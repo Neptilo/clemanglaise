@@ -8,7 +8,9 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += answerframe.h questionframe.h testframe.h
-SOURCES += answerframe.cpp main.cpp questionframe.cpp testframe.cpp
+HEADERS += answerframe.h questionframe.h testframe.h \
+    addframe.h
+SOURCES += answerframe.cpp main.cpp questionframe.cpp testframe.cpp \
+    addframe.cpp
 
 QT += network

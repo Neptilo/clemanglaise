@@ -5,3 +5,5 @@ syntax: glob
 *.o
 clemanglaise
 *~
+moc_*
+

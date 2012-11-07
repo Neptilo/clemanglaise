@@ -5,10 +5,13 @@ TestFrame::TestFrame(QWidget *parent)
 
     // GUI (Don't initialize the answer frame.)
     setWindowTitle("Clemanglaise");
-    layout = new QVBoxLayout();
-    setLayout(layout);
+    layout = new QVBoxLayout(this);
     question_frame = new QuestionFrame(this);
     layout->addWidget(question_frame);
+
+    add_button = new QPushButton("Add word", this);
+    connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
+    layout->addWidget(add_button);
 
     // Request to PHP file
     const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php");
@@ -62,4 +65,15 @@ void TestFrame::validate_answer(){
 
     // Request for a new question
     nam->get(*request);
+}
+
+void TestFrame::add_word(){
+
+    // Remove everything
+    delete question_frame;
+
+    // Create a new add frame
+    add_frame = new AddFrame(this);
+    layout->addWidget(add_frame);
+
 }
