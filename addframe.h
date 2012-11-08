@@ -5,6 +5,7 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QtNetwork>
 
 class AddFrame : public QWidget{
     Q_OBJECT
@@ -19,6 +20,7 @@ private:
     QLabel* meaning;
     QLabel* comment;
     QLabel* example;
+    QLabel* status;
     QLineEdit* word_edit;
     QLineEdit* meaning_edit;
     QLineEdit* comment_edit;
@@ -26,6 +28,9 @@ private:
     QPushButton* OK_button;
     QVBoxLayout* layout;
 
+public slots:
+    void add_word();
+    void show_confirmation(QNetworkReply* reply);
 };
 
 #endif // ADDFRAME_H
