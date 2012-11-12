@@ -19,10 +19,11 @@ private:
     QNetworkRequest* request;
     QNetworkAccessManager* nam;
     QStringList* reply_list;
-    QVBoxLayout* layout;
+    QLayout* layout;
     QPushButton* add_button;
 
 public slots:
+    void init();
     void read_reply(QNetworkReply* reply);
     void validate_question();
     void validate_answer();

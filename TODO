@@ -1,8 +1,8 @@
+* Ensure that every time an object is created with "new", either it has never been defined before, or it has been deleted with "delete". Either way there'll be memory leaks.
+* Understand why some "delete" make the app crash
 * Color the edit field in green or red when right or wrong and color those messages too
 * Change font sizes
 * Set a default window width
-* Upload on Bitbucket
 * Create app icon
-* Remove articles in database?
 * Edit existing entries to get them all clean and available for tests
-* Create widget to insert new entries
+* Solve encoding issues

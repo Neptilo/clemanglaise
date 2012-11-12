@@ -6,6 +6,9 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QtNetwork>
+#include <QFormLayout>
+#include <QComboBox>
+#include <QTextEdit>
 
 class AddFrame : public QWidget{
     Q_OBJECT
@@ -16,21 +19,19 @@ public:
 
 private:
     QLabel* title;
-    QLabel* word;
-    QLabel* meaning;
-    QLabel* comment;
-    QLabel* example;
     QLabel* status;
-    QLineEdit* word_edit;
-    QLineEdit* meaning_edit;
-    QLineEdit* comment_edit;
-    QLineEdit* example_edit;
+    QComboBox* nature;
+    QLineEdit* word;
+    QLineEdit* meaning;
+    QTextEdit* comment;
+    QTextEdit* example;
     QPushButton* OK_button;
-    QVBoxLayout* layout;
+    QFormLayout* layout;
 
 public slots:
     void add_word();
     void show_confirmation(QNetworkReply* reply);
+    void exit();
 };
 
 #endif // ADDFRAME_H

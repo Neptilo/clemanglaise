@@ -14,7 +14,7 @@ public:
 
 private:
     QLabel* label;
-    QVBoxLayout* layout;
+    QLayout* layout;
     QPushButton* OK_button;
 };
 

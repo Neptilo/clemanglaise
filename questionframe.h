@@ -19,7 +19,7 @@ public:
 private:
     QLabel* label;
     QLineEdit* edit;
-    QVBoxLayout* layout;
+    QLayout* layout;
     QPushButton* OK_button;
 
 public slots:

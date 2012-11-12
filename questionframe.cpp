@@ -8,9 +8,6 @@ QuestionFrame::QuestionFrame(QWidget *parent)
 
     label = new QLabel("Loading...", this);
     layout->addWidget(label);
-
-    OK_button = new QPushButton("OK", this);
-    OK_button->setEnabled(false); // OK button should not be clicked until network reply is finished.
 }
 
 QuestionFrame::~QuestionFrame(){
@@ -33,7 +30,8 @@ void QuestionFrame::ask_question(const QString& word){
     edit = new QLineEdit(this);
     layout->addWidget(edit);
 
-    // Show OK button
+    // Create OK button
+    OK_button = new QPushButton("OK", this);
     layout->addWidget(OK_button);
 
     // Connections
@@ -48,6 +46,6 @@ void QuestionFrame::ask_question(const QString& word){
 
 void QuestionFrame::disable_validation(){
     OK_button->disconnect();
+    OK_button->hide();
     edit->disconnect();
-    layout->removeWidget(OK_button); // For aesthetic reasons
 }

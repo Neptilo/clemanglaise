@@ -3,35 +3,38 @@
 TestFrame::TestFrame(QWidget *parent)
     : QWidget(parent){
 
-    // GUI (Don't initialize the answer frame.)
     setWindowTitle("Clemanglaise");
     layout = new QVBoxLayout(this);
-    question_frame = new QuestionFrame(this);
-    layout->addWidget(question_frame);
 
     add_button = new QPushButton("Add word", this);
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
-    layout->addWidget(add_button);
 
-    // Request to PHP file
-    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php");
-    request = new QNetworkRequest(url);
-    nam = new QNetworkAccessManager;
-
-    // Connections
-    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
-
-    nam->get(*request);
+    init();
 }
 
-TestFrame::~TestFrame()
-{
+TestFrame::~TestFrame(){
     delete question_frame;
     delete answer_frame;
     delete request;
     delete nam;
     delete reply_list;
     delete layout;
+}
+
+void TestFrame::init(){
+    layout->addWidget(add_button);
+
+    question_frame = new QuestionFrame(this);
+    layout->addWidget(question_frame);
+
+    // Request to PHP file
+    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php");
+    request = new QNetworkRequest(url);
+    nam = new QNetworkAccessManager;
+
+    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+
+    nam->get(*request);
 }
 
 void TestFrame::read_reply(QNetworkReply* reply){
@@ -71,9 +74,11 @@ void TestFrame::add_word(){
 
     // Remove everything
     delete question_frame;
+    //delete answer_frame; // FIXME
+    add_button->disconnect();
+    add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
 
     // Create a new add frame
     add_frame = new AddFrame(this);
     layout->addWidget(add_frame);
-
 }
