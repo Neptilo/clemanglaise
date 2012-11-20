@@ -1,5 +1,8 @@
 #include "answerframe.h"
 
+AnswerFrame::AnswerFrame(QWidget *parent)
+    : QWidget(parent){}
+
 AnswerFrame::AnswerFrame(QWidget *parent, const QStringList &reply_list, const QString &player_answer)
     : QWidget(parent){
 
@@ -41,7 +44,7 @@ AnswerFrame::AnswerFrame(QWidget *parent, const QStringList &reply_list, const Q
 }
 
 AnswerFrame::~AnswerFrame(){
-    delete label;
     delete layout;
+    delete label;
     delete OK_button;
 }

@@ -6,6 +6,8 @@ TestFrame::TestFrame(QWidget *parent)
     setWindowTitle("Clemanglaise");
     layout = new QVBoxLayout(this);
 
+    answer_frame = new AnswerFrame(this);
+
     init();
 }
 
@@ -52,6 +54,7 @@ void TestFrame::read_reply(QNetworkReply* reply){
 void TestFrame::validate_question(){
 
     // Create a new answer frame
+    delete answer_frame;
     answer_frame = new AnswerFrame(this, *reply_list, question_frame->getAnswer());
     layout->addWidget(answer_frame);
 }
@@ -60,7 +63,7 @@ void TestFrame::validate_answer(){
 
     // Remove everything
     delete question_frame;
-    delete answer_frame;
+    answer_frame->hide();
 
     // Create a new question frame
     question_frame = new QuestionFrame(this);
@@ -74,7 +77,7 @@ void TestFrame::add_word(){
 
     // Remove everything
     delete question_frame;
-    delete answer_frame;
+    answer_frame->hide();
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
 

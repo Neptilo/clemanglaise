@@ -8,6 +8,7 @@
 
 class AnswerFrame : public QWidget{
 public:
+    AnswerFrame(QWidget *parent);
     AnswerFrame(QWidget *parent, const QStringList& reply_list, const QString& player_answer);
     ~AnswerFrame();
     void setLabel(QString &text);
