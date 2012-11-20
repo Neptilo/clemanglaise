@@ -26,12 +26,13 @@ private:
     QTextEdit* comment;
     QTextEdit* example;
     QPushButton* OK_button;
+    QPushButton* cancel_button;
     QFormLayout* layout;
 
 public slots:
     void add_word();
     void show_confirmation(QNetworkReply* reply);
-    void exit();
+    void back();
 };
 
 #endif // ADDFRAME_H

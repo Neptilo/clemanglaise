@@ -6,15 +6,13 @@ TestFrame::TestFrame(QWidget *parent)
     setWindowTitle("Clemanglaise");
     layout = new QVBoxLayout(this);
 
-    add_button = new QPushButton("Add word", this);
-    connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
-
     init();
 }
 
 TestFrame::~TestFrame(){
     delete question_frame;
     delete answer_frame;
+    delete add_frame;
     delete request;
     delete nam;
     delete reply_list;
@@ -22,6 +20,8 @@ TestFrame::~TestFrame(){
 }
 
 void TestFrame::init(){
+    add_button = new QPushButton("Add word", this);
+    connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
     layout->addWidget(add_button);
 
     question_frame = new QuestionFrame(this);
@@ -74,11 +74,12 @@ void TestFrame::add_word(){
 
     // Remove everything
     delete question_frame;
-    //delete answer_frame; // FIXME
+    delete answer_frame;
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
 
     // Create a new add frame
     add_frame = new AddFrame(this);
     layout->addWidget(add_frame);
+    connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }

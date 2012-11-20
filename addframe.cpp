@@ -6,7 +6,7 @@ AddFrame::AddFrame(QWidget *parent) :
 
     layout = new QFormLayout(this);
 
-    title = new QLabel("<b>Add a new word</b>", this);
+    title = new QLabel(tr("<b>Add a new word</b>"), this);
     layout->addWidget(title);
 
     word = new QLineEdit(this);
@@ -14,14 +14,14 @@ AddFrame::AddFrame(QWidget *parent) :
 
     nature = new QComboBox(this);
     nature->addItem("---");
-    nature->addItem("Adjective", QVariant("adj"));
-    nature->addItem("Adverb", QVariant("adv"));
-    nature->addItem("Article", QVariant("art"));
-    nature->addItem("Conjunction", QVariant("conj"));
-    nature->addItem("Noun", QVariant("n"));
-    nature->addItem("Preposition", QVariant("prep"));
-    nature->addItem("Pronoun", QVariant("pron"));
-    nature->addItem("Verb", QVariant("v"));
+    nature->addItem(tr("Adjective"), QVariant("adj"));
+    nature->addItem(tr("Adverb"), QVariant("adv"));
+    nature->addItem(tr("Article"), QVariant("art"));
+    nature->addItem(tr("Conjunction"), QVariant("conj"));
+    nature->addItem(tr("Noun"), QVariant("n"));
+    nature->addItem(tr("Preposition"), QVariant("prep"));
+    nature->addItem(tr("Pronoun"), QVariant("pron"));
+    nature->addItem(tr("Verb"), QVariant("v"));
     layout->addRow(tr("&Nature:"), nature);
 
     meaning = new QLineEdit(this);
@@ -36,9 +36,13 @@ AddFrame::AddFrame(QWidget *parent) :
     status = new QLabel(this);
     layout->addWidget(status);
 
-    OK_button = new QPushButton("Add", this);
+    OK_button = new QPushButton(tr("Add"), this);
     connect(OK_button, SIGNAL(clicked()), this, SLOT(add_word()));
     layout->addWidget(OK_button);
+
+    cancel_button = new QPushButton(tr("Cancel"), this);
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
+    layout->addWidget(cancel_button);
 }
 
 AddFrame::~AddFrame(){
@@ -49,11 +53,12 @@ AddFrame::~AddFrame(){
     delete comment;
     delete example;
     delete OK_button;
+    delete cancel_button;
     delete layout;
 }
 
 void AddFrame::add_word(){
-    status->setText("Sending data...");
+    status->setText(tr("Sending data..."));
     QUrl post_data;
     post_data.addQueryItem("word", word->text());
     post_data.addQueryItem("nature", nature->itemData(nature->currentIndex()).toString());
@@ -74,14 +79,12 @@ void AddFrame::show_confirmation(QNetworkReply* reply){
     if(reply_string.compare("")){
         status->setText(reply_string);
     }else{
-        status->setText("Word successfully added!");
+        status->setText(tr("Word successfully added!"));
     }
-    disconnect(OK_button);
-    OK_button->setText("Back to test");
-    connect(OK_button, SIGNAL(clicked()), this, SLOT(exit()));
-    connect(OK_button, SIGNAL(clicked()), parent(), SLOT(init()));
+    delete OK_button;
+    cancel_button->setText(tr("Back to test"));
 }
 
-void AddFrame::exit(){
+void AddFrame::back(){
     delete this;
 }
