@@ -9,8 +9,10 @@ INCLUDEPATH += .
 
 # Input
 HEADERS += answerframe.h questionframe.h testframe.h \
-    addframe.h
+    addframe.h \
+    homewindow.h
 SOURCES += answerframe.cpp main.cpp questionframe.cpp testframe.cpp \
-    addframe.cpp
+    addframe.cpp \
+    homewindow.cpp
 
 QT += network

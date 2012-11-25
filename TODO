@@ -7,4 +7,3 @@
 * Edit existing entries to get them all clean and available for tests
 * Solve encoding issues
 
-To avoid many 'delete' crashes and memory leak problems, I found out it was efficient to use the technique of always ensuring that every attribute is instancied by allocating resources from the first time (even if widget is not already in use)and deleting and re-creating it each time we want a new widget.
