@@ -42,9 +42,3 @@ AnswerFrame::AnswerFrame(QWidget *parent, const QStringList &reply_list, const Q
     OK_button->setFocus(); // Because the focus is still on the edit line.
     layout->addWidget(OK_button);
 }
-
-AnswerFrame::~AnswerFrame(){
-    delete layout;
-    delete label;
-    delete OK_button;
-}

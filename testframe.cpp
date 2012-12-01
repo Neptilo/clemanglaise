@@ -3,7 +3,6 @@
 TestFrame::TestFrame(const QString &lang, QWidget *parent)
     : QWidget(parent){
 
-    setWindowTitle("Clemanglaise");
     layout = new QVBoxLayout(this);
 
     answer_frame = new AnswerFrame(this);
@@ -21,6 +20,7 @@ TestFrame::~TestFrame(){
     delete nam;
     delete reply_list;
     delete layout;
+    delete lang;
 }
 
 void TestFrame::init(){
@@ -32,7 +32,7 @@ void TestFrame::init(){
     layout->addWidget(question_frame);
 
     // Request to PHP file
-    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php&lang=" + *lang);
+    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + *lang);
     request = new QNetworkRequest(url);
     nam = new QNetworkAccessManager;
 
@@ -56,9 +56,7 @@ void TestFrame::read_reply(QNetworkReply* reply){
 void TestFrame::validate_question(){
 
     // Create a new answer frame
-    qDebug() << "Gonna delete answer frame";
     delete answer_frame;
-    qDebug() << "Deleted answer frame";
     answer_frame = new AnswerFrame(this, *reply_list, question_frame->getAnswer());
     layout->addWidget(answer_frame);
 }
