@@ -6,6 +6,7 @@
 #include <QList>
 
 #include <testframe.h>
+#include <languagebuttons.h>
 
 class HomeWindow : public QWidget{
     Q_OBJECT
@@ -13,8 +14,9 @@ class HomeWindow : public QWidget{
 private:
     TestFrame* test_frame;
     QLabel* title;
-    QList<QPushButton*>* buttons;
-    QLayout* layout;
+    QStringList* mapping_texts;
+    QStringList* button_texts;
+    LanguageButtons* buttons;
 
 public:
     explicit HomeWindow(QWidget *parent = 0);
@@ -22,7 +24,7 @@ public:
 signals:
     
 public slots:
-    void start_test();
+    void start_test(const QString & mapping_text);
     
 };
 
