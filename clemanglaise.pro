@@ -11,10 +11,12 @@ INCLUDEPATH += .
 HEADERS += answerframe.h questionframe.h testframe.h \
     addframe.h \
     homewindow.h \
-    languagebuttons.h
+    languagebuttons.h \
+    test.h
 SOURCES += answerframe.cpp main.cpp questionframe.cpp testframe.cpp \
     addframe.cpp \
     homewindow.cpp \
-    languagebuttons.cpp
+    languagebuttons.cpp \
+    test.cpp
 
 QT += network

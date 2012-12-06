@@ -9,15 +9,11 @@ HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
     title = new QLabel(tr("Choose your vocab test:"), this);
     layout->addWidget(title);
 
-    mapping_texts = new QStringList;
-    *mapping_texts << "enfr";
-    *mapping_texts << "enja";
+    tests = new QList<Test>;
+    *tests << *new Test("English to French", "en", "fr");
+    *tests << *new Test("English to Japanese", "en", "ja");
 
-    button_texts = new QStringList;
-    *button_texts << "English to French";
-    *button_texts << "English to Japanese";
-
-    buttons = new LanguageButtons(*mapping_texts, *button_texts, this);
+    buttons = new LanguageButtons(*tests, this);
     layout->addWidget(buttons);
 }
 

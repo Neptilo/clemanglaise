@@ -7,6 +7,7 @@
 
 #include <testframe.h>
 #include <languagebuttons.h>
+#include <test.h>
 
 class HomeWindow : public QWidget{
     Q_OBJECT
@@ -14,6 +15,7 @@ class HomeWindow : public QWidget{
 private:
     TestFrame* test_frame;
     QLabel* title;
+    QList<Test>* tests;
     QStringList* mapping_texts;
     QStringList* button_texts;
     LanguageButtons* buttons;

@@ -4,10 +4,12 @@
 #include <QWidget>
 #include <QSignalMapper>
 
+#include <test.h>
+
 class LanguageButtons : public QWidget{
     Q_OBJECT
 public:
-    LanguageButtons(const QStringList &mapping_texts, const QStringList &button_texts, QWidget *parent = 0);
+    LanguageButtons(const QList<Test>& tests, QWidget *parent);
     void disconnect_all();
 
 signals:

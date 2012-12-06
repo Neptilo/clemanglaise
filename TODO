@@ -5,5 +5,5 @@
 * Set a default window width
 * Create app icon
 * Edit existing entries to get them all clean and available for tests
-* Solve encoding issues
+* Solve encoding issues: encode user entries as HTML
 
