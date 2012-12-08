@@ -1,3 +1,5 @@
+#include <QObject>
+
 #include "test.h"
 
 Test::Test(const QString& name, const QString& src, const QString& dst){
@@ -6,7 +8,7 @@ Test::Test(const QString& name, const QString& src, const QString& dst){
     this->dst = dst;
 }
 
-const QString& Test::getName(){
+const QString& Test::getName() const{
     return name;
 }
 

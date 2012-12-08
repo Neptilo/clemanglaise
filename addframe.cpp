@@ -1,10 +1,13 @@
-#include "addframe.h"
 #include <QtNetwork>
 
-AddFrame::AddFrame(QWidget *parent) :
+#include "addframe.h"
+
+AddFrame::AddFrame(Test* test, QWidget *parent) :
     QWidget(parent){
 
     layout = new QFormLayout(this);
+
+    this->test = test;
 
     title = new QLabel(tr("<b>Add a new word</b>"), this);
     layout->addWidget(title);
@@ -65,6 +68,7 @@ void AddFrame::add_word(){
     post_data.addQueryItem("meaning", meaning->text());
     post_data.addQueryItem("comment", comment->toPlainText());
     post_data.addQueryItem("example", example->toPlainText());
+    post_data.addQueryItem("lang", test->getSrc() + test->getDst());
     const QUrl url("http://neptilo.com/php/clemanglaise/add.php");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");

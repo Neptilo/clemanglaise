@@ -4,12 +4,13 @@
 #include "questionframe.h"
 #include "answerframe.h"
 #include "addframe.h"
+#include "test.h"
 
 class TestFrame : public QWidget{
     Q_OBJECT
     
 public:
-    TestFrame(const QString &lang, QWidget *parent = 0);
+    TestFrame(Test *test, QWidget *parent = 0);
     ~TestFrame();
 
 private:
@@ -21,7 +22,7 @@ private:
     QStringList* reply_list;
     QLayout* layout;
     QPushButton* add_button;
-    QString* lang;
+    Test* test;
 
 public slots:
     void init();

@@ -12,7 +12,7 @@ private:
 
 public:
     explicit Test(const QString &name, const QString &src, const QString &dst);
-    const QString& getName();
+    const QString& getName() const;
     const QString& getSrc();
     const QString& getDst();
 };

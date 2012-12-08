@@ -1,13 +1,13 @@
 #include "testframe.h"
 
-TestFrame::TestFrame(const QString &lang, QWidget *parent)
+TestFrame::TestFrame(Test *test, QWidget *parent)
     : QWidget(parent){
 
     layout = new QVBoxLayout(this);
 
     answer_frame = new AnswerFrame(this);
 
-    this->lang = new QString(lang);
+    this->test = test;
 
     init();
 }
@@ -20,7 +20,7 @@ TestFrame::~TestFrame(){
     delete nam;
     delete reply_list;
     delete layout;
-    delete lang;
+    delete test;
 }
 
 void TestFrame::init(){
@@ -32,7 +32,7 @@ void TestFrame::init(){
     layout->addWidget(question_frame);
 
     // Request to PHP file
-    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + *lang);
+    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test->getSrc() + test->getDst());
     request = new QNetworkRequest(url);
     nam = new QNetworkAccessManager;
 
@@ -84,7 +84,7 @@ void TestFrame::add_word(){
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
 
     // Create a new add frame
-    add_frame = new AddFrame(this);
+    add_frame = new AddFrame(test, this);
     layout->addWidget(add_frame);
     connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }

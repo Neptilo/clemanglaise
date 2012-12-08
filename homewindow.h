@@ -26,7 +26,7 @@ public:
 signals:
     
 public slots:
-    void start_test(const QString & mapping_text);
+    void start_test(int i);
     
 };
 

@@ -12,16 +12,15 @@ LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent)
     QGridLayout *layout = new QGridLayout(this);
 
     for (int i = 0; i < tests.size(); ++i) {
-        Test test = tests[i];
+        const Test& test = tests[i];
         QString button_text = test.getName();
-        QString mapping_text = test.getSrc() + test.getDst();
         QPushButton *button = new QPushButton(button_text);
         connect(button, SIGNAL(clicked()), signal_mapper, SLOT(map()));
-        signal_mapper->setMapping(button, mapping_text);
+        signal_mapper->setMapping(button, i);
         layout->addWidget(button, 0, i);
     }
 
-    connect(signal_mapper, SIGNAL(mapped(const QString &)), parent, SLOT(start_test(const QString &)));
+    connect(signal_mapper, SIGNAL(mapped(int)), parent, SLOT(start_test(int)));
 }
 
 void LanguageButtons::disconnect_all(){

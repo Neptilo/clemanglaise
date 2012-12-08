@@ -10,11 +10,13 @@
 #include <QComboBox>
 #include <QTextEdit>
 
+#include "test.h"
+
 class AddFrame : public QWidget{
     Q_OBJECT
 
 public:
-    AddFrame(QWidget* parent);
+    AddFrame(Test *test, QWidget *parent);
     ~AddFrame();
 
 private:
@@ -28,6 +30,7 @@ private:
     QPushButton* OK_button;
     QPushButton* cancel_button;
     QFormLayout* layout;
+    Test* test;
 
 public slots:
     void add_word();

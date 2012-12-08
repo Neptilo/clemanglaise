@@ -17,10 +17,11 @@ HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
     layout->addWidget(buttons);
 }
 
-void HomeWindow::start_test(const QString & mapping_text){
+void HomeWindow::start_test(int i){
     title->hide();
     buttons->hide();
     buttons->disconnect_all();
-    TestFrame* test_frame = new TestFrame(mapping_text, this);
+    Test* test = &((*tests)[i]);
+    TestFrame* test_frame = new TestFrame(test, this);
     layout()->addWidget(test_frame);
 }
