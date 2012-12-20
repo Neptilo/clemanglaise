@@ -1,4 +1,8 @@
+#include <QTextDocument>
+#include <QDebug>
+
 #include "questionframe.h"
+#include "ampersand_escape.h"
 
 QuestionFrame::QuestionFrame(QWidget *parent)
     : QWidget(parent)
@@ -18,7 +22,7 @@ QuestionFrame::~QuestionFrame(){
 }
 
 QString QuestionFrame::getAnswer(){
-    return edit->text();
+    return ampersand_escape(edit->text());
 }
 
 void QuestionFrame::ask_question(const QString& word){

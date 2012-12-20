@@ -28,7 +28,7 @@ AnswerFrame::AnswerFrame(QWidget *parent, const QStringList &reply_list, const Q
             + meaning+"<br/>"
             + "<i>"+comment+"</i><br/>";
     if(example.compare("")){
-        string += "<b>Example:</b> "+example;
+        string += "<b>Example:</b> "+ example;
     }
 
     // Create the label

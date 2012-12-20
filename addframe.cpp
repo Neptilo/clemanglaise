@@ -1,6 +1,8 @@
 #include <QtNetwork>
+#include <QTextDocument>
 
 #include "addframe.h"
+#include "ampersand_escape.h"
 
 AddFrame::AddFrame(Test* test, QWidget *parent) :
     QWidget(parent){
@@ -63,17 +65,23 @@ AddFrame::~AddFrame(){
 void AddFrame::add_word(){
     status->setText(tr("Sending data..."));
     QUrl post_data;
-    post_data.addQueryItem("word", word->text());
+    post_data.addQueryItem("word", ampersand_escape(word->text()));
     post_data.addQueryItem("nature", nature->itemData(nature->currentIndex()).toString());
-    post_data.addQueryItem("meaning", meaning->text());
-    post_data.addQueryItem("comment", comment->toPlainText());
-    post_data.addQueryItem("example", example->toPlainText());
+    post_data.addQueryItem("meaning", ampersand_escape(meaning->text()));
+    post_data.addQueryItem("comment", ampersand_escape(comment->toPlainText()));
+    post_data.addQueryItem("example", ampersand_escape(example->toPlainText()));
     post_data.addQueryItem("lang", test->getSrc() + test->getDst());
+
     const QUrl url("http://neptilo.com/php/clemanglaise/add.php");
     QNetworkRequest request(url);
+
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QNetworkAccessManager* nam = new QNetworkAccessManager;
+
+    // Will show confirmation when loading of reply is finished
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
+
+    // Send the request
     nam->post(request, post_data.encodedQuery());
 }
 

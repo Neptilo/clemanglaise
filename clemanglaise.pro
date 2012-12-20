@@ -12,11 +12,13 @@ HEADERS += answerframe.h questionframe.h testframe.h \
     addframe.h \
     homewindow.h \
     languagebuttons.h \
-    test.h
+    test.h \
+    ampersand_escape.h
 SOURCES += answerframe.cpp main.cpp questionframe.cpp testframe.cpp \
     addframe.cpp \
     homewindow.cpp \
     languagebuttons.cpp \
-    test.cpp
+    test.cpp \
+    ampersand_escape.cpp
 
 QT += network
