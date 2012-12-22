@@ -1,10 +1,12 @@
+* Create new widget abstract class WordFrame which will generalize the QuestionFrame and AnswerFrame. Constructors will have a boolean parameter "handwriting". If it is true, layout will be a QHorizontalAlign, with on the left a 100 pixels high QWidget (used for showing big characters), and on the right a QPushButton. If handwriting is wrong, only the right part will be shown.
+* QuestionFrame: On the left part, the big widget will be a QLineEdit (for now). A QLabel with the question will be added. On the right part, there will be a QLabel for the question and a QLineEdit for the answer.
+* AnswerFrame: On the left part, the big widget will be a QLabel. On the right part, there will be QLabels for the correction.
+
 * App mustn't crash when clicking on "Back to test" from add frame.
 * Ensure that every time an object is created with "new", either it has never been defined before, or it has been deleted with "delete". Either way there'll be memory leaks.
 * Understand why some "delete" make the app crash
 * Color the edit field in green or red when right or wrong and color those messages too
-* Change font sizes
-* Set a default window width
+* Change font sizes, especially the word being asked
+* Set a default window width (?)
 * Create app icon
 * Edit existing entries to get them all clean and available for tests
-* Solve encoding issues: encode user entries as HTML
-
