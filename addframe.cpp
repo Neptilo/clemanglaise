@@ -4,12 +4,12 @@
 #include "addframe.h"
 #include "ampersand_escape.h"
 
-AddFrame::AddFrame(Test* test, QWidget *parent) :
-    QWidget(parent){
+AddFrame::AddFrame(Test &test, QWidget *parent) :
+    QWidget(parent),
+    test(test)
+{
 
     layout = new QFormLayout(this);
-
-    this->test = test;
 
     title = new QLabel(tr("<b>Add a new word</b>"), this);
     layout->addWidget(title);
@@ -70,7 +70,7 @@ void AddFrame::add_word(){
     post_data.addQueryItem("meaning", ampersand_escape(meaning->text()));
     post_data.addQueryItem("comment", ampersand_escape(comment->toPlainText()));
     post_data.addQueryItem("example", ampersand_escape(example->toPlainText()));
-    post_data.addQueryItem("lang", test->getSrc() + test->getDst());
+    post_data.addQueryItem("lang", test.getSrc() + test.getDst());
 
     const QUrl url("http://neptilo.com/php/clemanglaise/add.php");
     QNetworkRequest request(url);

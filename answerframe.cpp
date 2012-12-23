@@ -1,44 +1,60 @@
 #include "answerframe.h"
 
-AnswerFrame::AnswerFrame(QWidget *parent)
-    : QWidget(parent){}
+AnswerFrame::AnswerFrame(Test &test, QWidget *parent):
+    WordFrame(test, parent)
+{}
 
-AnswerFrame::AnswerFrame(QWidget *parent, const QStringList &reply_list, const QString &player_answer)
-    : QWidget(parent){
-
-    // Create the layout
-    layout = new QVBoxLayout(this);
-
+AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_answer, Test &test, QWidget *parent):
+    WordFrame(test, parent)
+{
     // Define explicit variables for the content of the label
     QString word = reply_list.at(0);
     QString meaning = reply_list.at(1);
     QString nature = reply_list.at(2);
     QString comment = reply_list.at(3);
     QString example = reply_list.at(4);
+    QString pronunciation = reply_list.at(5);
+
+    // List of languages for which we asked for the pronunciation
+    QStringList list;
+    list << "ja" << "zh";
+    bool asked_pronunciation = list.contains(test.getDst());
 
     // Check answer
-    QString message = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive)) ? "Right!" : "Wrong!";
-
-    // Create the string for the label
-    QString string =
-            (QString)
-            "<b>"+message+"</b><br/>"
-            + "<b>"+word+"</b> "
-            + "<i>"+nature+"</i>: "
-            + meaning+"<br/>"
-            + "<i>"+comment+"</i><br/>";
-    if(example.compare("")){
-        string += "<b>Example:</b> "+ example;
+    QString message;
+    if(asked_pronunciation){
+        message = (pronunciation == player_answer) ? "Right!" : "Wrong!";
+    }else{
+        message = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive)) ? "Right!" : "Wrong!";
     }
 
-    // Create the label
-    label = new QLabel(string, this);
-    layout->addWidget(label);
+    // Left part
+    if(handwriting){
+        QLabel* handwriting_edit = new QLabel("<b>"+meaning+"</b>", this);
+        QFont font;
+        font.setPixelSize(100);
+        handwriting_edit->setFont(font);
+        right_vertical_layout->addWidget(handwriting_edit);
+    }
+
+    // Right part
+
+    // Add labels
+    vertical_layout->addWidget(new QLabel("<b>"+message+"</b>", this));
+    if(asked_pronunciation){
+        vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
+    }else{
+        vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+meaning, this));
+    }
+    vertical_layout->addWidget(new QLabel("<i>"+comment+"</i>", this));
+    if(example.compare("")){
+        vertical_layout->addWidget(new QLabel("<b>Example:</b> "+ example, this));
+    }
 
     // Create the OK button
     OK_button = new QPushButton("OK", this);
     connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
     OK_button->setDefault(true);
     OK_button->setFocus(); // Because the focus is still on the edit line.
-    layout->addWidget(OK_button);
+    vertical_layout->addWidget(OK_button);
 }

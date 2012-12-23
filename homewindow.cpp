@@ -21,7 +21,7 @@ void HomeWindow::start_test(int i){
     title->hide();
     buttons->hide();
     buttons->disconnect_all();
-    Test* test = &((*tests)[i]);
+    Test test = (*tests)[i];
     TestFrame* test_frame = new TestFrame(test, this);
     layout()->addWidget(test_frame);
 }

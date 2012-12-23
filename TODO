@@ -1,8 +1,6 @@
-* Create the two following subclasses of WordFrame.
-* QuestionFrame: On the left part, the big widget will be a QLineEdit (for now). A QLabel with the question will be added. On the right part, there will be a QLabel for the question and a QLineEdit for the answer.
-* AnswerFrame: On the left part, the big widget will be a QLabel. On the right part, there will be QLabels for the correction.
-* Add a QPushButton on the right part of the WordFrame.
-
+* Add a QPushButton on the right part of the WordFrame. (Factorize the existing ones in QuestionFrame and AnswerFrame)
+* Align the big characters of the AnswerFrame to the right
+* Allow editing the 'pronunciation' field when adding a word
 * App mustn't crash when clicking on "Back to test" from add frame.
 * Ensure that every time an object is created with "new", either it has never been defined before, or it has been deleted with "delete". Either way there'll be memory leaks.
 * Understand why some "delete" make the app crash

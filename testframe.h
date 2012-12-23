@@ -10,7 +10,7 @@ class TestFrame : public QWidget{
     Q_OBJECT
     
 public:
-    TestFrame(Test *test, QWidget *parent = 0);
+    TestFrame(Test &test, QWidget *parent = 0);
     ~TestFrame();
 
 private:
@@ -22,7 +22,7 @@ private:
     QStringList* reply_list;
     QLayout* layout;
     QPushButton* add_button;
-    Test* test;
+    Test test;
 
 public slots:
     void init();

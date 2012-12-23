@@ -16,7 +16,7 @@ class AddFrame : public QWidget{
     Q_OBJECT
 
 public:
-    AddFrame(Test *test, QWidget *parent);
+    AddFrame(Test &test, QWidget *parent);
     ~AddFrame();
 
 private:
@@ -30,7 +30,7 @@ private:
     QPushButton* OK_button;
     QPushButton* cancel_button;
     QFormLayout* layout;
-    Test* test;
+    Test test;
 
 public slots:
     void add_word();

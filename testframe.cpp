@@ -1,14 +1,11 @@
 #include "testframe.h"
 
-TestFrame::TestFrame(Test *test, QWidget *parent)
-    : QWidget(parent){
-
+TestFrame::TestFrame(Test &test, QWidget *parent):
+    QWidget(parent),
+    test(test)
+{
     layout = new QVBoxLayout(this);
-
-    answer_frame = new AnswerFrame(this);
-
-    this->test = test;
-
+    answer_frame = new AnswerFrame(test, this);
     init();
 }
 
@@ -20,7 +17,6 @@ TestFrame::~TestFrame(){
     delete nam;
     delete reply_list;
     delete layout;
-    delete test;
 }
 
 void TestFrame::init(){
@@ -28,11 +24,11 @@ void TestFrame::init(){
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
     layout->addWidget(add_button);
 
-    question_frame = new QuestionFrame(this);
+    question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
 
     // Request to PHP file
-    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test->getSrc() + test->getDst());
+    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test.getSrc() + test.getDst());
     request = new QNetworkRequest(url);
     nam = new QNetworkAccessManager;
 
@@ -57,7 +53,7 @@ void TestFrame::validate_question(){
 
     // Create a new answer frame
     delete answer_frame;
-    answer_frame = new AnswerFrame(this, *reply_list, question_frame->getAnswer());
+    answer_frame = new AnswerFrame(*reply_list, question_frame->getAnswer(), test, this);
     layout->addWidget(answer_frame);
 }
 
@@ -68,7 +64,7 @@ void TestFrame::validate_answer(){
     answer_frame->hide();
 
     // Create a new question frame
-    question_frame = new QuestionFrame(this);
+    question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
 
     // Request for a new question

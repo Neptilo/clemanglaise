@@ -6,11 +6,13 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 
-class QuestionFrame : public QWidget{
+#include "wordframe.h"
+
+class QuestionFrame : public WordFrame{
     Q_OBJECT
 
 public:
-    QuestionFrame(QWidget* parent);
+    QuestionFrame(Test &test, QWidget *parent);
     ~QuestionFrame();
 
     QString getAnswer();
@@ -19,7 +21,6 @@ public:
 private:
     QLabel* label;
     QLineEdit* edit;
-    QLayout* layout;
     QPushButton* OK_button;
 
 public slots:

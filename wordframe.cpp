@@ -5,12 +5,11 @@ WordFrame::WordFrame(Test& test, QWidget *parent) :
     QWidget(parent),
     test(test){
 
-    this->test = test;
-
     // List of languages for which we want a handwriting widget
     QStringList list;
     list << "ja" << "zh";
-    if(list.contains(test.getDst())){
+    handwriting = list.contains(test.getDst());
+    if(handwriting){
         // We want a place for a character handwriting widget.
         // Layout is a horizontal one composed of two vertical layouts. The one on the right is for character handwriting.
         // The widget is set as horizontal_layout's parent so it will use this layout as default.

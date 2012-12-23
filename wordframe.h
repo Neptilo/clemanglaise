@@ -10,11 +10,12 @@ class WordFrame : public QWidget
 {
     Q_OBJECT
 
-private:
+protected:
     Test test;
     QHBoxLayout* horizontal_layout;
     QVBoxLayout* right_vertical_layout;
     QVBoxLayout* vertical_layout;
+    bool handwriting;
 
 public:
     WordFrame(Test &test, QWidget *parent);

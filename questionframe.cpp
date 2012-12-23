@@ -1,22 +1,19 @@
 #include <QTextDocument>
+#include <QLineEdit>
 
 #include "questionframe.h"
 #include "ampersand_escape.h"
 
-QuestionFrame::QuestionFrame(QWidget *parent)
-    : QWidget(parent)
+QuestionFrame::QuestionFrame(Test &test, QWidget *parent):
+    WordFrame(test, parent)
 {
-    // GUI
-    layout = new QVBoxLayout(this);
-
     label = new QLabel("Loading...", this);
-    layout->addWidget(label);
+    vertical_layout->addWidget(label);
 }
 
 QuestionFrame::~QuestionFrame(){
     delete label;
     delete edit;
-    delete layout;
     delete OK_button;
 }
 
@@ -26,16 +23,33 @@ QString QuestionFrame::getAnswer(){
 
 void QuestionFrame::ask_question(const QString& word){
 
+    // Left part
+    if(handwriting){
+        right_vertical_layout->addWidget(new QLabel("You can write the characters here if you have an IME.<br/>(Later you'll be able to draw them here.)", this));
+
+        QLineEdit* handwriting_edit = new QLineEdit(this);
+        QFont font;
+        font.setPixelSize(100);
+        handwriting_edit->setFont(font);
+        right_vertical_layout->addWidget(handwriting_edit);
+    }
+
+    // Right part
+
     // Display question
-    label->setText("Translate <b>" + word + "</b> into French.");
+    if(test.getDst() == "fr"){
+        label->setText("Translate <b>" + word + "</b> into French.");
+    }else if(test.getDst() == "ja"){
+        label->setText("<b>"+word+"</b><br/>Write the pronunciation of this word in R&#333;maji.");
+    }
 
     // Create edit field
     edit = new QLineEdit(this);
-    layout->addWidget(edit);
+    vertical_layout->addWidget(edit);
 
     // Create OK button
     OK_button = new QPushButton("OK", this);
-    layout->addWidget(OK_button);
+    vertical_layout->addWidget(OK_button);
 
     // Connections
     connect(edit, SIGNAL(returnPressed()), parent(), SLOT(validate_question()));
