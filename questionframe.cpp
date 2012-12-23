@@ -1,5 +1,4 @@
 #include <QTextDocument>
-#include <QDebug>
 
 #include "questionframe.h"
 #include "ampersand_escape.h"

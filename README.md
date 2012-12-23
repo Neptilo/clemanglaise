@@ -1,1 +1,8 @@
-This program creates English vocabulary tests with words from an online database.
+This program creates vocabulary tests in different languages using words from an online database.
+
+To compile it:
+  * First Qt must be installed on your computer.
+  * Don't regenerate the project file, use the one provided in the repo
+  * Type "make" in the command line.
+
+To run the application, type "clemanglaise" in the command line.

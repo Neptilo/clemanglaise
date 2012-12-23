@@ -1,6 +1,7 @@
-* Create new widget abstract class WordFrame which will generalize the QuestionFrame and AnswerFrame. Constructors will have a boolean parameter "handwriting". If it is true, layout will be a QHorizontalAlign, with on the left a 100 pixels high QWidget (used for showing big characters), and on the right a QPushButton. If handwriting is wrong, only the right part will be shown.
+* Create the two following subclasses of WordFrame.
 * QuestionFrame: On the left part, the big widget will be a QLineEdit (for now). A QLabel with the question will be added. On the right part, there will be a QLabel for the question and a QLineEdit for the answer.
 * AnswerFrame: On the left part, the big widget will be a QLabel. On the right part, there will be QLabels for the correction.
+* Add a QPushButton on the right part of the WordFrame.
 
 * App mustn't crash when clicking on "Back to test" from add frame.
 * Ensure that every time an object is created with "new", either it has never been defined before, or it has been deleted with "delete". Either way there'll be memory leaks.
