@@ -21,7 +21,6 @@ public:
 private:
     QLabel* label;
     QLineEdit* edit;
-    QPushButton* OK_button;
 
 public slots:
     void disable_validation();

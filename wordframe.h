@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QBoxLayout>
+#include <QPushButton>
 
 #include "test.h"
 
@@ -16,6 +17,7 @@ protected:
     QVBoxLayout* right_vertical_layout;
     QVBoxLayout* vertical_layout;
     bool handwriting;
+    QPushButton* OK_button;
 
 public:
     WordFrame(Test &test, QWidget *parent);

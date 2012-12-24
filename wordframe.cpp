@@ -3,7 +3,8 @@
 WordFrame::WordFrame(Test& test, QWidget *parent) :
 
     QWidget(parent),
-    test(test){
+    test(test)
+{
 
     // List of languages for which we want a handwriting widget
     QStringList list;

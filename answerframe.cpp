@@ -23,9 +23,9 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Check answer
     QString message;
     if(asked_pronunciation){
-        message = (pronunciation == player_answer) ? "Right!" : "Wrong!";
+        message = (pronunciation == player_answer) ? tr("Right!") : tr("Wrong!");
     }else{
-        message = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive)) ? "Right!" : "Wrong!";
+        message = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive)) ? tr("Right!") : tr("Wrong!");
     }
 
     // Left part
@@ -48,11 +48,11 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     }
     vertical_layout->addWidget(new QLabel("<i>"+comment+"</i>", this));
     if(example.compare("")){
-        vertical_layout->addWidget(new QLabel("<b>Example:</b> "+ example, this));
+        vertical_layout->addWidget(new QLabel(tr("<b>Example:</b> ")+ example, this));
     }
 
     // Create the OK button
-    OK_button = new QPushButton("OK", this);
+    OK_button = new QPushButton(tr("OK"), this);
     connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
     OK_button->setDefault(true);
     OK_button->setFocus(); // Because the focus is still on the edit line.

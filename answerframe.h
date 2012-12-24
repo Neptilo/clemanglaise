@@ -15,7 +15,6 @@ public:
 
 private:
     QLabel* label;
-    QPushButton* OK_button;
 };
 
 #endif // ANSWERFRAME_H

@@ -7,14 +7,13 @@
 QuestionFrame::QuestionFrame(Test &test, QWidget *parent):
     WordFrame(test, parent)
 {
-    label = new QLabel("Loading...", this);
+    label = new QLabel(tr("Loading..."), this);
     vertical_layout->addWidget(label);
 }
 
 QuestionFrame::~QuestionFrame(){
     delete label;
     delete edit;
-    delete OK_button;
 }
 
 QString QuestionFrame::getAnswer(){
@@ -25,7 +24,7 @@ void QuestionFrame::ask_question(const QString& word){
 
     // Left part
     if(handwriting){
-        right_vertical_layout->addWidget(new QLabel("You can write the characters here if you have an IME.<br/>(Later you'll be able to draw them here.)", this));
+        right_vertical_layout->addWidget(new QLabel(tr("You can write the characters here if you have an IME.<br/>(Later you'll be able to draw them here.)"), this));
 
         QLineEdit* handwriting_edit = new QLineEdit(this);
         QFont font;
@@ -38,9 +37,9 @@ void QuestionFrame::ask_question(const QString& word){
 
     // Display question
     if(test.getDst() == "fr"){
-        label->setText("Translate <b>" + word + "</b> into French.");
+        label->setText(tr("Translate <b>") + word + tr("</b> into French."));
     }else if(test.getDst() == "ja"){
-        label->setText("<b>"+word+"</b><br/>Write the pronunciation of this word in R&#333;maji.");
+        label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in R&#333;maji."));
     }
 
     // Create edit field
@@ -48,7 +47,7 @@ void QuestionFrame::ask_question(const QString& word){
     vertical_layout->addWidget(edit);
 
     // Create OK button
-    OK_button = new QPushButton("OK", this);
+    OK_button = new QPushButton(tr("OK"), this);
     vertical_layout->addWidget(OK_button);
 
     // Connections

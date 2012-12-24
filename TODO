@@ -1,4 +1,3 @@
-* Add a QPushButton on the right part of the WordFrame. (Factorize the existing ones in QuestionFrame and AnswerFrame)
 * Align the big characters of the AnswerFrame to the right
 * Allow editing the 'pronunciation' field when adding a word
 * App mustn't crash when clicking on "Back to test" from add frame.
