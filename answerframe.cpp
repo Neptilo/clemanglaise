@@ -48,7 +48,9 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     }
     vertical_layout->addWidget(new QLabel("<i>"+comment+"</i>", this));
     if(example.compare("")){
-        vertical_layout->addWidget(new QLabel(tr("<b>Example:</b> ")+ example, this));
+        QTextBrowser * qtb = new QTextBrowser(this);
+        qtb->setHtml("<b>Example:</b> "+ example);
+        vertical_layout->addWidget(qtb);
     }
 
     // Create the OK button

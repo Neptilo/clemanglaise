@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QtNetwork>
 #include <QPushButton>
+#include <QTextBrowser>
 
 #include "wordframe.h"
 

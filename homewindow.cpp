@@ -5,8 +5,10 @@ HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
     setWindowTitle("Clemanglaise");
 
     QLayout* layout = new QVBoxLayout(this);
+    layout->setMargin(0);
 
     title = new QLabel(tr("Choose your vocab test:"), this);
+    title->setAlignment(Qt::AlignHCenter);
     layout->addWidget(title);
 
     tests = new QList<Test>;
