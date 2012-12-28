@@ -25,6 +25,7 @@ private:
     QComboBox* nature;
     QLineEdit* word;
     QLineEdit* meaning;
+    QLineEdit* pronunciation;
     QTextEdit* comment;
     QTextEdit* example;
     QPushButton* OK_button;

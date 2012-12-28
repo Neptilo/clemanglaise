@@ -32,6 +32,15 @@ AddFrame::AddFrame(Test &test, QWidget *parent) :
     meaning = new QLineEdit(this);
     layout->addRow(tr("&Meaning:"), meaning);
 
+    QStringList list;
+    list << "ja" << "zh";
+    bool asked_pronunciation = list.contains(test.getDst());
+
+    if(asked_pronunciation){
+        pronunciation = new QLineEdit(this);
+        layout->addRow(tr("&Pronunciation:"), pronunciation);
+    }
+
     comment = new QTextEdit(this);
     layout->addRow(tr("&Comment:"), comment);
 
@@ -50,17 +59,7 @@ AddFrame::AddFrame(Test &test, QWidget *parent) :
     layout->addWidget(cancel_button);
 }
 
-AddFrame::~AddFrame(){
-    delete title;
-    delete word;
-    delete nature;
-    delete meaning;
-    delete comment;
-    delete example;
-    delete OK_button;
-    delete cancel_button;
-    delete layout;
-}
+AddFrame::~AddFrame(){}
 
 void AddFrame::add_word(){
     status->setText(tr("Sending data..."));
@@ -68,6 +67,12 @@ void AddFrame::add_word(){
     post_data.addQueryItem("word", ampersand_escape(word->text()));
     post_data.addQueryItem("nature", nature->itemData(nature->currentIndex()).toString());
     post_data.addQueryItem("meaning", ampersand_escape(meaning->text()));
+    QStringList list;
+    list << "ja" << "zh";
+    bool asked_pronunciation = list.contains(test.getDst());
+    if(asked_pronunciation){
+        post_data.addQueryItem("pronunciation", ampersand_escape(pronunciation->text()));
+    }
     post_data.addQueryItem("comment", ampersand_escape(comment->toPlainText()));
     post_data.addQueryItem("example", ampersand_escape(example->toPlainText()));
     post_data.addQueryItem("lang", test.getSrc() + test.getDst());

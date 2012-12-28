@@ -30,11 +30,12 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 
     // Left part
     if(handwriting){
-        QLabel* handwriting_edit = new QLabel("<b>"+meaning+"</b>", this);
+        QLabel* handwriting_label = new QLabel("<b>"+meaning+"</b>", this);
         QFont font;
         font.setPixelSize(100);
-        handwriting_edit->setFont(font);
-        right_vertical_layout->addWidget(handwriting_edit);
+        handwriting_label->setFont(font);
+        handwriting_label->setAlignment(Qt::AlignRight);
+        right_vertical_layout->addWidget(handwriting_label);
     }
 
     // Right part
