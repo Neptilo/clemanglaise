@@ -23,13 +23,13 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Check answer
     QString message;
     if(asked_pronunciation){
-        // Uniformize player answer before checking
-        QString uniformized_answer = QString(player_answer);
-        uniformized_answer.replace(QString("ou"), QString("&#333;"));
-        uniformized_answer.replace(QString("uu"), QString("&#363;"));
-        uniformized_answer.replace(QString("aa"), QString("&#257;"));
-        uniformized_answer.replace(QString("ei"), QString("&#275;"));
-        message = (pronunciation == uniformized_answer) ? tr("Right!") : tr("Wrong!");
+        // Standardize player answer before checking
+        QString standardized_answer = QString(player_answer);
+        standardized_answer.replace(QString("ou"), QString("&#333;"));
+        standardized_answer.replace(QString("uu"), QString("&#363;"));
+        standardized_answer.replace(QString("aa"), QString("&#257;"));
+        standardized_answer.replace(QString("ee"), QString("&#275;"));
+        message = (pronunciation == standardized_answer) ? tr("Right!") : tr("Wrong!");
     }else{
         message = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive)) ? tr("Right!") : tr("Wrong!");
     }

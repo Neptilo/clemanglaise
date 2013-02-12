@@ -71,7 +71,14 @@ void AddFrame::add_word(){
     list << "ja" << "zh";
     bool asked_pronunciation = list.contains(test.getDst());
     if(asked_pronunciation){
-        post_data.addQueryItem("pronunciation", ampersand_escape(pronunciation->text()));
+        // Standardize pronunciation to save into database
+        QString standardized_pronunciation = ampersand_escape(pronunciation->text());
+        standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
+        standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
+        standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
+        standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
+        qDebug() << standardized_pronunciation;
+        post_data.addQueryItem("pronunciation", standardized_pronunciation);
     }
     post_data.addQueryItem("comment", ampersand_escape(comment->toPlainText()));
     post_data.addQueryItem("example", ampersand_escape(example->toPlainText()));

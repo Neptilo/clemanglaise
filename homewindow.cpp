@@ -14,6 +14,7 @@ HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
     tests = new QList<Test>;
     *tests << *new Test("English to French", "en", "fr");
     *tests << *new Test("English to Japanese", "en", "ja");
+    *tests << *new Test("English to Chinese", "en", "zh");
 
     buttons = new LanguageButtons(*tests, this);
     layout->addWidget(buttons);
