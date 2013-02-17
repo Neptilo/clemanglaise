@@ -2,7 +2,7 @@
 #include <QLineEdit>
 
 #include "questionframe.h"
-#include "ampersand_escape.h"
+#include "string_utils.h"
 
 QuestionFrame::QuestionFrame(Test &test, QWidget *parent):
     WordFrame(test, parent)

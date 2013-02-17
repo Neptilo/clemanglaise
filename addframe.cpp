@@ -2,7 +2,7 @@
 #include <QTextDocument>
 
 #include "addframe.h"
-#include "ampersand_escape.h"
+#include "string_utils.h"
 
 AddFrame::AddFrame(Test &test, QWidget *parent) :
     QWidget(parent),
@@ -72,12 +72,18 @@ void AddFrame::add_word(){
     bool asked_pronunciation = list.contains(test.getDst());
     if(asked_pronunciation){
         // Standardize pronunciation to save into database
-        QString standardized_pronunciation = ampersand_escape(pronunciation->text());
-        standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
-        standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
-        standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
-        standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
-        qDebug() << standardized_pronunciation;
+        QString standardized_pronunciation;
+
+        if(test.getDst() == "ja"){
+            standardized_pronunciation = ampersand_escape(pronunciation->text());
+            standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
+            standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
+            standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
+            standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
+        }else if(test.getDst() == "zh"){
+            standardized_pronunciation = numbers_to_accents(standardized_pronunciation);
+        }
+
         post_data.addQueryItem("pronunciation", standardized_pronunciation);
     }
     post_data.addQueryItem("comment", ampersand_escape(comment->toPlainText()));

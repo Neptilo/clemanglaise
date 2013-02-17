@@ -1,4 +1,5 @@
 #include "answerframe.h"
+#include "string_utils.h"
 
 AnswerFrame::AnswerFrame(Test &test, QWidget *parent):
     WordFrame(test, parent)
@@ -25,10 +26,16 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     if(asked_pronunciation){
         // Standardize player answer before checking
         QString standardized_answer = QString(player_answer);
-        standardized_answer.replace(QString("ou"), QString("&#333;"));
-        standardized_answer.replace(QString("uu"), QString("&#363;"));
-        standardized_answer.replace(QString("aa"), QString("&#257;"));
-        standardized_answer.replace(QString("ee"), QString("&#275;"));
+
+        if(test.getDst() == "ja"){
+            standardized_answer.replace(QString("ou"), QString("&#333;"));
+            standardized_answer.replace(QString("uu"), QString("&#363;"));
+            standardized_answer.replace(QString("aa"), QString("&#257;"));
+            standardized_answer.replace(QString("ee"), QString("&#275;"));
+        }else if(test.getDst() == "zh"){
+            standardized_answer = numbers_to_accents(standardized_answer);
+        }
+
         message = (pronunciation == standardized_answer) ? tr("Right!") : tr("Wrong!");
     }else{
         message = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive)) ? tr("Right!") : tr("Wrong!");
