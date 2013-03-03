@@ -9,12 +9,12 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     WordFrame(test, parent)
 {
     // Define explicit variables for the content of the label
-    QString word = reply_list.at(0);
-    QString meaning = reply_list.at(1);
-    QString nature = reply_list.at(2);
-    QString comment = reply_list.at(3);
-    QString example = reply_list.at(4);
-    QString pronunciation = reply_list.at(5);
+    QString word = reply_list.at(1);
+    QString meaning = reply_list.at(2);
+    QString nature = reply_list.at(3);
+    QString comment = reply_list.at(4);
+    QString example = reply_list.at(5);
+    QString pronunciation = reply_list.at(6);
 
     // List of languages for which we asked for the pronunciation
     QStringList list;

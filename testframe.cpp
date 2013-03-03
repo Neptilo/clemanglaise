@@ -20,9 +20,13 @@ TestFrame::~TestFrame(){
 }
 
 void TestFrame::init(){
-    add_button = new QPushButton("Add word", this);
+    add_button = new QPushButton(tr("Add word"), this);
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
     layout->addWidget(add_button);
+
+    update_button = new QPushButton(tr("Edit this word entry"), this);
+    connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
+    layout->addWidget(update_button);
 
     question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
@@ -45,7 +49,7 @@ void TestFrame::read_reply(QNetworkReply* reply){
     reply_list = new QStringList(reply_string->split('\n'));
 
     // Everything is ready for the question frame to ask the question.
-    QString word = reply_list->at(0);
+    QString word = reply_list->at(1);
     question_frame->ask_question(word);
 }
 
@@ -64,7 +68,7 @@ void TestFrame::validate_answer(){
     answer_frame->hide();
 
     // Create a new question frame
-    question_frame = new QuestionFrame(test, this);
+    question_frame = new QuestionFrame(test, this); // Is it deleted somewhere? It should because of "new".
     layout->addWidget(question_frame);
 
     // Request for a new question
@@ -78,9 +82,29 @@ void TestFrame::add_word(){
     answer_frame->hide();
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    update_button->disconnect();
+    update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
 
     // Create a new add frame
-    add_frame = new AddFrame(test, this);
+    QStringList default_values_list;
+    default_values_list << "" << "" << "" << "" << "" << "" << "";
+    add_frame = new EditFrame(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), this);
     layout->addWidget(add_frame);
     connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
+}
+
+void TestFrame::update_word(){
+
+    // Remove everything
+    delete question_frame;
+    answer_frame->hide();
+    add_button->disconnect();
+    add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    update_button->disconnect();
+    update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+
+    // Create a new add frame
+    update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), *reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
+    layout->addWidget(update_frame);
+    connect(update_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }

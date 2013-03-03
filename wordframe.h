@@ -19,6 +19,7 @@ protected:
     bool handwriting;
     QPushButton* OK_button;
 
+
 public:
     WordFrame(Test &test, QWidget *parent);
     

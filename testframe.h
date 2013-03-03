@@ -3,7 +3,7 @@
 
 #include "questionframe.h"
 #include "answerframe.h"
-#include "addframe.h"
+#include "editframe.h"
 #include "test.h"
 
 class TestFrame : public QWidget{
@@ -16,12 +16,14 @@ public:
 private:
     QuestionFrame* question_frame;
     AnswerFrame* answer_frame;
-    AddFrame* add_frame;
+    EditFrame* add_frame;
+    EditFrame* update_frame;
     QNetworkRequest* request;
     QNetworkAccessManager* nam;
     QStringList* reply_list;
     QLayout* layout;
     QPushButton* add_button;
+    QPushButton* update_button;
     Test test;
 
 public slots:
@@ -30,6 +32,7 @@ public slots:
     void validate_question();
     void validate_answer();
     void add_word();
+    void update_word();
 };
 
 #endif // TESTFRAME_H

@@ -15,6 +15,23 @@ QString ampersand_escape(const QString &string) {
     return encoded;
 }
 
+QString ampersand_unescape(const QString &string){
+    QRegExp rx0("[^&]*");
+    QRegExp rx("&#(\\d*);([^&]*)");
+    QString res;
+    int pos = 0;
+    if((pos = rx0.indexIn(string, pos)) != -1){
+        pos += rx0.matchedLength();
+        res += rx0.cap(0);
+        while ((pos = rx.indexIn(string, pos)) != -1) {
+            pos += rx.matchedLength();
+            res += QChar(rx.cap(1).toInt())+rx.cap(2);
+        }
+    }
+    return res;
+}
+
+// Don't use with ampersand_escape. It would be redundant and generate bugs.
 QString number_to_accent(const QString letter, int accent_number){
     if(letter == "a"){
         switch(accent_number){
@@ -94,13 +111,13 @@ QString number_to_accent(const QString letter, int accent_number){
         default:
             return "&#252;";
         }
-    }else return letter;
+    }else return ampersand_escape(letter);
 }
 
 QString numbers_to_accents(const QString &string){
 
     // Capture syllables
-    QRegExp syllable_rx("([bcdfghj-np-tw-z]h?[iu]?)([āēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜaeiouüv])([iounr]?g?)(\\d?)");
+    QRegExp syllable_rx("([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCv])([iounr]?g?)(\\d?)");
     QString res;
     int pos = 0;
     while ((pos = syllable_rx.indexIn(string, pos)) != -1) {
