@@ -35,6 +35,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     nature_edit->addItem(tr("Article"), QVariant("art"));
     nature_edit->addItem(tr("Classifier"), QVariant("clas"));
     nature_edit->addItem(tr("Conjunction"), QVariant("conj"));
+    nature_edit->addItem(tr("Interjecion"), QVariant("inter"));
     nature_edit->addItem(tr("Noun"), QVariant("n"));
     nature_edit->addItem(tr("Preposition"), QVariant("prep"));
     nature_edit->addItem(tr("Pronoun"), QVariant("pron"));

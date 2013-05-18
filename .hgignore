@@ -6,4 +6,4 @@ syntax: glob
 clemanglaise
 *~
 moc_*
-
+Makefile
