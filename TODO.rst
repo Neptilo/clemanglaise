@@ -1,9 +1,9 @@
 TODO
 ====
 
-* App mustn't crash when clicking on "Back to test" from add frame.
-* Ensure that every time an object is created with "new", either it has never been defined before, or it has been deleted with "delete". Either way there'll be memory leaks.
-* Understand why some "delete" make the app crash
+* App mustn't crash when clicking on ``Back to test`` from add frame.
+* Ensure that every time an object is created with ``new``, either it has never been defined before, or it has been deleted with ``delete``. Either way there'll be memory leaks.
+* Understand why some ``delete`` make the app crash
 * Color the edit field in green or red when right or wrong and color those messages too
 * Change font sizes, especially the word being asked
 * Set a default window width (?)
