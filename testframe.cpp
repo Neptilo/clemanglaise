@@ -24,6 +24,10 @@ void TestFrame::init(){
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
     layout->addWidget(add_button);
 
+    search_button = new QPushButton(tr("Search for words"), this);
+    connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
+    layout->addWidget(search_button);
+
     update_button = new QPushButton(tr("Edit this word entry"), this);
     connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
     layout->addWidget(update_button);
@@ -84,6 +88,8 @@ void TestFrame::add_word(){
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     update_button->disconnect();
     update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    search_button->disconnect();
+    search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
 
     // Create a new add frame
     QStringList default_values_list;
@@ -102,9 +108,29 @@ void TestFrame::update_word(){
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     update_button->disconnect();
     update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    search_button->disconnect();
+    search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
 
     // Create a new add frame
     update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), *reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
     layout->addWidget(update_frame);
     connect(update_frame, SIGNAL(destroyed()), this, SLOT(init()));
+}
+
+void TestFrame::search()
+{
+    // Remove everything
+    delete question_frame;
+    answer_frame->hide();
+    add_button->disconnect();
+    add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    update_button->disconnect();
+    update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    search_button->disconnect();
+    search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+
+    // Create a new search frame
+    search_frame = new SearchFrame(test, this);
+    layout->addWidget(search_frame);
+    connect(search_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }

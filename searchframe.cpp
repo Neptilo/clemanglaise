@@ -1,0 +1,64 @@
+#include <QLabel>
+#include <QtNetwork>
+#include <QBoxLayout>
+#include <QLineEdit>
+#include <QHeaderView>
+
+#include "searchframe.h"
+#include "string_utils.h"
+
+SearchFrame::SearchFrame(Test& test, QWidget *parent) :
+    QWidget(parent),
+    nam(),
+    result(NULL),
+    test(test)
+{
+    QLayout* layout = new QVBoxLayout(this);
+    search_bar = new QLineEdit(this);
+    QPushButton* OK_button = new QPushButton("OK", this);
+    layout->addWidget(search_bar);
+    layout->addWidget(OK_button);
+
+    connect(search_bar, SIGNAL(returnPressed()), this, SLOT(search()));
+    connect(OK_button, SIGNAL(clicked()), this, SLOT(search()));
+    connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+}
+
+SearchFrame::~SearchFrame(){
+    result->clear(); // Because this QTableWidget contains pointers to items with no parent.
+}
+
+void SearchFrame::search(){
+    // Standardization of search string
+    QString search_str = ampersand_escape(search_bar->text());
+
+    // Request to PHP file
+    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test.getSrc() + test.getDst() + "&string=" + search_str);
+    request = new QNetworkRequest(url);
+
+    nam.get(*request);
+}
+
+void SearchFrame::read_reply(QNetworkReply* reply)
+{
+    // Store the lines of the reply in the "reply_list" attribute
+    QString reply_string = reply->readAll();
+    reply->deleteLater();
+    QStringList reply_list(reply_string.split('\n'));
+    if(result){
+        result->clear(); // Because this QTableWidget contains pointers to items with no parent.
+        delete result;
+    }
+    result = new QTableWidget(reply_list.count()/7, 6, this);
+    QStringList header_labels;
+    header_labels << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Pronunciation");
+    result->setHorizontalHeaderLabels(header_labels);
+    result->verticalHeader()->hide();
+    layout()->addWidget(result);
+    for(int i=0; i<reply_list.count()-1; ++i){ // -1 because the last string is an empty string.
+        if(i%7 != 0){ // We don't want to show the ID.
+            QTableWidgetItem* item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i))); // Need to delete this later
+            result->setItem(i/7, i%7-1, item);
+        }
+    }
+}

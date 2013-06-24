@@ -2,7 +2,6 @@
 #define ANSWERFRAME_H
 
 #include <QLabel>
-#include <QtNetwork>
 #include <QPushButton>
 #include <QTextBrowser>
 

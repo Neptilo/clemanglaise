@@ -79,7 +79,7 @@ QString number_to_accent(const QString letter, int accent_number){
         case 2:
             return "&#243;";
         case 3:
-            return "&#465;";
+            return "&#466;";
         case 4:
             return "&#242;";
         default:

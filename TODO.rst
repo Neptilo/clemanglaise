@@ -1,6 +1,7 @@
 To do first (because very useful):
 ==================================
 
+* I saw some capital 'Ǒ' written in a pinyin pronunciation. Find out why it happened.
 * Enable using a list from an offline database
 * Create widget to search for a word in the lexicon
 * Create widget to draw characters for Asian languages

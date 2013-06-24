@@ -17,7 +17,8 @@ HEADERS += \
            string_utils.h \
            test.h \
            testframe.h \
-           wordframe.h
+           wordframe.h \
+    searchframe.h
 SOURCES += \
            answerframe.cpp \
            editframe.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
            string_utils.cpp \
            test.cpp \
            testframe.cpp \
-           wordframe.cpp
+           wordframe.cpp \
+    searchframe.cpp
 
 QT += network
