@@ -1,15 +1,14 @@
 To do first (because very useful):
 ==================================
 
-* I saw some capital 'Ǒ' written in a pinyin pronunciation. Find out why it happened.
 * Enable using a list from an offline database
-* Create widget to search for a word in the lexicon
 * Create widget to draw characters for Asian languages
 * Marking system: define a mark for each word (representing the level of learning of this word) ranging between 0 and 1. Set everything to 0 in the beginning. When a word is correct, set the mark in the middle between the current mark and 1. If it is wrong, set it in the middle between 0 and the current mark. Always ask words with the lowest marks.
 
 To do next:
 ===========
 
+* Button to go back from the search widget
 * Button ``Add another word`` in widget ``Add a word``.
 * App mustn't crash when clicking on ``Add new word`` while the asked word is still loading.
 * Treat all cases when there is no Internet connection.
