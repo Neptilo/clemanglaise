@@ -1,3 +1,5 @@
+#include <QtNetwork>
+
 #include "answerframe.h"
 #include "string_utils.h"
 
@@ -15,6 +17,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QString comment = reply_list.at(4);
     QString example = reply_list.at(5);
     QString pronunciation = reply_list.at(6);
+    int score = reply_list.at(7).toInt();
 
     // List of languages for which we asked for the pronunciation
     QStringList list;
@@ -23,6 +26,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 
     // Check answer
     QString message;
+    bool correct;
     if(asked_pronunciation){
         // Standardize player answer before checking
         QString standardized_answer = QString(player_answer);
@@ -36,10 +40,23 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
             standardized_answer = numbers_to_accents(standardized_answer);
         }
 
-        message = (pronunciation == standardized_answer) ? tr("Right!") : tr("Wrong!");
+        correct = (pronunciation == standardized_answer);
     }else{
-        message = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive)) ? tr("Right!") : tr("Wrong!");
+        correct = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive));
     }
+    message = correct ? tr("Right!") : tr("Wrong!");
+
+    // Update score
+    const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QNetworkAccessManager* nam = new QNetworkAccessManager;
+    QUrl post_data;
+    post_data.addQueryItem("id", reply_list.at(0));
+    post_data.addQueryItem("lang", test.getSrc() + test.getDst());
+    post_data.addQueryItem("score", QString::number(score+correct?1:-1));
+    //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+    nam->post(request, post_data.encodedQuery());
 
     // Left part
     if(handwriting){

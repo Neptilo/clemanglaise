@@ -25,6 +25,7 @@ private:
 public slots:
     void search();
     void read_reply(QNetworkReply * reply);
+    void back();
     
 };
 

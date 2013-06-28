@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QBoxLayout>
 #include <QPushButton>
+#include <QtNetwork>
 
 #include "test.h"
 
@@ -26,7 +27,7 @@ public:
 signals:
     
 public slots:
-    
+
 };
 
 #endif // WORDFRAME_H

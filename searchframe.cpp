@@ -15,13 +15,16 @@ SearchFrame::SearchFrame(Test& test, QWidget *parent) :
 {
     QLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
-    QPushButton* OK_button = new QPushButton("OK", this);
+    QPushButton* OK_button = new QPushButton(tr("OK"), this);
+    QPushButton* back_button = new QPushButton(tr("Back to test"), this);
     layout->addWidget(search_bar);
     layout->addWidget(OK_button);
+    layout->addWidget(back_button);
 
     connect(search_bar, SIGNAL(returnPressed()), this, SLOT(search()));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(search()));
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+    connect(back_button, SIGNAL(clicked()), this, SLOT(back()));
 }
 
 SearchFrame::~SearchFrame(){
@@ -61,4 +64,10 @@ void SearchFrame::read_reply(QNetworkReply* reply)
             result->setItem(i/7, i%7-1, item);
         }
     }
+    result->resizeColumnsToContents();
+}
+
+void SearchFrame::back()
+{
+    delete this;
 }
