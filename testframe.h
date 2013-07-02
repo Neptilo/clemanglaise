@@ -24,10 +24,12 @@ private:
     QNetworkAccessManager* nam;
     QStringList* reply_list;
     QLayout* layout;
+	QLabel* label;
     QPushButton* add_button;
     QPushButton* search_button;
     QPushButton* update_button;
     Test test;
+	QComboBox *themes;
 
 public slots:
     void init();
