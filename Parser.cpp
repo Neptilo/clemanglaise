@@ -6,7 +6,6 @@
 #include <iostream>
 
 using namespace std;
-const int MAXPATHLEN(256);
 Parser::Parser(string file_in, string file_out) {
     m_filein = file_in;
     m_fileout = file_out;

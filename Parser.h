@@ -2,10 +2,12 @@
 #define PARSER_H
 #include <string>
 #include <vector>
+const int MAXPATHLEN(256);
+
 class Parser
 {
     public:
-        Parser(std::string file_in="./file_in", std::string file_out="./file_out");
+        Parser(std::string file_in="file_in", std::string file_out="file_out");
         virtual ~Parser();
         /**
      *@return the numberth line of the file filename

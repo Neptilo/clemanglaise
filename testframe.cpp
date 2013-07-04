@@ -1,14 +1,6 @@
 #include "testframe.h"
 using namespace std;
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-static const std::string slash="\\";
-#else
-static const std::string slash="/";
-#endif
-const string espace(" ");
-const string endline("\n");
-
 TestFrame::TestFrame(Test &test, QWidget *parent):
     QWidget(parent),
     test(test)

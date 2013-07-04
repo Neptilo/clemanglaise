@@ -8,6 +8,15 @@
 #include "test.h"
 #include "Parser.h" 
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+static const std::string slash="\\";
+#else
+static const std::string slash="/";
+#endif
+
+const std::string espace(" ");
+const std::string endline("\n");
+
 class TestFrame : public QWidget{
     Q_OBJECT
     
