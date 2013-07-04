@@ -1,5 +1,4 @@
 #include "homewindow.h"
-
 HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
 
     setWindowTitle("Clemanglaise");
@@ -21,6 +20,7 @@ HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
 }
 
 void HomeWindow::start_test(int i){
+	srand(time(0));
     title->hide();
     buttons->hide();
     buttons->disconnect_all();

@@ -6,6 +6,7 @@
 #include "editframe.h"
 #include "searchframe.h"
 #include "test.h"
+#include "Parser.h" 
 
 class TestFrame : public QWidget{
     Q_OBJECT
@@ -30,6 +31,7 @@ private:
     QPushButton* update_button;
     Test test;
 	QComboBox *themes;
+	Parser* parser;
 
 public slots:
     void init();

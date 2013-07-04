@@ -1,4 +1,8 @@
 #include "testframe.h"
+using namespace std;
+
+const string espace(" ");
+const string endline("\n");
 
 TestFrame::TestFrame(Test &test, QWidget *parent):
     QWidget(parent),
@@ -45,7 +49,11 @@ void TestFrame::init(){
     layout->addWidget(question_frame);
 
     // Request to PHP file
-    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test.getSrc() + test.getDst());
+   	parser = new Parser();
+	vector<string> text(parser->split(parser->getRandomLine(), ':'));
+	parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
+    const QUrl url = QUrl("file:///home/mbit/2A/clemanglaise/file_out");
+	//const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test.getSrc() + test.getDst());
     request = new QNetworkRequest(url);
     nam = new QNetworkAccessManager;
 
@@ -85,6 +93,8 @@ void TestFrame::validate_answer(){
     layout->addWidget(question_frame);
 
     // Request for a new question
+	vector<string> text(parser->split(parser->getRandomLine(), ':'));
+	parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
     nam->get(*request);
 }
 
