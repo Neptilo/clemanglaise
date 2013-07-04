@@ -1,4 +1,5 @@
 #include "homewindow.h"
+#include <QRadioButton>
 HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
 
     setWindowTitle("Clemanglaise");
@@ -9,6 +10,11 @@ HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
     title = new QLabel(tr("Choose your vocab test:"), this);
     title->setAlignment(Qt::AlignHCenter);
     layout->addWidget(title);
+	QRadioButton* q1 = new QRadioButton(tr("Work in localhost"), this);
+	QRadioButton* q2 = new QRadioButton(tr("Work on remote server"), this);
+	q2->setChecked(true);
+	layout->addWidget(q1);
+	layout->addWidget(q2);
 
     tests = new QList<Test>;
     *tests << *new Test("English to French", "en", "fr");
