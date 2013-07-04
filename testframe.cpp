@@ -1,4 +1,5 @@
 #include "testframe.h"
+#include <iostream>
 using namespace std;
 
 TestFrame::TestFrame(Test &test, QWidget *parent):
@@ -47,8 +48,12 @@ void TestFrame::init(){
 
     // Request to PHP file
    	parser = new Parser();
-	vector<string> text(parser->split(parser->getRandomLine(), ':'));
-	parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
+	try {
+		vector<string> text(parser->split(parser->getRandomLine(), ':'));
+		parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
+	} catch (string const& e) {
+		cerr << e << endl;
+	}
 	string path = "file://" + Parser::get_working_path() + slash + "file_out";
 	
 	QString qpath = QString::fromStdString(path);
@@ -93,8 +98,12 @@ void TestFrame::validate_answer(){
     layout->addWidget(question_frame);
 
     // Request for a new question
-	vector<string> text(parser->split(parser->getRandomLine(), ':'));
-	parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
+	try {
+		vector<string> text(parser->split(parser->getRandomLine(), ':'));
+		parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
+	} catch (string const& e) {
+		cerr << e << endl;
+	}
     nam->get(*request);
 }
 
