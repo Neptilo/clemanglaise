@@ -1,6 +1,11 @@
 #include "testframe.h"
 using namespace std;
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+static const std::string slash="\\";
+#else
+static const std::string slash="/";
+#endif
 const string espace(" ");
 const string endline("\n");
 
@@ -52,7 +57,10 @@ void TestFrame::init(){
    	parser = new Parser();
 	vector<string> text(parser->split(parser->getRandomLine(), ':'));
 	parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
-    const QUrl url = QUrl("file:///home/mbit/2A/clemanglaise/file_out");
+	string path = "file://" + Parser::get_working_path() + slash + "file_out";
+	
+	QString qpath = QString::fromStdString(path);
+    const QUrl url = QUrl(qpath);
 	//const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test.getSrc() + test.getDst());
     request = new QNetworkRequest(url);
     nam = new QNetworkAccessManager;

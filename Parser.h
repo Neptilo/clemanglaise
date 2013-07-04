@@ -27,6 +27,7 @@ class Parser
     std::string getFilein();
     std::string getFileout();
     void writeInFile(const std::string& text);
+	static std::string get_working_path();
 
 
     private:

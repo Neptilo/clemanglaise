@@ -4,8 +4,9 @@
 #include <cstdlib>
 #include <exception>
 #include <iostream>
-using namespace std;
 
+using namespace std;
+const int MAXPATHLEN(256);
 Parser::Parser(string file_in, string file_out) {
     m_filein = file_in;
     m_fileout = file_out;
@@ -128,6 +129,11 @@ void Parser::writeInFile(const string& text) {
     } else {
         throw string("Error while opening " + m_fileout);
     }
+}
+
+string Parser::get_working_path() {
+	char temp[MAXPATHLEN];
+	return ( getcwd(temp, MAXPATHLEN) ? std::string(temp) : std::string("") );
 }
 /*
 int main() {
