@@ -52,14 +52,8 @@ void TestFrame::init(){
 		url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test.getSrc() + test.getDst());
 	} else {
 		parser = new Parser();
-		try {
-			vector<string> text(parser->split(parser->getRandomLine(), ':'));
-			parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
-		} catch (string const& e) {
-			cerr << e << endl;
-		}
-		string path = "file://" + Parser::get_working_path() + slash + "file_out";
-		
+		parser->parse();
+		string path = "file://" + Parser::get_working_path() + slash + "file_out"; 
 		QString qpath = QString::fromStdString(path);
 		url = QUrl(qpath);
 	}
@@ -103,12 +97,7 @@ void TestFrame::validate_answer(){
 
     // Request for a new question
 	if (!test.isRemoteWork()) {
-		try {
-			vector<string> text(parser->split(parser->getRandomLine(), ':'));
-			parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
-		} catch (string const& e) {
-			cerr << e << endl;
-		}
+		parser->parse();
 	}
     nam->get(*request);
 }

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 const int MAXPATHLEN(256);
+const std::string espace(" ");
+const std::string endline("\n");
 
 class Parser
 {
@@ -29,6 +31,7 @@ class Parser
     std::string getFilein();
     std::string getFileout();
     void writeInFile(const std::string& text);
+	void parse();
 	static std::string get_working_path();
 
 

@@ -134,15 +134,13 @@ string Parser::get_working_path() {
 	char temp[MAXPATHLEN];
 	return ( getcwd(temp, MAXPATHLEN) ? std::string(temp) : std::string("") );
 }
-/*
-int main() {
-    //Initialize random numbers
-    srand(time(0));
-    string espace(" ");
-    string endline("\n");
-    Parser* parser = new Parser("/home/mbit/2A/stage/documentation/vocabulary1.rst");
-    vector<string> text(parser->split(parser->getRandomLine(), ':'));
-    parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
-    return 0;
+
+void Parser::parse() {
+    vector<string> text(split(getRandomLine(), ':'));
+	try {
+		writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline); 
+	} catch (string const& e) {
+		cerr << e;
+	}
 }
-*/
+

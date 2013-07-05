@@ -14,9 +14,6 @@ static const std::string slash="\\";
 static const std::string slash="/";
 #endif
 
-const std::string espace(" ");
-const std::string endline("\n");
-
 class TestFrame : public QWidget{
     Q_OBJECT
     
