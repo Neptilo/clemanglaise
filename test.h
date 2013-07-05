@@ -6,13 +6,15 @@
 class Test{
 
 private:
-     QString name;
-     QString src;
-     QString dst;
-	 bool remote;
+    int id;
+    QString name;
+    QString src;
+    QString dst;
+    bool remote;
 
 public:
-    explicit Test(const QString &name, const QString &src, const QString &dst, bool remote=true);
+    explicit Test(int id, const QString &name, const QString &src, const QString &dst, bool remote=true);
+    int getId() const;
     const QString& getName() const;
     const QString& getSrc();
     const QString& getDst();

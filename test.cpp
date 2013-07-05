@@ -2,11 +2,17 @@
 
 #include "test.h"
 
-Test::Test(const QString& name, const QString& src, const QString& dst, const bool remote){
+Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote){
+    this->id = id;
     this->name = name;
     this->src = src;
     this->dst = dst;
-	this->remote = remote;
+    this->remote = remote;
+}
+
+int Test::getId() const
+{
+    return id;
 }
 
 const QString& Test::getName() const{

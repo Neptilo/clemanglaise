@@ -19,12 +19,12 @@ private:
     QList<Test>* tests;
     QStringList* mapping_texts;
     QStringList* button_texts;
-    LanguageButtons* buttons;
-	QRadioButton* radioLocal; 
-	QRadioButton* radioRemote;
+    LanguageButtons* online_buttons;
+    LanguageButtons* offline_buttons;
 
 public:
     explicit HomeWindow(QWidget *parent = 0);
+    ~HomeWindow();
     
 signals:
     

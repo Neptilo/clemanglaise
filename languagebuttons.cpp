@@ -16,7 +16,7 @@ LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent)
         QString button_text = test.getName();
         QPushButton *button = new QPushButton(button_text);
         connect(button, SIGNAL(clicked()), signal_mapper, SLOT(map()));
-        signal_mapper->setMapping(button, i);
+        signal_mapper->setMapping(button, test.getId());
         layout->addWidget(button, 0, i);
     }
 
