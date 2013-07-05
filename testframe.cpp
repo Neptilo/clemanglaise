@@ -49,7 +49,7 @@ void TestFrame::init(){
     // Request to PHP file
 	QUrl url;
 	if (test.isRemoteWork()) {
-		url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test.getSrc() + test.getDst());
+        url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + test.getSrc() + test.getDst());
 	} else {
 		parser = new Parser();
 		parser->parse();

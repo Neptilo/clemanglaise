@@ -54,7 +54,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QUrl post_data;
     post_data.addQueryItem("id", reply_list.at(0));
     post_data.addQueryItem("lang", test.getSrc() + test.getDst());
-    post_data.addQueryItem("score", QString::number(score+correct?1:-1));
+    post_data.addQueryItem("score", QString::number(score+(correct?1:-1)));
     //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     nam->post(request, post_data.encodedQuery());
 
