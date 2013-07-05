@@ -2,10 +2,11 @@
 
 #include "test.h"
 
-Test::Test(const QString& name, const QString& src, const QString& dst){
+Test::Test(const QString& name, const QString& src, const QString& dst, const bool remote){
     this->name = name;
     this->src = src;
     this->dst = dst;
+	this->remote = remote;
 }
 
 const QString& Test::getName() const{
@@ -18,4 +19,12 @@ const QString &Test::getSrc(){
 
 const QString &Test::getDst(){
     return dst;
+}
+
+bool Test::isRemoteWork() const {
+	return remote;
+}
+
+void Test::setRemoteWork(bool where) {
+	this->remote = where;
 }

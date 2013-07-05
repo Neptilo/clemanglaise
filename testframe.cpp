@@ -47,18 +47,22 @@ void TestFrame::init(){
     layout->addWidget(question_frame);
 
     // Request to PHP file
-   	parser = new Parser();
-	try {
-		vector<string> text(parser->split(parser->getRandomLine(), ':'));
-		parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
-	} catch (string const& e) {
-		cerr << e << endl;
+	QUrl url;
+	if (test.isRemoteWork()) {
+		url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test.getSrc() + test.getDst());
+	} else {
+		parser = new Parser();
+		try {
+			vector<string> text(parser->split(parser->getRandomLine(), ':'));
+			parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
+		} catch (string const& e) {
+			cerr << e << endl;
+		}
+		string path = "file://" + Parser::get_working_path() + slash + "file_out";
+		
+		QString qpath = QString::fromStdString(path);
+		url = QUrl(qpath);
 	}
-	string path = "file://" + Parser::get_working_path() + slash + "file_out";
-	
-	QString qpath = QString::fromStdString(path);
-    const QUrl url = QUrl(qpath);
-	//const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_random.php?lang=" + test.getSrc() + test.getDst());
     request = new QNetworkRequest(url);
     nam = new QNetworkAccessManager;
 
@@ -98,11 +102,13 @@ void TestFrame::validate_answer(){
     layout->addWidget(question_frame);
 
     // Request for a new question
-	try {
-		vector<string> text(parser->split(parser->getRandomLine(), ':'));
-		parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
-	} catch (string const& e) {
-		cerr << e << endl;
+	if (!test.isRemoteWork()) {
+		try {
+			vector<string> text(parser->split(parser->getRandomLine(), ':'));
+			parser->writeInFile(endline + text.at(0) + endline + text.at(1) + endline + espace + endline + endline + endline + endline);
+		} catch (string const& e) {
+			cerr << e << endl;
+		}
 	}
     nam->get(*request);
 }
