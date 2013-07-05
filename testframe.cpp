@@ -53,8 +53,7 @@ void TestFrame::init(){
 	} else {
 		parser = new Parser();
 		parser->parse();
-		string path = "file://" + Parser::get_working_path() + slash + "file_out"; 
-		QString qpath = QString::fromStdString(path);
+		QString qpath = "file://" + Parser::get_working_path("file_out");
 		url = QUrl(qpath);
 	}
     request = new QNetworkRequest(url);

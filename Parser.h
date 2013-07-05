@@ -1,43 +1,31 @@
 #ifndef PARSER_H
 #define PARSER_H
-#include <string>
-#include <vector>
-const int MAXPATHLEN(256);
-const std::string espace(" ");
-const std::string endline("\n");
-
+#include <QString>
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+const QString slash="\\";
+#else
+const QString slash="/";
+#endif
+const QString endline("\n");
+const QString space(" ");
 class Parser
 {
     public:
-        Parser(std::string file_in="file_in", std::string file_out="file_out");
-        virtual ~Parser();
-        /**
-     *@return the numberth line of the file filename
-     */
-    std::string getline(const unsigned int & number) const;
-    /**
-     * @return the file number of lines
-     */
-    int nblines() const;
-    /**
-     * @return a random line in a file
-     */
-    std::string getRandomLine() const;
-    inline std::string trim_right_copy(const std::string& s, const std::string& delimiters = " \f\n\r\t\v*" ) const;
-    inline std::string trim_left_copy(const std::string& s, const std::string& delimiters = " \f\n\r\t\v*" ) const;
-    inline std::string trim_copy(const std::string& s,const std::string& delimiters = " \f\n\r\t\v*" ) const;
-    std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) const;
-    std::vector<std::string> split(const std::string &s, char delim) const;
-    std::string getFilein();
-    std::string getFileout();
-    void writeInFile(const std::string& text);
-	void parse();
-	static std::string get_working_path();
-
+        Parser(QString file_in="file_in", QString file_out="file_out");
+		virtual ~Parser();
+		QString getline(const unsigned int & number) const;
+		unsigned int nblines() const;
+		QString getFilein() const;
+		QString getFileout() const;
+		QString getRandomLine() const;
+		void parse();
+		void writeInFile(const QString& text);
+		static QString get_working_path();
+		static QString get_working_path(const QString& file);
 
     private:
-        std::string m_filein;
-        std::string m_fileout;
+        QString m_filein;
+        QString m_fileout;
 };
 
 #endif // PARSER_H
