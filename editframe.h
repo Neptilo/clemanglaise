@@ -39,6 +39,7 @@ private:
 public slots:
     void edit_word();
     void show_confirmation(QNetworkReply* reply);
+    void show_confirmation();
     void back();
 };
 

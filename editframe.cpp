@@ -3,6 +3,7 @@
 
 #include "editframe.h"
 #include "string_utils.h"
+#include "Parser.h"
 
 EditFrame::EditFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
     QWidget(parent),
@@ -77,45 +78,55 @@ EditFrame::~EditFrame(){}
 
 void EditFrame::edit_word(){
     status->setText(tr("Sending data..."));
-    QUrl post_data;
-    post_data.addQueryItem("id", this->default_values.at(0));
-    post_data.addQueryItem("word", ampersand_escape(word_edit->text()));
-    post_data.addQueryItem("nature", nature_edit->itemData(nature_edit->currentIndex()).toString());
-    post_data.addQueryItem("meaning", ampersand_escape(meaning_edit->text()));
-    QStringList list;
-    list << "ja" << "zh";
-    bool asked_pronunciation = list.contains(test.getDst());
-    if(asked_pronunciation){
-        // Standardize pronunciation to save into database
-        QString standardized_pronunciation;
+	if (!test.isRemoteWork()) {
+		//offline
+		Parser* p = new Parser;
+		// Will show confirmation when loading of reply is finished
+		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
+		QString line = word_edit->text() + "\t:\t" + meaning_edit->text() + endline;
+		p->appendInFile(line);
+	} else {
+		QUrl post_data;
+		post_data.addQueryItem("id", this->default_values.at(0));
+		post_data.addQueryItem("word", ampersand_escape(word_edit->text()));
+		post_data.addQueryItem("nature", nature_edit->itemData(nature_edit->currentIndex()).toString());
+		post_data.addQueryItem("meaning", ampersand_escape(meaning_edit->text()));
+		QStringList list;
+		list << "ja" << "zh";
+		bool asked_pronunciation = list.contains(test.getDst());
+		if(asked_pronunciation){
+			// Standardize pronunciation to save into database
+			QString standardized_pronunciation;
 
-        if(test.getDst() == "ja"){
-            standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
-            standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
-            standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
-            standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
-            standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
-        }else if(test.getDst() == "zh"){
-            standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
-        }
+			if(test.getDst() == "ja"){
+				standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
+				standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
+				standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
+				standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
+				standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
+			}else if(test.getDst() == "zh"){
+				standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
+			}
 
-        post_data.addQueryItem("pronunciation", standardized_pronunciation);
-    }
-    post_data.addQueryItem("comment", ampersand_escape(comment_edit->toPlainText()));
-    post_data.addQueryItem("example", ampersand_escape(example_edit->toPlainText()));
-    post_data.addQueryItem("lang", test.getSrc() + test.getDst());
+			post_data.addQueryItem("pronunciation", standardized_pronunciation);
+		}
+		post_data.addQueryItem("comment", ampersand_escape(comment_edit->toPlainText()));
+		post_data.addQueryItem("example", ampersand_escape(example_edit->toPlainText()));
+		post_data.addQueryItem("lang", test.getSrc() + test.getDst());
 
-    const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
-    QNetworkRequest request(url);
+		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
+		QNetworkRequest request(url);
+		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+		QNetworkAccessManager* nam = new QNetworkAccessManager;
 
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    QNetworkAccessManager* nam = new QNetworkAccessManager;
+		// Will show confirmation when loading of reply is finished
+		connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
-    // Will show confirmation when loading of reply is finished
-    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
-    // Send the request
-    nam->post(request, post_data.encodedQuery());
+		// Send the request
+		nam->post(request, post_data.encodedQuery());
+	}
+	
 }
 
 void EditFrame::show_confirmation(QNetworkReply* reply){
@@ -126,6 +137,12 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
     }else{
         status->setText(this->success_message);
     }
+    delete OK_button;
+    cancel_button->setText(tr("Back to test"));
+}
+
+void EditFrame::show_confirmation(){
+    status->setText(this->success_message);
     delete OK_button;
     cancel_button->setText(tr("Back to test"));
 }

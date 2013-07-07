@@ -2,7 +2,7 @@
 #include <QFile>
 #include <QTextStream>
 #include "Parser.h"
-Parser::Parser(QString file_in, QString file_out) {
+Parser::Parser(QObject* parent, QString file_in, QString file_out):QObject(parent) {
     m_filein = file_in;
     m_fileout = file_out;
 
@@ -75,6 +75,18 @@ QString Parser::getRandomLine() const {
 	return getline(line);
 }
 
+void Parser::appendInFile(const QString& text) {
+	QFile file(m_filein);
+	if (!file.open(QIODevice::Append | QIODevice::Text))
+		return;
+	// Creation of QTextStream from QFile object
+	QTextStream flux(&file);
+	// choose codec UTF-8
+	flux.setCodec("UTF-8");
+	// write lines into file
+	flux << text;
+	emit appendDone();
+}
 void Parser::writeInFile(const QString& text) {
 	QFile file(m_fileout);
 	//Open file in write only
