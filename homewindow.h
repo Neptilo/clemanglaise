@@ -21,6 +21,8 @@ private:
     QStringList* button_texts;
     LanguageButtons* online_buttons;
     LanguageButtons* offline_buttons;
+	QLabel *workremote;
+	QLabel *workoffline;
 
 public:
     explicit HomeWindow(QWidget *parent = 0);

@@ -3,8 +3,6 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include "Parser.h"
-#include <iostream>
-using namespace std;
 Parser::Parser(QString file_in, QString file_out) {
     m_filein = file_in;
     m_fileout = file_out;
