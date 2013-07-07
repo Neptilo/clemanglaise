@@ -1,6 +1,4 @@
 #include "testframe.h"
-#include <iostream>
-using namespace std;
 
 TestFrame::TestFrame(Test &test, QWidget *parent):
     QWidget(parent),
@@ -53,8 +51,7 @@ void TestFrame::init(){
 	} else {
 		parser = new Parser();
 		parser->parse();
-		QString qpath = "file://" + Parser::get_working_path("file_out");
-		url = QUrl(qpath);
+		url = QUrl(Parser::get_working_path("file_out"));
 	}
     request = new QNetworkRequest(url);
     nam = new QNetworkAccessManager;

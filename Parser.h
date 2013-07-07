@@ -2,9 +2,9 @@
 #define PARSER_H
 #include <QString>
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-const QString slash="\\";
+const QString prec="/";
 #else
-const QString slash="/";
+const QString prec="";
 #endif
 const QString endline("\n");
 const QString space(" ");

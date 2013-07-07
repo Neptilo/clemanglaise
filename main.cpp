@@ -1,4 +1,5 @@
 #include <QtGui/QApplication>
+#include <ctime>
 
 #include "homewindow.h"
 

@@ -78,14 +78,14 @@ QString Parser::getRandomLine() const {
 
 void Parser::writeInFile(const QString& text) {
 	QFile file(m_fileout);
-	//Ouverture du fichier en écriture seule
+	//Open file in write only
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 		return;
-	// Création d'un objet QTextStream à partir de notre objet QFile
+	// Creation of QTextStream from QFile object
 	QTextStream flux(&file);
-	// On choisit le codec correspondant au jeu de caractère que l'on souhaite ; ici, UTF-8
+	// choose codec UTF-8
 	flux.setCodec("UTF-8");
-	// Écriture des différentes lignes dans le fichier
+	// write lines into file
 	flux << text;
 }
 
@@ -99,5 +99,5 @@ QString Parser::get_working_path() {
 }
 
 QString Parser::get_working_path(const QString & file) {
-	return Parser::get_working_path() + slash + file; 
+	return "file://" + prec + Parser::get_working_path() + "/" + file; 
 }

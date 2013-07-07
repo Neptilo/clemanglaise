@@ -11,7 +11,7 @@ LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent)
 
     QGridLayout *layout = new QGridLayout(this);
 
-    for (int i = 0; i < tests.size(); ++i) {
+    for (int i = 0, l=tests.size(); i < l; ++i) {
         const Test& test = tests[i];
         QString button_text = test.getName();
         QPushButton *button = new QPushButton(button_text);
