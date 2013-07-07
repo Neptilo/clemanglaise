@@ -4,6 +4,7 @@ This program creates vocabulary tests in different languages using words from an
 
 ## How to use ?
 
+### Unix OS
 To compile it:
 
   * First Qt must be installed on your computer.
@@ -12,3 +13,9 @@ To compile it:
   * Type `make` in the command line.
 
 To run the application, type `./clemanglaise` in the command line.
+
+### Windows Os
+Open the project **clemanglaise.pro** with Qtcreator
+Compile with qmake in the compilation tab
+compile the project hotkey : `CTRL+B`
+Run the project and enjoy!!
