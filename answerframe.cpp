@@ -70,8 +70,9 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 
     // Right part
 
-    // Add labels
-    vertical_layout->addWidget(new QLabel("<b>"+message+"</b>", this));
+    // Add labels 
+    vertical_layout->addWidget(new QLabel("<b>"+message+"</b>", this);
+);
     if(asked_pronunciation){
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
     }else{
