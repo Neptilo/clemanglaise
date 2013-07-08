@@ -1,6 +1,6 @@
 #include <QtGui/QApplication>
 #include <ctime>
-
+#include <QPushButton>
 #include "homewindow.h"
 
 int main(int argc, char *argv[])
