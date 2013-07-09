@@ -2,12 +2,13 @@
 
 #include "test.h"
 
-Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote){
+Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote, bool withThemes){
     this->id = id;
     this->name = name;
     this->src = src;
     this->dst = dst;
     this->remote = remote;
+    this->withThemes = withThemes;
 }
 
 int Test::getId() const
@@ -32,5 +33,10 @@ bool Test::isRemoteWork() const {
 }
 
 void Test::setRemoteWork(bool where) {
-	this->remote = where;
+    this->remote = where;
+}
+
+bool Test::hasThemes() const
+{
+    return withThemes;
 }
