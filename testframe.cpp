@@ -10,24 +10,22 @@ TestFrame::TestFrame(Test &test, QWidget *parent):
 }
 
 TestFrame::~TestFrame(){
-    delete question_frame;
-    delete answer_frame;
-    delete add_frame;
     delete request;
     delete nam;
     delete reply_list;
-    delete layout;
 }
 
 void TestFrame::init(){
-    label = new QLabel(tr("Choose a theme"), this);
-    layout->addWidget(label);
 
-	themes = new QComboBox(this);
-	themes->addItem("Restaurant");
-	themes->addItem("Business");
-	themes->addItem("Internship");
-    layout->addWidget(themes);
+    if(test.hasThemes()){
+        label = new QLabel(tr("Choose a theme"), this);
+        layout->addWidget(label);
+        themes = new QComboBox(this);
+        themes->addItem("Restaurant");
+        themes->addItem("Business");
+        themes->addItem("Internship");
+        layout->addWidget(themes);
+    }
 
     add_button = new QPushButton(tr("Add word"), this);
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
