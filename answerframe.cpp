@@ -1,5 +1,4 @@
 #include <QtNetwork>
-
 #include "answerframe.h"
 #include "string_utils.h"
 
@@ -42,7 +41,8 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 
         correct = (pronunciation == standardized_answer);
     }else{
-        correct = (meaning.split(", ").contains(player_answer, Qt::CaseInsensitive));
+        QString standard_answer = ampersand_unescape(player_answer);
+        correct = (meaning.split(", ").contains(standard_answer, Qt::CaseInsensitive));
     }
     message = correct ? tr("Right!") : tr("Wrong!");
 
