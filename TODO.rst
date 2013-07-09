@@ -1,10 +1,9 @@
 To do first (because very useful):
 ==================================
 
-* Enable using a list from an offline database
 * Create widget to draw characters for Asian languages
-* Marking system: define a mark for each word (representing the level of learning of this word). Set everything to 0 in the beginning. When a word is correct, increment the mark. If it is wrong, decrement it. Always ask words with the lowest marks.
-* Encode QString in utf-8 or try to make a latin12utf8 function.
+* Allow to come back from vocab test and select another vocab list
+
 
 To do next:
 ===========
