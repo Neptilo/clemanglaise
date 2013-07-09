@@ -16,6 +16,6 @@ To run the application, type `./clemanglaise` in the command line.
 
 ### Windows Os
 * Open the project **clemanglaise.pro** with Qtcreator
-* Compile with qmake in the compilation tab
-* compile the project hotkey : `CTRL+B`
-* Run the project and enjoy!!
+* Build with qmake in the compilation tab
+* Build the project; hotkey : `CTRL+B`
+* Run the project; hotkey : `CTRL+R` and enjoy
