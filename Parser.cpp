@@ -16,7 +16,7 @@ Parser::Parser(QObject* parent, QString file_in, QString file_out):QObject(paren
 		// choose corresponding codec: UTF-8
 		flux.setCodec("UTF-8");
 		// write in file
-		flux << "Hello : Bonjour, Salut";
+		flux << "Hello : Bonjour, Salut"<<endl;
 	}
 }
 

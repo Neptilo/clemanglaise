@@ -66,7 +66,7 @@ void TestFrame::read_reply(QNetworkReply* reply){
     // Store the lines of the reply in the "reply_list" attribute
     QString* reply_string = new QString(reply->readAll());
     reply->deleteLater();
-    reply_list = new QStringList(reply_string->split('\n'));
+    reply_list = test.isRemoteWork()?new QStringList(reply_string->split('\n')):new QStringList(reply_string->split(QRegExp(ENDL)));
 
     // Everything is ready for the question frame to ask the question.
     QString word = reply_list->at(1);

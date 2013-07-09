@@ -8,6 +8,14 @@
 #include "test.h"
 #include "Parser.h" 
 
+#if defined(Q_WS_WIN)
+const QString ENDL="\\r\\n";
+#elif defined(Q_WS_MACX)
+const QString ENDL="\\r";
+#else
+const QString ENDL="\\n";
+#endif
+
 class TestFrame : public QWidget{
     Q_OBJECT
     
