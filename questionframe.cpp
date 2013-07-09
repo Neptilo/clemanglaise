@@ -1,5 +1,6 @@
 #include <QTextDocument>
 #include <QLineEdit>
+#include <QPainter>
 
 #include "questionframe.h"
 #include "string_utils.h"
@@ -26,11 +27,11 @@ void QuestionFrame::ask_question(const QString& word){
     if(handwriting){
         right_vertical_layout->addWidget(new QLabel(tr("You can write the characters here if you have an IME.<br/>(Later you'll be able to draw them here.)"), this));
 
-        QLineEdit* handwriting_edit = new QLineEdit(this);
-        QFont font;
+        handwriting_area = new HandwritingArea(this);
+        /*QFont font;
         font.setPixelSize(100);
-        handwriting_edit->setFont(font);
-        right_vertical_layout->addWidget(handwriting_edit);
+        handwriting_edit->setFont(font);*/
+        right_vertical_layout->addWidget(handwriting_area);
     }
 
     // Right part
@@ -67,3 +68,4 @@ void QuestionFrame::disable_validation(){
     OK_button->hide();
     edit->disconnect();
 }
+

@@ -7,6 +7,7 @@
 #include <QPushButton>
 
 #include "wordframe.h"
+#include "handwritingarea.h"
 
 class QuestionFrame : public WordFrame{
     Q_OBJECT
@@ -21,6 +22,7 @@ public:
 private:
     QLabel* label;
     QLineEdit* edit;
+    HandwritingArea* handwriting_area;
 
 public slots:
     void disable_validation();

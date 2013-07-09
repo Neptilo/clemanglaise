@@ -41,12 +41,12 @@ HomeWindow::~HomeWindow(){
 
 
 void HomeWindow::start_test(int i){
-	workoffline->hide();
+    workoffline->hide();
     offline_buttons->disconnect_all();
-	offline_buttons->hide();
-	workremote->hide();
+    offline_buttons->hide();
+    workremote->hide();
     online_buttons->disconnect_all();
-	online_buttons->hide();
+    online_buttons->hide();
     Test test = (*tests)[i];
     // No possible decomposition of the sentence, because of translations in foreign languages that put words in a different order.
     title->setText(test.isRemoteWork()?

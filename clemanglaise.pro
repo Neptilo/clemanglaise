@@ -18,7 +18,8 @@ HEADERS += answerframe.h \
            string_utils.h \
            test.h \
            testframe.h \
-           wordframe.h
+           wordframe.h \
+    handwritingarea.h
 SOURCES += answerframe.cpp \
            editframe.cpp \
            homewindow.cpp \
@@ -30,5 +31,6 @@ SOURCES += answerframe.cpp \
            string_utils.cpp \
            test.cpp \
            testframe.cpp \
-           wordframe.cpp
+           wordframe.cpp \
+    handwritingarea.cpp
 QT += network
