@@ -4,6 +4,7 @@ To do first (because very useful):
 * Enable using a list from an offline database
 * Create widget to draw characters for Asian languages
 * Marking system: define a mark for each word (representing the level of learning of this word). Set everything to 0 in the beginning. When a word is correct, increment the mark. If it is wrong, decrement it. Always ask words with the lowest marks.
+* Encode QString in utf-8 or try to make a latin12utf8 function.
 
 To do next:
 ===========
@@ -17,5 +18,6 @@ To do next:
 * Color the edit field in green or red when right or wrong and color those messages too
 * Change font sizes, especially the word being asked
 * Set a default window width (?)
-* Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: http://www.howdoyousaythatword.com/wp-content/uploads/2012/01/creme-anglaise.jpg, use a vector graphics editor.
+* Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: 
+  http://www.howdoyousaythatword.com/wp-content/uploads/2012/01/creme-anglaise.jpg, use a vector graphics editor.
 * Group words by theme

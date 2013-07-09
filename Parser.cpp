@@ -8,14 +8,14 @@ Parser::Parser(QObject* parent, QString file_in, QString file_out):QObject(paren
 
 	QFile file(m_filein);
 	if (!file.exists()) {
-		//Ouverture du fichier en écriture seule
+		//Opening file in write only mode
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 			return;
-		// Création d'un objet QTextStream à partir de notre objet QFile
+		// Creation of QTextStream from QFile's object
 		QTextStream flux(&file);
-		// On choisit le codec correspondant au jeu de caractère que l'on souhaite ; ici, UTF-8
+		// choose corresponding codec: UTF-8
 		flux.setCodec("UTF-8");
-		// Écriture des différentes lignes dans le fichier
+		// write in file
 		flux << "Hello : Bonjour, Salut";
 	}
 }
