@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QString>
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#if defined(Q_OS_WIN) && !defined(__CYGWIN__)
 const QString prec="/";
 #else
 const QString prec="";
