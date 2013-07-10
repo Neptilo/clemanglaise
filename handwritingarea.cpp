@@ -3,12 +3,13 @@
 
 #include "handwritingarea.h"
 
-HandwritingArea::HandwritingArea(QWidget *parent)
-     : QWidget(parent)
- {
-     scribbling = false;
-     resizeImage(&image, QSize(100, 100));
- }
+HandwritingArea::HandwritingArea(QSize size, QWidget *parent)
+    : QWidget(parent)
+{
+    scribbling = false;
+    image = QImage(size, QImage::Format_Mono);
+    image.fill(1);
+}
 
 void HandwritingArea::mousePressEvent(QMouseEvent *event)
 {
@@ -35,31 +36,18 @@ void HandwritingArea::mouseReleaseEvent(QMouseEvent *event)
 void HandwritingArea::drawLineTo(const QPoint &endPoint)
 {
     QPainter painter(&image);
-    painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap,
-                        Qt::RoundJoin));
+    int width = 8;
+    painter.setPen(QPen(Qt::black, width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     painter.drawLine(lastPoint, endPoint);
 
-    int rad = (1 / 2) + 2;
-    update(QRect(lastPoint, endPoint).normalized()
-                                     .adjusted(-rad, -rad, +rad, +rad));
+    int rad = width/2+2;
+    update(QRect(lastPoint, endPoint).adjusted(-rad, -rad, +rad, +rad));
     lastPoint = endPoint;
 }
 
 void HandwritingArea::paintEvent(QPaintEvent *event)
- {
-     QPainter painter(this);
-     QRect dirtyRect = event->rect();
-     painter.drawImage(dirtyRect, image, dirtyRect);
- }
-
-void HandwritingArea::resizeImage(QImage *image, const QSize &newSize)
- {
-     if (image->size() == newSize)
-         return;
-
-     QImage newImage(newSize, QImage::Format_RGB32);
-     newImage.fill(qRgb(255, 255, 255));
-     QPainter painter(&newImage);
-     painter.drawImage(QPoint(0, 0), *image);
-     *image = newImage;
- }
+{
+    QPainter painter(this);
+    QRect dirtyRect = event->rect();
+    painter.drawImage(dirtyRect, image, dirtyRect);
+}

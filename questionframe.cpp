@@ -25,12 +25,11 @@ void QuestionFrame::ask_question(const QString& word){
 
     // Left part
     if(handwriting){
-        right_vertical_layout->addWidget(new QLabel(tr("You can write the characters here if you have an IME.<br/>(Later you'll be able to draw them here.)"), this));
+        right_vertical_layout->addWidget(new QLabel(tr("Draw the characters in the box below. (You can then check them for yourself.)"), this));
 
-        handwriting_area = new HandwritingArea(this);
-        /*QFont font;
-        font.setPixelSize(100);
-        handwriting_edit->setFont(font);*/
+        QSize handwriting_area_size(500, 150);
+        handwriting_area = new HandwritingArea(handwriting_area_size, this);
+        handwriting_area->setMinimumSize(handwriting_area_size);
         right_vertical_layout->addWidget(handwriting_area);
     }
 

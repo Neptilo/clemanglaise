@@ -8,7 +8,7 @@ class HandwritingArea : public QWidget
 {
     Q_OBJECT
 public:
-    explicit HandwritingArea(QWidget *parent = 0);
+    explicit HandwritingArea(QSize size, QWidget *parent);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
@@ -16,7 +16,6 @@ public:
 
 private:
     void drawLineTo(const QPoint &endPoint);
-    void resizeImage(QImage *image, const QSize &newSize);
     bool scribbling;
     QImage image;
     QPoint lastPoint;

@@ -1,7 +1,6 @@
 To do first (because very useful):
 ==================================
 
-* Create widget to draw characters for Asian languages
 * Allow to come back from vocab test and select another vocab list
 
 
