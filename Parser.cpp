@@ -102,7 +102,31 @@ void Parser::writeInFile(const QString& text) {
 
 void Parser::parse() {
     QStringList text = getRandomLine().split(QRegExp("\\s*:\\s*"));
-	writeInFile(endline + text[0] + endline + text[1] + endline + space + endline + endline + endline + endline); 
+	QString defaultText("");
+	int l(text.size());
+	int MAX(7);
+	QStringList temp;
+	for(int i=0; i<l; i++){
+		temp << text[i];
+	}
+	for(int j = l; j<MAX; j++){
+		temp<< defaultText;
+	}
+	/*
+	 * temp[0] = name
+	 * temp[1] = meaning
+	 * temp[2] = nature
+	 * temp[3] = comment
+	 * temp[4] = example
+	 * temp[5] = pronunciation
+	 * temp[6] = score
+	 */  
+    	
+	QString real_text(endline);
+	for(int k=0; k<MAX; k++) {
+		real_text += temp[k] + endline;
+	}
+	writeInFile(real_text);
 }
 
 QString Parser::get_working_path() {

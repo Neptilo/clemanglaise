@@ -1,4 +1,4 @@
-**scope**                :          champ, cadre (de travail)
+**scope**                :          champ, cadre de travail, cadre
 **mapping**              :          application
 **foresee**              :          prévoir, anticiper
 **compliance**           :          conformité
@@ -9,15 +9,15 @@
 **remote**               :          éloigné, distant
 **intended, planned**    :          prévu, planifié
 **burn-out**             :          grillage de circuit
-**recovery**             :          récupération, rétablissement(guérison),redressement(economy)
+**recovery**             :          récupération, rétablissement,guérison,redressement
 **unrecoverable**        :          irrécupérable
 **herein**               :          ci-inclus
 **hereby**               :          par la présente, par le présent document
 **boldface**             :          caractères gras
-**curly bracket, brace** :          accolade "{}"
-**square bracket**       :          crochet "[]"
-**round bracket, parenthese** :     parenthèse "()"
-**latter**               :          dernier. The latter two rules = les deux dernières règles
+**curly bracket, brace** :          accolade, {}
+**square bracket**       :          crochet, []
+**round bracket, parenthese** :     parenthèse, ()
+**latter**               :          dernier, The latter two rules = les deux dernières règles
 **discrete**             :          distinct, séparé
 **scheduling**           :          programmation
 **scheduling**           :          plannification
@@ -26,17 +26,18 @@
 **automate**             :          automatiser
 **automaton**            :          automate
 **automata**             :          automates
-**heavy**                :          épais (heavy border = bordure épaisse)
+**heavy**                :          lourd, épais
+**heavy border**		 :			bordure épaisse
 **dispatch**             :          envoyer, expédier
 **dispatching**          :          envoi
 **subsequent**           :          ultérieur, suivant
 **oblong (adj, noun)**   :          rectangulaire, rectangle
 **wherever**             :          partout où, où que
-**preempt**              :          prévenir=>anticiper, devancer
+**preempt**              :          prévenir, anticiper, devancer
 **stunning (person)**    :          éblouissant, sensationel, maginfique
 **stunning (schocking)** :          stupéfiant, renversant
 **whenever**             :          à chaque fois que
-**come out**             :          sortis (les résultats sont sortis)
+**come out**             :          sortis, (les résultats sont sortis)
 **creepy(scary)**        :          louche, suspect, effrayant, qui fiche la trouille
 **creepy(annoying)**     :          agaçant, énervant
 **to state**             :          déclarer
@@ -57,12 +58,12 @@
 **scalable**             :          extensible, évolutif
 **handling**             :          traitement, manipulation
 **related**              :          lié, relié (connected)
-**colon**                :          deux-points (:)
+**colon**                :          deux-points
 **guideline/gaIdlaIn/**  :          directive, recommendation, indication 
 **i.e = that is,**       :          c'est-à-dire
 **binding**              :          reliure, liaison
 **end-to-end**           :          bout à bout, de bout en bout, du début à la fin
-**handheld**             :          portable(adj)
+**handheld**             :          portable,(adj)
 **requirements**         :          exigences
 **abort**                :          interrompre
 **incoming/outgoing**    :          entrant/sortant
@@ -70,7 +71,7 @@
 **complete**             :          achèver, terminer, finir
 **tight**                :          serré, difficile, délicat, hermétique
 **milestone**            :          événement marquant, étape importante
-**delay**                :          retarder(v), retard(n)
+**delay**                :          retarder, retard
 **sink**                 :          évier, lavabo
 **to sink**              :          faire couler
 **compound**             :          mélange, combinaison
@@ -96,11 +97,11 @@
 **possibly**             :          probablement, sans doute
 **manner**               :          façon, manière
 **gathering**            :          assemblée, réunion (meeting) | rassemblement (of people)
-**numerous**             :          (de) nombreux
-**paradigm**             :          paradigme(ens des différents sens d'un mot)
+**numerous**             :          de nombreux, nombreux
+**paradigm**             :          paradigme, (ens des différents sens d'un mot)
 **hence**                :          donc
 **subtle**               :          subtil
-**to issue**             :          distribuer, remettre | faire part, publier
+**to issue**             :          distribuer, remettre, faire part, publier
 **issue**                :          problème, objet de litige
 **lead(pp = led)**       :          mener, conduire   
 **overly (adv)**         :          trop
