@@ -80,10 +80,17 @@ void EditFrame::edit_word(){
     status->setText(tr("Sending data..."));
 	if (!test.isRemoteWork()) {
 		//offline
+		QString separator("\t:\t");
 		Parser* p = new Parser;
 		// Will show confirmation when loading of reply is finished
 		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
-		QString line = word_edit->text() + "\t:\t" + meaning_edit->text() + endline;
+		QString line = colon_unescape(word_edit->text()) + separator + 
+			colon_unescape(meaning_edit->text()) + separator +
+			nature_edit->itemData(nature_edit->currentIndex()).toString() +
+		   separator +	
+			colon_unescape(comment_edit->toPlainText()) + separator + 
+			colon_unescape(example_edit->toPlainText()) + separator +
+			endline;
 		p->appendInFile(line);
 	} else {
 		QUrl post_data;
