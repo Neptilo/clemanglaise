@@ -38,7 +38,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
             standardized_answer = numbers_to_accents(standardized_answer);
         }
 
-        correct = (pronunciation == standardized_answer);
+        correct = (pronunciation.split(", ").contains(standardized_answer, Qt::CaseInsensitive));
     }else{
         QString standard_answer = ampersand_unescape(player_answer);
         QString meaning_standard_answer = ampersand_unescape(meaning);
