@@ -1,6 +1,7 @@
 To do first (because very useful):
 ==================================
 
+* Group word by themes 
 * App mustn't crash when clicking on ``Back to test`` from add frame.
 
 To do next:
@@ -16,4 +17,3 @@ To do next:
 * Set a default window width (?)
 * Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: 
   http://www.howdoyousaythatword.com/wp-content/uploads/2012/01/creme-anglaise.jpg, use a vector graphics editor.
-* Group words by theme
