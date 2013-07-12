@@ -1,9 +1,11 @@
 #include "testframe.h"
 
-TestFrame::TestFrame(Test &test, QWidget *parent):
+TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
     QWidget(parent),
     test(test)
 {
+	title = new QLabel(str_title,this);
+    title->setAlignment(Qt::AlignHCenter);
     layout = new QVBoxLayout(this);
     answer_frame = new AnswerFrame(test, this);
     init();
@@ -17,15 +19,20 @@ TestFrame::~TestFrame(){
 
 void TestFrame::init(){
 
+	layout->addWidget(title); 
     if(test.hasThemes()){
-        label = new QLabel(tr("Choose a theme"), this);
-        layout->addWidget(label);
+        theme = new QLabel(tr("Choose a theme"), this);
+        layout->addWidget(theme);
         themes = new QComboBox(this);
         themes->addItem("Restaurant");
         themes->addItem("Business");
         themes->addItem("Internship");
         layout->addWidget(themes);
-    }
+    } 
+
+    back_button = new QPushButton(tr("Go back to tests list"), this);
+    connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
+    layout->addWidget(back_button);
 
     add_button = new QPushButton(tr("Add word"), this);
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
@@ -101,6 +108,8 @@ void TestFrame::add_word(){
     // Remove everything
     delete question_frame;
     answer_frame->hide();
+	back_button->disconnect();
+	back_button->hide();
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     update_button->disconnect();
@@ -121,6 +130,8 @@ void TestFrame::update_word(){
     // Remove everything
     delete question_frame;
     answer_frame->hide();
+	back_button->disconnect();
+	back_button->hide();
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     update_button->disconnect();
@@ -139,6 +150,8 @@ void TestFrame::search()
     // Remove everything
     delete question_frame;
     answer_frame->hide();
+	back_button->disconnect();
+	back_button->hide();
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     update_button->disconnect();
@@ -150,4 +163,8 @@ void TestFrame::search()
     search_frame = new SearchFrame(test, this);
     layout->addWidget(search_frame);
     connect(search_frame, SIGNAL(destroyed()), this, SLOT(init()));
+}
+
+void TestFrame::go_back() {
+	delete this;
 }

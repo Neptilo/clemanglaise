@@ -16,6 +16,7 @@ class HomeWindow : public QWidget{
 private:
     TestFrame* test_frame;
     QLabel* title;
+	QLayout* layout;
     QList<Test>* tests;
     QStringList* mapping_texts;
     QStringList* button_texts;
@@ -32,6 +33,7 @@ signals:
     
 public slots:
     void start_test(int i);
+	void init();
 };
 
 #endif // HOMEWINDOW_H

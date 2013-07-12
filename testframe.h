@@ -20,7 +20,7 @@ class TestFrame : public QWidget{
     Q_OBJECT
     
 public:
-    TestFrame(Test &test, QWidget *parent = 0);
+    TestFrame(Test &test, QString str_title="", QWidget *parent = 0);
     ~TestFrame();
 
 private:
@@ -33,7 +33,9 @@ private:
     QNetworkAccessManager* nam;
     QStringList* reply_list;
     QLayout* layout;
-	QLabel* label;
+	QLabel* theme;
+	QLabel* title;
+    QPushButton* back_button;
     QPushButton* add_button;
     QPushButton* search_button;
     QPushButton* update_button;
@@ -49,6 +51,7 @@ public slots:
     void add_word();
     void update_word();
     void search();
+	void go_back();
 };
 
 #endif // TESTFRAME_H

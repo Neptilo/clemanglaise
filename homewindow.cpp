@@ -1,10 +1,13 @@
 #include "homewindow.h"
 HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
 
-    setWindowTitle("Clemanglaise");
+    setWindowTitle("Clemanglaise"); 
+    layout = new QVBoxLayout(this);
+	init();
 
-    QLayout* layout = new QVBoxLayout(this);
+}
 
+void HomeWindow::init(){
     int test_id = 0;
 
     // No need to delete tests in a destructor because they are directly referenced, not by a pointer
@@ -32,7 +35,6 @@ HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
 	layout->addWidget(workoffline);
     layout->addWidget(offline_buttons);
 }
-
 HomeWindow::~HomeWindow(){
     delete tests;
     delete mapping_texts;
@@ -41,6 +43,7 @@ HomeWindow::~HomeWindow(){
 
 
 void HomeWindow::start_test(int i){
+	title->hide();
     workoffline->hide();
     offline_buttons->disconnect_all();
     offline_buttons->hide();
@@ -49,9 +52,11 @@ void HomeWindow::start_test(int i){
     online_buttons->hide();
     Test test = (*tests)[i];
     // No possible decomposition of the sentence, because of translations in foreign languages that put words in a different order.
-    title->setText(test.isRemoteWork()?
-                       tr("You are now working on tests from the remote server."):
-                       tr("You are now working on offline tests."));
-    TestFrame* test_frame = new TestFrame(test, this);
-    layout()->addWidget(test_frame);
+    QString str_title = test.isRemoteWork()?
+                       tr("<b>You are now working on tests from the remote server.</b>"):
+                       tr("<b>You are now working on offline tests.</b>");
+	
+    TestFrame* test_frame = new TestFrame(test,str_title, this);
+	connect(test_frame,SIGNAL(destroyed()) ,SLOT(init()));
+    layout->addWidget(test_frame);
 }
