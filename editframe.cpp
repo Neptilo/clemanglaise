@@ -129,7 +129,6 @@ void EditFrame::edit_word(){
 		// Will show confirmation when loading of reply is finished
 		connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
-
 		// Send the request
 		nam->post(request, post_data.encodedQuery());
 	}
@@ -145,6 +144,9 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
         status->setText(this->success_message);
     }
     delete OK_button;
+    continue_button = new QPushButton(tr("Add another word"), this);
+    layout->addWidget(continue_button);
+    connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
     cancel_button->setText(tr("Back to test"));
 }
 
@@ -156,4 +158,33 @@ void EditFrame::show_confirmation(){
 
 void EditFrame::back(){
     delete this;
+}
+
+void EditFrame::reset(){
+
+    QStringList list;
+    list << "ja" << "zh";
+    bool asked_pronunciation = list.contains(test.getDst());
+
+    // Very dirty and non-reusable coding, but it works
+    int i = 1;
+    ((QLineEdit*) layout->itemAt(2)->widget())->setText(default_values.at(i++)); // word
+    ((QLineEdit*) layout->itemAt(6)->widget())->setText(default_values.at(i++)); // meaning
+    ((QComboBox*) layout->itemAt(4)->widget())->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++)))); // nature
+    if(asked_pronunciation){
+        ((QTextEdit*) layout->itemAt(10)->widget())->setText(default_values.at(i++)); // comment
+        ((QTextEdit*) layout->itemAt(12)->widget())->setText(default_values.at(i++)); // example
+        ((QLineEdit*) layout->itemAt(8)->widget())->setText(default_values.at(i++)); // pronunciation
+    }else{
+        ((QTextEdit*) layout->itemAt(8)->widget())->setText(default_values.at(i++)); // comment
+        ((QTextEdit*) layout->itemAt(10)->widget())->setText(default_values.at(i++)); // example
+    }
+
+    delete continue_button;
+
+    OK_button = new QPushButton(tr("Add word"), this);
+    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
+    layout->addWidget(OK_button);
+
+    cancel_button->setText(tr("Cancel"));
 }

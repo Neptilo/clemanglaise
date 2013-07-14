@@ -30,6 +30,7 @@ private:
     QTextEdit* example_edit;
     QPushButton* OK_button;
     QPushButton* cancel_button;
+    QPushButton* continue_button;
     QFormLayout* layout;
     Test test;
     QString php_filename;
@@ -41,6 +42,7 @@ public slots:
     void show_confirmation(QNetworkReply* reply);
     void show_confirmation();
     void back();
+    void reset();
 };
 
 #endif // EDITFRAME_H
