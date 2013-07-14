@@ -1,6 +1,7 @@
 #include <QtNetwork>
 #include "answerframe.h"
 #include "string_utils.h"
+
 AnswerFrame::AnswerFrame(Test &test, QWidget *parent):
     WordFrame(test, parent)
 {}
@@ -17,15 +18,10 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QString pronunciation = reply_list.at(6);
     int score = reply_list.at(7).toInt();
 
-    // List of languages for which we asked for the pronunciation
-    QStringList list;
-    list << "ja" << "zh";
-    bool asked_pronunciation = list.contains(test.getDst());
-
     // Check answer
     QString message;
     bool correct;
-    if(asked_pronunciation){
+    if(test.asked_pronunciation){
         // Standardize player answer before checking
         QString standardized_answer = QString(player_answer);
 
@@ -73,7 +69,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Add labels 
     vertical_layout->addWidget(new QLabel("<b>"+message+"</b>", this));
 
-    if(asked_pronunciation){
+    if(test.asked_pronunciation){
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
     }else{
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+meaning, this));

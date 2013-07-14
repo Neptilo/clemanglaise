@@ -14,6 +14,8 @@ private:
     bool withThemes;
 
 public:
+    bool asked_pronunciation;
+
     explicit Test(int id, const QString &name, const QString &src, const QString &dst, bool remote=true, bool withThemes=false);
     int getId() const;
     const QString& getName() const;

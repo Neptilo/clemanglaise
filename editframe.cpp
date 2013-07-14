@@ -47,11 +47,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     meaning_edit = new QLineEdit(meaning, this);
     layout->addRow(tr("&Meaning:"), meaning_edit);
 
-    QStringList list;
-    list << "ja" << "zh";
-    bool asked_pronunciation = list.contains(test.getDst());
-
-    if(asked_pronunciation){
+    if(test.asked_pronunciation){
         pronunciation_edit = new QLineEdit(pronunciation, this);
         layout->addRow(tr("&Pronunciation:"), pronunciation_edit);
     }
@@ -98,10 +94,7 @@ void EditFrame::edit_word(){
 		post_data.addQueryItem("word", ampersand_escape(word_edit->text()));
 		post_data.addQueryItem("nature", nature_edit->itemData(nature_edit->currentIndex()).toString());
 		post_data.addQueryItem("meaning", ampersand_escape(meaning_edit->text()));
-		QStringList list;
-		list << "ja" << "zh";
-		bool asked_pronunciation = list.contains(test.getDst());
-		if(asked_pronunciation){
+        if(test.asked_pronunciation){
 			// Standardize pronunciation to save into database
 			QString standardized_pronunciation;
 
@@ -162,22 +155,15 @@ void EditFrame::back(){
 
 void EditFrame::reset(){
 
-    QStringList list;
-    list << "ja" << "zh";
-    bool asked_pronunciation = list.contains(test.getDst());
-
     // Very dirty and non-reusable coding, but it works
     int i = 1;
-    ((QLineEdit*) layout->itemAt(2)->widget())->setText(default_values.at(i++)); // word
-    ((QLineEdit*) layout->itemAt(6)->widget())->setText(default_values.at(i++)); // meaning
-    ((QComboBox*) layout->itemAt(4)->widget())->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++)))); // nature
-    if(asked_pronunciation){
-        ((QTextEdit*) layout->itemAt(10)->widget())->setText(default_values.at(i++)); // comment
-        ((QTextEdit*) layout->itemAt(12)->widget())->setText(default_values.at(i++)); // example
-        ((QLineEdit*) layout->itemAt(8)->widget())->setText(default_values.at(i++)); // pronunciation
-    }else{
-        ((QTextEdit*) layout->itemAt(8)->widget())->setText(default_values.at(i++)); // comment
-        ((QTextEdit*) layout->itemAt(10)->widget())->setText(default_values.at(i++)); // example
+    word_edit->setText(default_values.at(i++));
+    meaning_edit->setText(default_values.at(i++));
+    nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++))));
+    comment_edit->setText(default_values.at(i++));
+    example_edit->setText(default_values.at(i++));
+    if(test.asked_pronunciation){
+        pronunciation_edit->setText(default_values.at(i++));
     }
 
     delete continue_button;
