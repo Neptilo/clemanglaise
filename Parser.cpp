@@ -40,7 +40,8 @@ QString Parser::getline(const unsigned int & number) const {
     QString currentline("");
     unsigned int i(0);
 	QFile file(m_filein);
-	file.open(QIODevice::ReadOnly | QIODevice::Text);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return "";
 	QTextStream flux(&file);
 	while( i<number && !flux.atEnd()) {
 		i++;
@@ -53,7 +54,8 @@ unsigned int Parser::nblines() const {
     QString s;
     unsigned int count(0);
 	QFile file(m_filein);
-	file.open(QIODevice::ReadOnly | QIODevice::Text);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return -1;
 	QTextStream flux(&file);
 
 	while(!flux.atEnd()) {
@@ -68,7 +70,8 @@ QString Parser::getRandomLine() const {
     unsigned int lines(nblines());
     QString const nomFichier(m_filein);
 	QFile file(m_filein);
-	file.open(QIODevice::ReadOnly | QIODevice::Text);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return "";
 	QTextStream flux(&file);
 	line = (lines > 0)? rand() % lines + 1 : 0;
 	file.close();
@@ -135,4 +138,19 @@ QString Parser::get_working_path() {
 
 QString Parser::get_working_path(const QString & file) {
 	return "file://" + prec + Parser::get_working_path() + "/" + file; 
+}
+
+QString Parser::search(const QString& word) const {
+	QString currentline("");
+	QString result("");
+	QFile file(m_filein);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return "";
+	QTextStream flux(&file);
+	while(!flux.atEnd()) {
+		currentline = flux.readLine();
+		if(currentline.contains(word, Qt::CaseInsensitive))
+			result += currentline + endline; 	
+	}
+	return result;
 }

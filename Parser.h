@@ -22,6 +22,7 @@ class Parser: public QObject {
 		QString getFilein() const;
 		QString getFileout() const;
 		QString getRandomLine() const;
+		QString search(const QString& word) const;
 		void parse();
 		void writeInFile(const QString& text);
 		void appendInFile(const QString& text);

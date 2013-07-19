@@ -6,6 +6,7 @@
 
 #include "searchframe.h"
 #include "string_utils.h"
+#include "Parser.h"
 
 SearchFrame::SearchFrame(Test& test, QWidget *parent) :
     QWidget(parent),
@@ -30,15 +31,23 @@ SearchFrame::~SearchFrame(){
     result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 }
 
-void SearchFrame::search(){
-    // Standardization of search string
-    QString search_str = ampersand_escape(search_bar->text());
+void SearchFrame::search() {
+	if (!test.isRemoteWork()) {
+		Parser* p = new Parser();
+		//offline
+		QString search_str = ampersand_unescape(search_bar->text());
+		read_reply(p->search(search_str));
+	} else {
 
-    // Request to PHP file
-    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test.getSrc() + test.getDst() + "&string=" + search_str);
-    request = new QNetworkRequest(url);
+		// Standardization of search string
+		QString search_str = ampersand_escape(search_bar->text());
 
-    nam.get(*request);
+		// Request to PHP file
+		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test.getSrc() + test.getDst() + "&string=" + search_str);
+		request = new QNetworkRequest(url);
+
+		nam.get(*request);
+	}
 }
 
 void SearchFrame::read_reply(QNetworkReply* reply)
@@ -46,6 +55,10 @@ void SearchFrame::read_reply(QNetworkReply* reply)
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll();
     reply->deleteLater();
+	read_reply(reply_string);
+}
+
+void SearchFrame::read_reply(QString reply_string) {
     QStringList reply_list(reply_string.split('\n'));
     if(result){
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.

@@ -14,6 +14,7 @@ class SearchFrame : public QWidget
 public:
     explicit SearchFrame(Test &test, QWidget *parent = 0);
     ~SearchFrame();
+    void read_reply(QString reply_string);
 
 private:
     QLineEdit* search_bar;
