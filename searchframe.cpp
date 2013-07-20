@@ -3,7 +3,6 @@
 #include <QBoxLayout>
 #include <QLineEdit>
 #include <QHeaderView>
-
 #include "searchframe.h"
 #include "string_utils.h"
 #include "Parser.h"

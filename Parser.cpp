@@ -90,6 +90,7 @@ void Parser::appendInFile(const QString& text) {
 	flux << text;
 	emit appendDone();
 }
+
 void Parser::writeInFile(const QString& text) {
 	QFile file(m_fileout);
 	//Open file in write only
@@ -104,10 +105,15 @@ void Parser::writeInFile(const QString& text) {
 }
 
 void Parser::parse() {
-    QStringList text = getRandomLine().split(QRegExp("\\s*:\\s*"));
+	QString real_text = split_line(getRandomLine());
+	writeInFile(real_text);
+}
+
+QString Parser::split_line(QString line) const {
+    QStringList text = line.split(QRegExp("\\s*:\\s*"));
 	QString defaultText("");
 	int l(text.size());
-	int MAX(7);
+	int MAX(6);
 	QStringList temp;
 	for(int i=0; i<l; i++){
 		temp << text[i];
@@ -122,14 +128,14 @@ void Parser::parse() {
 	 * temp[3] = comment
 	 * temp[4] = example
 	 * temp[5] = pronunciation
-	 * temp[6] = score
+	 * temp[6] = score //non géré
 	 */  
     	
 	QString real_text(endline);
 	for(int k=0; k<MAX; k++) {
 		real_text += temp[k] + endline;
 	}
-	writeInFile(real_text);
+	return real_text;
 }
 
 QString Parser::get_working_path() {
@@ -150,7 +156,7 @@ QString Parser::search(const QString& word) const {
 	while(!flux.atEnd()) {
 		currentline = flux.readLine();
 		if(currentline.contains(word, Qt::CaseInsensitive))
-			result += currentline + endline; 	
+			result += split_line(currentline); 	
 	}
 	return result;
 }
