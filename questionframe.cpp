@@ -42,6 +42,10 @@ void QuestionFrame::ask_question(const QString& word){
         label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in r&#333;maji."));
     }else if(test.getDst() == "zh"){
         label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in pinyin."));
+    }else if(test.getDst() == "hr"){
+        label->setText(tr("Translate <b>") + word + tr("</b> into Croatian."));
+    }else{
+        label->setText(tr("Translate <b>") + word + tr("</b>."));
     }
 
     // Create edit field
