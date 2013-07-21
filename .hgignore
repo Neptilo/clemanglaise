@@ -1,7 +1,7 @@
 syntax: glob
 
 *.autosave
-*.user
+*.user*
 *.o
 clemanglaise
 *~

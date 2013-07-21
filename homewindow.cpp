@@ -16,6 +16,7 @@ void HomeWindow::init(){
     online_tests << *new Test(test_id++, tr("English to French"), "en", "fr");
     online_tests << *new Test(test_id++, tr("English to Japanese"), "en", "ja");
     online_tests << *new Test(test_id++, tr("English to Chinese"), "en", "zh");
+    online_tests << *new Test(test_id++, tr("English to Croatian"), "en", "hr");
 
     QList<Test> offline_tests;
     offline_tests << *new Test(test_id++, tr("English to French"), "en", "fr", false, false);
