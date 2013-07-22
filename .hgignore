@@ -8,3 +8,5 @@ clemanglaise
 moc_*
 Makefile
 file_out
+.qmake.cache
+*.app
