@@ -33,7 +33,7 @@ SOURCES += answerframe.cpp \
            testframe.cpp \
            wordframe.cpp
 
-QT += network \
-      widgets
+QT += network
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-cache()
+greaterThan(QT_MAJOR_VERSION, 4): cache()
