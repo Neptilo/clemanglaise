@@ -1,5 +1,8 @@
 #include <QtNetwork>
 #include <QTextDocument>
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#   include <QUrlQuery>
+#endif
 
 #include "editframe.h"
 #include "string_utils.h"
@@ -89,7 +92,11 @@ void EditFrame::edit_word(){
 			endline;
 		p->appendInFile(line);
 	} else {
-		QUrl post_data;
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+        QUrl post_data;
+#else
+        QUrlQuery post_data;
+#endif
 		post_data.addQueryItem("id", this->default_values.at(0));
 		post_data.addQueryItem("word", ampersand_escape(word_edit->text()));
 		post_data.addQueryItem("nature", nature_edit->itemData(nature_edit->currentIndex()).toString());
@@ -123,7 +130,11 @@ void EditFrame::edit_word(){
 		connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
 		// Send the request
-		nam->post(request, post_data.encodedQuery());
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+        nam->post(request, post_data.encodedQuery());
+#else
+        nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+#endif
 	}
 	
 }

@@ -1,4 +1,4 @@
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <ctime>
 #include <QPushButton>
 #include "homewindow.h"

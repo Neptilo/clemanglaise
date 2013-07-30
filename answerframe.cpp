@@ -1,4 +1,8 @@
 #include <QtNetwork>
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#   include <QUrlQuery>
+#endif
+
 #include "answerframe.h"
 #include "string_utils.h"
 
@@ -47,12 +51,21 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QNetworkAccessManager* nam = new QNetworkAccessManager;
+    
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
     QUrl post_data;
     post_data.addQueryItem("id", reply_list.at(0));
     post_data.addQueryItem("lang", test.getSrc() + test.getDst());
     post_data.addQueryItem("score", QString::number(score+(correct?1:-1)));
     //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     nam->post(request, post_data.encodedQuery());
+#else
+    QUrlQuery post_data;
+    post_data.addQueryItem("id", reply_list.at(0));
+    post_data.addQueryItem("lang", test.getSrc() + test.getDst());
+    post_data.addQueryItem("score", QString::number(score+(correct?1:-1)));
+    nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+#endif
 
     // Left part
     if(handwriting){
