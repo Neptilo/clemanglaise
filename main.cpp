@@ -1,4 +1,8 @@
+#if QT_VERSION < 0x050000
+#include <QtGui/QApplication>
+#else
 #include <QtWidgets/QApplication>
+#endif
 #include <ctime>
 #include <QPushButton>
 #include "homewindow.h"
