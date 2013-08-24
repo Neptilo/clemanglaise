@@ -7,7 +7,7 @@ clemanglaise
 *~
 moc_*
 Makefile
-file_in
+file_out
 .qmake.cache
 *.app
 *.orig
