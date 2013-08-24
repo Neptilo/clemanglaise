@@ -25,8 +25,9 @@ class Parser: public QObject {
 		QString split_line(QString line) const;
 		QString search(const QString& word) const;
 		void parse();
-		void writeInFile(const QString& text);
+		void writeInFile(const QString& text, const QString& file);
 		void appendInFile(const QString& text);
+		void deleteLineId(const int & id);
 		static QString get_working_path();
 		static QString get_working_path(const QString& file);
 

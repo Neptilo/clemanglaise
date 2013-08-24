@@ -23,7 +23,7 @@ Parser::Parser(const QString& srcDst, QObject* parent, QString file_in, QString 
 		// choose corresponding codec: UTF-8
 		flux.setCodec("UTF-8");
 		// write in file
-		flux << "Ball : Balle, Ballon"<<endl;
+		flux << 1 << " : Ball : Balle, Ballon" << endl;
 	}
 	
 }
@@ -95,12 +95,43 @@ void Parser::appendInFile(const QString& text) {
 	// choose codec UTF-8
 	flux.setCodec("UTF-8");
 	// write lines into file
-	flux << text;
+    int id = getline(nblines()).split(QRegExp("\\s*:\\s*")).at(0).toInt();
+	flux << ++id << " : " << text;
 	emit appendDone();
 }
 
-void Parser::writeInFile(const QString& text) {
-	QFile file(m_fileout);
+void Parser::deleteLineId(const int & id) {
+	QString currentline("");
+	bool ok = false;
+	QFile file(m_filein);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return;
+	QTextStream flux0(&file);
+	QStringList file_list = flux0.readAll().split(endline);
+	file.close();
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return;
+	QTextStream flux(&file);
+	while(!flux.atEnd() && !ok) {
+		currentline = flux.readLine();
+		if(currentline.split(QRegExp("\\s*:\\s*")).at(0).toInt() == id){
+			file_list.removeOne(currentline);
+			ok = true;
+		}
+	}
+	file.close();
+	file.resize(0);
+	
+	QString text("");
+	for(int i=0, l = file_list.size(); i<l; i++) {
+		text += (i==l-1)?file_list.at(i) : file_list.at(i) + endline;
+	} 
+
+	writeInFile(text, m_filein); 
+}
+
+void Parser::writeInFile(const QString& text, const QString & files) {
+	QFile file(files);
 	//Open file in write only
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 		return;
@@ -110,36 +141,38 @@ void Parser::writeInFile(const QString& text) {
 	flux.setCodec("UTF-8");
 	// write lines into file
 	flux << text;
+
 }
 
 void Parser::parse() {
 	QString real_text = split_line(getRandomLine());
-	writeInFile(real_text);
+	writeInFile(real_text, m_fileout);
 }
 
 QString Parser::split_line(QString line) const {
     QStringList text = line.split(QRegExp("\\s*:\\s*"));
 	QString defaultText("");
 	int l(text.size());
-	int MAX(6);
+	int MAX(7);
 	QStringList temp;
 	for(int i=0; i<l; i++){
 		temp << text[i];
 	}
 	for(int j = l; j<MAX; j++){
-		temp<< defaultText;
+		temp << defaultText;
 	}
 	/*
-	 * temp[0] = name
-	 * temp[1] = meaning
-	 * temp[2] = nature
-	 * temp[3] = comment
-	 * temp[4] = example
-	 * temp[5] = pronunciation
-	 * temp[6] = score //non géré
+	 * temp[0] = id
+	 * temp[1] = name
+	 * temp[2] = meaning
+	 * temp[3] = nature
+	 * temp[4] = comment
+	 * temp[5] = example
+	 * temp[6] = pronunciation
+	 * temp[7] = score //non géré
 	 */  
     	
-	QString real_text(endline);
+	QString real_text("");
 	for(int k=0; k<MAX; k++) {
 		real_text += temp[k] + endline;
 	}

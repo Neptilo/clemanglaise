@@ -91,6 +91,7 @@ void EditFrame::edit_word(){
 			colon_unescape(example_edit->toPlainText()) + separator +
 			endline;
 		p->appendInFile(line);
+		p->deleteLineId(default_values.at(0).toInt());
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
