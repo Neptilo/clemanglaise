@@ -23,7 +23,7 @@ Parser::Parser(const QString& srcDst, QObject* parent, QString file_in, QString 
 		// choose corresponding codec: UTF-8
 		flux.setCodec("UTF-8");
 		// write in file
-		flux << 1 << " : Ball : Balle, Ballon" << endl;
+		flux << 1 << " : Ball : Balle, Ballon : n" << endl;
 	}
 	
 }
