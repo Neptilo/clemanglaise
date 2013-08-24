@@ -21,6 +21,7 @@ void HomeWindow::init(){
     QList<Test> offline_tests;
     offline_tests << *new Test(test_id++, tr("English to French"), "en", "fr", false, false);
 
+    offline_tests << *new Test(test_id++, tr("German to French"), "de", "fr", false, false);
     tests = new QList<Test>(online_tests+offline_tests);
 
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);

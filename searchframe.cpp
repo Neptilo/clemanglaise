@@ -32,7 +32,7 @@ SearchFrame::~SearchFrame(){
 
 void SearchFrame::search() {
 	if (!test.isRemoteWork()) {
-		Parser* p = new Parser();
+		Parser* p = new Parser(test.getSrc() + test.getDst());
 		//offline
 		QString search_str = ampersand_unescape(search_bar->text());
 		read_reply(p->search(search_str));

@@ -54,9 +54,9 @@ void TestFrame::init(){
 	if (test.isRemoteWork()) {
         url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + test.getSrc() + test.getDst());
 	} else {
-		parser = new Parser();
+		parser = new Parser(test.getSrc() + test.getDst());
 		parser->parse();
-		url = QUrl(Parser::get_working_path("file_out"));
+		url = QUrl(Parser::get_working_path(parser->getFileout()));
 	}
     request = new QNetworkRequest(url);
     nam = new QNetworkAccessManager;

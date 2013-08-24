@@ -1,11 +1,18 @@
+#include <QMessageBox>
 #include <QDir>
+#include <iostream>
 #include <QFile>
 #include <QTextStream>
 #include "Parser.h"
-Parser::Parser(QObject* parent, QString file_in, QString file_out):QObject(parent) {
-    m_filein = file_in;
-    m_fileout = file_out;
-
+Parser::Parser(const QString& srcDst, QObject* parent, QString file_in, QString file_out):QObject(parent) {
+	m_srcDst = srcDst;
+    m_filein = m_srcDst + "/" + file_in;
+    m_fileout = m_srcDst + "/" + file_out;
+	QDir dir(m_srcDst);
+	if (!dir.exists()) {
+		dir.mkpath(".");
+	}
+	
 	QFile file(m_filein);
 	if (!file.exists()) {
 		//Opening file in write only mode
@@ -16,8 +23,9 @@ Parser::Parser(QObject* parent, QString file_in, QString file_out):QObject(paren
 		// choose corresponding codec: UTF-8
 		flux.setCodec("UTF-8");
 		// write in file
-		flux << "Hello : Bonjour, Salut"<<endl;
+		flux << "Ball : Balle, Ballon"<<endl;
 	}
+	
 }
 
 Parser::~Parser()

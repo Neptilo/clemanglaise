@@ -15,7 +15,7 @@ const QString space(" ");
 class Parser: public QObject {
 	Q_OBJECT
     public:
-		Parser(QObject* parent =0, QString file_in="file_in", QString file_out="file_out" );
+		Parser(const QString& srcDst, QObject* parent =0, QString file_in="file_in", QString file_out="file_out");
 		virtual ~Parser();
 		QString getline(const unsigned int & number) const;
 		unsigned int nblines() const;
@@ -36,6 +36,7 @@ class Parser: public QObject {
     private:
         QString m_filein;
         QString m_fileout;
+		QString m_srcDst;
 
 
 };

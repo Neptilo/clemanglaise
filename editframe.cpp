@@ -80,7 +80,7 @@ void EditFrame::edit_word(){
 	if (!test.isRemoteWork()) {
 		//offline
 		QString separator("\t:\t");
-		Parser* p = new Parser;
+		Parser* p = new Parser(test.getSrc() + test.getDst());
 		// Will show confirmation when loading of reply is finished
 		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(word_edit->text()) + separator + 
