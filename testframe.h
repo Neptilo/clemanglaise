@@ -3,6 +3,7 @@
 
 #include "questionframe.h"
 #include "answerframe.h"
+#include "themeframe.h"
 #include "editframe.h"
 #include "searchframe.h"
 #include "test.h"
@@ -26,6 +27,8 @@ public:
 private:
     QuestionFrame* question_frame;
     AnswerFrame* answer_frame;
+    ThemeFrame* add_theme_frame;
+    ThemeFrame* update_theme_frame;
     EditFrame* add_frame;
     EditFrame* update_frame;
     SearchFrame* search_frame;
@@ -36,6 +39,7 @@ private:
 	QLabel* theme;
 	QLabel* title;
     QPushButton* back_button;
+    QPushButton* add_theme_button;
     QPushButton* add_button;
     QPushButton* search_button;
     QPushButton* update_button;
@@ -48,6 +52,7 @@ public slots:
     void read_reply(QNetworkReply* reply);
     void validate_question();
     void validate_answer();
+    void add_theme();
     void add_word();
     void update_word();
     void search();

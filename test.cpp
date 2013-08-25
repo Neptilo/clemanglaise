@@ -46,3 +46,12 @@ bool Test::hasThemes() const
 {
     return withThemes;
 }
+
+void Test::addTheme(const QString& theme) {
+	this->themes.insert(theme);
+	this->withThemes = true;
+}
+
+QSet<QString>& Test::getThemes() {
+	return this->themes;
+}

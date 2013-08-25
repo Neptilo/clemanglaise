@@ -16,7 +16,8 @@ SearchFrame::SearchFrame(Test& test, QWidget *parent) :
     QLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
     QPushButton* OK_button = new QPushButton(tr("OK"), this);
-    QPushButton* back_button = new QPushButton(tr("Back to test"), this); layout->addWidget(search_bar);
+    QPushButton* back_button = new QPushButton(tr("Back to test"), this);
+   	layout->addWidget(search_bar);
     layout->addWidget(OK_button);
     layout->addWidget(back_button);
 
@@ -26,7 +27,7 @@ SearchFrame::SearchFrame(Test& test, QWidget *parent) :
     connect(back_button, SIGNAL(clicked()), this, SLOT(back()));
 }
 
-SearchFrame::~SearchFrame(){
+SearchFrame::~SearchFrame() {
     result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 }
 

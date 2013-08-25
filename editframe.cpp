@@ -90,7 +90,7 @@ void EditFrame::edit_word(){
 			colon_unescape(comment_edit->toPlainText()) + separator + 
 			colon_unescape(example_edit->toPlainText()) + separator +
 			endline;
-		p->appendInFile(line);
+		p->appendInFile(line, p->getFilein());
 		p->deleteLineId(default_values.at(0).toInt());
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
@@ -158,6 +158,9 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
 void EditFrame::show_confirmation(){
     status->setText(this->success_message);
     delete OK_button;
+    continue_button = new QPushButton(tr("Add another word"), this);
+    layout->addWidget(continue_button);
+    connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
     cancel_button->setText(tr("Back to test"));
 }
 

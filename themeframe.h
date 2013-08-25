@@ -1,5 +1,5 @@
-#ifndef EDITFRAME_H
-#define EDITFRAME_H
+#ifndef THEMEFRAME_H
+#define THEMEFRAME_H
 
 #include <QLabel>
 #include <QLineEdit>
@@ -12,24 +12,21 @@
 
 #include "test.h"
 
-class EditFrame : public QWidget{
+class ThemeFrame : public QWidget{
     Q_OBJECT
 
 public:
-    EditFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent);
-    ~EditFrame();
+    ThemeFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent);
+    ~ThemeFrame();
+
+    void read_reply(QString reply_string);
 
 private:
     QLabel* title;
     QLabel* status;
-    QComboBox* nature_edit;
-    QComboBox* themes;
-    QLineEdit* word_edit;
-    QLineEdit* meaning_edit;
-    QLineEdit* pronunciation_edit;
-    QTextEdit* comment_edit;
-    QTextEdit* example_edit;
+    QLineEdit* theme_edit;
     QPushButton* OK_button;
+	QNetworkAccessManager nam; 
     QPushButton* cancel_button;
     QPushButton* continue_button;
     QFormLayout* layout;
@@ -37,13 +34,17 @@ private:
     QString php_filename;
     QStringList default_values;
     QString success_message;
+	QLabel* theme;
+	QComboBox* themes;
 
 public slots:
-    void edit_word();
+    void edit_theme();
     void show_confirmation(QNetworkReply* reply);
     void show_confirmation();
+	void read_reply(QNetworkReply * reply); 
+	void find_themes(); 
     void back();
     void reset();
 };
 
-#endif // EDITFRAME_H
+#endif // THEMEFRAME_H

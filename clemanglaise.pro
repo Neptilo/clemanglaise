@@ -18,6 +18,7 @@ HEADERS += answerframe.h \
            string_utils.h \
            test.h \
            testframe.h \
+           themeframe.h \
            wordframe.h
 SOURCES += answerframe.cpp \
            editframe.cpp \
@@ -31,6 +32,7 @@ SOURCES += answerframe.cpp \
            string_utils.cpp \
            test.cpp \
            testframe.cpp \
+           themeframe.cpp \
            wordframe.cpp
 
 QT += network

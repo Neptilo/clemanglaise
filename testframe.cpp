@@ -21,18 +21,25 @@ void TestFrame::init(){
 
 	layout->addWidget(title); 
     if(test.hasThemes()){
+		//TODO
         theme = new QLabel(tr("Choose a theme"), this);
         layout->addWidget(theme);
         themes = new QComboBox(this);
-        themes->addItem("Restaurant");
-        themes->addItem("Business");
-        themes->addItem("Internship");
+		QSet<QString> set = test.getThemes();
+		foreach (const QString &value, set){
+			themes->addItem(value);
+		}
         layout->addWidget(themes);
     } 
 
     back_button = new QPushButton(tr("Go back to tests list"), this);
     connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
     layout->addWidget(back_button);
+
+
+    add_theme_button = new QPushButton(tr("Add a theme"), this);
+    connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
+    layout->addWidget(add_theme_button);
 
     add_button = new QPushButton(tr("Add word"), this);
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
@@ -86,7 +93,7 @@ void TestFrame::validate_question(){
     layout->addWidget(answer_frame);
 }
 
-void TestFrame::validate_answer(){
+void TestFrame::validate_answer() {
 
     // Remove everything
     delete question_frame;
@@ -103,6 +110,30 @@ void TestFrame::validate_answer(){
     nam->get(*request);
 }
 
+
+void TestFrame::add_theme() {
+    // Remove everything
+    delete question_frame;
+    answer_frame->hide();
+	back_button->disconnect();
+	back_button->hide();
+    add_theme_button->disconnect();
+    add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    add_button->disconnect();
+    add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    update_button->disconnect();
+    update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    search_button->disconnect();
+    search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+
+    // Create a new add frame
+    QStringList default_values_list;
+    default_values_list << "" << "";
+    add_theme_frame = new ThemeFrame(test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), this);
+    layout->addWidget(add_theme_frame);
+    connect(add_theme_frame, SIGNAL(destroyed()), this, SLOT(init()));
+}
+
 void TestFrame::add_word(){
 
     // Remove everything
@@ -110,6 +141,8 @@ void TestFrame::add_word(){
     answer_frame->hide();
 	back_button->disconnect();
 	back_button->hide();
+    add_theme_button->disconnect();
+    add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     update_button->disconnect();
@@ -132,6 +165,8 @@ void TestFrame::update_word(){
     answer_frame->hide();
 	back_button->disconnect();
 	back_button->hide();
+    add_theme_button->disconnect();
+    add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     update_button->disconnect();
@@ -152,6 +187,8 @@ void TestFrame::search()
     answer_frame->hide();
 	back_button->disconnect();
 	back_button->hide();
+    add_theme_button->disconnect();
+    add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     add_button->disconnect();
     add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
     update_button->disconnect();

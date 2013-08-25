@@ -41,6 +41,10 @@ QString Parser::getFileout() const{
     return m_fileout;
 }
 
+QString Parser::getThemeFile() const {
+	return m_srcDst + "/" + "themes";
+}
+
 /**
  *@return the numberth line of the file m_filein
  */
@@ -58,10 +62,10 @@ QString Parser::getline(const unsigned int & number) const {
     return currentline;
 }
 
-unsigned int Parser::nblines() const {
+unsigned int Parser::nblines(const QString& files) const {
     QString s;
     unsigned int count(0);
-	QFile file(m_filein);
+	QFile file(files);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return -1;
 	QTextStream flux(&file);
@@ -75,7 +79,7 @@ unsigned int Parser::nblines() const {
 
 QString Parser::getRandomLine() const {
     unsigned int line;
-    unsigned int lines(nblines());
+    unsigned int lines(nblines(m_filein));
     QString const nomFichier(m_filein);
 	QFile file(m_filein);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -86,8 +90,8 @@ QString Parser::getRandomLine() const {
 	return getline(line);
 }
 
-void Parser::appendInFile(const QString& text) {
-	QFile file(m_filein);
+void Parser::appendInFile(const QString& text, const QString& files) {
+	QFile file(files);
 	if (!file.open(QIODevice::Append | QIODevice::Text))
 		return;
 	// Creation of QTextStream from QFile object
@@ -95,7 +99,7 @@ void Parser::appendInFile(const QString& text) {
 	// choose codec UTF-8
 	flux.setCodec("UTF-8");
 	// write lines into file
-    int id = getline(nblines()).split(QRegExp("\\s*:\\s*")).at(0).toInt();
+    int id = getline(nblines(files)).split(QRegExp("\\s*:\\s*")).at(0).toInt();
 	flux << ++id << " : " << text;
 	emit appendDone();
 }
