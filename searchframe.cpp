@@ -36,7 +36,7 @@ void SearchFrame::search() {
 		Parser* p = new Parser(test.getSrc() + test.getDst());
 		//offline
 		QString search_str = ampersand_unescape(search_bar->text());
-		read_reply(p->search(search_str));
+		read_reply(p->search(search_str, p->getFilein()));
 	} else {
 
 		// Standardization of search string

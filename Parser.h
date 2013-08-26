@@ -24,7 +24,7 @@ class Parser: public QObject {
 		QString getThemeFile() const;
 		QString getRandomLine() const;
 		QString split_line(QString line) const;
-		QString search(const QString& word) const;
+		QString search(const QString& word, const QString &files) const;
 		void parse();
 		void writeInFile(const QString& text, const QString& files);
 		void appendInFile(const QString& text, const QString& files);

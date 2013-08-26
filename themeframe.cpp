@@ -138,10 +138,9 @@ void ThemeFrame::reset(){
 
 void ThemeFrame::find_themes() {
 	if (!test.isRemoteWork()) {
-		//Parser* p = new Parser(test.getSrc() + test.getDst());
+		Parser* p = new Parser(test.getSrc() + test.getDst());
 		//offline
-		//QString search_str = ampersand_unescape(search_bar->text());
-		//read_reply(p->search(search_str));
+		read_reply(p->search("", p->getThemeFile()));
 	} else { 
 		// Request to PHP file
 		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php?lang=" + test.getSrc() + test.getDst());

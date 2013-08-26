@@ -191,10 +191,10 @@ QString Parser::get_working_path(const QString & file) {
 	return "file://" + prec + Parser::get_working_path() + "/" + file; 
 }
 
-QString Parser::search(const QString& word) const {
+QString Parser::search(const QString& word, const QString& files) const {
 	QString currentline("");
 	QString result("");
-	QFile file(m_filein);
+	QFile file(files);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return "";
 	QTextStream flux(&file);
