@@ -20,6 +20,10 @@ ThemeFrame::ThemeFrame(Test &test, const QString &title, const QStringList &defa
     layout = new QFormLayout(this);
 
 	theme = new QLabel(tr("Available themes"), this);
+	layout->addWidget(theme);
+	themes = new QComboBox(this);
+	layout->addWidget(themes);
+	find_themes();
 
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
@@ -65,7 +69,7 @@ void ThemeFrame::edit_theme(){
         QUrlQuery post_data;
 #endif
 		post_data.addQueryItem("id", this->default_values.at(0));
-		QString line = ampersand_escape(theme_edit->text().left(1) + theme_edit->text().mid(1));
+		QString line = ampersand_escape(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1));
 		post_data.addQueryItem("theme", line);
 
 		post_data.addQueryItem("lang", test.getSrc() + test.getDst());
@@ -155,20 +159,8 @@ void ThemeFrame::read_reply(QNetworkReply* reply)
 }
 
 void ThemeFrame::read_reply(QString reply_string) {
-    QStringList reply_list(reply_string.split('\n'));
-	themes = new QComboBox(this);
-	QSet<QString> set = QSet<QString>::fromList(reply_list);
-	foreach (const QString &value, set) {
-		themes->addItem(value);
+    QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
+	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
+		themes->addItem(reply_list.at(i+1), QVariant(i));
 	}
-	layout->addWidget(themes);
-	/*
-    for(int i=0; i<reply_list.count()-1; ++i){ // -1 because the last string is an empty string.
-        if(i%7 != 0){ // We don't want to show the ID.
-            QTableWidgetItem* item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i))); // Need to delete this later
-            result->setItem(i/7, i%7-1, item);
-        }
-    }
-    result->resizeColumnsToContents();
-	*/
 }
