@@ -123,9 +123,7 @@ void ThemeFrame::back(){
 
 void ThemeFrame::reset(){
 
-    // Very dirty and non-reusable coding, but it works
 	theme_edit->setText(default_values.at(1));
-
     delete continue_button;
 
     OK_button = new QPushButton(tr("Add Theme"), this);
