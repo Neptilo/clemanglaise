@@ -3,7 +3,6 @@
 3 : **foresee**              :          prévoir, anticiper
 4 : **compliance**           :          conformité
 5 : **consistent**           :          cohérent
-6 : **vendor**               :          vendeur
 7 : **conformance**          :          conformité
 8 : **middleware**           :          intergiciel
 9 : **remote**               :          éloigné, distant
@@ -37,11 +36,9 @@
 37 : **stunning (person)**    :          éblouissant, sensationel, maginfique
 38 : **stunning (schocking)** :          stupéfiant, renversant
 39 : **whenever**             :          à chaque fois que
-40 : **come out**             :          sortis, (les résultats sont sortis)
 41 : **creepy(scary)**        :          louche, suspect, effrayant, qui fiche la trouille
 42 : **creepy(annoying)**     :          agaçant, énervant
 43 : **to state**             :          déclarer
-44 : **device**               :          système, dispositif
 45 : **ultimate**             :          meilleur, final
 46 : **refine**               :          raffiner
 47 : **refinement**           :          raffinement
@@ -92,7 +89,6 @@
 92 : **workout**              :          entraînement physique
 93 : **to work out**          :          faire de la muscu
 94 : **draft version**        :          version préliminaire
-95 : **deterministic**        :          déterministe(adj)
 96 : **assignment**           :          tâche, mission
 97 : **possibly**             :          probablement, sans doute
 98 : **manner**               :          façon, manière
@@ -144,3 +140,7 @@
 144  : **shatterred**           :          brisé
 145  : Test	:	test	:	adv	:	commentTest	:	Example test	:	
 146 : 	:		:		:		:		:	
+147 : **come out**	:	sortis, (les résultats sont sortis)	:	adj	:		:		:	
+148 : **device**	:	système, dispositif	:	n	:		:		:	
+149 : **vendor**	:	vendeur	:	n	:		:		:	
+150 : **deterministic**	:	déterministe	:	adj	:		:		:	2

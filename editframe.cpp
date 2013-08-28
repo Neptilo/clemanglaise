@@ -10,6 +10,7 @@
 
 EditFrame::EditFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
     QWidget(parent),
+	nam(),
     test(test)
 {
     this->php_filename = php_filename;
@@ -27,10 +28,11 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     QString nature = default_values.at(3);
     QString comment = default_values.at(4);
     QString example = default_values.at(5);
-    QString pronunciation = ampersand_unescape(default_values.at(6));
+	//int id_theme = default_values.at(6).toInt();
+    QString pronunciation = ampersand_unescape(default_values.at(7));
 
     word_edit = new QLineEdit(word, this);
-    layout->addRow(tr("&Word:"), word_edit);
+    layout->addRow(tr("&Word : "), word_edit);
 
     nature_edit = new QComboBox(this);
     nature_edit->addItem("---");
@@ -45,24 +47,30 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     nature_edit->addItem(tr("Pronoun"), QVariant("pron"));
     nature_edit->addItem(tr("Verb"), QVariant("v"));
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(nature)));
-    layout->addRow(tr("&Nature:"), nature_edit);
+    layout->addRow(tr("&Nature : "), nature_edit);
 
     meaning_edit = new QLineEdit(meaning, this);
-    layout->addRow(tr("&Meaning:"), meaning_edit);
+    layout->addRow(tr("&Meaning : "), meaning_edit);
 
     if(test.asked_pronunciation){
         pronunciation_edit = new QLineEdit(pronunciation, this);
-        layout->addRow(tr("&Pronunciation:"), pronunciation_edit);
+        layout->addRow(tr("&Pronunciation : "), pronunciation_edit);
     }
 
     comment_edit = new QTextEdit(comment, this);
-    layout->addRow(tr("&Comment:"), comment_edit);
+    layout->addRow(tr("&Comment : "), comment_edit);
 
     example_edit = new QTextEdit(example, this);
-    layout->addRow(tr("&Example:"), example_edit);
+    layout->addRow(tr("&Example : "), example_edit);
 
     status = new QLabel(this);
     layout->addWidget(status);
+
+	
+	themes = new QComboBox();
+	layout->addRow(tr("&Theme : "),themes);
+	find_themes();
+    connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
     OK_button = new QPushButton(OK_button_value, this);
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
@@ -88,7 +96,8 @@ void EditFrame::edit_word(){
 			nature_edit->itemData(nature_edit->currentIndex()).toString() +
 		   separator +	
 			colon_unescape(comment_edit->toPlainText()) + separator + 
-			colon_unescape(example_edit->toPlainText()) + separator +
+			colon_unescape(example_edit->toPlainText()) + separator + 
+			themes->itemData(themes->currentIndex()).toString() +
 			endline;
 		p->appendInFile(line, p->getFilein());
 		p->deleteLineId(default_values.at(0).toInt());
@@ -120,6 +129,7 @@ void EditFrame::edit_word(){
 		}
 		post_data.addQueryItem("comment", ampersand_escape(comment_edit->toPlainText()));
 		post_data.addQueryItem("example", ampersand_escape(example_edit->toPlainText()));
+		post_data.addQueryItem("theme", themes->itemData(themes->currentIndex()).toString());
 		post_data.addQueryItem("lang", test.getSrc() + test.getDst());
 
 		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
@@ -177,9 +187,11 @@ void EditFrame::reset(){
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++))));
     comment_edit->setText(default_values.at(i++));
     example_edit->setText(default_values.at(i++));
+	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(i++))));
     if(test.asked_pronunciation){
         pronunciation_edit->setText(default_values.at(i++));
-    }
+    } 
+
 
     delete continue_button;
 
@@ -188,4 +200,33 @@ void EditFrame::reset(){
     layout->addWidget(OK_button);
 
     cancel_button->setText(tr("Cancel"));
+}
+
+void EditFrame::find_themes() {
+	if (!test.isRemoteWork()) {
+		Parser* p = new Parser(test.getSrc() + test.getDst());
+		//offline
+		read_reply(p->search("", p->getThemeFile()));
+	} else { 
+		// Request to PHP file
+		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php?lang=" + test.getSrc() + test.getDst());
+		QNetworkRequest request(url);
+		nam.get(request);
+	}
+}
+
+void EditFrame::read_reply(QNetworkReply* reply)
+{
+    // Store the lines of the reply in the "reply_list" attribute
+    QString reply_string = reply->readAll();
+    reply->deleteLater();
+	read_reply(reply_string);
+}
+
+void EditFrame::read_reply(QString reply_string) {
+    QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
+	themes->addItem("");
+	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
+		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
+	}
 }

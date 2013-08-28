@@ -1,9 +1,9 @@
-#include <QMessageBox>
 #include <QDir>
 #include <iostream>
 #include <QFile>
 #include <QTextStream>
 #include "Parser.h"
+
 Parser::Parser(const QString& srcDst, QObject* parent, QString file_in, QString file_out):QObject(parent) {
 	m_srcDst = srcDst;
     m_filein = m_srcDst + "/" + file_in;
@@ -157,7 +157,7 @@ QString Parser::split_line(QString line) const {
     QStringList text = line.split(QRegExp("\\s*:\\s*"));
 	QString defaultText("");
 	int l(text.size());
-	int MAX(7);
+	int MAX(8);
 	QStringList temp;
 	for(int i=0; i<l; i++){
 		temp << text[i];
@@ -172,8 +172,8 @@ QString Parser::split_line(QString line) const {
 	 * temp[3] = nature
 	 * temp[4] = comment
 	 * temp[5] = example
-	 * temp[6] = pronunciation
-	 * temp[7] = score //non géré
+	 * temp[6] = id_theme
+	 * temp[7] = pronunciation
 	 */  
     	
 	QString real_text("");

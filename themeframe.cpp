@@ -158,6 +158,6 @@ void ThemeFrame::read_reply(QNetworkReply* reply)
 void ThemeFrame::read_reply(QString reply_string) {
     QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
-		themes->addItem(reply_list.at(i+1), QVariant(i));
+		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
 	}
 }

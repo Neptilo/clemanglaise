@@ -152,7 +152,8 @@ void TestFrame::add_word(){
 
     // Create a new add frame
     QStringList default_values_list;
-    default_values_list << "" << "" << "" << "" << "" << "" << "";
+	//word << meaning << nature << comment << exple << id_theme << pronunciation <<score 
+    default_values_list << "" << "" << "" << "" << "" << "" << "" << "";
     add_frame = new EditFrame(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), this);
     layout->addWidget(add_frame);
     connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
