@@ -64,16 +64,16 @@ void SearchFrame::read_reply(QString reply_string) {
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.
         delete result;
     }
-    result = new QTableWidget(reply_list.count()/7, 6, this);
+    result = new QTableWidget(reply_list.count()/8, 7, this);
     QStringList header_labels;
-    header_labels << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Pronunciation");
+    header_labels << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Theme") << tr("Pronunciation");
     result->setHorizontalHeaderLabels(header_labels);
     result->verticalHeader()->hide();
     layout()->addWidget(result);
     for(int i=0; i<reply_list.count()-1; ++i){ // -1 because the last string is an empty string.
-        if(i%7 != 0){ // We don't want to show the ID.
+        if(i%8 != 0){ // We don't want to show the ID.
             QTableWidgetItem* item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i))); // Need to delete this later
-            result->setItem(i/7, i%7-1, item);
+            result->setItem(i/8, i%8-1, item);
         }
     }
     result->resizeColumnsToContents();
