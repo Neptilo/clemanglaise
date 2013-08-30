@@ -28,7 +28,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     QString nature = default_values.at(3);
     QString comment = default_values.at(4);
     QString example = default_values.at(5);
-	//int id_theme = default_values.at(6).toInt();
+	int id_theme = default_values.at(6).toInt();
     QString pronunciation = ampersand_unescape(default_values.at(7));
 
     word_edit = new QLineEdit(word, this);
@@ -70,6 +70,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
 	themes = new QComboBox();
 	layout->addRow(tr("&Theme : "),themes);
 	find_themes();
+    themes->setCurrentIndex(themes->findData(QVariant(id_theme)));
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
     OK_button = new QPushButton(OK_button_value, this);
@@ -93,8 +94,7 @@ void EditFrame::edit_word(){
 		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(word_edit->text()) + separator + 
 			colon_unescape(meaning_edit->text()) + separator +
-			nature_edit->itemData(nature_edit->currentIndex()).toString() +
-		   separator +	
+			nature_edit->itemData(nature_edit->currentIndex()).toString() + separator +	
 			colon_unescape(comment_edit->toPlainText()) + separator + 
 			colon_unescape(example_edit->toPlainText()) + separator + 
 			themes->itemData(themes->currentIndex()).toString() +
