@@ -54,9 +54,9 @@ ThemeFrame::~ThemeFrame(){}
 void ThemeFrame::edit_theme(){
     status->setText(tr("Sending data..."));
 	if (!test.isRemoteWork()) {
-		//offline
-		QString separator("\t:\t");
+        // Offline
 		Parser* p = new Parser(test.getSrc() + test.getDst());
+
 		// Will show confirmation when loading of reply is finished
 		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1)) + endline;
@@ -71,9 +71,6 @@ void ThemeFrame::edit_theme(){
 		post_data.addQueryItem("id", this->default_values.at(0));
 		QString line = ampersand_escape(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1));
 		post_data.addQueryItem("theme", line);
-
-		post_data.addQueryItem("lang", test.getSrc() + test.getDst());
-
 		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -136,12 +133,12 @@ void ThemeFrame::reset(){
 
 void ThemeFrame::find_themes() {
 	if (!test.isRemoteWork()) {
-		Parser* p = new Parser(test.getSrc() + test.getDst());
-		//offline
+        // Offline
+        Parser* p = new Parser(test.getSrc() + test.getDst());
 		read_reply(p->search("", p->getThemeFile()));
 	} else { 
 		// Request to PHP file
-		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php?lang=" + test.getSrc() + test.getDst());
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
 		QNetworkRequest request(url);
 		nam.get(request);
 	}
