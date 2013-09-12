@@ -4,7 +4,6 @@
 4 : **compliance**           :          conformité
 5 : **consistent**           :          cohérent
 7 : **conformance**          :          conformité
-8 : **middleware**           :          intergiciel
 9 : **remote**               :          éloigné, distant
 10 : **intended, planned**    :          prévu, planifié
 11 : **burn-out**             :          grillage de circuit
@@ -145,3 +144,4 @@
 149 : **vendor**	:	vendeur	:	n	:		:		:	
 150 : **deterministic**	:	déterministe	:	adj	:		:		:	2
 151 : test	:	test	:	n	:		:	a test	:	1
+152 : **middleware**	:	intergiciel	:		:		:		:	1
