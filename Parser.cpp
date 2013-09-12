@@ -42,7 +42,7 @@ QString Parser::getFileout() const{
 }
 
 QString Parser::getThemeFile() const {
-	return m_srcDst + "/" + "themes";
+	return "themes";
 }
 
 /**
