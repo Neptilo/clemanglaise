@@ -36,8 +36,10 @@ void QuestionFrame::ask_question(const QString& word){
     // Right part
 
     // Display question
-    if(test.getDst() == "fr"){
-        label->setText(tr("Translate <b>") + word + tr("</b> into French."));
+	QString context;
+    if(test.getDst() == "fr") {
+		context = "";
+        label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + context);
     }else if(test.getDst() == "ja"){
         label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in r&#333;maji."));
     }else if(test.getDst() == "zh"){
