@@ -82,7 +82,12 @@ void TestFrame::read_reply(QNetworkReply* reply){
 
     // Everything is ready for the question frame to ask the question.
     QString word = reply_list->at(1);
-    question_frame->ask_question(word);
+    QString theme = reply_list->at(6);
+	if (test.isRemoteWork()) {
+		question_frame->ask_question(word, theme);
+	} else {
+		question_frame->ask_question(word, Parser::getTheme(theme.toInt()));
+	}
 }
 
 void TestFrame::validate_question(){
@@ -152,7 +157,7 @@ void TestFrame::add_word(){
 
     // Create a new add frame
     QStringList default_values_list;
-	//word << meaning << nature << comment << exple << id_theme << pronunciation <<score 
+	//word << meaning << nature << comment << exple << theme << pronunciation <<score 
     default_values_list << "" << "" << "" << "" << "" << "" << "" << "";
     add_frame = new EditFrame(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), this);
     layout->addWidget(add_frame);

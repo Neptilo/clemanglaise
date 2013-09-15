@@ -13,7 +13,6 @@
 15 : **hereby**               :          par la présente, par le présent document
 16 : **boldface**             :          caractères gras
 17 : **curly bracket, brace** :          accolade, {}
-18 : **square bracket**       :          crochet, []
 19 : **round bracket, parenthese** :     parenthèse, ()
 20 : **latter**               :          dernier, The latter two rules = les deux dernières règles
 21 : **discrete**             :          distinct, séparé
@@ -63,7 +62,6 @@
 67 : **requirements**         :          exigences
 68 : **abort**                :          interrompre
 69 : **incoming/outgoing**    :          entrant/sortant
-70 : **completion**           :          achèvement, fin
 71 : **complete**             :          achèver, terminer, finir
 72 : **tight**                :          serré, difficile, délicat, hermétique
 73 : **milestone**            :          événement marquant, étape importante
@@ -145,3 +143,5 @@
 150 : **deterministic**	:	déterministe	:	adj	:		:		:	2
 151 : test	:	test	:	n	:		:	a test	:	1
 152 : **middleware**	:	intergiciel	:		:		:		:	1
+153 : **square bracket**	:	crochet, []	:		:		:		:	2
+154 : **completion**	:	achèvement, fin	:		:		:		:	2

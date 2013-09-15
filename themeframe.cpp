@@ -60,7 +60,7 @@ void ThemeFrame::edit_theme(){
 		// Will show confirmation when loading of reply is finished
 		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1)) + endline;
-		p->appendInFile(line, p->getThemeFile());
+		p->appendInFile(line, Parser::getThemeFile());
 		p->deleteLineId(default_values.at(0).toInt());
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
@@ -135,7 +135,7 @@ void ThemeFrame::find_themes() {
 	if (!test.isRemoteWork()) {
         // Offline
         Parser* p = new Parser(test.getSrc() + test.getDst());
-		read_reply(p->search("", p->getThemeFile()));
+		read_reply(p->search("", Parser::getThemeFile()));
 	} else { 
 		// Request to PHP file
         const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");

@@ -17,11 +17,12 @@ class Parser: public QObject {
     public:
 		Parser(const QString& srcDst, QObject* parent =0, QString file_in="file_in", QString file_out="file_out");
 		virtual ~Parser();
-		QString getline(const unsigned int & number) const;
+		static QString getline(const unsigned int & number, const QString & filename);
 		unsigned int nblines(const QString &files) const;
 		QString getFilein() const;
 		QString getFileout() const;
-		QString getThemeFile() const;
+		static QString getThemeFile();
+		static QString getTheme(const int & id);
 		QString getRandomLine() const;
 		QString split_line(QString line) const;
 		QString search(const QString& word, const QString &files) const;

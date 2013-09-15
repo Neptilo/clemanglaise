@@ -28,7 +28,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     QString nature = default_values.at(3);
     QString comment = default_values.at(4);
     QString example = default_values.at(5);
-	int id_theme = default_values.at(6).toInt();
+	QString theme = default_values.at(6).trimmed();
     QString pronunciation = ampersand_unescape(default_values.at(7));
 
     word_edit = new QLineEdit(word, this);
@@ -70,7 +70,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
 	themes = new QComboBox();
 	layout->addRow(tr("&Theme : "),themes);
 	find_themes();
-    themes->setCurrentIndex(themes->findData(QVariant(id_theme)));
+    themes->setCurrentIndex(themes->findText(theme));
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
     OK_button = new QPushButton(OK_button_value, this);
@@ -187,7 +187,7 @@ void EditFrame::reset(){
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++))));
     comment_edit->setText(default_values.at(i++));
     example_edit->setText(default_values.at(i++));
-	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(i++))));
+	themes->setCurrentIndex(themes->findText(default_values.at(i++)));
     if(test.asked_pronunciation){
         pronunciation_edit->setText(default_values.at(i++));
     } 
@@ -209,7 +209,7 @@ void EditFrame::find_themes() {
 		read_reply(p->search("", p->getThemeFile()));
 	} else { 
 		// Request to PHP file
-		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php?lang=" + test.getSrc() + test.getDst());
+		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
 		QNetworkRequest request(url);
 		nam.get(request);
 	}
@@ -227,6 +227,6 @@ void EditFrame::read_reply(QString reply_string) {
     QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
 	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
-		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
+		themes->addItem(reply_list.at(i+1).trimmed(), QVariant(reply_list.at(i).toInt()));
 	}
 }

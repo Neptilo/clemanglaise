@@ -41,17 +41,26 @@ QString Parser::getFileout() const{
     return m_fileout;
 }
 
-QString Parser::getThemeFile() const {
+QString Parser::getThemeFile() {
 	return "themes";
 }
 
+QString Parser::getTheme(const int & id) {
+	QString theme("");
+	QStringList list = getline(id, getThemeFile()).split(QRegExp("\\s*:\\s*"));
+    if (list.count()>1) {
+		theme = list.at(1);
+	}
+	return theme;
+}
+
 /**
- *@return the numberth line of the file m_filein
+ *@return the numberth line of filename
  */
-QString Parser::getline(const unsigned int & number) const {
+QString Parser::getline(const unsigned int & number, const QString & filename) {
     QString currentline("");
     unsigned int i(0);
-	QFile file(m_filein);
+	QFile file(filename);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return "";
 	QTextStream flux(&file);
@@ -87,7 +96,7 @@ QString Parser::getRandomLine() const {
 	QTextStream flux(&file);
 	line = (lines > 0)? rand() % lines + 1 : 0;
 	file.close();
-	return getline(line);
+	return getline(line, m_filein);
 }
 
 void Parser::appendInFile(const QString& text, const QString& files) {
@@ -99,7 +108,7 @@ void Parser::appendInFile(const QString& text, const QString& files) {
 	// choose codec UTF-8
 	flux.setCodec("UTF-8");
 	// write lines into file
-    int id = getline(nblines(files)).split(QRegExp("\\s*:\\s*")).at(0).toInt();
+    int id = getline(nblines(files), files).split(QRegExp("\\s*:\\s*")).at(0).toInt();
 	flux << ++id << " : " << text;
 	emit appendDone();
 }

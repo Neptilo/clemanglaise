@@ -17,7 +17,7 @@ public:
     ~QuestionFrame();
 
     QString getAnswer();
-    void ask_question(const QString& text);
+    void ask_question(const QString& word, const QString& theme);
 
 private:
     QLabel* label;

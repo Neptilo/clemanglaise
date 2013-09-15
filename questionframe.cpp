@@ -21,7 +21,7 @@ QString QuestionFrame::getAnswer(){
     return ampersand_escape(edit->text());
 }
 
-void QuestionFrame::ask_question(const QString& word){
+void QuestionFrame::ask_question(const QString& word, const QString & theme) {
 
     // Left part
     if(handwriting){
@@ -36,9 +36,9 @@ void QuestionFrame::ask_question(const QString& word){
     // Right part
 
     // Display question
-	QString context;
+	QString context("");
     if(test.getDst() == "fr") {
-		context = "";
+		context = (theme.isEmpty())? "" : "context : " + theme;
         label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + context);
     }else if(test.getDst() == "ja"){
         label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in r&#333;maji."));
