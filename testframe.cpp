@@ -1,7 +1,9 @@
 #include "testframe.h"
+#include "themeframe.h"
 
 TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
     QWidget(parent),
+	nam_themes(),
     test(test)
 {
 	title = new QLabel(str_title,this);
@@ -9,6 +11,8 @@ TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
     layout = new QVBoxLayout(this);
     answer_frame = new AnswerFrame(test, this);
     init();
+	find_themes(); 
+    connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
 
 TestFrame::~TestFrame(){
@@ -20,17 +24,11 @@ TestFrame::~TestFrame(){
 void TestFrame::init(){
 
 	layout->addWidget(title); 
-    if(test.hasThemes()){
-		//TODO
-        theme = new QLabel(tr("Choose a theme"), this);
-        layout->addWidget(theme);
-        themes = new QComboBox(this);
-		QSet<QString> set = test.getThemes();
-		foreach (const QString &value, set){
-			themes->addItem(value);
-		}
-        layout->addWidget(themes);
-    } 
+
+	theme = new QLabel(tr("Choose a theme"), this);
+	layout->addWidget(theme);
+	themes = new QComboBox(this);
+	layout->addWidget(themes);
 
     back_button = new QPushButton(tr("Go back to tests list"), this);
     connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
@@ -210,4 +208,32 @@ void TestFrame::search()
 
 void TestFrame::go_back() {
 	delete this;
+}
+
+void TestFrame::find_themes() {
+	if (!test.isRemoteWork()) {
+        // Offline
+        Parser* p = new Parser(test.getSrc() + test.getDst());
+		read_reply(p->search("", Parser::getThemeFile()));
+	} else { 
+		// Request to PHP file
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
+		QNetworkRequest request(url);
+		nam_themes.get(request);
+	}
+}
+
+void TestFrame::read_reply_themes(QNetworkReply* reply)
+{
+    // Store the lines of the reply in the "reply_list" attribute
+    QString reply_string = reply->readAll();
+    reply->deleteLater();
+	read_reply(reply_string);
+}
+
+void TestFrame::read_reply(QString reply_string) {
+    QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
+	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
+		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
+	}
 }

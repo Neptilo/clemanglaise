@@ -3,7 +3,7 @@
 
 #include "test.h"
 
-Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote, bool withThemes){
+Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote, bool withThemes) {
     this->id = id;
     this->name = name;
     this->src = src;

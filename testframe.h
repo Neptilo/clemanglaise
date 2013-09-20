@@ -23,6 +23,7 @@ class TestFrame : public QWidget{
 public:
     TestFrame(Test &test, QString str_title="", QWidget *parent = 0);
     ~TestFrame();
+    void read_reply(QString reply_string);
 
 private:
     QuestionFrame* question_frame;
@@ -34,6 +35,7 @@ private:
     SearchFrame* search_frame;
     QNetworkRequest* request;
     QNetworkAccessManager* nam;
+    QNetworkAccessManager nam_themes;
     QStringList* reply_list;
     QLayout* layout;
 	QLabel* theme;
@@ -50,8 +52,10 @@ private:
 public slots:
     void init();
     void read_reply(QNetworkReply* reply);
+    void read_reply_themes(QNetworkReply* reply);
     void validate_question();
     void validate_answer();
+	void find_themes(); 
     void add_theme();
     void add_word();
     void update_word();

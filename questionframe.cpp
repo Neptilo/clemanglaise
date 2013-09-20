@@ -37,17 +37,17 @@ void QuestionFrame::ask_question(const QString& word, const QString & theme) {
 
     // Display question
 	QString context("");
+	context = (theme.isEmpty())? "" : "context : " + theme;
     if(test.getDst() == "fr") {
-		context = (theme.isEmpty())? "" : "context : " + theme;
         label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + context);
     }else if(test.getDst() == "ja"){
-        label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in r&#333;maji."));
+        label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in r&#333;maji.")+ context);
     }else if(test.getDst() == "zh"){
-        label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in pinyin."));
+        label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in pinyin.")+ context);
     }else if(test.getDst() == "hr"){
-        label->setText(tr("Translate <b>") + word + tr("</b> into Croatian."));
+        label->setText(tr("Translate <b>") + word + tr("</b> into Croatian.")+ context);
     }else{
-        label->setText(tr("Translate <b>") + word + tr("</b>."));
+        label->setText(tr("Translate <b>") + word + tr("</b>.")+ context);
     }
 
     // Create edit field
