@@ -51,6 +51,7 @@ private:
 
 public slots:
     void init();
+    void requestToFile();
     void read_reply(QNetworkReply* reply);
     void read_reply_themes(QNetworkReply* reply);
     void validate_question();

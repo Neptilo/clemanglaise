@@ -1,4 +1,5 @@
 #include "testframe.h"
+#include <QMessageBox>
 #include "themeframe.h"
 
 TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
@@ -11,7 +12,7 @@ TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
     layout = new QVBoxLayout(this);
     answer_frame = new AnswerFrame(test, this);
     init();
-	find_themes(); 
+    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(requestToFile()));
     connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
 
@@ -21,7 +22,7 @@ TestFrame::~TestFrame(){
     delete reply_list;
 }
 
-void TestFrame::init(){
+void TestFrame::init() {
 
 	layout->addWidget(title); 
 
@@ -53,11 +54,15 @@ void TestFrame::init(){
 
     question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
+	requestToFile();
+	find_themes(); 
+}
 
+void TestFrame::requestToFile() {
     // Request to PHP file
 	QUrl url;
 	if (test.isRemoteWork()) {
-        url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + test.getSrc() + test.getDst());
+        url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + test.getSrc() + test.getDst()+"&id_theme="+themes->itemData(themes->currentIndex()).toString());
 	} else {
 		parser = new Parser(test.getSrc() + test.getDst());
 		parser->parse();
@@ -118,6 +123,8 @@ void TestFrame::add_theme() {
     // Remove everything
     delete question_frame;
     answer_frame->hide();
+	theme->hide();
+	themes->hide();
 	back_button->disconnect();
 	back_button->hide();
     add_theme_button->disconnect();
@@ -142,6 +149,8 @@ void TestFrame::add_word(){
     // Remove everything
     delete question_frame;
     answer_frame->hide();
+	theme->hide();
+	themes->hide();
 	back_button->disconnect();
 	back_button->hide();
     add_theme_button->disconnect();
@@ -167,6 +176,8 @@ void TestFrame::update_word(){
     // Remove everything
     delete question_frame;
     answer_frame->hide();
+	theme->hide();
+	themes->hide();
 	back_button->disconnect();
 	back_button->hide();
     add_theme_button->disconnect();
@@ -189,6 +200,8 @@ void TestFrame::search()
     // Remove everything
     delete question_frame;
     answer_frame->hide();
+	theme->hide();
+	themes->hide();
 	back_button->disconnect();
 	back_button->hide();
     add_theme_button->disconnect();
@@ -233,7 +246,8 @@ void TestFrame::read_reply_themes(QNetworkReply* reply)
 
 void TestFrame::read_reply(QString reply_string) {
     QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
+	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
-	}
+	} 
 }
