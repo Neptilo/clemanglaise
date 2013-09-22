@@ -19,9 +19,8 @@ void HomeWindow::init(){
     online_tests << *new Test(test_id++, tr("English to Croatian"), "en", "hr");
 
     QList<Test> offline_tests;
-    offline_tests << *new Test(test_id++, tr("English to French"), "en", "fr", false, false);
-
-    offline_tests << *new Test(test_id++, tr("German to French"), "de", "fr", false, false);
+    offline_tests << *new Test(test_id++, tr("English to French"), "en", "fr", false);
+    offline_tests << *new Test(test_id++, tr("German to French"), "de", "fr", false);
     tests = new QList<Test>(online_tests+offline_tests);
 
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);
@@ -58,7 +57,7 @@ void HomeWindow::start_test(int i){
                        tr("<b>You are now working on tests from the remote server.</b>"):
                        tr("<b>You are now working on offline tests.</b>");
 	
-    TestFrame* test_frame = new TestFrame(test,str_title, this);
-	connect(test_frame,SIGNAL(destroyed()) ,SLOT(init()));
+    TestFrame* test_frame = new TestFrame(test, str_title, this);
+    connect(test_frame, SIGNAL(destroyed()), SLOT(init()));
     layout->addWidget(test_frame);
 }

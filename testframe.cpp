@@ -1,5 +1,6 @@
-#include "testframe.h"
 #include <QMessageBox>
+
+#include "testframe.h"
 #include "themeframe.h"
 
 TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
@@ -12,7 +13,6 @@ TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
     layout = new QVBoxLayout(this);
     answer_frame = new AnswerFrame(test, this);
     init();
-    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(requestToFile()));
     connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
 
@@ -54,11 +54,14 @@ void TestFrame::init() {
 
     question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
-	requestToFile();
-	find_themes(); 
+    update_request();
+    nam = new QNetworkAccessManager;
+    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+    nam->get(*request);
+    find_themes();
 }
 
-void TestFrame::requestToFile() {
+void TestFrame::update_request() {
     // Request to PHP file
 	QUrl url;
 	if (test.isRemoteWork()) {
@@ -69,11 +72,6 @@ void TestFrame::requestToFile() {
 		url = QUrl(Parser::get_working_path(parser->getFileout()));
 	}
     request = new QNetworkRequest(url);
-    nam = new QNetworkAccessManager;
-
-    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
-
-    nam->get(*request);
 }
 
 void TestFrame::read_reply(QNetworkReply* reply){
@@ -118,6 +116,10 @@ void TestFrame::validate_answer() {
     nam->get(*request);
 }
 
+void TestFrame::update_question(int){
+    update_request();
+    validate_answer();
+}
 
 void TestFrame::add_theme() {
     // Remove everything
@@ -242,6 +244,7 @@ void TestFrame::read_reply_themes(QNetworkReply* reply)
     QString reply_string = reply->readAll();
     reply->deleteLater();
 	read_reply(reply_string);
+    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
 
 void TestFrame::read_reply(QString reply_string) {
@@ -249,5 +252,5 @@ void TestFrame::read_reply(QString reply_string) {
 	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
-	} 
+    }
 }

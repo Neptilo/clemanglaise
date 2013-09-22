@@ -51,7 +51,7 @@ private:
 
 public slots:
     void init();
-    void requestToFile();
+    void update_request();
     void read_reply(QNetworkReply* reply);
     void read_reply_themes(QNetworkReply* reply);
     void validate_question();
@@ -62,6 +62,7 @@ public slots:
     void update_word();
     void search();
 	void go_back();
+    void update_question(int);
 };
 
 #endif // TESTFRAME_H

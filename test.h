@@ -12,20 +12,18 @@ private:
     QString src;
     QString dst;
     bool remote;
-    bool withThemes;
 	QSet<QString> themes;
 
 public:
     bool asked_pronunciation;
 
-    explicit Test(int id, const QString &name, const QString &src, const QString &dst, bool remote=true, bool withThemes=false);
+    explicit Test(int id, const QString &name, const QString &src, const QString &dst, bool remote=true);
     int getId() const;
     const QString& getName() const;
     const QString& getSrc();
     const QString& getDst();
 	bool isRemoteWork() const;
 	void setRemoteWork(bool where);
-    bool hasThemes() const;
 	void addTheme(const QString& theme);
 	QSet<QString>& getThemes();
 };

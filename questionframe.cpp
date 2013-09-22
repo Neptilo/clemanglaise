@@ -73,4 +73,3 @@ void QuestionFrame::disable_validation(){
     OK_button->hide();
     edit->disconnect();
 }
-
