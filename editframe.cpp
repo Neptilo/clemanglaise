@@ -32,7 +32,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     QString pronunciation = ampersand_unescape(default_values.at(7));
 
     word_edit = new QLineEdit(word, this);
-    layout->addRow(tr("&Word : "), word_edit);
+    layout->addRow(tr("&Word: "), word_edit);
 
     nature_edit = new QComboBox(this);
     nature_edit->addItem("---");
@@ -47,28 +47,27 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     nature_edit->addItem(tr("Pronoun"), QVariant("pron"));
     nature_edit->addItem(tr("Verb"), QVariant("v"));
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(nature)));
-    layout->addRow(tr("&Nature : "), nature_edit);
+    layout->addRow(tr("&Nature: "), nature_edit);
 
     meaning_edit = new QLineEdit(meaning, this);
-    layout->addRow(tr("&Meaning : "), meaning_edit);
+    layout->addRow(tr("&Meaning: "), meaning_edit);
 
     if(test.asked_pronunciation){
         pronunciation_edit = new QLineEdit(pronunciation, this);
-        layout->addRow(tr("&Pronunciation : "), pronunciation_edit);
+        layout->addRow(tr("&Pronunciation: "), pronunciation_edit);
     }
 
     comment_edit = new QTextEdit(comment, this);
-    layout->addRow(tr("&Comment : "), comment_edit);
+    layout->addRow(tr("&Comment: "), comment_edit);
 
     example_edit = new QTextEdit(example, this);
-    layout->addRow(tr("&Example : "), example_edit);
+    layout->addRow(tr("&Example: "), example_edit);
 
     status = new QLabel(this);
     layout->addWidget(status);
 
-	
-	themes = new QComboBox();
-	layout->addRow(tr("&Theme : "),themes);
+    themes = new QComboBox(this);
+    layout->addRow(tr("&Theme: "),themes);
 	find_themes();
     themes->setCurrentIndex(themes->findText(theme));
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
@@ -87,7 +86,7 @@ EditFrame::~EditFrame(){}
 void EditFrame::edit_word(){
     status->setText(tr("Sending data..."));
 	if (!test.isRemoteWork()) {
-		//offline
+        // Offline
 		QString separator("\t:\t");
 		Parser* p = new Parser(test.getSrc() + test.getDst());
 		// Will show confirmation when loading of reply is finished

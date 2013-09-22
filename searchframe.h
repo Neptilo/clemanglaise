@@ -7,6 +7,7 @@
 #include <QPushButton>
 
 #include "test.h"
+#include "editframe.h"
 
 class SearchFrame : public QWidget
 {
@@ -22,12 +23,15 @@ private:
     QNetworkAccessManager nam;
     QTableWidget* result;
     Test test;
+    QStringList* reply_list;
+    EditFrame* update_frame;
 
 public slots:
     void search();
     void read_reply(QNetworkReply * reply);
     void back();
-    
+    void edit(int row, int col);
+    void show_widgets();
 };
 
 #endif // SEARCHFRAME_H
