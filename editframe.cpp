@@ -28,8 +28,8 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     QString nature = default_values.at(3);
     QString comment = default_values.at(4);
     QString example = default_values.at(5);
-	QString theme = default_values.at(6).trimmed();
     QString pronunciation = ampersand_unescape(default_values.at(7));
+	QString theme = default_values.at(9).trimmed();
 
     word_edit = new QLineEdit(word, this);
     layout->addRow(tr("&Word: "), word_edit);
@@ -69,7 +69,6 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     themes = new QComboBox(this);
     layout->addRow(tr("&Theme: "),themes);
 	find_themes();
-    themes->setCurrentIndex(themes->findText(theme));
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
     OK_button = new QPushButton(OK_button_value, this);
@@ -186,11 +185,10 @@ void EditFrame::reset(){
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++))));
     comment_edit->setText(default_values.at(i++));
     example_edit->setText(default_values.at(i++));
-	themes->setCurrentIndex(themes->findText(default_values.at(i++)));
+	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(i++))));
     if(test.asked_pronunciation){
         pronunciation_edit->setText(default_values.at(i++));
     } 
-
 
     delete continue_button;
 
@@ -228,4 +226,5 @@ void EditFrame::read_reply(QString reply_string) {
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1).trimmed(), QVariant(reply_list.at(i).toInt()));
 	}
+    themes->setCurrentIndex(themes->findData(QVariant(default_values.at(6).toInt())));
 }

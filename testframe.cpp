@@ -83,11 +83,12 @@ void TestFrame::read_reply(QNetworkReply* reply){
 
     // Everything is ready for the question frame to ask the question.
     QString word = reply_list->at(1);
-    QString theme = reply_list->at(6);
 	if (test.isRemoteWork()) {
+		QString theme = reply_list->at(9);
 		question_frame->ask_question(word, theme);
 	} else {
-		question_frame->ask_question(word, Parser::getTheme(theme.toInt()));
+		int id_theme = reply_list->at(6).toInt();
+		question_frame->ask_question(word, Parser::getTheme(id_theme));
 	}
 }
 
@@ -166,8 +167,9 @@ void TestFrame::add_word(){
 
     // Create a new add frame
     QStringList default_values_list;
-	//word << meaning << nature << comment << exple << theme << pronunciation <<score 
-    default_values_list << "" << "" << "" << "" << "" << "" << "" << "";
+	//word << meaning << nature << comment << exple << id_theme << pronunciation << score<< theme
+ 
+    default_values_list << "" << "" << "" << "" << "" << "" << "" << "" <<"";
     add_frame = new EditFrame(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), this);
     layout->addWidget(add_frame);
     connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
@@ -232,7 +234,7 @@ void TestFrame::find_themes() {
 		read_reply(p->search("", Parser::getThemeFile()));
 	} else { 
 		// Request to PHP file
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php");
 		QNetworkRequest request(url);
 		nam_themes.get(request);
 	}

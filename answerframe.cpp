@@ -19,7 +19,6 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QString nature = reply_list.at(3);
     QString comment = reply_list.at(4);
     QString example = reply_list.at(5);
-	int id_theme = reply_list.at(6).toInt();
     QString pronunciation = reply_list.at(7);
     int score = reply_list.at(8).toInt();
 

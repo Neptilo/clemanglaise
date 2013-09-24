@@ -62,55 +62,66 @@ void SearchFrame::read_reply(QNetworkReply* reply)
 }
 
 void SearchFrame::read_reply(QString reply_string) {
-    reply_list = new QStringList(reply_string.split('\n'));
-    if(result){
-        result->clear(); // Because this QTableWidget contains pointers to items with no parent.
-        delete result;
-    }
-    result = new QTableWidget(reply_list->count()/8, 8, this);
-    QStringList header_labels;
-    header_labels << "" << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Theme") << tr("Pronunciation");
-    result->setHorizontalHeaderLabels(header_labels);
-    result->verticalHeader()->hide();
-    layout()->addWidget(result);
-    for(int i=0; i<reply_list->count()-1; ++i){ // -1 because the last string is an empty string.
-        QTableWidgetItem* item;
-        if(i%8 == 0){
-            item = new QTableWidgetItem(tr("Edit"));
-        }else{ // We don't want to show the ID.
-            item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i))); // Need to delete this later
-        }
-        result->setItem(i/8, i%8, item);
-    }
-    result->resizeColumnsToContents();
-    disconnect(result);
-    connect(result, SIGNAL(cellClicked(int,int)), this, SLOT(edit(int, int)));
+	int nbcols(9);
+	reply_list = new QStringList(reply_string.split('\n'));
+	if(result){
+		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
+		delete result;
+	}
+	result = new QTableWidget(reply_list->count()/nbcols, nbcols-1, this);
+	QStringList header_labels;
+	header_labels << "" << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Theme") << tr("Pronunciation");
+	result->setHorizontalHeaderLabels(header_labels);
+	result->verticalHeader()->hide();
+	layout()->addWidget(result);
+	for(int i=0; i<reply_list->count()-1; ++i){ // -1 because the last string is an empty string.
+		QTableWidgetItem* item;
+		if(i%nbcols == 0){
+			item = new QTableWidgetItem(tr("Edit"));
+		} else if ((i-6)%nbcols==0) { // We don't want to show the ID_THEME.  
+			if (test.isRemoteWork()) {
+				//item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i+3)));
+				item = new QTableWidgetItem(reply_list->at(i+3));
+			} else { 
+				item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i).toInt()))); 
+			}
+			
+		}else {
+			item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i))); // Need to delete this later
+		}
+		result->setItem(i/nbcols, i%nbcols, item);
+	}
+	result->resizeColumnsToContents();
+	disconnect(result);
+	connect(result, SIGNAL(cellClicked(int,int)), this, SLOT(edit(int, int)));
 }
+
 
 void SearchFrame::back()
 {
-    delete this;
+	delete this;
 }
 
 void SearchFrame::edit(int row, int col)
 {
-    if(col == 0){
+	int nbcols(9);
+	if(col == 0){
 
-        // Remove everything
-        result->disconnect();
-        result->hide();
+		// Remove everything
+		result->disconnect();
+		result->hide();
 
-        // Create a new add frame
-        QStringList default_values;
-        for(int i=row*8; i<(row+1)*8; ++i){
-            default_values << reply_list->at(i);
-        }
-        update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), this);
-        layout()->addWidget(update_frame);
-        connect(update_frame, SIGNAL(destroyed()), this, SLOT(show_widgets()));
-    }
+		// Create a new add frame
+		QStringList default_values;
+		for(int i=row*nbcols; i<(row+1)*nbcols; ++i){
+			default_values << reply_list->at(i);
+		}
+		update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), this);
+		layout()->addWidget(update_frame);
+		connect(update_frame, SIGNAL(destroyed()), this, SLOT(show_widgets()));
+	}
 }
 
 void SearchFrame::show_widgets(){
-    result->show();
+	result->show();
 }

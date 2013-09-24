@@ -166,7 +166,7 @@ QString Parser::split_line(QString line) const {
     QStringList text = line.split(QRegExp("\\s*:\\s*"));
 	QString defaultText("");
 	int l(text.size());
-	int MAX(8);
+	int MAX(9);
 	QStringList temp;
 	for(int i=0; i<l; i++){
 		temp << text[i];
@@ -183,6 +183,8 @@ QString Parser::split_line(QString line) const {
 	 * temp[5] = example
 	 * temp[6] = id_theme
 	 * temp[7] = pronunciation
+	 * temp[8] = score
+	 * temp[9] = theme
 	 */  
     	
 	QString real_text("");
