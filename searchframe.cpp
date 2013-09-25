@@ -62,13 +62,13 @@ void SearchFrame::read_reply(QNetworkReply* reply)
 }
 
 void SearchFrame::read_reply(QString reply_string) {
-	int nbcols(9);
+	int nbcols(10);
 	reply_list = new QStringList(reply_string.split('\n'));
 	if(result){
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 		delete result;
 	}
-	result = new QTableWidget(reply_list->count()/nbcols, nbcols-1, this);
+	result = new QTableWidget(reply_list->count()/nbcols, nbcols-2, this);
 	QStringList header_labels;
 	header_labels << "" << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Theme") << tr("Pronunciation");
 	result->setHorizontalHeaderLabels(header_labels);
@@ -104,7 +104,7 @@ void SearchFrame::back()
 
 void SearchFrame::edit(int row, int col)
 {
-	int nbcols(9);
+	int nbcols(10);
 	if(col == 0){
 
 		// Remove everything
