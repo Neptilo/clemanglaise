@@ -166,7 +166,7 @@ QString Parser::split_line(QString line) const {
     QStringList text = line.split(QRegExp("\\s*:\\s*"));
 	QString defaultText("");
 	int l(text.size());
-	int MAX(9);
+	int MAX(10);
 	QStringList temp;
 	for(int i=0; i<l; i++){
 		temp << text[i];
