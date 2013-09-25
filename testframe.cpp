@@ -234,7 +234,7 @@ void TestFrame::find_themes() {
 		read_reply(p->search("", Parser::getThemeFile()));
 	} else { 
 		// Request to PHP file
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php");
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test.getSrc() + test.getDst());
 		QNetworkRequest request(url);
 		nam_themes.get(request);
 	}
