@@ -17,7 +17,7 @@ QString ampersand_escape(const QString &string) {
 
 /**
  * replace all &#number; by corresponding ascii letter
- * @par string : the string we want to handle
+ * @par string: the string we want to handle
  */
 QString colon_unescape(const QString &string){
     QRegExp rx0("[^:]*");
@@ -36,9 +36,9 @@ QString colon_unescape(const QString &string){
 }
 
 /**
- * replace all : by nothing, because colon is a reserved caracter while
+ * replace all: by nothing, because colon is a reserved caracter while
  * parsing a file
- * @par string : the string we want to handle
+ * @par string: the string we want to handle
  */
 QString ampersand_unescape(const QString &string){
     QRegExp rx0("[^&]*");

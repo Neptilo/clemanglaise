@@ -31,7 +31,10 @@ SearchFrame::SearchFrame(Test& test, QWidget *parent) :
 }
 
 SearchFrame::~SearchFrame() {
-    result->clear(); // Because this QTableWidget contains pointers to items with no parent.
+    if(result){
+        disconnect(result);
+        result->clear(); // Because this QTableWidget contains pointers to items with no parent.
+    }
 }
 
 void SearchFrame::search() {
@@ -65,6 +68,7 @@ void SearchFrame::read_reply(QString reply_string) {
 	int nbcols(10);
 	reply_list = new QStringList(reply_string.split('\n'));
 	if(result){
+        disconnect(result);
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 		delete result;
 	}

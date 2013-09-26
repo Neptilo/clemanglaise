@@ -1,7 +1,9 @@
-#include <QDir>
 #include <iostream>
+
+#include <QDir>
 #include <QFile>
 #include <QTextStream>
+
 #include "Parser.h"
 
 Parser::Parser(const QString& srcDst, QObject* parent, QString file_in, QString file_out):QObject(parent) {

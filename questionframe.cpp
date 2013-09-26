@@ -37,7 +37,7 @@ void QuestionFrame::ask_question(const QString& word, const QString & theme) {
 
     // Display question
 	QString context("");
-	context = (theme.isEmpty())? "" : "<i>context : " + theme+"</i><br />";
+    context = (theme.isEmpty())? "" : "<i>context: " + theme+"</i><br />";
     if(test.getDst() == "fr") {
         label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + context);
     }else if(test.getDst() == "ja"){
