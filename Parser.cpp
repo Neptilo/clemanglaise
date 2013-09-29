@@ -89,17 +89,17 @@ unsigned int Parser::nblines(const QString& files) const {
     return count;
 }
 
-QString Parser::getRandomLine() const {
+QString Parser::getRandomLine(const QString& files) const {
     unsigned int line;
-    unsigned int lines(nblines(m_filein));
-    QString const nomFichier(m_filein);
-	QFile file(m_filein);
+    unsigned int lines(nblines(files));
+    QString const nomFichier(files);
+	QFile file(files);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return "";
 	QTextStream flux(&file);
 	line = (lines > 0)? rand() % lines + 1 : 0;
 	file.close();
-	return getline(line, m_filein);
+	return getline(line, files);
 }
 
 void Parser::appendInFile(const QString& text, const QString& files) {
@@ -143,7 +143,7 @@ void Parser::deleteLineId(const int & id, const QString& files) {
 		text += (i==l-1)?file_list.at(i) : file_list.at(i) + endline;
 	} 
 
-	writeInFile(text, m_filein); 
+	writeInFile(text, files); 
 }
 
 void Parser::writeInFile(const QString& text, const QString & files) {
@@ -160,8 +160,8 @@ void Parser::writeInFile(const QString& text, const QString & files) {
 
 }
 
-void Parser::parse() {
-	QString real_text = split_line(getRandomLine());
+void Parser::parse(const QString &files) {
+	QString real_text = split_line(getRandomLine(files));
 	writeInFile(real_text, m_fileout);
 }
 

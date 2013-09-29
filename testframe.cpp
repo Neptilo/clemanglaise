@@ -1,5 +1,3 @@
-#include <QMessageBox>
-
 #include "testframe.h"
 #include "themeframe.h"
 
@@ -62,13 +60,19 @@ void TestFrame::init() {
 }
 
 void TestFrame::update_request() {
-    // Request to PHP file
+    // Request to PHP or local file
 	QUrl url;
+	int index = themes->currentIndex();
+	QString root = test.getSrc() + test.getDst(); 
 	if (test.isRemoteWork()) {
-        url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + test.getSrc() + test.getDst()+"&id_theme="+themes->itemData(themes->currentIndex()).toString());
+        url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + root +"&id_theme="+themes->itemData(index).toString());
 	} else {
-		parser = new Parser(test.getSrc() + test.getDst());
-		parser->parse();
+		parser = new Parser(root);
+		if (!index || (index && index < 0)) {
+			parser->parse(parser->getFilein());
+		} else {	
+			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
+		}
 		url = QUrl(Parser::get_working_path(parser->getFileout()));
 	}
     request = new QNetworkRequest(url);
@@ -101,6 +105,8 @@ void TestFrame::validate_question(){
 }
 
 void TestFrame::validate_answer() {
+	int index = themes->currentIndex();
+	QString root = test.getSrc() + test.getDst(); 
 
     // Remove everything
     delete question_frame;
@@ -112,7 +118,11 @@ void TestFrame::validate_answer() {
 
     // Request for a new question
 	if (!test.isRemoteWork()) {
-		parser->parse();
+		if (!index || (index && index < 0)) {
+			parser->parse(parser->getFilein());
+		} else {	
+			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
+		}
 	}
     nam->get(*request);
 }
@@ -246,7 +256,6 @@ void TestFrame::read_reply_themes(QNetworkReply* reply)
     QString reply_string = reply->readAll();
     reply->deleteLater();
 	read_reply(reply_string);
-    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
 
 void TestFrame::read_reply(QString reply_string) {
@@ -255,4 +264,5 @@ void TestFrame::read_reply(QString reply_string) {
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
     }
+    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
