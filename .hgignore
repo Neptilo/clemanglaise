@@ -11,3 +11,6 @@ file_out
 .qmake.cache
 *.app
 *.orig
+html
+latex
+Doxyfile

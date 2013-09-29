@@ -37,6 +37,10 @@ QString Parser::getFilein() const {
     return m_filein;
 }
 
+QString Parser::getSrcDst() const {
+	return m_srcDst;
+}
+
 QString Parser::getFileout() const{
     return m_fileout;
 }
@@ -54,9 +58,6 @@ QString Parser::getTheme(const int & id) {
 	return theme;
 }
 
-/**
- *@return the numberth line of filename
- */
 QString Parser::getline(const unsigned int & number, const QString & filename) {
     QString currentline("");
     unsigned int i(0);
@@ -113,10 +114,10 @@ void Parser::appendInFile(const QString& text, const QString& files) {
 	emit appendDone();
 }
 
-void Parser::deleteLineId(const int & id) {
+void Parser::deleteLineId(const int & id, const QString& files) {
 	QString currentline("");
 	bool ok = false;
-	QFile file(m_filein);
+	QFile file(files);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return;
 	QTextStream flux0(&file);

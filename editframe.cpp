@@ -1,5 +1,6 @@
 #include <QtNetwork>
 #include <QTextDocument>
+#include <QMessageBox>
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
 #endif
@@ -97,8 +98,17 @@ void EditFrame::edit_word(){
 			colon_unescape(example_edit->toPlainText()) + separator + 
 			themes->itemData(themes->currentIndex()).toString() +
 			endline;
+		if (themes->currentIndex()>0) {
+			QString theme_file = p->getSrcDst() + "/" + themes->itemText(themes->currentIndex());
+			p->appendInFile(line, theme_file);
+			if (int id = default_values.at(0).toInt()>1) {
+				p->deleteLineId(id, theme_file);
+			}
+		} 
 		p->appendInFile(line, p->getFilein());
-		p->deleteLineId(default_values.at(0).toInt());
+		if (int id = default_values.at(0).toInt()>1) {
+			p->deleteLineId(id, p->getFilein());
+		}
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;

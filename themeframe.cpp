@@ -61,7 +61,7 @@ void ThemeFrame::edit_theme(){
 		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1)) + endline;
 		p->appendInFile(line, Parser::getThemeFile());
-		p->deleteLineId(default_values.at(0).toInt());
+		p->deleteLineId(default_values.at(0).toInt(), p->getFilein());
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;

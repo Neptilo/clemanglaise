@@ -17,10 +17,14 @@ class Parser: public QObject {
     public:
 		Parser(const QString& srcDst, QObject* parent =0, QString file_in="file_in", QString file_out="file_out");
 		virtual ~Parser();
+		/**
+		 *@return the numberth line of filename
+		 */
 		static QString getline(const unsigned int & number, const QString & filename);
 		unsigned int nblines(const QString &files) const;
 		QString getFilein() const;
 		QString getFileout() const;
+		QString getSrcDst() const;
 		static QString getThemeFile();
 		static QString getTheme(const int & id);
 		QString getRandomLine() const;
@@ -29,7 +33,7 @@ class Parser: public QObject {
 		void parse();
 		void writeInFile(const QString& text, const QString& files);
 		void appendInFile(const QString& text, const QString& files);
-		void deleteLineId(const int & id);
+		void deleteLineId(const int & id, const QString& files);
 		static QString get_working_path();
 		static QString get_working_path(const QString& file);
 
