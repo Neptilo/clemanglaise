@@ -80,7 +80,14 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Right part
 
     // Add labels 
-    vertical_layout->addWidget(new QLabel("<b>"+message+"</b>", this));
+	QLabel*  display_answer = new QLabel("<b>"+message+"</b>", this);
+	if (!correct) {
+		display_answer->setStyleSheet("QLabel {color : red; }");
+	} else {
+		display_answer->setStyleSheet("QLabel {color : green; }"); 
+	}
+
+    vertical_layout->addWidget(display_answer);
 
     if(test.asked_pronunciation){
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
