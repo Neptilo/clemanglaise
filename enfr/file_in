@@ -62,7 +62,6 @@
 62	: **i.e = that is,**       :          c'est-à-dire
 63	: **binding**              :          reliure, liaison
 64	: **end-to-end**           :          bout à bout, de bout en bout, du début à la fin
-65	: **handheld**             :          portable(adj)
 66	: **requirements**         :          exigences
 67	: **abort**                :          interrompre
 68	: **incoming/outgoing**    :          entrant/sortant
@@ -110,7 +109,6 @@
 111	: **layered**              :          superposé
 112	: **mandatory**            :          obligatoire, imposé
 113	: **actually**             :          en fait, vraiment
-114	: **precededence**         :          priorité (/presIdens/)
 115	: **properly**             :          correctement
 116	: **outline**              :          esquisse, profil, silhouette
 117	: **disclaimer**           :          limitation(exonération) de responsabilité
@@ -150,3 +148,5 @@
 151	: **betray**               :          trahir    : verb
 152 : 	:		:		:		:		:	1
 153 : **numerous**	:	nombreux, de nombreux	:	adj	:		:		:	
+154 : **handheld**	:	portable	:	adj	:		:		:	
+155 : **precedence**	:	priorité, (/presIdens/)	:	n	:		:		:	
