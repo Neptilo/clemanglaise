@@ -80,11 +80,25 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Right part
 
     // Add labels 
-	QLabel*  display_answer = new QLabel("<b>"+message+"</b>", this);
+	QLabel*  display_answer = new QLabel(this);
+	display_answer->setTextFormat(Qt::RichText);
 	if (!correct) {
+		display_answer->setText("<img src='wrong.png'><b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : red; }");
+		//QPixmap *p=new QPixmap("wrong.png");
+		//Pixmap p1(p->scaled ( 30,30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
+		//display_answer->setPixmap(p1);
+		//display_answer->show();
+		//display_answer->adjustSize();
 	} else {
+		display_answer->setText("<img src='right.png'><b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : green; }"); 
+		//QPixmap *p=new QPixmap("right.png");
+		//Pixmap p1(p->scaled ( 30,30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
+		//display_answer->setPixmap(p1);
+		//display_answer->show();
+		//display_answer->adjustSize();
+
 	}
 
     vertical_layout->addWidget(display_answer);
