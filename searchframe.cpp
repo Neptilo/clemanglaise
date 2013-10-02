@@ -65,35 +65,39 @@ void SearchFrame::read_reply(QNetworkReply* reply)
 }
 
 void SearchFrame::read_reply(QString reply_string) {
-	int nbcols(10);
+    int nb_cols(10);
 	reply_list = new QStringList(reply_string.split('\n'));
 	if(result){
         disconnect(result);
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 		delete result;
 	}
-	result = new QTableWidget(reply_list->count()/nbcols, nbcols-2, this);
+    result = new QTableWidget(reply_list->count()/nb_cols, nb_cols-1, this);
 	QStringList header_labels;
-	header_labels << "" << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Theme") << tr("Pronunciation");
+    header_labels << "" << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Theme") << tr("Pronunciation") << tr("Score");
 	result->setHorizontalHeaderLabels(header_labels);
 	result->verticalHeader()->hide();
 	layout()->addWidget(result);
 	for(int i=0; i<reply_list->count()-1; ++i){ // -1 because the last string is an empty string.
 		QTableWidgetItem* item;
-		if(i%nbcols == 0){
-			item = new QTableWidgetItem(tr("Edit"));
-		} else if ((i-6)%nbcols==0) { // We don't want to show the ID_THEME.  
+        if(i%nb_cols == 0){
+            QLabel* edit_label = new QLabel(this);
+            edit_label->setPixmap(QIcon::fromTheme("accessories-text-editor").pixmap(16));
+            edit_label->setAlignment(Qt::AlignCenter);
+            edit_label->setToolTip(tr("Edit"));
+            result->setCellWidget(i/nb_cols, i%nb_cols, edit_label);
+        } else if ((i-6)%nb_cols==0) { // We don't want to show the ID_THEME.
 			if (test.isRemoteWork()) {
 				//item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i+3)));
-				item = new QTableWidgetItem(reply_list->at(i+3));
+                item = new QTableWidgetItem(reply_list->at(i+3));
 			} else { 
-				item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i).toInt()))); 
+                item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i).toInt())));
 			}
-			
+            result->setItem(i/nb_cols, i%nb_cols, item);
 		}else {
 			item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i))); // Need to delete this later
+            result->setItem(i/nb_cols, i%nb_cols, item);
 		}
-		result->setItem(i/nbcols, i%nbcols, item);
 	}
 	result->resizeColumnsToContents();
 	disconnect(result);
