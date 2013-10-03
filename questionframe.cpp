@@ -72,4 +72,5 @@ void QuestionFrame::disable_validation(){
     OK_button->disconnect();
     OK_button->hide();
     edit->disconnect();
+    edit->setEnabled(false);
 }
