@@ -1,7 +1,5 @@
 To do first (because very useful):
 ==================================
-* Color the edit field in green or red when right or wrong and color those messages too
-
 * Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: 
   http://www.howdoyousaythatword.com/wp-content/uploads/2012/01/creme-anglaise.jpg, use a vector graphics editor.
 To do next:
