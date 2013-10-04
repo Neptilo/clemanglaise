@@ -31,7 +31,7 @@ public slots:
     void read_reply(QNetworkReply * reply);
     void back();
     void edit(int row, int col);
-    void show_widgets();
+    void refresh();
 };
 
 #endif // SEARCHFRAME_H

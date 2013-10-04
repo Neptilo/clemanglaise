@@ -72,31 +72,30 @@ void SearchFrame::read_reply(QString reply_string) {
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 		delete result;
 	}
-    result = new QTableWidget(reply_list->count()/nb_cols, nb_cols-1, this);
+    int result_nb_rows(reply_list->count()/nb_cols), result_nb_cols(nb_cols-1);
+    result = new QTableWidget(result_nb_rows, result_nb_cols, this);
 	QStringList header_labels;
-    header_labels << "" << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Theme") << tr("Pronunciation") << tr("Score");
+    header_labels << "" << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Pronunciation") << tr("Score") << tr("Theme");
 	result->setHorizontalHeaderLabels(header_labels);
 	result->verticalHeader()->hide();
 	layout()->addWidget(result);
-	for(int i=0; i<reply_list->count()-1; ++i){ // -1 because the last string is an empty string.
+    for(int i=0, col_ind=0; i<reply_list->count()-1; ++i){ // -1 because the last string is an empty string.
 		QTableWidgetItem* item;
-        if(i%nb_cols == 0){
+        if(col_ind == 0){
             QLabel* edit_label = new QLabel(this);
             edit_label->setPixmap(QIcon::fromTheme("accessories-text-editor").pixmap(16));
             edit_label->setAlignment(Qt::AlignCenter);
             edit_label->setToolTip(tr("Edit"));
-            result->setCellWidget(i/nb_cols, i%nb_cols, edit_label);
-        } else if ((i-6)%nb_cols==0) { // We don't want to show the ID_THEME.
-			if (test.isRemoteWork()) {
-				//item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i+3)));
-                item = new QTableWidgetItem(reply_list->at(i+3));
-			} else { 
-                item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i).toInt())));
-			}
-            result->setItem(i/nb_cols, i%nb_cols, item);
-		}else {
-			item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i))); // Need to delete this later
-            result->setItem(i/nb_cols, i%nb_cols, item);
+            result->setCellWidget(i/nb_cols, col_ind, edit_label);
+            col_ind = (col_ind+1)%result_nb_cols;
+        } else if (i%nb_cols != 6){ // We don't want to show the theme id.
+            if(col_ind == 8 && !test.isRemoteWork()){ // Theme
+                item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i-3).toInt())));
+            }else{
+                item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i)));
+            }
+            result->setItem(i/nb_cols, col_ind, item);
+            col_ind = (col_ind+1)%result_nb_cols;
 		}
 	}
 	result->resizeColumnsToContents();
@@ -126,10 +125,11 @@ void SearchFrame::edit(int row, int col)
 		}
 		update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), this);
 		layout()->addWidget(update_frame);
-		connect(update_frame, SIGNAL(destroyed()), this, SLOT(show_widgets()));
+        connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
 	}
 }
 
-void SearchFrame::show_widgets(){
+void SearchFrame::refresh(){
 	result->show();
+    search();
 }
