@@ -83,7 +83,7 @@ void SearchFrame::read_reply(QString reply_string) {
 		QTableWidgetItem* item;
         if(col_ind == 0){
             QLabel* edit_label = new QLabel(this);
-            edit_label->setPixmap(QIcon::fromTheme("accessories-text-editor").pixmap(16));
+            edit_label->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon("textedit.png")).pixmap(16));
             edit_label->setAlignment(Qt::AlignCenter);
             edit_label->setToolTip(tr("Edit"));
             result->setCellWidget(i/nb_cols, col_ind, edit_label);
