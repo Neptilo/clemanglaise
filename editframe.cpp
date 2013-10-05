@@ -5,6 +5,7 @@
 #endif
 
 #include "editframe.h"
+#include "questionframe.h"
 #include "string_utils.h"
 #include "Parser.h"
 
@@ -71,21 +72,27 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
 	find_themes();
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
-    OK_button = new QPushButton(OK_button_value, this);
-    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
-    layout->addWidget(OK_button);
+	//OK_button = new QPushButton(OK_button_value, this);
+	OK_button = new QToolButton(this);
+	QuestionFrame::set_button(OK_button, OK_button_value, "img/ok.png");
 
-    cancel_button = new QPushButton(tr("Cancel"), this);
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
-    layout->addWidget(cancel_button);
+	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
+	layout->addWidget(OK_button);
+
+	//cancel_button = new QPushButton(tr("Cancel"), this);
+	cancel_button = new QToolButton(this);
+	QuestionFrame::set_button(cancel_button, tr("Cancel"), "img/cancel.png");
+
+	connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
+	layout->addWidget(cancel_button);
 }
 
 EditFrame::~EditFrame(){}
 
 void EditFrame::edit_word(){
-    status->setText(tr("Sending data..."));
+	status->setText(tr("Sending data..."));
 	if (!test.isRemoteWork()) {
-        // Offline
+		// Offline
 		QString separator("\t:\t");
 		Parser* p = new Parser(test.getSrc() + test.getDst());
 		// Will show confirmation when loading of reply is finished
@@ -107,15 +114,15 @@ void EditFrame::edit_word(){
 		p->appendInFile(line, p->getFilein());
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        QUrl post_data;
+		QUrl post_data;
 #else
-        QUrlQuery post_data;
+		QUrlQuery post_data;
 #endif
 		post_data.addQueryItem("id", this->default_values.at(0));
 		post_data.addQueryItem("word", ampersand_escape(word_edit->text()));
 		post_data.addQueryItem("nature", nature_edit->itemData(nature_edit->currentIndex()).toString());
 		post_data.addQueryItem("meaning", ampersand_escape(meaning_edit->text()));
-        if(test.asked_pronunciation){
+		if(test.asked_pronunciation){
 			// Standardize pronunciation to save into database
 			QString standardized_pronunciation;
 
@@ -146,63 +153,71 @@ void EditFrame::edit_word(){
 
 		// Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        nam->post(request, post_data.encodedQuery());
+		nam->post(request, post_data.encodedQuery());
 #else
-        nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+		nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 	}
-	
+
 }
 
 void EditFrame::show_confirmation(QNetworkReply* reply){
-    const QString reply_string(reply->readAll());
-    reply->deleteLater();
-    if(reply_string.compare("")){
-        status->setText(reply_string);
-    }else{
-        status->setText(this->success_message);
-    }
-    delete OK_button;
-    continue_button = new QPushButton(tr("Add another word"), this);
-    layout->addWidget(continue_button);
-    connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-    cancel_button->setText(tr("Back to test"));
+	const QString reply_string(reply->readAll());
+	reply->deleteLater();
+	if(reply_string.compare("")){
+		status->setText(reply_string);
+	}else{
+		status->setText(this->success_message);
+	}
+	delete OK_button;
+	//continue_button = new QPushButton(tr("Add another word"), this);
+	continue_button = new QToolButton(this);
+	QuestionFrame::set_button(continue_button, tr("Add another word"), "img/add.png");
+
+	layout->addWidget(continue_button);
+	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
+	cancel_button->setText(tr("Back to test"));
 }
 
 void EditFrame::show_confirmation(){
-    status->setText(this->success_message);
-    delete OK_button;
-    continue_button = new QPushButton(tr("Add another word"), this);
-    layout->addWidget(continue_button);
-    connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-    cancel_button->setText(tr("Back to test"));
+	status->setText(this->success_message);
+	delete OK_button;
+	//continue_button = new QPushButton(tr("Add another word"), this);
+	continue_button = new QToolButton(this);
+	QuestionFrame::set_button(continue_button, tr("Add another word"), "img/add.png");
+
+	layout->addWidget(continue_button);
+	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
+	cancel_button->setText(tr("Back to test"));
 }
 
 void EditFrame::back(){
-    delete this;
+	delete this;
 }
 
 void EditFrame::reset(){
 
-    // Very dirty and non-reusable coding, but it works
-    int i = 1;
-    word_edit->setText(default_values.at(i++));
-    meaning_edit->setText(default_values.at(i++));
-    nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++))));
-    comment_edit->setText(default_values.at(i++));
-    example_edit->setText(default_values.at(i++));
+	// Very dirty and non-reusable coding, but it works
+	int i = 1;
+	word_edit->setText(default_values.at(i++));
+	meaning_edit->setText(default_values.at(i++));
+	nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++))));
+	comment_edit->setText(default_values.at(i++));
+	example_edit->setText(default_values.at(i++));
 	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(i++))));
-    if(test.asked_pronunciation){
-        pronunciation_edit->setText(default_values.at(i++));
-    } 
+	if(test.asked_pronunciation){
+		pronunciation_edit->setText(default_values.at(i++));
+	} 
 
-    delete continue_button;
+	delete continue_button;
 
-    OK_button = new QPushButton(tr("Add word"), this);
-    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
-    layout->addWidget(OK_button);
+	//OK_button = new QPushButton(tr("Add word"), this);
+	OK_button = new QToolButton(this);
+	QuestionFrame::set_button(OK_button, tr("Add Word"), "img/ok.png");
+	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
+	layout->addWidget(OK_button);
 
-    cancel_button->setText(tr("Cancel"));
+	cancel_button->setText(tr("Cancel"));
 }
 
 void EditFrame::find_themes() {
@@ -220,17 +235,17 @@ void EditFrame::find_themes() {
 
 void EditFrame::read_reply(QNetworkReply* reply)
 {
-    // Store the lines of the reply in the "reply_list" attribute
-    QString reply_string = reply->readAll();
-    reply->deleteLater();
+	// Store the lines of the reply in the "reply_list" attribute
+	QString reply_string = reply->readAll();
+	reply->deleteLater();
 	read_reply(reply_string);
 }
 
 void EditFrame::read_reply(QString reply_string) {
-    QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
+	QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
 	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1).trimmed(), QVariant(reply_list.at(i).toInt()));
 	}
-    themes->setCurrentIndex(themes->findData(QVariant(default_values.at(6).toInt())));
+	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(6).toInt())));
 }

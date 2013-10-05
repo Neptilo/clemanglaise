@@ -18,6 +18,7 @@ public:
 
     QString getAnswer();
     void ask_question(const QString& word, const QString& theme);
+	static void set_button(QToolButton* button, const QString& text, const QString & icon_path);
 
 private:
     QLabel* label;

@@ -1,6 +1,5 @@
 #include "testframe.h"
 #include "themeframe.h"
-
 TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
     QWidget(parent),
 	nam_themes(),
@@ -27,26 +26,39 @@ void TestFrame::init() {
 	theme = new QLabel(tr("Choose a theme"), this);
 	layout->addWidget(theme);
 	themes = new QComboBox(this);
+	// set the ComboBoxe to that width.
+	themes->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
 	layout->addWidget(themes);
 
-    back_button = new QPushButton(tr("Go back to tests list"), this);
+    //back_button = new QPushButton(tr("Go back to tests list"), this);
+    back_button = new QToolButton(this);
+	QuestionFrame::set_button(back_button, tr("Go back to tests list"), "img/back.png");
+
     connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
     layout->addWidget(back_button);
 
 
-    add_theme_button = new QPushButton(tr("Add a theme"), this);
+    //add_theme_button = new QPushButton(tr("Add a theme"), this);
+    add_theme_button = new QToolButton(this);
+	QuestionFrame::set_button(add_theme_button, tr("Add a theme"), "img/add.png");
     connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
     layout->addWidget(add_theme_button);
 
-    add_button = new QPushButton(tr("Add word"), this);
+    //add_button = new QPushButton(tr("Add word"), this);
+    add_button = new QToolButton(this);
+	QuestionFrame::set_button(add_button, tr("Add word"), "img/add.png");
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
     layout->addWidget(add_button);
 
-    search_button = new QPushButton(tr("Search for words"), this);
+    //search_button = new QPushButton(tr("Search for words"), this);
+    search_button = new QToolButton(this);
+	QuestionFrame::set_button(search_button, tr("Search for words"), "img/search.png");
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);
 
-    update_button = new QPushButton(tr("Edit this word entry"), this);
+    //update_button = new QPushButton(tr("Edit this word entry"), this);
+    update_button = new QToolButton(this);
+	QuestionFrame::set_button(update_button, tr("Edit this word entry"), "img/edit.png");
     connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
     layout->addWidget(update_button);
 
@@ -266,3 +278,4 @@ void TestFrame::read_reply(QString reply_string) {
     }
     connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
+

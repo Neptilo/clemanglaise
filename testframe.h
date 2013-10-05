@@ -1,6 +1,6 @@
 #ifndef TESTFRAME_H
 #define TESTFRAME_H
-
+#include <QToolButton>
 #include "questionframe.h"
 #include "answerframe.h"
 #include "themeframe.h"
@@ -40,11 +40,11 @@ private:
     QLayout* layout;
 	QLabel* theme;
 	QLabel* title;
-    QPushButton* back_button;
-    QPushButton* add_theme_button;
-    QPushButton* add_button;
-    QPushButton* search_button;
-    QPushButton* update_button;
+    QToolButton* back_button;
+    QToolButton* add_theme_button;
+    QToolButton* add_button;
+    QToolButton* search_button;
+    QToolButton* update_button;
     Test test;
 	QComboBox *themes;
 	Parser* parser;

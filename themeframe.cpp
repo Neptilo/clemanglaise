@@ -5,6 +5,7 @@
 #endif
 
 #include "themeframe.h"
+#include "questionframe.h"
 #include "string_utils.h"
 #include "Parser.h"
 
@@ -40,11 +41,15 @@ ThemeFrame::ThemeFrame(Test &test, const QString &title, const QStringList &defa
     status = new QLabel(this);
     layout->addWidget(status);
 
-    OK_button = new QPushButton(OK_button_value, this);
+    //OK_button = new QPushButton(OK_button_value, this);
+	OK_button = new QToolButton(this);
+	QuestionFrame::set_button(OK_button, OK_button_value, "img/ok.png");
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_theme()));
     layout->addWidget(OK_button);
 
-    cancel_button = new QPushButton(tr("Cancel"), this);
+    //cancel_button = new QPushButton(tr("Cancel"), this);
+    cancel_button = new QToolButton(this);
+	QuestionFrame::set_button(cancel_button, tr("Cancel"), "img/cancel.png");
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
     layout->addWidget(cancel_button);
 }
@@ -99,7 +104,9 @@ void ThemeFrame::show_confirmation(QNetworkReply* reply){
         status->setText(this->success_message);
     }
     delete OK_button;
-    continue_button = new QPushButton(tr("Add another theme"), this);
+    //continue_button = new QPushButton(tr("Add another theme"), this);
+    continue_button = new QToolButton(this);
+	QuestionFrame::set_button(continue_button, tr("Add another theme"), "img/add.png");
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
     cancel_button->setText(tr("Back to test"));
@@ -108,7 +115,9 @@ void ThemeFrame::show_confirmation(QNetworkReply* reply){
 void ThemeFrame::show_confirmation(){
     status->setText(this->success_message);
     delete OK_button;
-    continue_button = new QPushButton(tr("Add another theme"), this);
+    //continue_button = new QPushButton(tr("Add another theme"), this);
+    continue_button = new QToolButton(this);
+	QuestionFrame::set_button(continue_button, tr("Add another theme"), "img/add.png");
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
     cancel_button->setText(tr("Back to test"));
@@ -123,7 +132,12 @@ void ThemeFrame::reset(){
 	theme_edit->setText(default_values.at(1));
     delete continue_button;
 
-    OK_button = new QPushButton(tr("Add Theme"), this);
+    //OK_button = new QPushButton(tr("Add Theme"), this);
+	OK_button = new QToolButton(this);
+	OK_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	OK_button->setIcon(QIcon("ok.png"));
+	OK_button->setText(tr("Add theme"));
+	OK_button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_theme()));
     layout->addWidget(OK_button);
 

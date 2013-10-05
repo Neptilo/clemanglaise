@@ -4,7 +4,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include <QPushButton>
+#include <QToolButton>
 #include <QtNetwork>
 #include <QFormLayout>
 #include <QComboBox>
@@ -31,9 +31,9 @@ private:
     QLineEdit* pronunciation_edit;
     QTextEdit* comment_edit;
     QTextEdit* example_edit;
-    QPushButton* OK_button;
-    QPushButton* cancel_button;
-    QPushButton* continue_button;
+    QToolButton* OK_button;
+    QToolButton* cancel_button;
+    QToolButton* continue_button;
     QFormLayout* layout;
     Test test;
     QString php_filename;

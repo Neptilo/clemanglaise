@@ -54,8 +54,8 @@ void HomeWindow::start_test(int i){
     Test test = (*tests)[i];
     // No possible decomposition of the sentence, because of translations in foreign languages that put words in a different order.
     QString str_title = test.isRemoteWork()?
-                       tr("<b>You are now working on tests from the remote server.</b>"):
-                       tr("<b>You are now working on offline tests.</b>");
+                       tr("<b>You are now working on <br />tests from the remote server.</b>"):
+                       tr("<b>You are now working on <br /> offline tests.</b>");
 	
     TestFrame* test_frame = new TestFrame(test, str_title, this);
     connect(test_frame, SIGNAL(destroyed()), SLOT(init()));

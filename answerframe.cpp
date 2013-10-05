@@ -4,6 +4,7 @@
 #endif
 
 #include "answerframe.h"
+#include "questionframe.h"
 #include "string_utils.h"
 
 AnswerFrame::AnswerFrame(Test &test, QWidget *parent):
@@ -83,15 +84,15 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 	QLabel*  display_answer = new QLabel(this);
 	display_answer->setTextFormat(Qt::RichText);
 	if (!correct) {
-		display_answer->setText("<img src='wrong.png'><b>" + message + "</b>");
+		display_answer->setText("<img src='img/wrong.png'><b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : red; }");
-		//QPixmap *p=new QPixmap("wrong.png");
+		//QPixmap *p=new QPixmap("wrong.jpg");
 		//Pixmap p1(p->scaled ( 30,30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
 		//display_answer->setPixmap(p1);
 		//display_answer->show();
 		//display_answer->adjustSize();
 	} else {
-		display_answer->setText("<img src='right.png'><b>" + message + "</b>");
+		display_answer->setText("<img src='img/right.png'><b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : green; }"); 
 		//QPixmap *p=new QPixmap("right.png");
 		//Pixmap p1(p->scaled ( 30,30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
@@ -115,10 +116,12 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
         vertical_layout->addWidget(qtb);
     }
 
-    // Create the OK button
-    OK_button = new QPushButton(tr("OK"), this);
-    connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
-    OK_button->setDefault(true);
-    OK_button->setFocus(); // Because the focus is still on the edit line.
-    vertical_layout->addWidget(OK_button);
+	// Create the OK button
+	OK_button = new QToolButton(this);
+	QuestionFrame::set_button(OK_button, tr("OK"), "img/ok.png");
+
+	connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
+	//OK_button->setDefault(true);
+	OK_button->setFocus(); // Because the focus is still on the edit line.
+	vertical_layout->addWidget(OK_button);
 }

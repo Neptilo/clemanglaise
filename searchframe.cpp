@@ -3,11 +3,13 @@
 #include <QBoxLayout>
 #include <QLineEdit>
 #include <QHeaderView>
+#include <QToolButton>
 
+#include "editframe.h"
+#include "questionframe.h"
 #include "searchframe.h"
 #include "string_utils.h"
 #include "Parser.h"
-#include "editframe.h"
 
 SearchFrame::SearchFrame(Test& test, QWidget *parent) :
     QWidget(parent),
@@ -18,8 +20,13 @@ SearchFrame::SearchFrame(Test& test, QWidget *parent) :
 {
     QLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
-    QPushButton* OK_button = new QPushButton(tr("OK"), this);
-    QPushButton* back_button = new QPushButton(tr("Back to test"), this);
+
+    QToolButton* OK_button = new QToolButton(this);
+	QuestionFrame::set_button(OK_button, tr("OK"), "img/ok.png");
+
+    QToolButton* back_button = new QToolButton(this);
+	QuestionFrame::set_button(back_button, tr("Back to test"), "img/back.png");
+
    	layout->addWidget(search_bar);
     layout->addWidget(OK_button);
     layout->addWidget(back_button);
@@ -83,7 +90,7 @@ void SearchFrame::read_reply(QString reply_string) {
 		QTableWidgetItem* item;
         if(col_ind == 0){
             QLabel* edit_label = new QLabel(this);
-            edit_label->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon("textedit.png")).pixmap(16));
+            edit_label->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon("img/textedit.png")).pixmap(16));
             edit_label->setAlignment(Qt::AlignCenter);
             edit_label->setToolTip(tr("Edit"));
             result->setCellWidget(i/nb_cols, col_ind, edit_label);
