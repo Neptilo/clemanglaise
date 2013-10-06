@@ -2,6 +2,7 @@
 HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
 
     setWindowTitle("Clemanglaise"); 
+    setWindowIcon(QIcon("img/clemanglaise.png")); 
     layout = new QVBoxLayout(this);
 	init();
 
