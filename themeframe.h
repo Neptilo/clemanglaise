@@ -4,7 +4,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include <QToolButton>
+#include <QPushButton>
 #include <QtNetwork>
 #include <QFormLayout>
 #include <QComboBox>
@@ -25,10 +25,10 @@ private:
     QLabel* title;
     QLabel* status;
     QLineEdit* theme_edit;
-    QToolButton* OK_button;
+    QPushButton* OK_button;
 	QNetworkAccessManager nam; 
-    QToolButton* cancel_button;
-    QToolButton* continue_button;
+    QPushButton* cancel_button;
+    QPushButton* continue_button;
     QFormLayout* layout;
     Test test;
     QString php_filename;

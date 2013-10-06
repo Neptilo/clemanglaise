@@ -3,7 +3,6 @@
 #include <QBoxLayout>
 #include <QLineEdit>
 #include <QHeaderView>
-#include <QToolButton>
 
 #include "editframe.h"
 #include "questionframe.h"
@@ -21,11 +20,11 @@ SearchFrame::SearchFrame(Test& test, QWidget *parent) :
     QLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
 
-    QToolButton* OK_button = new QToolButton(this);
-	QuestionFrame::set_button(OK_button, tr("OK"), "img/ok.png");
+    QPushButton* OK_button = new QPushButton(tr("OK"),this);
+	OK_button->setIcon(QIcon("img/ok.png"));
 
-    QToolButton* back_button = new QToolButton(this);
-	QuestionFrame::set_button(back_button, tr("Back to test"), "img/back.png");
+    QPushButton* back_button = new QPushButton(tr("Cancel"),this);
+	back_button->setIcon(QIcon("img/back.png"));
 
    	layout->addWidget(search_bar);
     layout->addWidget(OK_button);

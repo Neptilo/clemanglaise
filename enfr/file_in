@@ -19,7 +19,6 @@
 21	: **discrete**             :          distinct, séparé
 22	: **scheduling**           :          programmation
 23	: **scheduling**           :          plannification
-24	: **scheduling**           :          ordonancement
 25	: **anomalous**            :          anormal, irrégulier
 26	: **automate**             :          automatiser
 27	: **automaton**            :          automate
@@ -139,7 +138,6 @@
 151	: **betray**               :          trahir    : verb
 153 : **numerous**	:	nombreux, de nombreux	:	adj	:		:		:	
 154 : **handheld**	:	portable	:	adj	:		:		:	
-155 : **precedence**	:	priorité, (/presIdens/)	:	n	:		:		:	
 156 : **square bracket**	:	crochet, []	:	n	:		:		:	
 157 : **overly**	:	trop	:	adv	:		:		:	
 158 : **latter**	:	dernier	:		:		:	The latter two rules = les deux dernières règles	:	
@@ -150,3 +148,5 @@
 165 : **colon**	:	deux-points ()	:	n	:		:		:	
 166 : ** to dispatch**	:	envoyer, expédier	:	v	:		:		:	
 167 : **paradigm**	:	paradigme	:	n	:	ensemble des différents sens d'un mot	:		:	
+168 : **precedence**	:	priorité	:	n	:		:		:	
+169 : **scheduling**	:	ordonancement	:	n	:		:		:	

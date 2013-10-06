@@ -117,11 +117,11 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     }
 
 	// Create the OK button
-	OK_button = new QToolButton(this);
-	QuestionFrame::set_button(OK_button, tr("OK"), "img/ok.png");
+	OK_button = new QPushButton(tr("OK"),this);
+	OK_button->setIcon(QIcon("img/ok.png"));
 
 	connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
-	//OK_button->setDefault(true);
+	OK_button->setDefault(true);
 	OK_button->setFocus(); // Because the focus is still on the edit line.
 	vertical_layout->addWidget(OK_button);
 }

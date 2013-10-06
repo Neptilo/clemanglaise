@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QBoxLayout>
-#include <QToolButton>
+#include <QPushButton>
 #include <QtNetwork>
 
 #include "test.h"
@@ -18,7 +18,7 @@ protected:
     QVBoxLayout* right_vertical_layout;
     QVBoxLayout* vertical_layout;
     bool handwriting;
-    QToolButton* OK_button;
+    QPushButton* OK_button;
 
 
 public:

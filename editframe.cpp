@@ -72,16 +72,14 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
 	find_themes();
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
-	//OK_button = new QPushButton(OK_button_value, this);
-	OK_button = new QToolButton(this);
-	QuestionFrame::set_button(OK_button, OK_button_value, "img/ok.png");
+	OK_button = new QPushButton(OK_button_value, this);
+	OK_button->setIcon(QIcon("img/ok.png"));
 
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
 
-	//cancel_button = new QPushButton(tr("Cancel"), this);
-	cancel_button = new QToolButton(this);
-	QuestionFrame::set_button(cancel_button, tr("Cancel"), "img/cancel.png");
+	cancel_button = new QPushButton(tr("Cancel"), this);
+	cancel_button->setIcon(QIcon("img/cancel.png"));
 
 	connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
 	layout->addWidget(cancel_button);
@@ -170,9 +168,8 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
 		status->setText(this->success_message);
 	}
 	delete OK_button;
-	//continue_button = new QPushButton(tr("Add another word"), this);
-	continue_button = new QToolButton(this);
-	QuestionFrame::set_button(continue_button, tr("Add another word"), "img/add.png");
+	continue_button = new QPushButton(tr("Add another word"), this);
+	continue_button->setIcon(QIcon("img/add.png"));
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
@@ -182,9 +179,8 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
 void EditFrame::show_confirmation(){
 	status->setText(this->success_message);
 	delete OK_button;
-	//continue_button = new QPushButton(tr("Add another word"), this);
-	continue_button = new QToolButton(this);
-	QuestionFrame::set_button(continue_button, tr("Add another word"), "img/add.png");
+	continue_button = new QPushButton(tr("Add another word"), this);
+	continue_button->setIcon(QIcon("img/add.png"));
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
@@ -211,9 +207,8 @@ void EditFrame::reset(){
 
 	delete continue_button;
 
-	//OK_button = new QPushButton(tr("Add word"), this);
-	OK_button = new QToolButton(this);
-	QuestionFrame::set_button(OK_button, tr("Add Word"), "img/ok.png");
+	OK_button = new QPushButton(tr("Add word"), this);
+	OK_button->setIcon(QIcon("img/ok.png"));
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
 

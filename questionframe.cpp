@@ -55,8 +55,8 @@ void QuestionFrame::ask_question(const QString& word, const QString & theme) {
     vertical_layout->addWidget(edit);
 
     // Create OK button
-	OK_button = new QToolButton(this);
-	QuestionFrame::set_button(OK_button, tr("OK"), "img/ok.png");
+	OK_button = new QPushButton(tr("OK"),this);
+	OK_button->setIcon(QIcon("img/ok.png"));
 
 	vertical_layout->addWidget(OK_button);
 
@@ -65,7 +65,7 @@ void QuestionFrame::ask_question(const QString& word, const QString & theme) {
 	connect(edit, SIGNAL(returnPressed()), this, SLOT(disable_validation()));
 	connect(OK_button, SIGNAL(clicked()), parent(), SLOT(validate_question()));
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(disable_validation()));
-	//OK_button->setDefault(true);
+	OK_button->setDefault(true);
 	edit->setFocus();
 	OK_button->setEnabled(true);
 }
@@ -76,12 +76,11 @@ void QuestionFrame::disable_validation(){
 	edit->disconnect();
 	edit->setEnabled(false);
 }
-
+/*
 void QuestionFrame::set_button(QToolButton* button, const QString& text, const QString & icon_path) {
 	button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	button->setIcon(QIcon(icon_path));
 	button->setText(text);
 	button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
-
 }
-
+*/

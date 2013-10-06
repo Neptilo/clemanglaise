@@ -4,7 +4,7 @@
 
 #include "languagebuttons.h"
 
-LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent)
+LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent, const QString & flag)
     : QWidget(parent){
 
     signal_mapper = new QSignalMapper(this);
@@ -15,6 +15,7 @@ LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent)
         const Test& test = tests[i];
         QString button_text = test.getName();
         QPushButton *button = new QPushButton(button_text);
+		button->setIcon(QIcon("img/france.png").pixmap(50));
         connect(button, SIGNAL(clicked()), signal_mapper, SLOT(map()));
         signal_mapper->setMapping(button, test.getId());
         layout->addWidget(button, 0, i);
