@@ -48,7 +48,7 @@ void TestFrame::init() {
     layout->addWidget(add_button);
 
     search_button = new QPushButton(tr("Search for words"), this);
-	search_button->setIcon(QIcon("img/search.png"));
+	search_button->setIcon(QIcon::fromTheme("edit-find", QIcon("img/search.png")));
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);
 

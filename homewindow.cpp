@@ -18,18 +18,23 @@ void HomeWindow::init(){
     online_tests << *new Test(test_id++, tr("English to Chinese"), "en", "zh");
     online_tests << *new Test(test_id++, tr("English to Croatian"), "en", "hr");
 
+	QStringList online_flags;
+	online_flags << "img/france.png" << "img/japan.png" << "img/china.png" <<"img/croatia.png";
+
     QList<Test> offline_tests;
     offline_tests << *new Test(test_id++, tr("English to French"), "en", "fr", false);
     offline_tests << *new Test(test_id++, tr("German to French"), "de", "fr", false);
+	QStringList offline_flags;
+	offline_flags << "img/france.png" << "img/germany.png";
     tests = new QList<Test>(online_tests+offline_tests);
 
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);
     title->setAlignment(Qt::AlignHCenter);
     layout->addWidget(title);
 	workremote = new QLabel(tr("Tests on remote server:"), this);
-    online_buttons = new LanguageButtons(online_tests, this);
+    online_buttons = new LanguageButtons(online_tests, this, online_flags);
 	workoffline = new QLabel(tr("Offline tests:"), this);
-    offline_buttons = new LanguageButtons(offline_tests, this);
+    offline_buttons = new LanguageButtons(offline_tests, this, offline_flags);
 
 	layout->addWidget(workremote);
     layout->addWidget(online_buttons);
