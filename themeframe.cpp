@@ -47,7 +47,7 @@ ThemeFrame::ThemeFrame(Test &test, const QString &title, const QStringList &defa
     layout->addWidget(OK_button);
 
     cancel_button = new QPushButton(tr("Cancel"), this);
-	cancel_button->setIcon(QIcon("img/cancel.png"));
+	cancel_button->setIcon(QIcon::fromTheme("process-stop", QIcon("img/cancel.png")));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
     layout->addWidget(cancel_button);
 }
@@ -103,7 +103,7 @@ void ThemeFrame::show_confirmation(QNetworkReply* reply){
     }
     delete OK_button;
     continue_button = new QPushButton(tr("Add another theme"), this);
-	continue_button->setIcon(QIcon("img/add.png"));
+	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon("img/add.png")));
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
     cancel_button->setText(tr("Back to test"));
@@ -113,7 +113,7 @@ void ThemeFrame::show_confirmation(){
     status->setText(this->success_message);
     delete OK_button;
     continue_button = new QPushButton(tr("Add another theme"), this);
-	continue_button->setIcon(QIcon("img/add.png"));
+	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon("img/add.png")));
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
     cancel_button->setText(tr("Back to test"));

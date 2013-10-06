@@ -81,27 +81,20 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Right part
 
     // Add labels 
+	QLabel*  display_icon_answer = new QLabel(this);
 	QLabel*  display_answer = new QLabel(this);
-	display_answer->setTextFormat(Qt::RichText);
 	if (!correct) {
-		display_answer->setText("<img src='img/wrong.png'><b>" + message + "</b>");
+		display_icon_answer->setPixmap(QIcon::fromTheme("face-crying", QIcon("img/wrong.png")).pixmap(50));
+		display_answer->setText("<b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : red; }");
-		//QPixmap *p=new QPixmap("wrong.jpg");
-		//Pixmap p1(p->scaled ( 30,30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
-		//display_answer->setPixmap(p1);
-		//display_answer->show();
-		//display_answer->adjustSize();
 	} else {
-		display_answer->setText("<img src='img/right.png'><b>" + message + "</b>");
-		display_answer->setStyleSheet("QLabel {color : green; }"); 
-		//QPixmap *p=new QPixmap("right.png");
-		//Pixmap p1(p->scaled ( 30,30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
-		//display_answer->setPixmap(p1);
-		//display_answer->show();
-		//display_answer->adjustSize();
+		display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon("img/right.png")).pixmap(50));
+		display_answer->setText("<b>" + message + "</b>");
+		display_answer->setStyleSheet("QLabel {color : green; }");
 
 	}
 
+    vertical_layout->addWidget(display_icon_answer);
     vertical_layout->addWidget(display_answer);
 
     if(test.asked_pronunciation){

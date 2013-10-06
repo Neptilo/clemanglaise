@@ -24,7 +24,7 @@ SearchFrame::SearchFrame(Test& test, QWidget *parent) :
 	OK_button->setIcon(QIcon("img/ok.png"));
 
     QPushButton* back_button = new QPushButton(tr("Cancel"),this);
-	back_button->setIcon(QIcon("img/back.png"));
+	back_button->setIcon(QIcon::fromTheme("process-stop",QIcon("img/cancel.png")));
 
    	layout->addWidget(search_bar);
     layout->addWidget(OK_button);

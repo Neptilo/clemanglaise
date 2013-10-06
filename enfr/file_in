@@ -35,7 +35,6 @@
 40	: **creepy(scary)**        :          louche, suspect, effrayant, qui fiche la trouille
 41	: **creepy(annoying)**     :          agaçant, énervant
 42	: **to state**             :          déclarer
-43	: **device**               :          système, dispositif
 44	: **ultimate**             :          meilleur, final
 45	: **refine**               :          raffiner
 46	: **refinement**           :          raffinement
@@ -150,3 +149,4 @@
 167 : **paradigm**	:	paradigme	:	n	:	ensemble des différents sens d'un mot	:		:	
 168 : **precedence**	:	priorité	:	n	:		:		:	
 169 : **scheduling**	:	ordonancement	:	n	:		:		:	
+170 : **device**	:	système, dispositif	:	n	:		:		:	

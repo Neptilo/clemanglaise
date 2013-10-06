@@ -23,7 +23,7 @@ void TestFrame::init() {
 
 	layout->addWidget(title); 
 
-	theme = new QLabel(tr("Choose a theme"), this);
+	theme = new QLabel(tr("<i>Choose a theme</i>"), this);
 	layout->addWidget(theme);
 	themes = new QComboBox(this);
 	// set the ComboBoxe to that width.
@@ -31,19 +31,19 @@ void TestFrame::init() {
 	layout->addWidget(themes);
 
     back_button = new QPushButton(tr("Go back to tests list"), this);
-	back_button->setIcon(QIcon("img/back.png"));
+	back_button->setIcon(QIcon::fromTheme("go-home", QIcon("img/back.png")));
 
     connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
     layout->addWidget(back_button);
 
 
     add_theme_button = new QPushButton(tr("Add a theme"), this);
-	add_theme_button->setIcon(QIcon("img/add.png"));
+	add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon("img/add.png")));
     connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
     layout->addWidget(add_theme_button);
 
-    add_button = new QPushButton(tr("Add word"), this);
-	add_button->setIcon(QIcon("img/add.png"));
+    add_button = new QPushButton(tr("Add a word"), this);
+	add_button->setIcon(QIcon::fromTheme("list-add",QIcon("img/add.png")));
     connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
     layout->addWidget(add_button);
 
@@ -53,7 +53,7 @@ void TestFrame::init() {
     layout->addWidget(search_button);
 
     update_button = new QPushButton(tr("Edit this word entry"), this);
-	update_button->setIcon(QIcon("img/edit.png"));
+	update_button->setIcon(QIcon::fromTheme("accessories-text-editor", QIcon("img/edit.png")));
     connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
     layout->addWidget(update_button);
 
