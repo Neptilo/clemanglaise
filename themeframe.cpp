@@ -42,7 +42,7 @@ ThemeFrame::ThemeFrame(Test &test, const QString &title, const QStringList &defa
     layout->addWidget(status);
 
     OK_button = new QPushButton(OK_button_value, this);
-	OK_button->setIcon(QIcon("img/ok.png"));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_theme()));
     layout->addWidget(OK_button);
 
@@ -129,7 +129,7 @@ void ThemeFrame::reset(){
     delete continue_button;
 
     OK_button = new QPushButton(tr("Add Theme"), this);
-	OK_button->setIcon(QIcon("ok.png"));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_theme()));
     layout->addWidget(OK_button);
 

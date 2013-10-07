@@ -111,7 +111,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 
 	// Create the OK button
 	OK_button = new QPushButton(tr("OK"),this);
-	OK_button->setIcon(QIcon("img/ok.png"));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
 
 	connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
 	OK_button->setDefault(true);

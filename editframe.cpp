@@ -78,7 +78,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
 	OK_button = new QPushButton(OK_button_value, this);
-	OK_button->setIcon(QIcon("img/ok.png"));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
 
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
@@ -211,7 +211,7 @@ void EditFrame::reset(){
 	delete continue_button;
 
 	OK_button = new QPushButton(tr("Add word"), this);
-	OK_button->setIcon(QIcon("img/ok.png"));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
 
