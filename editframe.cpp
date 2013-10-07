@@ -8,10 +8,12 @@
 #include "questionframe.h"
 #include "string_utils.h"
 #include "Parser.h"
+#include "networkreplyreader.h"
 
 EditFrame::EditFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
     QWidget(parent),
-	nam(),
+    nam(),
+    theme_nam(),
     test(test)
 {
     this->php_filename = php_filename;
@@ -69,8 +71,11 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
 
     themes = new QComboBox(this);
     layout->addRow(tr("&Theme: "),themes);
-	find_themes();
-    connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+    find_themes();
+    connect(&theme_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+
+    nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
+    nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
 	//OK_button = new QPushButton(OK_button_value, this);
 	OK_button = new QToolButton(this);
@@ -146,19 +151,17 @@ void EditFrame::edit_word(){
 		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-		QNetworkAccessManager* nam = new QNetworkAccessManager;
 
 		// Will show confirmation when loading of reply is finished
-		connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
+        connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
 		// Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-		nam->post(request, post_data.encodedQuery());
+        nam.post(request, post_data.encodedQuery());
 #else
-		nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 	}
-
 }
 
 void EditFrame::show_confirmation(QNetworkReply* reply){
@@ -229,7 +232,7 @@ void EditFrame::find_themes() {
 		// Request to PHP file
 		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
 		QNetworkRequest request(url);
-		nam.get(request);
+        theme_nam.get(request);
 	}
 }
 

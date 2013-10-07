@@ -25,7 +25,8 @@ private:
     QLabel* status;
     QComboBox* nature_edit;
     QComboBox* themes;
-	QNetworkAccessManager nam; 
+    QNetworkAccessManager nam;
+    QNetworkAccessManager theme_nam;
     QLineEdit* word_edit;
     QLineEdit* meaning_edit;
     QLineEdit* pronunciation_edit;
