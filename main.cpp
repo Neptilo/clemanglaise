@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <QSplashScreen>
 #include <ctime>
 #include <QPushButton>
 #include "homewindow.h"
@@ -14,13 +13,8 @@ int main(int argc, char *argv[])
 
 	srand(time(0));
 	QApplication a(argc, argv);
-	QPixmap pixmap("img/clemanglaise.png");
-	QSplashScreen splash(pixmap);
-	splash.show();
-	a.processEvents();
 	HomeWindow* w = new HomeWindow();
 	w->show();
-	splash.finish(w);
 
 	return a.exec();
 }
