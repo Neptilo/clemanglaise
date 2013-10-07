@@ -1,5 +1,7 @@
 #include "testframe.h"
 #include "themeframe.h"
+#include "networkreplyreader.h"
+
 TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
     QWidget(parent),
 	nam_themes(),
@@ -26,7 +28,7 @@ void TestFrame::init() {
 	theme = new QLabel(tr("<i>Choose a theme</i>"), this);
 	layout->addWidget(theme);
 	themes = new QComboBox(this);
-	// set the ComboBoxe to that width.
+    // set the ComboBox to that width.
 	themes->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
 	layout->addWidget(themes);
 

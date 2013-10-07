@@ -19,7 +19,8 @@ HEADERS += answerframe.h \
            test.h \
            testframe.h \
            themeframe.h \
-           wordframe.h
+           wordframe.h \
+           networkreplyreader.h
 SOURCES += answerframe.cpp \
            editframe.cpp \
            handwritingarea.cpp \
@@ -33,7 +34,8 @@ SOURCES += answerframe.cpp \
            test.cpp \
            testframe.cpp \
            themeframe.cpp \
-           wordframe.cpp
+           wordframe.cpp \
+           networkreplyreader.cpp
 
 QT += network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
