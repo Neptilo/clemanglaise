@@ -16,6 +16,7 @@ class HomeWindow : public QWidget{
 private:
     TestFrame* test_frame;
     QLabel* title;
+	QLayout* layout;
     QList<Test>* tests;
     QStringList* mapping_texts;
     QStringList* button_texts;
@@ -23,15 +24,17 @@ private:
     LanguageButtons* offline_buttons;
 	QLabel *workremote;
 	QLabel *workoffline;
+    bool admin;
 
 public:
-    explicit HomeWindow(QWidget *parent = 0);
+    explicit HomeWindow(bool admin = false, QWidget *parent = 0);
     ~HomeWindow();
     
 signals:
     
 public slots:
     void start_test(int i);
+	void init();
 };
 
 #endif // HOMEWINDOW_H

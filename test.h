@@ -2,6 +2,7 @@
 #define TEST_H
 
 #include<QString>
+#include <QSet>
 
 class Test{
 
@@ -11,8 +12,11 @@ private:
     QString src;
     QString dst;
     bool remote;
+	QSet<QString> themes;
 
 public:
+    bool asked_pronunciation;
+
     explicit Test(int id, const QString &name, const QString &src, const QString &dst, bool remote=true);
     int getId() const;
     const QString& getName() const;
@@ -20,6 +24,8 @@ public:
     const QString& getDst();
 	bool isRemoteWork() const;
 	void setRemoteWork(bool where);
+	void addTheme(const QString& theme);
+	QSet<QString>& getThemes();
 };
 
 #endif // TEST_H

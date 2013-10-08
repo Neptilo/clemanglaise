@@ -1,0 +1,152 @@
+1	: **scope**                :          champ, cadre (de travail)
+2	: **mapping**              :          application
+3	: **foresee**              :          prévoir, anticiper
+4	: **compliance**           :          conformité
+5	: **consistent**           :          cohérent
+6	: **vendor**               :          vendeur
+7	: **conformance**          :          conformité
+8	: **middleware**           :          intergiciel
+9	: **remote**               :          éloigné, distant
+10	: **intended, planned**    :          prévu, planifié
+11	: **burn-out**             :          grillage de circuit
+12	: **recovery**             :          récupération, rétablissement(guérison),redressement(economy)
+13	: **unrecoverable**        :          irrécupérable
+14	: **herein**               :          ci-inclus
+15	: **hereby**               :          par la présente, par le présent document
+16	: **boldface**             :          caractères gras
+17	: **curly bracket, brace** :          accolade "{}"
+19	: **round bracket, parenthese** :     parenthèse "()"
+21	: **discrete**             :          distinct, séparé
+22	: **scheduling**           :          programmation
+23	: **scheduling**           :          plannification
+25	: **anomalous**            :          anormal, irrégulier
+26	: **automate**             :          automatiser
+27	: **automaton**            :          automate
+28	: **automata**             :          automates
+29	: **heavy**                :          épais (heavy border = bordure épaisse)
+31	: **dispatching**          :          envoi
+32	: **subsequent**           :          ultérieur, suivant
+33	: **oblong (adj, noun)**   :          rectangulaire, rectangle
+34	: **wherever**             :          partout où, où que
+36	: **stunning (person)**    :          éblouissant, sensationel, maginfique
+37	: **stunning (schocking)** :          stupéfiant, renversant
+38	: **whenever**             :          à chaque fois que
+39	: **come out**             :          sortis (les résultats sont sortis)
+40	: **creepy(scary)**        :          louche, suspect, effrayant, qui fiche la trouille
+41	: **creepy(annoying)**     :          agaçant, énervant
+42	: **to state**             :          déclarer
+44	: **ultimate**             :          meilleur, final
+45	: **refine**               :          raffiner
+46	: **refinement**           :          raffinement
+47	: **adhere /ed'hier/**     :          adherer
+48	: **adhere to**            :          suivre
+49	: **consist of**           :          consister en
+50	: **consist of**           :          se composer de, (le repas se compose d'une entrée)
+51	: **along with**           :          ainsi que
+52	: **classifier**           :          classificateur, celui qui catégorise
+53	: **reside [in] /rezaid/** :          résider [dans]
+54	: **item**                 :          objet, article, unité
+55	: **comprise**             :          comprendre, se composer de
+56	: **processing**           :          traitement
+57	: **scalable**             :          extensible, évolutif
+58	: **handling**             :          traitement, manipulation
+59	: **related**              :          lié, relié (connected)
+61	: **guideline/gaIdlaIn/**  :          directive, recommendation, indication 
+62	: **i.e = that is,**       :          c'est-à-dire
+63	: **binding**              :          reliure, liaison
+64	: **end-to-end**           :          bout à bout, de bout en bout, du début à la fin
+66	: **requirements**         :          exigences
+67	: **abort**                :          interrompre
+68	: **incoming/outgoing**    :          entrant/sortant
+69	: **completion**           :          achèvement, fin
+70	: **complete**             :          achèver, terminer, finir
+71	: **tight**                :          serré, difficile, délicat, hermétique
+72	: **milestone**            :          événement marquant, étape importante
+73	: **delay**                :          retarder(v), retard(n)
+74	: **sink**                 :          évier, lavabo
+75	: **to sink**              :          faire couler
+76	: **compound**             :          mélange, combinaison
+77	: **hyphen**               :          trait d'union
+78	: **wizard**               :          assistant
+79	: **to master**            :          maîtriser
+80	: **dealt with (adj)**     :          traité
+81	: **willing**              :          disposé, bien vouloir       
+82	: **smooth**               :          sans problème (uneventful)
+83	: **be part of**           :          faire partie de
+84	: **tip**                  :          tuyau, conseil
+85	: **trick**                :          astuce
+86	: **nested**               :          emboîté
+87	: **workflow**             :          avancement d'une tâche, flux de travail
+88	: **standalone**           :          autonome, indépendant
+89	: **ignition**             :          allumage
+90	: **hotkey**               :          racccourci-clavier   
+91	: **workout**              :          entraînement physique
+92	: **to work out**          :          faire de la muscu
+93	: **draft version**        :          version préliminaire
+94	: **deterministic**        :          déterministe(adj)
+95	: **assignment**           :          tâche, mission
+96	: **possibly**             :          probablement, sans doute
+97	: **manner**               :          façon, manière
+98	: **gathering**            :          assemblée, réunion (meeting) | rassemblement (of people)
+101	: **hence**                :          donc
+102	: **subtle**               :          subtil
+103	: **to issue**             :          distribuer, remettre | faire part, publier
+104	: **issue**                :          problème, objet de litige
+105	: **lead(pp = led)**       :          mener, conduire   
+107	: **scheme**               :          procédé
+108	: **permissive**           :          permissif, indulgent
+109	: **dummy**                :          faux, factice
+110	: **along**                :          sur
+111	: **layered**              :          superposé
+112	: **mandatory**            :          obligatoire, imposé
+113	: **actually**             :          en fait, vraiment
+115	: **properly**             :          correctement
+116	: **outline**              :          esquisse, profil, silhouette
+117	: **disclaimer**           :          limitation(exonération) de responsabilité
+118	: **disclaimer**           :          avertissement
+120	: **underlying**           :          sous-jacent
+121	: **for now**              :          entre-temps, pour le moment, en attendant
+122	: **from now on**          :          désormais, dorénavant, à partir de maintenant
+123	: **whether**              :          si, que
+124	: **convenient**           :          commode, pratique
+125	: **as always**            :          comme d'habitude, comme toujours
+126	: **wary**                 :          méfiant, sur ses gardes, circonspect
+127	: **whatever!**            :          peu importe!
+128	: **whatever**             :          tout ce que, quoi que, peu importe
+129	: **odd**                  :          impair
+130	: **even**                 :          pair
+131	: **so far**               :          pour l'instant, jusqu'à présent, jusqu'à maintenant
+132	: **nifty**                :          classe, élégant, super, chic, chouette
+134	: **eagerly**              :          impatiemment
+135	: **per se**               :          en soi, en lui-même
+136	: **think of**             :          penser à
+137	: **minion**               :          larbin, laquais, sbire, sous-fifre, grouillot, favori
+138	: **tricky**               :          difficile, épineux, délicat
+139	: **cumbersome**           :          pataud, lourd, encombrant, embarrassant
+140	: **handy**                :          utile, pratique, commode, accessible, sous la main
+141	: **furthermore**          :          de plus, en outre
+142	: **undead**               :          mort-vivant
+143	: **shatterred**           :          brisé
+144	: **inventory of fixtures**:          état des lieux
+145	: **fixture**              :          aménagement, équipement, installation
+146	: **thorough**             :          rigoureux, minutieux
+147	: **newbie**               :          novice, débutant, petit nouveau
+148	: **shelter**              :          abri, refuge
+149	: **awkward**              :          maladroit : adj
+150	: **jocular**              :          farceur   : adj 
+151	: **betray**               :          trahir    : verb
+153 : **numerous**	:	nombreux, de nombreux	:	adj	:		:		:	
+154 : **handheld**	:	portable	:	adj	:		:		:	
+156 : **square bracket**	:	crochet, []	:	n	:		:		:	
+157 : **overly**	:	trop	:	adv	:		:		:	
+158 : **latter**	:	dernier	:		:		:	The latter two rules = les deux dernières règles	:	
+161 : **to disclaim**	:	démentir, rejeter, nier, désavouer, renoncer à	:	v	:		:		:	
+162 : **to preempt**	:	prévenir, anticiper, devancer	:	v	:		:		:	
+163 : **tuna**	:	thon	:	n	:		:		:	3
+164 : **uncle**	:	oncle	:	n	:		:		:	1
+165 : **colon**	:	deux-points ()	:	n	:		:		:	
+166 : ** to dispatch**	:	envoyer, expédier	:	v	:		:		:	
+167 : **paradigm**	:	paradigme	:	n	:	ensemble des différents sens d'un mot	:		:	
+168 : **precedence**	:	priorité	:	n	:		:		:	
+169 : **scheduling**	:	ordonancement	:	n	:		:		:	
+170 : **device**	:	système, dispositif	:	n	:		:		:	

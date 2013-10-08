@@ -1,13 +1,19 @@
 #include <QObject>
+#include <QStringList>
 
 #include "test.h"
 
-Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote){
+Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote) {
     this->id = id;
     this->name = name;
     this->src = src;
     this->dst = dst;
     this->remote = remote;
+
+    // List of languages for which we asked for the pronunciation
+    QStringList list;
+    list << "ja" << "zh";
+    this->asked_pronunciation = list.contains(this->dst);
 }
 
 int Test::getId() const
@@ -32,5 +38,13 @@ bool Test::isRemoteWork() const {
 }
 
 void Test::setRemoteWork(bool where) {
-	this->remote = where;
+    this->remote = where;
+}
+
+void Test::addTheme(const QString& theme) {
+	this->themes.insert(theme);
+}
+
+QSet<QString>& Test::getThemes() {
+	return this->themes;
 }

@@ -1,5 +1,6 @@
 #include <QTextDocument>
 #include <QLineEdit>
+#include <QPainter>
 
 #include "questionframe.h"
 #include "string_utils.h"
@@ -20,28 +21,33 @@ QString QuestionFrame::getAnswer(){
     return ampersand_escape(edit->text());
 }
 
-void QuestionFrame::ask_question(const QString& word){
+void QuestionFrame::ask_question(const QString& word, const QString & theme) {
 
     // Left part
     if(handwriting){
-        right_vertical_layout->addWidget(new QLabel(tr("You can write the characters here if you have an IME.<br/>(Later you'll be able to draw them here.)"), this));
+        right_vertical_layout->addWidget(new QLabel(tr("Draw the characters in the box below. (You can then check them for yourself.)"), this));
 
-        QLineEdit* handwriting_edit = new QLineEdit(this);
-        QFont font;
-        font.setPixelSize(100);
-        handwriting_edit->setFont(font);
-        right_vertical_layout->addWidget(handwriting_edit);
+        QSize handwriting_area_size(500, 150);
+        handwriting_area = new HandwritingArea(handwriting_area_size, this);
+        handwriting_area->setMinimumSize(handwriting_area_size);
+        right_vertical_layout->addWidget(handwriting_area);
     }
 
     // Right part
 
     // Display question
-    if(test.getDst() == "fr"){
-        label->setText(tr("Translate <b>") + word + tr("</b> into French."));
+	QString context("");
+    context = (theme.isEmpty())? "" : "<i>context: " + theme+"</i><br />";
+    if(test.getDst() == "fr") {
+        label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + context);
     }else if(test.getDst() == "ja"){
-        label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in r&#333;maji."));
+        label->setText("<b>"+word + "</b><br />" + context + tr("<br/>Write the pronunciation of this word in r&#333;maji."));
     }else if(test.getDst() == "zh"){
-        label->setText("<b>"+word+tr("</b><br/>Write the pronunciation of this word in pinyin."));
+        label->setText("<b>"+word + "</b><br />" + context + tr("<br/>Write the pronunciation of this word in pinyin."));
+    }else if(test.getDst() == "hr"){
+        label->setText(tr("Translate <b>") + word + tr("</b> into Croatian.<br />") + context);
+    }else{
+        label->setText(tr("Translate <b>") + word + tr("</b>.<br />")+ context);
     }
 
     // Create edit field
@@ -50,20 +56,31 @@ void QuestionFrame::ask_question(const QString& word){
 
     // Create OK button
     OK_button = new QPushButton(tr("OK"), this);
-    vertical_layout->addWidget(OK_button);
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
 
-    // Connections
-    connect(edit, SIGNAL(returnPressed()), parent(), SLOT(validate_question()));
-    connect(edit, SIGNAL(returnPressed()), this, SLOT(disable_validation()));
-    connect(OK_button, SIGNAL(clicked()), parent(), SLOT(validate_question()));
-    connect(OK_button, SIGNAL(clicked()), this, SLOT(disable_validation()));
-    OK_button->setDefault(true);
-    edit->setFocus();
-    OK_button->setEnabled(true);
+	vertical_layout->addWidget(OK_button);
+
+	// Connections
+	connect(edit, SIGNAL(returnPressed()), parent(), SLOT(validate_question()));
+	connect(edit, SIGNAL(returnPressed()), this, SLOT(disable_validation()));
+	connect(OK_button, SIGNAL(clicked()), parent(), SLOT(validate_question()));
+	connect(OK_button, SIGNAL(clicked()), this, SLOT(disable_validation()));
+	OK_button->setDefault(true);
+	edit->setFocus();
+	OK_button->setEnabled(true);
 }
 
 void QuestionFrame::disable_validation(){
-    OK_button->disconnect();
-    OK_button->hide();
-    edit->disconnect();
+	OK_button->disconnect();
+	OK_button->hide();
+	edit->disconnect();
+	edit->setEnabled(false);
 }
+/*
+void QuestionFrame::set_button(QToolButton* button, const QString& text, const QString & icon_path) {
+	button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	button->setIcon(QIcon(icon_path));
+	button->setText(text);
+	button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
+}
+*/

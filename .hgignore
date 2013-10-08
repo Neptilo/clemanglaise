@@ -1,10 +1,16 @@
 syntax: glob
 
 *.autosave
-*.user
+*.user*
 *.o
 clemanglaise
 *~
 moc_*
 Makefile
 file_out
+.qmake.cache
+*.app
+*.orig
+html
+latex
+Doxyfile

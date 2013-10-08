@@ -1,5 +1,10 @@
 #include <QtNetwork>
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#   include <QUrlQuery>
+#endif
+
 #include "answerframe.h"
+#include "questionframe.h"
 #include "string_utils.h"
 
 AnswerFrame::AnswerFrame(Test &test, QWidget *parent):
@@ -15,18 +20,13 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QString nature = reply_list.at(3);
     QString comment = reply_list.at(4);
     QString example = reply_list.at(5);
-    QString pronunciation = reply_list.at(6);
-    int score = reply_list.at(7).toInt();
-
-    // List of languages for which we asked for the pronunciation
-    QStringList list;
-    list << "ja" << "zh";
-    bool asked_pronunciation = list.contains(test.getDst());
+    QString pronunciation = reply_list.at(7);
+    int score = reply_list.at(8).toInt();
 
     // Check answer
     QString message;
     bool correct;
-    if(asked_pronunciation){
+    if(test.asked_pronunciation){
         // Standardize player answer before checking
         QString standardized_answer = QString(player_answer);
 
@@ -39,10 +39,11 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
             standardized_answer = numbers_to_accents(standardized_answer);
         }
 
-        correct = (pronunciation == standardized_answer);
+        correct = (pronunciation.split(", ").contains(standardized_answer, Qt::CaseInsensitive));
     }else{
         QString standard_answer = ampersand_unescape(player_answer);
-        correct = (meaning.split(", ").contains(standard_answer, Qt::CaseInsensitive));
+        QString meaning_standard_answer = ampersand_unescape(meaning);
+        correct = (meaning_standard_answer.split(", ").contains(standard_answer, Qt::CaseInsensitive));
     }
     message = correct ? tr("Right!") : tr("Wrong!");
 
@@ -51,12 +52,21 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QNetworkAccessManager* nam = new QNetworkAccessManager;
+    
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
     QUrl post_data;
     post_data.addQueryItem("id", reply_list.at(0));
     post_data.addQueryItem("lang", test.getSrc() + test.getDst());
     post_data.addQueryItem("score", QString::number(score+(correct?1:-1)));
     //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     nam->post(request, post_data.encodedQuery());
+#else
+    QUrlQuery post_data;
+    post_data.addQueryItem("id", reply_list.at(0));
+    post_data.addQueryItem("lang", test.getSrc() + test.getDst());
+    post_data.addQueryItem("score", QString::number(score+(correct?1:-1)));
+    nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+#endif
 
     // Left part
     if(handwriting){
@@ -71,9 +81,23 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Right part
 
     // Add labels 
-    vertical_layout->addWidget(new QLabel("<b>"+message+"</b>", this));
+	QLabel*  display_icon_answer = new QLabel(this);
+	QLabel*  display_answer = new QLabel(this);
+	if (!correct) {
+		display_icon_answer->setPixmap(QIcon::fromTheme("face-crying", QIcon("img/wrong.png")).pixmap(50));
+		display_answer->setText("<b>" + message + "</b>");
+		display_answer->setStyleSheet("QLabel {color : red; }");
+	} else {
+		display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon("img/right.png")).pixmap(50));
+		display_answer->setText("<b>" + message + "</b>");
+		display_answer->setStyleSheet("QLabel {color : green; }");
 
-    if(asked_pronunciation){
+	}
+
+    vertical_layout->addWidget(display_icon_answer);
+    vertical_layout->addWidget(display_answer);
+
+    if(test.asked_pronunciation){
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
     }else{
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+meaning, this));
@@ -85,10 +109,12 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
         vertical_layout->addWidget(qtb);
     }
 
-    // Create the OK button
-    OK_button = new QPushButton(tr("OK"), this);
-    connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
-    OK_button->setDefault(true);
-    OK_button->setFocus(); // Because the focus is still on the edit line.
-    vertical_layout->addWidget(OK_button);
+	// Create the OK button
+	OK_button = new QPushButton(tr("OK"),this);
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
+
+	connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
+	OK_button->setDefault(true);
+	OK_button->setFocus(); // Because the focus is still on the edit line.
+	vertical_layout->addWidget(OK_button);
 }
