@@ -4,7 +4,7 @@
 #if defined(Q_OS_WIN)
 #include <windows.h>
 #else
-#include <termios.h>
+//#include <termios.h>
 #include <unistd.h>
 #endif
 
@@ -42,12 +42,12 @@ int main(int argc, char *argv[])
 
                 // Hide tty input and read it
 #if defined(Q_OS_WIN)
-                HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+               /* HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
                 DWORD mode = 0;
                 GetConsoleMode(hStdin, &mode);
                 SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
                 cin >> password;
-                SetConsoleMode(hStdin, mode);
+                SetConsoleMode(hStdin, mode);*/
 #else
                 termios oldt;
                 tcgetattr(STDIN_FILENO, &oldt);
@@ -55,9 +55,10 @@ int main(int argc, char *argv[])
                 newt.c_lflag &= ~ECHO;
                 tcsetattr(STDIN_FILENO, TCSANOW, &newt);
                 cin >> password;
-#endif
                 tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
                 cout << endl;
+#endif
+
             }
         }else if(arg == "-h" || arg == "-?" || arg == "--help"){
             cout << tr("Usage: ") << argv[0] << tr(" [OPTION]") << endl << endl;

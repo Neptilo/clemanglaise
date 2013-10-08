@@ -7,14 +7,14 @@
 		<file alias="china-img.png">img/china.png</file>
 		<file alias="croatia-img.png">img/croatia.png</file>
 		<file alias="germany-img.png">img/germany.png</file>
-		<file>img/go-home.png</file>
-		<file>img/process-stop.png</file>
-		<file>img/emblem-default.png</file>
-		<file>img/list-add.png</file>
-		<file>img/face-smile.png</file>
-		<file>img/face-crying.png</file>
-		<file>img/accessories-text-editor.png</file>
-		<file>img/edit-find.png</file>
+		<file alias="go-home.png">img/go-home.png</file>
+		<file alias="process-stop.png">img/process-stop.png</file>
+		<file alias="emblem-default.png">img/emblem-default.png</file>
+		<file alias="list-add.png">img/list-add.png</file>
+		<file alias="face-smile.png">img/face-smile.png</file>
+		<file alias="face-crying.png">img/face-crying.png</file>
+		<file alias="accessories-text-editor.png">img/accessories-text-editor.png</file>
+		<file alias="edit-find.png">img/edit-find.png</file>
 		<file>index.theme</file>
 	</qresource>
 </RCC>

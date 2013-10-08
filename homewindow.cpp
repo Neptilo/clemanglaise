@@ -4,7 +4,7 @@ HomeWindow::HomeWindow(bool admin, QWidget *parent):
     admin(admin)
 {
     setWindowTitle("Clemanglaise"); 
-    setWindowIcon(QIcon("img/clemanglaise.png")); 
+    setWindowIcon(QIcon(":/clemanglaise-img.png"));
     layout = new QVBoxLayout(this);
 	init();
 }
@@ -21,13 +21,13 @@ void HomeWindow::init(){
     online_tests << *new Test(test_id++, tr("English to Croatian"), "en", "hr");
 
 	QStringList online_flags;
-	online_flags << "img/france.png" << "img/japan.png" << "img/china.png" <<"img/croatia.png";
+    online_flags << ":/france-img.png" << ":/japan-img.png" << ":/china-img.png" <<":/croatia-img.png";
 
     QList<Test> offline_tests;
     offline_tests << *new Test(test_id++, tr("English to French"), "en", "fr", false);
     offline_tests << *new Test(test_id++, tr("German to French"), "de", "fr", false);
 	QStringList offline_flags;
-	offline_flags << "img/france.png" << "img/germany.png";
+    offline_flags << ":/france-img.png" << ":/germany-img.png";
     tests = new QList<Test>(online_tests+offline_tests);
 
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);

@@ -23,10 +23,10 @@ SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
     search_bar = new QLineEdit(this);
 
     QPushButton* OK_button = new QPushButton(tr("OK"),this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
 
     QPushButton* back_button = new QPushButton(tr("Cancel"),this);
-	back_button->setIcon(QIcon::fromTheme("process-stop",QIcon("img/cancel.png")));
+	back_button->setIcon(QIcon::fromTheme("process-stop",QIcon(":/process-stop.png")));
 
    	layout->addWidget(search_bar);
     layout->addWidget(OK_button);
@@ -99,7 +99,7 @@ void SearchFrame::read_reply(QString reply_string) {
                 action_label->setToolTip(tr("Edit"));
                 break;
             case 1:
-                action_label->setPixmap(QIcon::fromTheme("edit-delete", QIcon("img/cancel.png")).pixmap(16));
+                action_label->setPixmap(QIcon::fromTheme("edit-delete", QIcon(":/process-stop.png")).pixmap(16));
                 action_label->setToolTip(tr("Delete"));
                 break;
             default:;
