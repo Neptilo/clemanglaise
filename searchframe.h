@@ -31,7 +31,7 @@ public slots:
     void search();
     void read_reply(QNetworkReply * reply);
     void back();
-    void edit(int row, int col);
+    void action(int row, int col);
     void refresh();
 };
 

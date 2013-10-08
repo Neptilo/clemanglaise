@@ -8,10 +8,10 @@ TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent)
     QWidget(parent),
 	nam_themes(),
     test(test),
-    admin(admin),
     add_button(NULL),
     update_button(NULL),
-    add_theme_button(NULL)
+    add_theme_button(NULL),
+    admin(admin)
 {
 	title = new QLabel(str_title,this);
     title->setAlignment(Qt::AlignHCenter);
