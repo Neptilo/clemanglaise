@@ -4,7 +4,7 @@
 #if defined(Q_OS_WIN)
 #include <windows.h>
 #else
-//#include <termios.h>
+#include <termios.h>
 #include <unistd.h>
 #endif
 
