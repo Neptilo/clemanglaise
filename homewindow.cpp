@@ -1,11 +1,12 @@
 #include "homewindow.h"
-HomeWindow::HomeWindow(QWidget *parent): QWidget(parent){
-
+HomeWindow::HomeWindow(bool admin, QWidget *parent):
+    QWidget(parent),
+    admin(admin)
+{
     setWindowTitle("Clemanglaise"); 
     setWindowIcon(QIcon(":/clemanglaise-img.png"));
     layout = new QVBoxLayout(this);
 	init();
-
 }
 
 void HomeWindow::init(){
@@ -63,7 +64,7 @@ void HomeWindow::start_test(int i){
                        tr("<b>You are now working on <br />tests from the remote server.</b>"):
                        tr("<b>You are now working on <br /> offline tests.</b>");
 	
-    TestFrame* test_frame = new TestFrame(test, str_title, this);
+    TestFrame* test_frame = new TestFrame(test, str_title, admin, this);
     connect(test_frame, SIGNAL(destroyed()), SLOT(init()));
     layout->addWidget(test_frame);
 }

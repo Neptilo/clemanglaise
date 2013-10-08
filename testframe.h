@@ -21,7 +21,7 @@ class TestFrame : public QWidget{
     Q_OBJECT
     
 public:
-    TestFrame(Test &test, QString str_title="", QWidget *parent = 0);
+    TestFrame(Test &test, QString str_title="", bool admin = false, QWidget *parent = 0);
     ~TestFrame();
     void read_reply(QString reply_string);
 
@@ -48,6 +48,7 @@ private:
     Test test;
 	QComboBox *themes;
 	Parser* parser;
+    bool admin;
 
 public slots:
     void init();

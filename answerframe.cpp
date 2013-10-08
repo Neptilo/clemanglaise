@@ -81,14 +81,14 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Right part
 
     // Add labels 
-    QLabel*  display_icon_answer = new QLabel(this);
+	QLabel*  display_icon_answer = new QLabel(this);
 	QLabel*  display_answer = new QLabel(this);
-	if (!correct) {        
-        display_icon_answer->setPixmap(QIcon::fromTheme("face-crying", QIcon(":/face-crying.png")).pixmap(50));
+	if (!correct) {
+		display_icon_answer->setPixmap(QIcon::fromTheme("face-crying", QIcon(":/face-crying.png")).pixmap(50));
 		display_answer->setText("<b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : red; }");
 	} else {
-        display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon(":/face-smile.png")).pixmap(50));
+		display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon(":/face-smile.png")).pixmap(50));
 		display_answer->setText("<b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : green; }");
 

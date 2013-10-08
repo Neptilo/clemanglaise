@@ -2,10 +2,16 @@
 #include "themeframe.h"
 #include "networkreplyreader.h"
 
-TestFrame::TestFrame(Test &test, QString str_title, QWidget *parent):
+#include "iostream"
+
+TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent):
     QWidget(parent),
 	nam_themes(),
-    test(test)
+    test(test),
+    add_button(NULL),
+    update_button(NULL),
+    add_theme_button(NULL),
+    admin(admin)
 {
 	title = new QLabel(str_title,this);
     title->setAlignment(Qt::AlignHCenter);
@@ -34,30 +40,30 @@ void TestFrame::init() {
 
     back_button = new QPushButton(tr("Go back to tests list"), this);
     back_button->setIcon(QIcon::fromTheme("go-home", QIcon(":/go-home.png")));
-
     connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
     layout->addWidget(back_button);
 
+    if(!test.isRemoteWork() || admin){
+        add_theme_button = new QPushButton(tr("Add a theme"), this);
+        add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon(":/list-add.png")));
+        connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
+        layout->addWidget(add_theme_button);
 
-    add_theme_button = new QPushButton(tr("Add a theme"), this);   
-    add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon(":/list-add.png")));
-    connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
-    layout->addWidget(add_theme_button);
+        add_button = new QPushButton(tr("Add a word"), this);
+        add_button->setIcon(QIcon::fromTheme("list-add",QIcon(":/list-add.png")));
+        connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
+        layout->addWidget(add_button);
 
-    add_button = new QPushButton(tr("Add a word"), this);
-    add_button->setIcon(QIcon::fromTheme("list-add",QIcon(":/list-add.png")));
-    connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
-    layout->addWidget(add_button);
+        update_button = new QPushButton(tr("Edit this word entry"), this);
+        update_button->setIcon(QIcon::fromTheme("accessories-text-editor", QIcon(":/accessories-text-editor.png")));
+        connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
+        layout->addWidget(update_button);
+    }
 
     search_button = new QPushButton(tr("Search for words"), this);
     search_button->setIcon(QIcon::fromTheme("edit-find", QIcon(":/edit-find.png")));
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);
-
-    update_button = new QPushButton(tr("Edit this word entry"), this);
-    update_button->setIcon(QIcon::fromTheme("accessories-text-editor", QIcon(":/accessories-text-editor.png")));
-    connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
-    layout->addWidget(update_button);
 
     question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
@@ -147,16 +153,26 @@ void TestFrame::add_theme() {
     answer_frame->hide();
 	theme->hide();
 	themes->hide();
-	back_button->disconnect();
-	back_button->hide();
-    add_theme_button->disconnect();
-    add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    add_button->disconnect();
-    add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    update_button->disconnect();
-    update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    search_button->disconnect();
-    search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    if(back_button){
+        disconnect(back_button);
+        back_button->hide();
+    }
+    if(add_theme_button){
+        disconnect(add_theme_button);
+        add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(add_button){
+        disconnect(add_button);
+        add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(update_button){
+        disconnect(update_button);
+        update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(search_button){
+        disconnect(search_button);
+        search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
 
     // Create a new add frame
     QStringList default_values_list;
@@ -173,16 +189,26 @@ void TestFrame::add_word(){
     answer_frame->hide();
 	theme->hide();
 	themes->hide();
-	back_button->disconnect();
-	back_button->hide();
-    add_theme_button->disconnect();
-    add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    add_button->disconnect();
-    add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    update_button->disconnect();
-    update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    search_button->disconnect();
-    search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    if(back_button){
+        disconnect(back_button);
+        back_button->hide();
+    }
+    if(add_theme_button){
+        disconnect(add_theme_button);
+        add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(add_button){
+        disconnect(add_button);
+        add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(update_button){
+        disconnect(update_button);
+        update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(search_button){
+        disconnect(search_button);
+        search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
 
     // Create a new add frame
     QStringList default_values_list;
@@ -201,16 +227,26 @@ void TestFrame::update_word(){
     answer_frame->hide();
 	theme->hide();
 	themes->hide();
-	back_button->disconnect();
-	back_button->hide();
-    add_theme_button->disconnect();
-    add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    add_button->disconnect();
-    add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    update_button->disconnect();
-    update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    search_button->disconnect();
-    search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    if(back_button){
+        disconnect(back_button);
+        back_button->hide();
+    }
+    if(add_theme_button){
+        disconnect(add_theme_button);
+        add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(add_button){
+        disconnect(add_button);
+        add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(update_button){
+        disconnect(update_button);
+        update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
+    if(search_button){
+        disconnect(search_button);
+        search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
 
     // Create a new add frame
     update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), *reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
@@ -223,21 +259,31 @@ void TestFrame::search()
     // Remove everything
     delete question_frame;
     answer_frame->hide();
-	theme->hide();
-	themes->hide();
-	back_button->disconnect();
-	back_button->hide();
-    add_theme_button->disconnect();
-    add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    add_button->disconnect();
-    add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    update_button->disconnect();
-    update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    search_button->disconnect();
-    search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    theme->hide();
+    themes->hide();
+    if(back_button){
+        disconnect(back_button);
+        back_button->hide();
+    }
+    if(add_theme_button){
+        add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+        disconnect(add_theme_button);
+    }
+    if(add_button){
+        add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+        disconnect(add_button);
+    }
+    if(update_button){
+        update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+        disconnect(update_button);
+    }
+    if(search_button){
+        disconnect(search_button);
+        search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
+    }
 
     // Create a new search frame
-    search_frame = new SearchFrame(test, this);
+    search_frame = new SearchFrame(test, !test.isRemoteWork()||admin, this);
     layout->addWidget(search_frame);
     connect(search_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
