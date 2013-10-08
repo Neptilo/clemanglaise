@@ -1,0 +1,20 @@
+<!DOCTYPE RCC>
+<RCC version='1.0'>
+	<qresource>
+		<file alias="clemanglaise-img.png">img/clemanglaise.png</file>
+		<file alias="france-img.png" >img/france.png</file>
+		<file alias="japan-img.png">img/japan.png</file>
+		<file alias="china-img.png">img/china.png</file>
+		<file alias="croatia-img.png">img/croatia.png</file>
+		<file alias="germany-img.png">img/germany.png</file>
+		<file>img/go-home.png</file>
+		<file>img/process-stop.png</file>
+		<file>img/emblem-default.png</file>
+		<file>img/list-add.png</file>
+		<file>img/face-smile.png</file>
+		<file>img/face-crying.png</file>
+		<file>img/accessories-text-editor.png</file>
+		<file>img/edit-find.png</file>
+		<file>index.theme</file>
+	</qresource>
+</RCC>
