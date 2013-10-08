@@ -36,7 +36,7 @@ SOURCES += answerframe.cpp \
            themeframe.cpp \
            wordframe.cpp \
            networkreplyreader.cpp
-
+RESOURCES += clemanglaise.qrc
 QT += network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

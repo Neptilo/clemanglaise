@@ -56,7 +56,7 @@ void QuestionFrame::ask_question(const QString& word, const QString & theme) {
 
     // Create OK button
     OK_button = new QPushButton(tr("OK"), this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon("img/ok.png")));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
 
 	vertical_layout->addWidget(OK_button);
 
