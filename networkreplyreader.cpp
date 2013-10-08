@@ -18,7 +18,7 @@ void NetworkReplyReader::read_reply(QNetworkReply* reply)
     reply->deleteLater();
     if(reply->readAll().toInt()){
         print(tr("Connection established"));
-        HomeWindow* w = new HomeWindow();
+        HomeWindow* w = new HomeWindow(true);
         w->show();
     }else{
         print(tr("Wrong password"));

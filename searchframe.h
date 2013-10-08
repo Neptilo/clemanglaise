@@ -13,7 +13,7 @@ class SearchFrame : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SearchFrame(Test &test, QWidget *parent = 0);
+    explicit SearchFrame(Test &test, bool modifiable = false, QWidget *parent = 0);
     ~SearchFrame();
     void read_reply(QString reply_string);
 
@@ -25,6 +25,7 @@ private:
     Test test;
     QStringList* reply_list;
     EditFrame* update_frame;
+    bool modifiable;
 
 public slots:
     void search();

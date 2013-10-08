@@ -10,12 +10,13 @@
 #include "string_utils.h"
 #include "Parser.h"
 
-SearchFrame::SearchFrame(Test& test, QWidget *parent) :
+SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
     QWidget(parent),
     nam(),
     result(NULL),
     test(test),
-    reply_list()
+    reply_list(),
+    modifiable(modifiable)
 {
     QLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
@@ -78,23 +79,26 @@ void SearchFrame::read_reply(QString reply_string) {
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 		delete result;
 	}
-    int result_nb_rows(reply_list->count()/nb_cols), result_nb_cols(nb_cols-1);
+    int result_nb_rows(reply_list->count()/nb_cols), result_nb_cols(modifiable?(nb_cols-1):(nb_cols-2));
     result = new QTableWidget(result_nb_rows, result_nb_cols, this);
 	QStringList header_labels;
-    header_labels << "" << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Pronunciation") << tr("Score") << tr("Theme");
+    if(modifiable)
+        header_labels << "";
+    header_labels << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Pronunciation") << tr("Score") << tr("Theme");
 	result->setHorizontalHeaderLabels(header_labels);
 	result->verticalHeader()->hide();
 	layout()->addWidget(result);
     for(int i=0, col_ind=0; i<reply_list->count()-1; ++i){ // -1 because the last string is an empty string.
 		QTableWidgetItem* item;
-        if(col_ind == 0){
+        if(modifiable && col_ind == 0){
             QLabel* edit_label = new QLabel(this);
             edit_label->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon("img/textedit.png")).pixmap(16));
             edit_label->setAlignment(Qt::AlignCenter);
             edit_label->setToolTip(tr("Edit"));
             result->setCellWidget(i/nb_cols, col_ind, edit_label);
             col_ind = (col_ind+1)%result_nb_cols;
-        } else if (i%nb_cols != 6){ // We don't want to show the theme id.
+        }
+        if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
             if(col_ind == 8 && !test.isRemoteWork()){ // Theme
                 item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i-3).toInt())));
             }else{
@@ -102,7 +106,7 @@ void SearchFrame::read_reply(QString reply_string) {
             }
             result->setItem(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
-		}
+        }
 	}
 	result->resizeColumnsToContents();
 	disconnect(result);

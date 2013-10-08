@@ -24,9 +24,10 @@ private:
     LanguageButtons* offline_buttons;
 	QLabel *workremote;
 	QLabel *workoffline;
+    bool admin;
 
 public:
-    explicit HomeWindow(QWidget *parent = 0);
+    explicit HomeWindow(bool admin = false, QWidget *parent = 0);
     ~HomeWindow();
     
 signals:

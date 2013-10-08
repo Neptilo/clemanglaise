@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
         // Then we wait for the NetworkReplyReader to answer yes.
     }else{
-        HomeWindow* w = new HomeWindow();
+        HomeWindow* w = new HomeWindow(false);
         w->show();
     }
 
