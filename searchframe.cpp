@@ -148,6 +148,8 @@ void SearchFrame::action(int row, int col)
     }else if(col == 1){
         result->disconnect();
 
+		if (test.isRemoteWork()) {
+
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
 #else
@@ -167,6 +169,11 @@ void SearchFrame::action(int row, int col)
 #else
         nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
+		} else {
+			//offline
+			Parser* p = new Parser(test.getSrc() + test.getDst());
+			p->deleteLineId(reply_list->at(row*nb_cols).toInt(), p->getFilein());
+		}
 
         refresh();
     }
