@@ -18,7 +18,7 @@
 using namespace std;
 
 string tr(const char* s){
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) && !defined(__CYGWIN__)
     return QObject::tr(s).toLocal8Bit().constData();
 #else
     return QObject::tr(s).toUtf8().constData();
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
                 cout << tr("Enter password: ");
 
                 // Hide tty input and read it
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) && !defined(__CYGWIN__)
                /* HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
                 DWORD mode = 0;
                 GetConsoleMode(hStdin, &mode);

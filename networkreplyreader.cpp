@@ -27,7 +27,7 @@ void NetworkReplyReader::read_reply(QNetworkReply* reply)
 }
 
 void NetworkReplyReader::print(QString s){
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) && !defined(__CYGWIN__)
     std::cout << s.toLocal8Bit().constData() << std::endl;
 #else
     std::cout << s.toUtf8().constData() << std::endl;
