@@ -11,6 +11,7 @@ This program creates vocabulary tests in different languages using words from an
     * [Qt installer for MAC 64 bits](http://download.qt-project.org/official_releases/online_installers/qt-mac-opensource-1.4.0-x86_64-online.dmg "download link for Mac") 
     * [Qt installer for Linux 64 bits](http://download.qt-project.org/official_releases/online_installers/qt-linux-opensource-1.4.0-x86_64-online.run "download link for Linux") 
     * [Qt installer for Windows](http://download.qt-project.org/official_releases/online_installers/qt-windows-opensource-1.4.0-x86-online.exe "Qt installer for Windows")
+
   * Open the project **clemanglaise.pro** with QtCreator.
   * Compile with qmake in the compilation tab.
   * Compile the project (hotkey: `CTRL+B`).
