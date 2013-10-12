@@ -99,7 +99,7 @@ void SearchFrame::read_reply(QString reply_string) {
                 action_label->setToolTip(tr("Edit"));
                 break;
             case 1:
-                action_label->setPixmap(QIcon::fromTheme("edit-delete", QIcon(getImgPath("process-stop.png"))).pixmap(16));
+                action_label->setPixmap(QIcon::fromTheme("edit-delete", QIcon(getImgPath("edit-delete.png"))).pixmap(16));
                 action_label->setToolTip(tr("Delete"));
                 break;
             default:;
