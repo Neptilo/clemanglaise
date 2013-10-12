@@ -78,13 +78,13 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
 	OK_button = new QPushButton(OK_button_value, this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
 
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
 
 	cancel_button = new QPushButton(tr("Cancel"), this);
-	cancel_button->setIcon(QIcon::fromTheme("process-stop",QIcon(":/process-stop.png")));
+	cancel_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
 
 	connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
 	layout->addWidget(cancel_button);
@@ -172,7 +172,7 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
 	}
 	delete OK_button;
 	continue_button = new QPushButton(tr("Add another word"), this);
-	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(":/list-add.png")));
+	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
@@ -183,7 +183,7 @@ void EditFrame::show_confirmation(){
 	status->setText(this->success_message);
 	delete OK_button;
 	continue_button = new QPushButton(tr("Add another word"), this);
-	continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(":/list-add.png")));
+	continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));

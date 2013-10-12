@@ -155,3 +155,16 @@ QString numbers_to_accents(const QString &string){
 
     return res;
 }
+
+QString getImgPath(const QString& img) {
+	QString path("");
+#if defined(Q_WS_WIN) && !defined(__CYGWIN__)
+	path = ":/img/win/"; 
+#elif defined(Q_WS_MACX)
+	path = ":/img/macx/";
+#else
+	path = ":/img/";
+#endif
+	path += img;
+	return path;
+}

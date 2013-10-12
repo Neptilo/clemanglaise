@@ -23,10 +23,10 @@ SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
     search_bar = new QLineEdit(this);
 
     QPushButton* OK_button = new QPushButton(tr("OK"),this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
 
     QPushButton* back_button = new QPushButton(tr("Cancel"),this);
-	back_button->setIcon(QIcon::fromTheme("process-stop",QIcon(":/process-stop.png")));
+	back_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
 
    	layout->addWidget(search_bar);
     layout->addWidget(OK_button);
@@ -95,11 +95,11 @@ void SearchFrame::read_reply(QString reply_string) {
             QLabel* action_label = new QLabel(this);
             switch(col_ind){
             case 0:
-                action_label->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon("img/textedit.png")).pixmap(16));
+                action_label->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))).pixmap(16));
                 action_label->setToolTip(tr("Edit"));
                 break;
             case 1:
-                action_label->setPixmap(QIcon::fromTheme("edit-delete", QIcon(":/process-stop.png")).pixmap(16));
+                action_label->setPixmap(QIcon::fromTheme("edit-delete", QIcon(getImgPath("process-stop.png"))).pixmap(16));
                 action_label->setToolTip(tr("Delete"));
                 break;
             default:;

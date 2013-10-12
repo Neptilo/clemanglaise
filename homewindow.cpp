@@ -1,4 +1,5 @@
 #include "homewindow.h"
+#include "string_utils.h"
 HomeWindow::HomeWindow(bool admin, QWidget *parent):
     QWidget(parent),
     admin(admin)

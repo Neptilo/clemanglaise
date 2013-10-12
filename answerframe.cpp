@@ -84,11 +84,11 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 	QLabel*  display_icon_answer = new QLabel(this);
 	QLabel*  display_answer = new QLabel(this);
 	if (!correct) {
-		display_icon_answer->setPixmap(QIcon::fromTheme("face-crying", QIcon(":/face-crying.png")).pixmap(50));
+		display_icon_answer->setPixmap(QIcon::fromTheme("face-crying", QIcon(getImgPath("face-crying.png"))).pixmap(50));
 		display_answer->setText("<b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : red; }");
 	} else {
-		display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon(":/face-smile.png")).pixmap(50));
+		display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon(getImgPath("face-smile.png"))).pixmap(50));
 		display_answer->setText("<b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : green; }");
 
@@ -111,7 +111,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 
 	// Create the OK button
 	OK_button = new QPushButton(tr("OK"),this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
 
 	connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
 	OK_button->setDefault(true);
