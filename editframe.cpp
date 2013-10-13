@@ -53,7 +53,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     layout->addRow(tr("&Nature: "), nature_edit);
 
     meaning_edit = new QLineEdit(meaning, this);
-    layout->addRow(tr("&Meaning: "), meaning_edit);
+    layout->addRow(tr("&Translation: "), meaning_edit);
 
     if(test.asked_pronunciation){
         pronunciation_edit = new QLineEdit(pronunciation, this);
@@ -70,7 +70,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     layout->addWidget(status);
 
     themes = new QComboBox(this);
-    layout->addRow(tr("&Theme: "),themes);
+    layout->addRow(tr("T&heme: "),themes);
     find_themes();
     connect(&theme_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
@@ -176,7 +176,7 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-	cancel_button->setText(tr("Back to test"));
+    cancel_button->setText(tr("Back"));
 }
 
 void EditFrame::show_confirmation(){
@@ -187,7 +187,7 @@ void EditFrame::show_confirmation(){
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-	cancel_button->setText(tr("Back to test"));
+    cancel_button->setText(tr("Back"));
 }
 
 void EditFrame::back(){
@@ -221,7 +221,7 @@ void EditFrame::reset(){
 void EditFrame::find_themes() {
 	if (!test.isRemoteWork()) {
 		Parser* p = new Parser(test.getSrc() + test.getDst());
-		//offline
+        // Offline
 		read_reply(p->search("", p->getThemeFile()));
 	} else { 
 		// Request to PHP file
