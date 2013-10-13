@@ -8,6 +8,7 @@
 #include "questionframe.h"
 #include "string_utils.h"
 #include "Parser.h"
+#include "networkreplyreader.h"
 
 ThemeFrame::ThemeFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
     QWidget(parent),
@@ -78,6 +79,8 @@ void ThemeFrame::edit_theme(){
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 		QNetworkAccessManager* nam2 = new QNetworkAccessManager;
+        nam2->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
+        nam2->cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
 		// Will show confirmation when loading of reply is finished
 		connect(nam2, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));

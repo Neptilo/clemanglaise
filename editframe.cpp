@@ -172,7 +172,7 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
 	}
 	delete OK_button;
 	continue_button = new QPushButton(tr("Add another word"), this);
-	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
+    continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
