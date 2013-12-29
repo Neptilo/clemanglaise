@@ -9,9 +9,9 @@
 #include "test.h"
 #include "Parser.h" 
 
-#if defined(Q_WS_WIN)
+#if defined(Q_OS_WIN)
 const QString ENDL="\\r\\n";
-#elif defined(Q_WS_MACX)
+#elif defined(Q_OS_MAC)
 const QString ENDL="\\r";
 #else
 const QString ENDL="\\n";

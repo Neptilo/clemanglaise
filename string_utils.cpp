@@ -158,9 +158,9 @@ QString numbers_to_accents(const QString &string){
 
 QString getImgPath(const QString& img) {
 	QString path("");
-#if defined(Q_WS_WIN) && !defined(__CYGWIN__)
+#if defined(Q_OS_WIN) && !defined(__CYGWIN__)
 	path = ":/img/win/"; 
-#elif defined(Q_WS_MACX)
+#elif defined(Q_OS_MAC)
 	path = ":/img/macx/";
 #else
 	path = ":/img/";
