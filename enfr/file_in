@@ -1,5 +1,3 @@
-1	: **scope**                :          champ, cadre (de travail)
-2	: **mapping**              :          application
 3	: **foresee**              :          prévoir, anticiper
 4	: **compliance**           :          conformité
 5	: **consistent**           :          cohérent
@@ -40,13 +38,10 @@
 46	: **refinement**           :          raffinement
 47	: **adhere /ed'hier/**     :          adherer
 48	: **adhere to**            :          suivre
-49	: **consist of**           :          consister en
-50	: **consist of**           :          se composer de, (le repas se compose d'une entrée)
 51	: **along with**           :          ainsi que
 52	: **classifier**           :          classificateur, celui qui catégorise
 53	: **reside [in] /rezaid/** :          résider [dans]
 54	: **item**                 :          objet, article, unité
-55	: **comprise**             :          comprendre, se composer de
 56	: **processing**           :          traitement
 57	: **scalable**             :          extensible, évolutif
 58	: **handling**             :          traitement, manipulation
@@ -59,7 +54,6 @@
 67	: **abort**                :          interrompre
 68	: **incoming/outgoing**    :          entrant/sortant
 69	: **completion**           :          achèvement, fin
-70	: **complete**             :          achèver, terminer, finir
 71	: **tight**                :          serré, difficile, délicat, hermétique
 72	: **milestone**            :          événement marquant, étape importante
 73	: **delay**                :          retarder(v), retard(n)
@@ -87,7 +81,6 @@
 95	: **assignment**           :          tâche, mission
 96	: **possibly**             :          probablement, sans doute
 97	: **manner**               :          façon, manière
-98	: **gathering**            :          assemblée, réunion (meeting) | rassemblement (of people)
 101	: **hence**                :          donc
 102	: **subtle**               :          subtil
 103	: **to issue**             :          distribuer, remettre | faire part, publier
@@ -150,3 +143,33 @@
 168 : **precedence**	:	priorité	:	n	:		:		:	
 169 : **scheduling**	:	ordonancement	:	n	:		:		:	
 170 : **device**	:	système, dispositif	:	n	:		:		:	
+171 : ** to consist of**	:	consister en	:	v	:		:		:	
+172 : **to consist of**	:	se composer de, (le repas se compose d'une entrée)	:	v	:		:		:	
+173 : **gathering**	:	assemblée, réunion, rassemblement, (of people)	:		:		:		:	
+174 : **to comprise**	:	comprendre, se composer de	:		:		:		:	
+175 : ** to complete**	:	achèver, terminer, finir	:	v	:		:		:	
+176 : hazard	:	danger, risque	:	n	:		:	Electrical hazards in confined spaces	:	4
+177 : disposal	:	élimination	:	n	:		:	hazardous waste disposal	:	4
+178 : waste	:	déchet	:	n	:		:	waste disposal	:	4
+179 : to inquire	:	se renseigner	:	v	:		:	to inquire about warehouse space	:	4
+180 : warehouse	:	magasin, entrepôt	:	n	:		:		:	4
+181 : stated	:	déclaré, cité, stipulé	:	adj	:		:	What is a stated advantage of the seminar?	:	4
+182 : to find out	:	apprendre, découvrir	:	v	:		:	I just find out my sister is pregnant	:	4
+183 : to find out about	:	se renseigner sur, trouver des informations sur, se procurer des informations sur	:	v	:		:	I read his biography to find out about his life	:	4
+184 : performance	:	représentation, séance, rôle	:	n	:	theatre representation, acting (rôle)	:	The theatre has 2 performances per night (theatre  séance)
+185 : stage	:	scène, étape	:	n	:	in a theatre or concert, it means "scène"
+1 : bow	:	arc, révérence	:	n	:		:	A hunter's bow is often made of flexible wood
+1 : to boat	:	naviguer	:	v	:		:	people are boating on the river	:	4
+2 : wiring	:	fils, câblage, installation électrique	:	n	:		:	wiring is beingplaced underground	:	4
+3 : to wire	:	câbler, virer	:	v	:		:	They wired the house themselves
+4 : tray	:	plateau	:	n	:	of food	:	The woman is carrying a tray of food	:	4
+5 : appliance	:	appareil	:	n	:		:	The men are wiring an appliance	:	4
+6 : disposal	:	élimination, rejet, collecte, ramassage, disposition	:	n	:	3contexts  throwing out, removal and treatment of waste, availability for use	:	hazardous waste disposal
+7 : bow	:	arc, révérence	:	n	:		:	A hunter's bow is often made of flexible wood . You must give a bow when you meet the king	:	4
+8 : to turn out	:	s'avérer, conclure	:	v	:		:		:	4
+9 : squirt	:	sale gosse	:	n	:		:		:	4
+10 : to squirt	:	gicler	:	v	:		:		:	
+11 : beyond	:	derrière, au-delà de, à part	:	prep	:		:	Beyond that, I have anything to say      There were clouds visible beyond the mountains	:	
+12 : lamb	:	agneau	:	n	:		:	i'll eat a lamb chop	:	3
+13 : harbor	:	port	:	n	:	sea port	:		:	
+14 : maze	:	labyrinthe, dédale	:	n	:		:		:	

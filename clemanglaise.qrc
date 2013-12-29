@@ -34,6 +34,5 @@
 		<file>img/macx/accessories-text-editor.png</file>
 		<file>img/macx/edit-find.png</file>
 		<file>img/macx/edit-delete.png</file>
-		<file>index.theme</file>
 	</qresource>
 </RCC>
