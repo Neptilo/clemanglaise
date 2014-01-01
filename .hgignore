@@ -1,6 +1,4 @@
 syntax: glob
-enfr
-defr
 *.autosave
 *.user*
 *.o
@@ -17,3 +15,5 @@ html
 latex
 Doxyfile
 gource
+enfr
+defr
