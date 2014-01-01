@@ -56,7 +56,6 @@
 69	: **completion**           :          achèvement, fin
 71	: **tight**                :          serré, difficile, délicat, hermétique
 72	: **milestone**            :          événement marquant, étape importante
-73	: **delay**                :          retarder(v), retard(n)
 74	: **sink**                 :          évier, lavabo
 75	: **to sink**              :          faire couler
 76	: **compound**             :          mélange, combinaison
@@ -149,7 +148,6 @@
 174 : **to comprise**	:	comprendre, se composer de	:		:		:		:	
 175 : ** to complete**	:	achèver, terminer, finir	:	v	:		:		:	
 176 : hazard	:	danger, risque	:	n	:		:	Electrical hazards in confined spaces	:	4
-177 : disposal	:	élimination	:	n	:		:	hazardous waste disposal	:	4
 178 : waste	:	déchet	:	n	:		:	waste disposal	:	4
 179 : to inquire	:	se renseigner	:	v	:		:	to inquire about warehouse space	:	4
 180 : warehouse	:	magasin, entrepôt	:	n	:		:		:	4
@@ -158,9 +156,7 @@
 183 : to find out about	:	se renseigner sur, trouver des informations sur, se procurer des informations sur	:	v	:		:	I read his biography to find out about his life	:	4
 184 : performance	:	représentation, séance, rôle	:	n	:	theatre representation, acting (rôle)	:	The theatre has 2 performances per night (theatre  séance)
 185 : stage	:	scène, étape	:	n	:	in a theatre or concert, it means "scène"
-1 : bow	:	arc, révérence	:	n	:		:	A hunter's bow is often made of flexible wood
 1 : to boat	:	naviguer	:	v	:		:	people are boating on the river	:	4
-2 : wiring	:	fils, câblage, installation électrique	:	n	:		:	wiring is beingplaced underground	:	4
 3 : to wire	:	câbler, virer	:	v	:		:	They wired the house themselves
 4 : tray	:	plateau	:	n	:	of food	:	The woman is carrying a tray of food	:	4
 5 : appliance	:	appareil	:	n	:		:	The men are wiring an appliance	:	4
@@ -173,3 +169,76 @@
 12 : lamb	:	agneau	:	n	:		:	i'll eat a lamb chop	:	3
 13 : harbor	:	port	:	n	:	sea port	:		:	
 14 : maze	:	labyrinthe, dédale	:	n	:		:		:	
+15 : to shatter	:	voler en éclat, briser, fracasser	:	v	:		:	the glasses shatter when I shake the table	:	5
+16 : to splash	:	éclabousser	:	v	:		:	the liquid splashed 	:	5
+17 : muffled	:	étouffé, sourd, assourdi	:	adj	:		:	muffled speech	:	
+18 : mustard	:	moutarde	:	n	:		:	you've got mustard on your shirt	:	5
+19 : to sigh	:	soupirer	:	v	:		:		:	
+20 : to scoff at	:	se moquer de	:	v	:		:		:	
+21 : to turn in	:	balancer, dénoncer	:	v	:		:	either you work with me, or I turn you in	:	
+22 : flask	:	flacon	:	n	:		:		:	5
+23 : faggot	:	tapette, pédé, tafiole	:	n	:		:		:	
+24 : meantime	:	en attendant, pendant ce temps, dans l'intervalle	:	adv	:		:	the furnace repairman will be here tomorrow, in the meantime we're keeping warm by the fire	:	
+25 : furnace	:	chaudière, fourneau	:	n	:		:		:	
+26 : to pant	:	être à bout de souffle, être essouflé	:	v	:		:		:	
+27 : to moan	:	gémir, geindre	:	v	:		:	when i make love, i pant and i moan	:	
+28 : to gasp	:	suffoquer, haleter	:	v	:		:		:	
+29 : mess	:	désordre, bazar	:	n	:		:		:	5
+30 : to pounce	:	bondir, sauter, se jeter	:	n	:		:	he is ready to pounce on me when i come back to my trip	:	
+31 : to wheeze	:	respirer bruyamment, avoir du mal à respirer	:	v	:		:		:	
+32 : to bide	:	attendre	:	n	:		:	i  bide my time	:	
+33 : to flip a coin	:	lancer une pièce	:	v	:		:	i will flip a coin. So guess, heads or tails?	:	
+34 : grunt	:	grogner	:	n	:		:		:	
+35 : coward	:	lâche	:	n	:		:		:	
+36 : weed	:	herbe, mauvaise herbe, marijuana	:	n	:		:		:	
+37 : earful	:	commérage, réprimande	:	n	:		:		:	
+38 : lung	:	poumon	:	prep	:		:		:	
+39 : crib	:	berceau	:	n	:		:	a baby crib	:	
+40 : chuckle	:	petit rire, gloussement	:	n	:		:		:	
+41 : needle	:	aiguille	:	n	:		:		:	
+42 : to bleed	:	saigner	:	v	:		:		:	
+43 : toke	:	bouffée, fumer un joint	:	n	:		:		:	
+44 : rusty	:	rouillé	:	adj	:		:		:	
+45 : upside	:	avantage, bon côté	:	n	:		:		:	
+46 : appealing	:	attirant	:	adj	:		:	your offer is very appealing	:	
+47 : shrimp	:	crevette	:	n	:		:		:	5
+48 : crutch	:	béquille	:	n	:		:		:	
+49 : to lean	:	s'appuyer	:	v	:		:	it's ok to lean on people	:	
+50 : whirring	:	bruissement	:	n	:		:		:	
+51 : realm	:	royaume	:	n	:		:		:	
+52 : bloodshed	:	carnage, effusion de sang	:	n	:		:		:	
+53 : to hold back	:	refouler, retenir, réprimer, contenir	:	v	:		:		:	
+54 : dizzy	:	étourdi, pris de vertige, vertigineux	:	adj	:		:		:	
+55 : to vouch for	:	se porter garant de, garantir, accepter	:	v	:		:		:	
+56 : to mess up	:	bousiller, foutre en l'air, saboter	:	v	:		:	you messed up our plan last night, asshole	:	
+57 : tweak	:	ajustement, petite modification	:	n	:		:		:	
+58 : nut	:	cinglé, fou	:	n	:	slang	:		:	
+59 : balls	:	couilles	:	n	:	slang	:		:	
+60 : frisky	:	fougueux	:	adj	:		:		:	
+61 : to sweat	:	transpirer, suer	:	v	:		:		:	
+62 : sweat	:	sueur, transpiration	:	n	:		:	beads of sweat == gouttes de transpirations	:	
+63 : lodge	:	hutte, cabane	:	n	:		:		:	
+64 : healing	:	guérison, cicatrisation	:	n	:		:		:	
+65 : dank	:	humide	:	n	:		:		:	
+66 : crapper	:	chiottes	:	n	:		:	i'm going to the crapper, i'll be right back	:	
+67 : jug	:	pichet, carafe	:	n	:		:		:	
+68 : right on	:	la classe, génial	:	inter	:		:		:	
+69 : yard	:	cour, jardin	:	n	:		:		:	
+70 : to sneak	:	glisser en douce, se faufiller, faire discrètement	:	v	:		:		:	
+71 : shoplifting	:	vol à l'étalage	:	n	:	theft from a shop	:		:	
+72 : wiring	:	fils, câblage, installation électrique	:	n	:		:	wiring is being placed underground	:	4
+73 : mortgage	:	emprunt-logement, prêt immobilier, prêt hypothécaire	:	n	:		:		:	
+74 : dent	:	trou, entaille, bosse	:	n	:		:	that's put a dent in our savings	:	
+75 : doable	:	faisable	:	n	:		:	it's definitely doable	:	
+76 : buzzard	:	oiseau rapace, buse	:	n	:		:		:	
+77 : to get rid of	:	se débarasser de, se passer de	:	v	:		:		:	
+78 : to take it out on	:	s'en prendre à, passer ses nerfs sur, retourner sa colère contre 	:	v	:		:		:	
+79 : junkyard	:	centre de recyclage, décharge, entrepôt de ferraille	:	n	:		:		:	
+80 : to stare at	:	regarder fixemment, fixer du regard	:	v	:		:		:	
+81 : stare	:	regard fixe	:	n	:		:		:	
+82 : to snort	:	sniffer	:	v	:	slang	:		:	
+83 : pin	:	épingle	:	n	:		:		:	
+84 : posse	:	petite troupe, petit groupe, bande	:	n	:		:		:	
+85 : lingo	:	jargon, langue	:	n	:		:		:	
+86 : hip	:	à la mode, branché, tendance	:	adj	:		:		:	
+87 : hip	:	hanche	:	n	:		:		:	

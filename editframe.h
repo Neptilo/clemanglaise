@@ -20,6 +20,7 @@ public:
     EditFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent);
     ~EditFrame();
     void read_reply(QString reply_string);
+	void disable_edition(bool ok);
 
 private:
     QLabel* title;

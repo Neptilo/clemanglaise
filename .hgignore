@@ -4,6 +4,7 @@ defr
 *.autosave
 *.user*
 *.o
+*.swp
 clemanglaise
 *~
 moc_*

@@ -160,6 +160,7 @@ void EditFrame::edit_word(){
         nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 	}
+	disable_edition(true);
 }
 
 void EditFrame::show_confirmation(QNetworkReply* reply){
@@ -216,6 +217,7 @@ void EditFrame::reset(){
 	layout->addWidget(OK_button);
 
 	cancel_button->setText(tr("Cancel"));
+	disable_edition(false);
 }
 
 void EditFrame::find_themes() {
@@ -246,4 +248,13 @@ void EditFrame::read_reply(QString reply_string) {
 		themes->addItem(reply_list.at(i+1).trimmed(), QVariant(reply_list.at(i).toInt()));
 	}
 	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(6).toInt())));
+}
+
+void EditFrame::disable_edition(bool ok) {
+	word_edit->setEnabled(!ok);
+	nature_edit->setEnabled(!ok);
+	meaning_edit->setEnabled(!ok);
+	comment_edit->setEnabled(!ok);
+	example_edit->setEnabled(!ok);
+	themes->setEnabled(!ok); 
 }

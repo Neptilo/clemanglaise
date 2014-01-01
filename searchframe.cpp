@@ -170,9 +170,10 @@ void SearchFrame::action(int row, int col)
         nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 		} else {
-			//offline
+			//offline some crash why??
 			Parser* p = new Parser(test.getSrc() + test.getDst());
 			p->deleteLineId(reply_list->at(row*nb_cols).toInt(), p->getFilein());
+			//qDebug() << "qdfqsd";
 		}
 
         refresh();
