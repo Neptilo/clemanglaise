@@ -109,7 +109,7 @@ void SearchFrame::read_reply(QString reply_string) {
             col_ind = (col_ind+1)%result_nb_cols;
         }
         if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
-            if(col_ind == 8 && !test.isRemoteWork()){ // Theme
+            if(col_ind == 9 && !test.isRemoteWork()){ // Theme
                 item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i-3).toInt())));
             }else{
                 item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i)));
