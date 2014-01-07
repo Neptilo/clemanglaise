@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QHash>
-
+extern const QHash<QString, QString> maphash;
 QString ampersand_escape(const QString &string);
 QString colon_unescape(const QString &string);
 QString ampersand_unescape(const QString &string);

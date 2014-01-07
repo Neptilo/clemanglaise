@@ -2,7 +2,7 @@
 
 #include "string_utils.h"
 
-const QHash<QString, QString> mapHash (mapping());
+const QHash<QString, QString> maphash = mapping();
 
 QString ampersand_escape(const QString &string) {
 	QString encoded;
@@ -160,7 +160,7 @@ QString numbers_to_accents(const QString &string){
 /**
  * mapping Kirshenbaum -- IPA
  */
-QHash<QString, QString> mapping()
+QHash<QString, QString> mapping() 
 {
 	QHash<QString, QString> hash;
 	hash.insert("a", QString::fromUtf8("\u0061"));
