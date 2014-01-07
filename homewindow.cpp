@@ -16,17 +16,17 @@ void HomeWindow::init(){
     // No need to delete tests in a destructor because they are directly referenced, not by a pointer
 	// remote is true by default
     QList<Test> online_tests;
-    online_tests << *new Test(test_id++, tr("English to French"), "en", "fr");
-    online_tests << *new Test(test_id++, tr("English to Japanese"), "en", "ja");
-    online_tests << *new Test(test_id++, tr("English to Chinese"), "en", "zh");
-    online_tests << *new Test(test_id++, tr("English to Croatian"), "en", "hr");
+    online_tests << *new Test(test_id++, tr("English to &French"), "en", "fr");
+    online_tests << *new Test(test_id++, tr("English to &Japanese"), "en", "ja");
+    online_tests << *new Test(test_id++, tr("English to &Chinese"), "en", "zh");
+    online_tests << *new Test(test_id++, tr("English to C&roatian"), "en", "hr");
 
 	QStringList online_flags;
     online_flags << ":/france-img.png" << ":/japan-img.png" << ":/china-img.png" <<":/croatia-img.png";
 
     QList<Test> offline_tests;
-    offline_tests << *new Test(test_id++, tr("English to French"), "en", "fr", false);
-    offline_tests << *new Test(test_id++, tr("German to French"), "de", "fr", false);
+    offline_tests << *new Test(test_id++, tr("English to Fr&ench"), "en", "fr", false);
+    offline_tests << *new Test(test_id++, tr("&German to French"), "de", "fr", false);
 	QStringList offline_flags;
     offline_flags << ":/france-img.png" << ":/germany-img.png";
     tests = new QList<Test>(online_tests+offline_tests);
