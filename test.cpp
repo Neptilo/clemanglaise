@@ -9,11 +9,6 @@ Test::Test(int id, const QString& name, const QString& src, const QString& dst, 
     this->src = src;
     this->dst = dst;
     this->remote = remote;
-
-    // List of languages for which we asked for the pronunciation
-    QStringList list;
-    list << "ja" << "zh";
-    this->asked_pronunciation = list.contains(this->dst);
 }
 
 int Test::getId() const

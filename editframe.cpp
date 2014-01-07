@@ -3,7 +3,7 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
 #endif
-
+#include <QDebug>
 #include "editframe.h"
 #include "questionframe.h"
 #include "string_utils.h"
@@ -44,7 +44,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     nature_edit->addItem(tr("Article"), QVariant("art"));
     nature_edit->addItem(tr("Classifier"), QVariant("clas"));
     nature_edit->addItem(tr("Conjunction"), QVariant("conj"));
-    nature_edit->addItem(tr("Interjecion"), QVariant("inter"));
+    nature_edit->addItem(tr("Interjection"), QVariant("inter"));
     nature_edit->addItem(tr("Noun"), QVariant("n"));
     nature_edit->addItem(tr("Preposition"), QVariant("prep"));
     nature_edit->addItem(tr("Pronoun"), QVariant("pron"));
@@ -55,10 +55,8 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     meaning_edit = new QLineEdit(meaning, this);
     layout->addRow(tr("&Translation: "), meaning_edit);
 
-    if(test.asked_pronunciation){
-        pronunciation_edit = new QLineEdit(pronunciation, this);
-        layout->addRow(tr("&Pronunciation: "), pronunciation_edit);
-    }
+	pronunciation_edit = new QLineEdit(pronunciation, this);
+	layout->addRow(tr("&Pronunciation: "), pronunciation_edit);
 
     comment_edit = new QTextEdit(comment, this);
     layout->addRow(tr("&Comment: "), comment_edit);
@@ -105,7 +103,8 @@ void EditFrame::edit_word(){
 			nature_edit->itemData(nature_edit->currentIndex()).toString() + separator +	
 			colon_unescape(comment_edit->toPlainText()) + separator + 
 			colon_unescape(example_edit->toPlainText()) + separator + 
-			themes->itemData(themes->currentIndex()).toString() +
+			themes->itemData(themes->currentIndex()).toString() + separator +
+			kirshenbaum2IPA(pronunciation_edit->text()) +
 			endline;
 		int id = default_values.at(0).toInt();
 		if (themes->currentIndex()>0) {
@@ -125,9 +124,11 @@ void EditFrame::edit_word(){
 		post_data.addQueryItem("word", ampersand_escape(word_edit->text()));
 		post_data.addQueryItem("nature", nature_edit->itemData(nature_edit->currentIndex()).toString());
 		post_data.addQueryItem("meaning", ampersand_escape(meaning_edit->text()));
-		if(test.asked_pronunciation){
-			// Standardize pronunciation to save into database
-			QString standardized_pronunciation;
+
+		// Standardize pronunciation to save into database
+		QString standardized_pronunciation;
+
+		if(test.getDst() =="ja" || test.getDst()=="zh"){
 
 			if(test.getDst() == "ja"){
 				standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
@@ -138,9 +139,12 @@ void EditFrame::edit_word(){
 			}else if(test.getDst() == "zh"){
 				standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
 			}
-
-			post_data.addQueryItem("pronunciation", standardized_pronunciation);
+		}else {
+				standardized_pronunciation = ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text()));
 		}
+
+
+		post_data.addQueryItem("pronunciation", standardized_pronunciation);
 		post_data.addQueryItem("comment", ampersand_escape(comment_edit->toPlainText()));
 		post_data.addQueryItem("example", ampersand_escape(example_edit->toPlainText()));
 		post_data.addQueryItem("theme", themes->itemData(themes->currentIndex()).toString());
@@ -205,9 +209,7 @@ void EditFrame::reset(){
 	comment_edit->setText(default_values.at(i++));
 	example_edit->setText(default_values.at(i++));
 	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(i++))));
-	if(test.asked_pronunciation){
-		pronunciation_edit->setText(default_values.at(i++));
-	} 
+	pronunciation_edit->setText(default_values.at(i++));
 
 	delete continue_button;
 
@@ -254,6 +256,7 @@ void EditFrame::disable_edition(bool ok) {
 	word_edit->setEnabled(!ok);
 	nature_edit->setEnabled(!ok);
 	meaning_edit->setEnabled(!ok);
+	pronunciation_edit->setEnabled(!ok);
 	comment_edit->setEnabled(!ok);
 	example_edit->setEnabled(!ok);
 	themes->setEnabled(!ok); 

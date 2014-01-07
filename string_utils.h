@@ -11,4 +11,6 @@ QString number_to_accent(const QString letter, int accent_number);
 QString numbers_to_accents(const QString &string);
 QString getImgPath(const QString & img);
 QHash<QString, QString> mapping();
+QString X2IPA(const QString &string);
+QString kirshenbaum2IPA(const QString &string);
 #endif // STRING_UTILS_H

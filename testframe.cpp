@@ -39,29 +39,29 @@ void TestFrame::init() {
 	themes->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
 	layout->addWidget(themes);
 
-    back_button = new QPushButton(tr("Go back to tests list"), this);
+    back_button = new QPushButton(tr("Go &back to tests list"), this);
     back_button->setIcon(QIcon::fromTheme("go-home", QIcon(getImgPath("go-home.png"))));
     connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
     layout->addWidget(back_button);
 
     if(!test.isRemoteWork() || admin){
-        add_theme_button = new QPushButton(tr("Add a theme"), this);
+        add_theme_button = new QPushButton(tr("Add a &theme"), this);
         add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
         connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
         layout->addWidget(add_theme_button);
 
-        add_button = new QPushButton(tr("Add a word"), this);
+        add_button = new QPushButton(tr("Add a &word"), this);
         add_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
         connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
         layout->addWidget(add_button);
 
-        update_button = new QPushButton(tr("Edit this word entry"), this);
+        update_button = new QPushButton(tr("&Edit this word entry"), this);
         update_button->setIcon(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))));
         connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
         layout->addWidget(update_button);
     }
 
-    search_button = new QPushButton(tr("Search for words"), this);
+    search_button = new QPushButton(tr("&Search for words"), this);
     search_button->setIcon(QIcon::fromTheme("edit-find", QIcon(getImgPath("edit-find.png"))));
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);

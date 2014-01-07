@@ -2,7 +2,6 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
 #endif
-
 #include "answerframe.h"
 #include "questionframe.h"
 #include "string_utils.h"
@@ -26,7 +25,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     // Check answer
     QString message;
     bool correct;
-    if(test.asked_pronunciation){
+    if(test.getDst()=="ja" || test.getDst()=="zh"){
         // Standardize player answer before checking
         QString standardized_answer = QString(player_answer);
 
@@ -45,6 +44,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
         QString meaning_standard_answer = ampersand_unescape(meaning);
         correct = (meaning_standard_answer.split(", ").contains(standard_answer, Qt::CaseInsensitive));
     }
+
     message = correct ? tr("Right!") : tr("Wrong!");
 
     // Update score
@@ -97,10 +97,12 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     vertical_layout->addWidget(display_icon_answer);
     vertical_layout->addWidget(display_answer);
 
-    if(test.asked_pronunciation){
+    if(test.getDst()=="ja" || test.getDst()=="zh"){
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
     }else{
-        vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+meaning, this));
+		QString answithoutpron = "<b>"+word+"</b> <i>"+nature+"</i>: "+meaning;
+		QString answithpron = pronunciation.isEmpty()?answithoutpron:answithoutpron+"\n<b>/ "+ pronunciation +" /</b>";
+        vertical_layout->addWidget(new QLabel(answithpron, this));
     }
     vertical_layout->addWidget(new QLabel("<i>"+comment+"</i>", this));
     if(example.compare("")){

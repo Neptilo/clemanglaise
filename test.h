@@ -15,8 +15,6 @@ private:
 	QSet<QString> themes;
 
 public:
-    bool asked_pronunciation;
-
     explicit Test(int id, const QString &name, const QString &src, const QString &dst, bool remote=true);
     int getId() const;
     const QString& getName() const;

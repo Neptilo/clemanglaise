@@ -1,4 +1,5 @@
 #include <QRegExp>
+#include <QDebug>
 
 #include "string_utils.h"
 
@@ -220,6 +221,8 @@ QHash<QString, QString> mapping()
 	hash.insert(":", QString::fromUtf8("\u02D0"));
 	hash.insert(";", QString::fromUtf8("\u02B2"));
 	hash.insert("`", QString::fromUtf8("\u02BC"));
+	hash.insert("'", QString::fromUtf8("\u02C8"));
+	hash.insert(",", QString::fromUtf8("\u02CC"));
 	hash.insert("b<trl>", QString::fromUtf8("\u0299"));
 	hash.insert("r<trl>", QString::fromUtf8("\u0280"));
 	hash.insert("<h>", QString::fromUtf8("\u02B0"));
@@ -271,6 +274,35 @@ QHash<QString, QString> mapping()
 	hash.insert("u-", QString::fromUtf8("\u026F"));
 	hash.insert("o-", QString::fromUtf8("\u0264"));
 	return hash;
+}
+
+QString X2IPA(const QString &string)
+{
+	if(maphash.contains(string))
+	{
+		return maphash.value(string);
+	} else {
+		return string;
+	}
+}
+
+QString kirshenbaum2IPA(const QString &string){
+
+	qDebug() << string;
+	// Capture phonemes
+	QRegExp rx("[a-zA-Z@&*?',](<[a-z?]{1,3}>)?[\":;`!\\-.^]?");
+	//QRegExp rx("[a-zA-Z@&*?]");
+	QString res;
+	int pos = 0;
+	// Match rx in string from pos and return final position or -1 if match failed
+	while (!rx.isEmpty() && (pos = rx.indexIn(string, pos)) != -1) {
+		pos += rx.matchedLength();
+
+		// Generate new string
+		res += X2IPA(rx.cap(0));
+	}
+
+	return res;
 }
 
 QString getImgPath(const QString& img) {
