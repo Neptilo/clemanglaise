@@ -278,11 +278,18 @@ QHash<QString, QString> mapping()
 
 QString X2IPA(const QString &string)
 {
+	int size = string.size();
+	QString res="";
 	if(maphash.contains(string))
 	{
-		return maphash.value(string);
-	} else {
-		return string;
+		res = maphash.value(string);
+	} else if(size>1) {
+		for(int i=0;i<size;++i) {
+			QChar ch = string.at(i);
+			res += maphash.value(ch);
+		}
+
+		return res;
 	}
 }
 
