@@ -3,7 +3,6 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
 #endif
-#include <QDebug>
 #include "editframe.h"
 #include "questionframe.h"
 #include "string_utils.h"
@@ -96,6 +95,7 @@ void EditFrame::edit_word(){
 		// Offline
 		QString separator("\t:\t");
 		Parser* p = new Parser(test.getSrc() + test.getDst());
+		QString pronunciation_line = isKirshenbaum(pronunciation_edit->text())?kirshenbaum2IPA(pronunciation_edit->text()):pronunciation_edit->text();
 		// Will show confirmation when loading of reply is finished
 		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(word_edit->text()) + separator + 
@@ -104,7 +104,7 @@ void EditFrame::edit_word(){
 			colon_unescape(comment_edit->toPlainText()) + separator + 
 			colon_unescape(example_edit->toPlainText()) + separator + 
 			themes->itemData(themes->currentIndex()).toString() + separator +
-			kirshenbaum2IPA(pronunciation_edit->text()) +
+			pronunciation_line + 
 			endline;
 		int id = default_values.at(0).toInt();
 		if (themes->currentIndex()>0) {
@@ -128,19 +128,17 @@ void EditFrame::edit_word(){
 		// Standardize pronunciation to save into database
 		QString standardized_pronunciation;
 
-		if(test.getDst() =="ja" || test.getDst()=="zh"){
 
-			if(test.getDst() == "ja"){
-				standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
-				standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
-				standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
-				standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
-				standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
-			}else if(test.getDst() == "zh"){
-				standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
-			}
-		}else {
-				standardized_pronunciation = ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text()));
+		if(test.getDst() == "ja"){
+			standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
+			standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
+			standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
+			standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
+			standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
+		}else if(test.getDst() == "zh"){
+			standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
+		} else {
+			standardized_pronunciation = isKirshenbaum(pronunciation_edit->text())?ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text())):ampersand_escape(pronunciation_edit->text());
 		}
 
 
@@ -155,13 +153,13 @@ void EditFrame::edit_word(){
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
 		// Will show confirmation when loading of reply is finished
-        connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
+		connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
 		// Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        nam.post(request, post_data.encodedQuery());
+		nam.post(request, post_data.encodedQuery());
 #else
-        nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+		nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 	}
 	disable_edition(true);
@@ -177,11 +175,11 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
 	}
 	delete OK_button;
 	continue_button = new QPushButton(tr("Add another word"), this);
-    continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
+	continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-    cancel_button->setText(tr("Back"));
+	cancel_button->setText(tr("Back"));
 }
 
 void EditFrame::show_confirmation(){
@@ -192,7 +190,7 @@ void EditFrame::show_confirmation(){
 
 	layout->addWidget(continue_button);
 	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-    cancel_button->setText(tr("Back"));
+	cancel_button->setText(tr("Back"));
 }
 
 void EditFrame::back(){
@@ -214,7 +212,7 @@ void EditFrame::reset(){
 	delete continue_button;
 
 	OK_button = new QPushButton(tr("Add word"), this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
+	OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
 
@@ -225,13 +223,13 @@ void EditFrame::reset(){
 void EditFrame::find_themes() {
 	if (!test.isRemoteWork()) {
 		Parser* p = new Parser(test.getSrc() + test.getDst());
-        // Offline
+		// Offline
 		read_reply(p->search("", p->getThemeFile()));
 	} else { 
 		// Request to PHP file
 		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
 		QNetworkRequest request(url);
-        theme_nam.get(request);
+		theme_nam.get(request);
 	}
 }
 

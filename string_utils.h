@@ -13,4 +13,5 @@ QString getImgPath(const QString & img);
 QHash<QString, QString> mapping();
 QString X2IPA(const QString &string);
 QString kirshenbaum2IPA(const QString &string);
+bool isKirshenbaum(const QString& string);
 #endif // STRING_UTILS_H

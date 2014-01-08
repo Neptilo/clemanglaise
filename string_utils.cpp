@@ -291,7 +291,6 @@ QString kirshenbaum2IPA(const QString &string){
 	qDebug() << string;
 	// Capture phonemes
 	QRegExp rx("[a-zA-Z@&*?',](<[a-z?]{1,3}>)?[\":;`!\\-.^]?");
-	//QRegExp rx("[a-zA-Z@&*?]");
 	QString res;
 	int pos = 0;
 	// Match rx in string from pos and return final position or -1 if match failed
@@ -303,6 +302,11 @@ QString kirshenbaum2IPA(const QString &string){
 	}
 
 	return res;
+}
+
+bool isKirshenbaum(const QString& string){
+	QRegExp rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^]?)+");
+	return rx.exactMatch(string);
 }
 
 QString getImgPath(const QString& img) {
