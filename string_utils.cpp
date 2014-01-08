@@ -1,5 +1,4 @@
 #include <QRegExp>
-#include <QDebug>
 
 #include "string_utils.h"
 
@@ -161,7 +160,7 @@ QString numbers_to_accents(const QString &string){
 /**
  * mapping Kirshenbaum -- IPA
  */
-QHash<QString, QString> mapping() 
+QHash<QString, QString> mapping()
 {
 	QHash<QString, QString> hash;
 	hash.insert("a", QString::fromUtf8("\u0061"));
@@ -278,41 +277,42 @@ QHash<QString, QString> mapping()
 
 QString X2IPA(const QString &string)
 {
-	int size = string.size();
-	QString res="";
+	QString res;
 	if(maphash.contains(string))
 	{
 		res = maphash.value(string);
-	} else if(size>1) {
-		for(int i=0;i<size;++i) {
-			QChar ch = string.at(i);
-			res += maphash.value(ch);
-		}
-
-		return res;
+	} else  {
+		res = string;
 	}
+	return res;
 }
 
 QString kirshenbaum2IPA(const QString &string){
 
-	qDebug() << string;
 	// Capture phonemes
-	QRegExp rx("[a-zA-Z@&*?',](<[a-z?]{1,3}>)?[\":;`!\\-.^]?");
-	QString res;
+	QRegExp rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^]?))(:?)");
+	QString res="";
 	int pos = 0;
 	// Match rx in string from pos and return final position or -1 if match failed
 	while (!rx.isEmpty() && (pos = rx.indexIn(string, pos)) != -1) {
 		pos += rx.matchedLength();
 
 		// Generate new string
-		res += X2IPA(rx.cap(0));
+		if (maphash.contains(rx.cap(1))) {
+			res += X2IPA(rx.cap(1));
+		} else if(maphash.contains(rx.cap(2)+rx.cap(3))) {
+			res += X2IPA(rx.cap(2) + rx.cap(3)) + X2IPA(rx.cap(4)); 
+		}else {
+			res += X2IPA(rx.cap(2)) + X2IPA(rx.cap(3)) + X2IPA(rx.cap(4));
+		}
+		res += X2IPA(rx.cap(5));
 	}
 
 	return res;
 }
 
 bool isKirshenbaum(const QString& string){
-	QRegExp rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^]?)+");
+	QRegExp rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\";`!\\-.^]?:?)+");
 	return rx.exactMatch(string);
 }
 
