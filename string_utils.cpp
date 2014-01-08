@@ -17,28 +17,28 @@ QString ampersand_escape(const QString &string) {
 }
 
 /**
- * replace all &#number; by corresponding ascii letter
+ * replace all: by : in IPA, because colon is a reserved caracter while
+ * parsing a file
  * @par string: the string we want to handle
  */
 QString colon_unescape(const QString &string){
 	QRegExp rx0("[^:]*");
 	QRegExp rx(":([^:]*)");
-	QString res;
+	QString res("");
 	int pos = 0;
 	if((pos = rx0.indexIn(string, pos)) != -1){
 		pos += rx0.matchedLength();
 		res += rx0.cap(0);
 		while ((pos = rx.indexIn(string, pos)) != -1) {
 			pos += rx.matchedLength();
-			res += rx.cap(1) + rx.cap(2);
+			res += QString::fromUtf8("\u02D0")+rx.cap(1);
 		}
 	}
 	return res;
 }
 
 /**
- * replace all: by nothing, because colon is a reserved caracter while
- * parsing a file
+ * replace all &#number; by corresponding ascii letter
  * @par string: the string we want to handle
  */
 QString ampersand_unescape(const QString &string){

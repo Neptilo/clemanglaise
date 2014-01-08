@@ -95,7 +95,7 @@ void EditFrame::edit_word(){
 		// Offline
 		QString separator("\t:\t");
 		Parser* p = new Parser(test.getSrc() + test.getDst());
-		QString pronunciation_line = isKirshenbaum(pronunciation_edit->text())?kirshenbaum2IPA(pronunciation_edit->text()):pronunciation_edit->text();
+		QString pronunciation_line = isKirshenbaum(pronunciation_edit->text())?kirshenbaum2IPA(pronunciation_edit->text()):colon_unescape(pronunciation_edit->text());
 		// Will show confirmation when loading of reply is finished
 		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(word_edit->text()) + separator + 
