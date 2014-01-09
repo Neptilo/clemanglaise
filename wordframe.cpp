@@ -3,7 +3,9 @@
 WordFrame::WordFrame(Test& test, QWidget *parent) :
 
     QWidget(parent),
-    test(test)
+    test(test),
+    right_vertical_layout(NULL),
+    handwriting(false)
 {
 
     // List of languages for which we want a handwriting widget

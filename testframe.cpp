@@ -7,11 +7,12 @@
 
 TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent):
     QWidget(parent),
+    question_frame(NULL),
 	nam_themes(),
-    test(test),
+    add_theme_button(NULL),
     add_button(NULL),
     update_button(NULL),
-    add_theme_button(NULL),
+    test(test),
     admin(admin)
 {
 	title = new QLabel(str_title,this);
@@ -95,21 +96,22 @@ void TestFrame::update_request() {
 }
 
 void TestFrame::read_reply(QNetworkReply* reply){
+    if(question_frame){ // If question_frame is deleted, that means the user has changed the frame to another one before the NAM request was finished, so we want to ignore the NAM's reply.
+        // Store the lines of the reply in the "reply_list" attribute
+        QString* reply_string = new QString(reply->readAll());
+        reply->deleteLater();
+        reply_list = test.isRemoteWork()?new QStringList(reply_string->split('\n')):new QStringList(reply_string->split(QRegExp(ENDL)));
 
-    // Store the lines of the reply in the "reply_list" attribute
-    QString* reply_string = new QString(reply->readAll());
-    reply->deleteLater();
-    reply_list = test.isRemoteWork()?new QStringList(reply_string->split('\n')):new QStringList(reply_string->split(QRegExp(ENDL)));
-
-    // Everything is ready for the question frame to ask the question.
-    QString word = reply_list->at(1);
-	if (test.isRemoteWork()) {
-		QString theme = reply_list->at(9);
-		question_frame->ask_question(word, theme);
-	} else {
-		int id_theme = reply_list->at(6).toInt();
-		question_frame->ask_question(word, Parser::getTheme(id_theme));
-	}
+        // Everything is ready for the question frame to ask the question.
+        QString word = reply_list->at(1);
+        if (test.isRemoteWork()) {
+            QString theme = reply_list->at(9);
+            question_frame->ask_question(word, theme);
+        } else {
+            int id_theme = reply_list->at(6).toInt();
+            question_frame->ask_question(word, Parser::getTheme(id_theme));
+        }
+    }
 }
 
 void TestFrame::validate_question(){
@@ -126,6 +128,7 @@ void TestFrame::validate_answer() {
 
     // Remove everything
     delete question_frame;
+    question_frame = NULL;
     answer_frame->hide();
 
     // Create a new question frame
@@ -151,6 +154,7 @@ void TestFrame::update_question(int){
 void TestFrame::add_theme() {
     // Remove everything
     delete question_frame;
+    question_frame = NULL;
     answer_frame->hide();
 	theme->hide();
 	themes->hide();
@@ -186,7 +190,9 @@ void TestFrame::add_theme() {
 void TestFrame::add_word(){
 
     // Remove everything
+    layout->removeWidget(question_frame);
     delete question_frame;
+    question_frame = NULL;
     answer_frame->hide();
 	theme->hide();
 	themes->hide();
@@ -214,7 +220,7 @@ void TestFrame::add_word(){
     // Create a new add frame
     QStringList default_values_list;
 	//word << meaning << nature << comment << exple << id_theme << pronunciation << score<< theme
- 
+
     default_values_list << "" << "" << "" << "" << "" << "" << "" << "" << "" << "";
     add_frame = new EditFrame(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), this);
     layout->addWidget(add_frame);
@@ -225,6 +231,7 @@ void TestFrame::update_word(){
 
     // Remove everything
     delete question_frame;
+    question_frame = NULL;
     answer_frame->hide();
 	theme->hide();
 	themes->hide();
@@ -259,6 +266,7 @@ void TestFrame::search()
 {
     // Remove everything
     delete question_frame;
+    question_frame = NULL;
     answer_frame->hide();
     theme->hide();
     themes->hide();
@@ -322,4 +330,3 @@ void TestFrame::read_reply(QString reply_string) {
     }
     connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
-

@@ -6,7 +6,10 @@
 #include "string_utils.h"
 
 QuestionFrame::QuestionFrame(Test &test, QWidget *parent):
-    WordFrame(test, parent)
+    WordFrame(test, parent),
+    label(NULL),
+    edit(NULL),
+    handwriting_area(NULL)
 {
     label = new QLabel(tr("Loading..."), this);
     vertical_layout->addWidget(label);
@@ -14,7 +17,9 @@ QuestionFrame::QuestionFrame(Test &test, QWidget *parent):
 
 QuestionFrame::~QuestionFrame(){
     delete label;
-    delete edit;
+    if(edit){
+        delete edit;
+    }
 }
 
 QString QuestionFrame::getAnswer(){
