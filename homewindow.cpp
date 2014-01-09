@@ -44,12 +44,12 @@ void HomeWindow::init(){
 	layout->addWidget(workoffline);
     layout->addWidget(offline_buttons);
 }
+
 HomeWindow::~HomeWindow(){
     delete tests;
     delete mapping_texts;
     delete button_texts;
 }
-
 
 void HomeWindow::start_test(int i){
 	title->hide();
