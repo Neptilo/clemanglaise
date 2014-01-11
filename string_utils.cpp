@@ -312,7 +312,7 @@ QString kirshenbaum2IPA(const QString &string){
 }
 
 bool isKirshenbaum(const QString& string){
-	QRegExp rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?([\";`!\\-.:^]?)+");
+	QRegExp rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^]?)+");
 	return rx.exactMatch(string);
 }
 
