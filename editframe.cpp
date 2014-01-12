@@ -11,8 +11,21 @@
 
 EditFrame::EditFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
     QWidget(parent),
+    title(NULL),
+    status(NULL),
+    nature_edit(NULL),
+    themes(NULL),
     nam(),
     theme_nam(),
+    word_edit(NULL),
+    meaning_edit(NULL),
+    pronunciation_edit(NULL),
+    comment_edit(NULL),
+    example_edit(NULL),
+    OK_button(NULL),
+    cancel_button(NULL),
+    continue_button(NULL),
+    layout(NULL),
     test(test)
 {
     this->php_filename = php_filename;

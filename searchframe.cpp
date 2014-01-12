@@ -13,10 +13,13 @@
 
 SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
     QWidget(parent),
+    search_bar(NULL),
+    request(NULL),
     nam(),
     result(NULL),
     test(test),
-    reply_list(),
+    reply_list(NULL),
+    update_frame(NULL),
     modifiable(modifiable)
 {
     QLayout* layout = new QVBoxLayout(this);

@@ -8,14 +8,30 @@
 TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent):
     QWidget(parent),
     question_frame(NULL),
-	nam_themes(),
+    answer_frame(NULL),
+    add_theme_frame(NULL),
+    update_theme_frame(NULL),
+    add_frame(NULL),
+    update_frame(NULL),
+    search_frame(NULL),
+    request(NULL),
+    nam(NULL),
+    nam_themes(),
+    reply_list(NULL),
+    layout(NULL),
+    theme(NULL),
+    title(NULL),
+    back_button(NULL),
     add_theme_button(NULL),
     add_button(NULL),
+    search_button(NULL),
     update_button(NULL),
     test(test),
+    themes(NULL),
+    parser(NULL),
     admin(admin)
 {
-	title = new QLabel(str_title,this);
+    title = new QLabel(str_title, this);
     title->setAlignment(Qt::AlignHCenter);
     layout = new QVBoxLayout(this);
     answer_frame = new AnswerFrame(test, this);

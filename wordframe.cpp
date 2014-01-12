@@ -1,11 +1,13 @@
 #include "wordframe.h"
 
 WordFrame::WordFrame(Test& test, QWidget *parent) :
-
     QWidget(parent),
     test(test),
+    horizontal_layout(NULL),
     right_vertical_layout(NULL),
-    handwriting(false)
+    vertical_layout(NULL),
+    handwriting(false),
+    OK_button(NULL)
 {
 
     // List of languages for which we want a handwriting widget

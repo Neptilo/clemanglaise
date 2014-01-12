@@ -16,14 +16,14 @@ class HomeWindow : public QWidget{
 private:
     TestFrame* test_frame;
     QLabel* title;
-	QLayout* layout;
+    QLayout* layout;
     QList<Test>* tests;
     QStringList* mapping_texts;
     QStringList* button_texts;
     LanguageButtons* online_buttons;
     LanguageButtons* offline_buttons;
-	QLabel *workremote;
-	QLabel *workoffline;
+    QLabel *workremote;
+    QLabel *workoffline;
     bool admin;
 
 public:
@@ -34,7 +34,7 @@ signals:
     
 public slots:
     void start_test(int i);
-	void init();
+    void init();
 };
 
 #endif // HOMEWINDOW_H

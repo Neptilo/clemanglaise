@@ -12,8 +12,17 @@
 
 ThemeFrame::ThemeFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
     QWidget(parent),
-	nam(),
-    test(test)
+    title(NULL),
+    status(NULL),
+    theme_edit(NULL),
+    OK_button(NULL),
+    nam(),
+    cancel_button(NULL),
+    continue_button(NULL),
+    layout(NULL),
+    test(test),
+    theme(NULL),
+    themes(NULL)
 {
     this->php_filename = php_filename;
     this->default_values = default_values;

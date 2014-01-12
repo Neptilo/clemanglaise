@@ -2,6 +2,16 @@
 #include "string_utils.h"
 HomeWindow::HomeWindow(bool admin, QWidget *parent):
     QWidget(parent),
+    test_frame(NULL),
+    title(NULL),
+    layout(NULL),
+    tests(NULL),
+    mapping_texts(NULL),
+    button_texts(NULL),
+    online_buttons(NULL),
+    offline_buttons(NULL),
+    workremote(NULL),
+    workoffline(NULL),
     admin(admin)
 {
     setWindowTitle("Clemanglaise"); 

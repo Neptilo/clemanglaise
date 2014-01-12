@@ -7,11 +7,15 @@
 #include "string_utils.h"
 
 AnswerFrame::AnswerFrame(Test &test, QWidget *parent):
-    WordFrame(test, parent)
+    WordFrame(test, parent),
+    label(NULL),
+    edit_button(NULL)
 {}
 
 AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_answer, Test &test, QWidget *parent):
-    WordFrame(test, parent)
+    WordFrame(test, parent),
+    label(NULL),
+    edit_button(NULL)
 {
     // Define explicit variables for the content of the label
     QString word = reply_list.at(1);
