@@ -7,15 +7,11 @@
 #include "string_utils.h"
 
 AnswerFrame::AnswerFrame(Test &test, QWidget *parent):
-    WordFrame(test, parent),
-    label(NULL),
-    edit_button(NULL)
+    WordFrame(test, parent)
 {}
 
 AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_answer, Test &test, QWidget *parent):
-    WordFrame(test, parent),
-    label(NULL),
-    edit_button(NULL)
+    WordFrame(test, parent)
 {
     // Define explicit variables for the content of the label
     QString word = reply_list.at(1);
@@ -55,14 +51,13 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    QNetworkAccessManager* nam = new QNetworkAccessManager; // FIXME: Memory leak
+    QNetworkAccessManager* nam = new QNetworkAccessManager(this); // has to be a pointer because otherwise it will be destroyed at the end of the function and not send the data.
     
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
     QUrl post_data;
     post_data.addQueryItem("id", reply_list.at(0));
     post_data.addQueryItem("lang", test.getSrc() + test.getDst());
     post_data.addQueryItem("score", QString::number(score+(correct?1:-1)));
-    //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     nam->post(request, post_data.encodedQuery());
 #else
     QUrlQuery post_data;
@@ -122,5 +117,5 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
 	connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
 	OK_button->setDefault(true);
 	OK_button->setFocus(); // Because the focus is still on the edit line.
-	vertical_layout->addWidget(OK_button);
+    vertical_layout->addWidget(OK_button);
 }

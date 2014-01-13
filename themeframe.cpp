@@ -87,7 +87,7 @@ void ThemeFrame::edit_theme(){
 		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-		QNetworkAccessManager* nam2 = new QNetworkAccessManager;
+        QNetworkAccessManager* nam2 = new QNetworkAccessManager(this);
         nam2->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
         nam2->cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 

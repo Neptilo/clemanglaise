@@ -17,7 +17,7 @@ TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent)
     request(NULL),
     nam(NULL),
     nam_themes(),
-    reply_list(NULL),
+    reply_list(),
     layout(NULL),
     theme(NULL),
     title(NULL),
@@ -78,8 +78,6 @@ TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent)
 
 TestFrame::~TestFrame(){
     delete request;
-    delete nam;
-    delete reply_list;
 }
 
 // This function is called every time the user comes back from another view.
@@ -88,7 +86,7 @@ void TestFrame::init()
     question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
     update_request();
-    nam = new QNetworkAccessManager; // FIXME: Memory leak
+    nam = new QNetworkAccessManager(this);
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     nam->get(*request);
     find_themes();
@@ -119,7 +117,7 @@ void TestFrame::update_request() {
 		}
 		url = QUrl(Parser::get_working_path(parser->getFileout()));
 	}
-    delete request;
+    delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request stays the same.)
     request = new QNetworkRequest(url);
 }
 
@@ -128,15 +126,15 @@ void TestFrame::read_reply(QNetworkReply* reply){
         // Store the lines of the reply in the "reply_list" attribute
         QString reply_string(reply->readAll());
         reply->deleteLater();
-        reply_list = test.isRemoteWork()?new QStringList(reply_string.split('\n')):new QStringList(reply_string.split(QRegExp(ENDL))); // FIXME: Memory leak
+        reply_list = test.isRemoteWork()?reply_string.split('\n'):reply_string.split(QRegExp(ENDL));
 
         // Everything is ready for the question frame to ask the question.
-        QString word = reply_list->at(1);
+        QString word = reply_list.at(1);
         if (test.isRemoteWork()) {
-            QString theme = reply_list->at(9);
+            QString theme = reply_list.at(9);
             question_frame->ask_question(word, theme);
         } else {
-            int id_theme = reply_list->at(6).toInt();
+            int id_theme = reply_list.at(6).toInt();
             question_frame->ask_question(word, Parser::getTheme(id_theme));
         }
     }
@@ -146,7 +144,7 @@ void TestFrame::validate_question(){
 
     // Create a new answer frame
     delete answer_frame;
-    answer_frame = new AnswerFrame(*reply_list, question_frame->getAnswer(), test, this); // FIXME: Memory leak
+    answer_frame = new AnswerFrame(reply_list, question_frame->getAnswer(), test, this);
     layout->addWidget(answer_frame);
 }
 
@@ -170,7 +168,7 @@ void TestFrame::validate_answer() {
 		} else {	
 			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
 		}
-	}
+    }
     nam->get(*request);
 }
 
@@ -210,7 +208,7 @@ void TestFrame::update_word()
     remove_widgets();
 
     // Create a new add frame
-    update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), *reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
+    update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
     layout->addWidget(update_frame);
     connect(update_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }

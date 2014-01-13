@@ -36,7 +36,7 @@ private:
     QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
     QNetworkAccessManager* nam;
     QNetworkAccessManager nam_themes;
-    QStringList* reply_list;
+    QStringList reply_list;
     QLayout* layout;
 	QLabel* theme;
 	QLabel* title;

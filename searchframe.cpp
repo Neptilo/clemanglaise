@@ -77,7 +77,7 @@ void SearchFrame::read_reply(QNetworkReply* reply)
 
 void SearchFrame::read_reply(QString reply_string) {
     int nb_cols(10);
-    reply_list = QStringList(reply_string.split('\n')); // FIXME: Memory leak
+    reply_list = QStringList(reply_string.split('\n'));
 	if(result){
         disconnect(result);
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.

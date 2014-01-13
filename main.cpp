@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 		const QUrl url("http://neptilo.com/php/clemanglaise/login.php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-		QNetworkAccessManager* nam = new QNetworkAccessManager(); // TODO: To delete later
+        QNetworkAccessManager* nam = new QNetworkAccessManager(); // FIXME: Memory leak
 		nam->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
 		nam->cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 		NetworkReplyReader* reply_reader = new NetworkReplyReader(); // TODO: To delete later
