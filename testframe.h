@@ -49,6 +49,7 @@ private:
 	QComboBox *themes;
 	Parser* parser;
     bool admin;
+    void remove_widgets();
 
 public slots:
     void init();

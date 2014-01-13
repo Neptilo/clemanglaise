@@ -45,6 +45,7 @@ TestFrame::~TestFrame(){
     delete reply_list;
 }
 
+// This function is called every time the user comes back from another view.
 void TestFrame::init() {
 
 	layout->addWidget(title); 
@@ -86,7 +87,7 @@ void TestFrame::init() {
     question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
     update_request();
-    nam = new QNetworkAccessManager;
+    nam = new QNetworkAccessManager; // FIXME: Memory leak
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     nam->get(*request);
     find_themes();
@@ -108,15 +109,15 @@ void TestFrame::update_request() {
 		}
 		url = QUrl(Parser::get_working_path(parser->getFileout()));
 	}
-    request = new QNetworkRequest(url);
+    request = new QNetworkRequest(url); // FIXME: Memory leak
 }
 
 void TestFrame::read_reply(QNetworkReply* reply){
     if(question_frame){ // If question_frame is deleted, that means the user has changed the frame to another one before the NAM request was finished, so we want to ignore the NAM's reply.
         // Store the lines of the reply in the "reply_list" attribute
-        QString* reply_string = new QString(reply->readAll());
+        QString reply_string(reply->readAll());
         reply->deleteLater();
-        reply_list = test.isRemoteWork()?new QStringList(reply_string->split('\n')):new QStringList(reply_string->split(QRegExp(ENDL)));
+        reply_list = test.isRemoteWork()?new QStringList(reply_string.split('\n')):new QStringList(reply_string.split(QRegExp(ENDL))); // FIXME: Memory leak
 
         // Everything is ready for the question frame to ask the question.
         QString word = reply_list->at(1);
@@ -134,7 +135,7 @@ void TestFrame::validate_question(){
 
     // Create a new answer frame
     delete answer_frame;
-    answer_frame = new AnswerFrame(*reply_list, question_frame->getAnswer(), test, this);
+    answer_frame = new AnswerFrame(*reply_list, question_frame->getAnswer(), test, this); // FIXME: Memory leak
     layout->addWidget(answer_frame);
 }
 
@@ -167,33 +168,9 @@ void TestFrame::update_question(int){
     validate_answer();
 }
 
-void TestFrame::add_theme() {
-    // Remove everything
-    delete question_frame;
-    question_frame = NULL;
-    answer_frame->hide();
-	theme->hide();
-	themes->hide();
-    if(back_button){
-        disconnect(back_button);
-        back_button->hide();
-    }
-    if(add_theme_button){
-        disconnect(add_theme_button);
-        add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(add_button){
-        disconnect(add_button);
-        add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(update_button){
-        disconnect(update_button);
-        update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(search_button){
-        disconnect(search_button);
-        search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
+void TestFrame::add_theme()
+{
+    remove_widgets();
 
     // Create a new add frame
     QStringList default_values_list;
@@ -203,35 +180,9 @@ void TestFrame::add_theme() {
     connect(add_theme_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
-void TestFrame::add_word(){
-
-    // Remove everything
-    layout->removeWidget(question_frame);
-    delete question_frame;
-    question_frame = NULL;
-    answer_frame->hide();
-	theme->hide();
-	themes->hide();
-    if(back_button){
-        disconnect(back_button);
-        back_button->hide();
-    }
-    if(add_theme_button){
-        disconnect(add_theme_button);
-        add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(add_button){
-        disconnect(add_button);
-        add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(update_button){
-        disconnect(update_button);
-        update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(search_button){
-        disconnect(search_button);
-        search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
+void TestFrame::add_word()
+{
+    remove_widgets();
 
     // Create a new add frame
     QStringList default_values_list;
@@ -243,34 +194,9 @@ void TestFrame::add_word(){
     connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
-void TestFrame::update_word(){
-
-    // Remove everything
-    delete question_frame;
-    question_frame = NULL;
-    answer_frame->hide();
-	theme->hide();
-	themes->hide();
-    if(back_button){
-        disconnect(back_button);
-        back_button->hide();
-    }
-    if(add_theme_button){
-        disconnect(add_theme_button);
-        add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(add_button){
-        disconnect(add_button);
-        add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(update_button){
-        disconnect(update_button);
-        update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
-    if(search_button){
-        disconnect(search_button);
-        search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
+void TestFrame::update_word()
+{
+    remove_widgets();
 
     // Create a new add frame
     update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), *reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
@@ -280,32 +206,7 @@ void TestFrame::update_word(){
 
 void TestFrame::search()
 {
-    // Remove everything
-    delete question_frame;
-    question_frame = NULL;
-    answer_frame->hide();
-    theme->hide();
-    themes->hide();
-    if(back_button){
-        disconnect(back_button);
-        back_button->hide();
-    }
-    if(add_theme_button){
-        add_theme_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-        disconnect(add_theme_button);
-    }
-    if(add_button){
-        add_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-        disconnect(add_button);
-    }
-    if(update_button){
-        update_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-        disconnect(update_button);
-    }
-    if(search_button){
-        disconnect(search_button);
-        search_button->hide(); // Careful! If I don't delete it, there's gonna be memory leaks.
-    }
+    remove_widgets();
 
     // Create a new search frame
     search_frame = new SearchFrame(test, !test.isRemoteWork()||admin, this);
@@ -345,4 +246,25 @@ void TestFrame::read_reply(QString reply_string) {
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
     }
     connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
+}
+
+void TestFrame::remove_widgets()
+{
+    answer_frame->hide();
+    delete question_frame;
+    question_frame = NULL;
+    delete theme;
+    theme = NULL;
+    delete themes;
+    themes = NULL;
+    delete back_button;
+    back_button = NULL;
+    delete add_theme_button;
+    add_theme_button = NULL;
+    delete add_button;
+    add_button = NULL;
+    delete update_button;
+    update_button = NULL;
+    delete search_button;
+    search_button = NULL;
 }

@@ -55,7 +55,7 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    QNetworkAccessManager* nam = new QNetworkAccessManager;
+    QNetworkAccessManager* nam = new QNetworkAccessManager; // FIXME: Memory leak
     
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
     QUrl post_data;

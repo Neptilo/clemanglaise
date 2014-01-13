@@ -61,7 +61,7 @@ void SearchFrame::search() {
 
 		// Request to PHP file
 		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test.getSrc() + test.getDst() + "&string=" + search_str);
-		request = new QNetworkRequest(url);
+        request = new QNetworkRequest(url); // FIXME: Memory leak
 
 		nam.get(*request);
 	}
@@ -72,12 +72,12 @@ void SearchFrame::read_reply(QNetworkReply* reply)
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll();
     reply->deleteLater();
-	read_reply(reply_string);
+    read_reply(reply_string); // FIXME: Memory leak
 }
 
 void SearchFrame::read_reply(QString reply_string) {
     int nb_cols(10);
-	reply_list = new QStringList(reply_string.split('\n'));
+    reply_list = new QStringList(reply_string.split('\n')); // FIXME: Memory leak
 	if(result){
         disconnect(result);
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
@@ -115,7 +115,7 @@ void SearchFrame::read_reply(QString reply_string) {
             if(col_ind == 9 && !test.isRemoteWork()){ // Theme
                 item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i-3).toInt())));
             }else{
-                item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i)));
+                item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i))); // FIXME: Memory leak
             }
             result->setItem(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
