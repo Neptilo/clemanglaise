@@ -119,7 +119,8 @@ void TestFrame::update_request() {
 		}
 		url = QUrl(Parser::get_working_path(parser->getFileout()));
 	}
-    request = new QNetworkRequest(url); // FIXME: Memory leak
+    delete request;
+    request = new QNetworkRequest(url);
 }
 
 void TestFrame::read_reply(QNetworkReply* reply){

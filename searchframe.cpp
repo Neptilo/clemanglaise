@@ -18,7 +18,7 @@ SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
     nam(),
     result(NULL),
     test(test),
-    reply_list(NULL),
+    reply_list(),
     update_frame(NULL),
     modifiable(modifiable)
 {
@@ -77,13 +77,13 @@ void SearchFrame::read_reply(QNetworkReply* reply)
 
 void SearchFrame::read_reply(QString reply_string) {
     int nb_cols(10);
-    reply_list = new QStringList(reply_string.split('\n')); // FIXME: Memory leak
+    reply_list = QStringList(reply_string.split('\n')); // FIXME: Memory leak
 	if(result){
         disconnect(result);
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 		delete result;
 	}
-    int result_nb_rows(reply_list->count()/nb_cols), result_nb_cols(modifiable?nb_cols:(nb_cols-2));
+    int result_nb_rows(reply_list.count()/nb_cols), result_nb_cols(modifiable?nb_cols:(nb_cols-2));
     result = new QTableWidget(result_nb_rows, result_nb_cols, this);
 	QStringList header_labels;
     if(modifiable)
@@ -92,7 +92,7 @@ void SearchFrame::read_reply(QString reply_string) {
 	result->setHorizontalHeaderLabels(header_labels);
 	result->verticalHeader()->hide();
 	layout()->addWidget(result);
-    for(int i=0, col_ind=0; i<reply_list->count()-1; ++i){ // -1 because the last string is an empty string.
+    for(int i=0, col_ind=0; i<reply_list.count()-1; ++i){ // -1 because the last string is an empty string.
 		QTableWidgetItem* item;
         if(modifiable && (col_ind==0 || col_ind==1)){
             QLabel* action_label = new QLabel(this);
@@ -113,9 +113,9 @@ void SearchFrame::read_reply(QString reply_string) {
         }
         if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
             if(col_ind == 9 && !test.isRemoteWork()){ // Theme
-                item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list->at(i-3).toInt())));
+                item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list.at(i-3).toInt())));
             }else{
-                item = new QTableWidgetItem(ampersand_unescape(reply_list->at(i))); // FIXME: Memory leak
+                item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i))); // FIXME: Memory leak
             }
             result->setItem(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
@@ -143,7 +143,7 @@ void SearchFrame::action(int row, int col)
         // Create a new add frame
         QStringList default_values;
         for(int i=row*nb_cols; i<(row+1)*nb_cols; ++i){
-			default_values << reply_list->at(i);
+            default_values << reply_list.at(i);
 		}
 		update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), this);
 		layout()->addWidget(update_frame);
@@ -159,7 +159,7 @@ void SearchFrame::action(int row, int col)
         QUrlQuery post_data;
 #endif
         post_data.addQueryItem("lang", test.getSrc() + test.getDst());
-        post_data.addQueryItem("id", reply_list->at(row*nb_cols));
+        post_data.addQueryItem("id", reply_list.at(row*nb_cols));
         const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -175,7 +175,7 @@ void SearchFrame::action(int row, int col)
 		} else {
 			//offline some crash why??
 			Parser* p = new Parser(test.getSrc() + test.getDst());
-			p->deleteLineId(reply_list->at(row*nb_cols).toInt(), p->getFilein());
+            p->deleteLineId(reply_list.at(row*nb_cols).toInt(), p->getFilein());
 			//qDebug() << "qdfqsd";
 		}
 

@@ -23,7 +23,7 @@ private:
     QNetworkAccessManager nam;
     QTableWidget* result;
     Test test;
-    QStringList* reply_list;
+    QStringList reply_list;
     EditFrame* update_frame;
     bool modifiable;
 

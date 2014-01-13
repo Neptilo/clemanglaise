@@ -33,7 +33,7 @@ private:
     EditFrame* add_frame;
     EditFrame* update_frame;
     SearchFrame* search_frame;
-    QNetworkRequest* request;
+    QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
     QNetworkAccessManager* nam;
     QNetworkAccessManager nam_themes;
     QStringList* reply_list;
