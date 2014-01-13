@@ -35,27 +35,15 @@ TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent)
     title->setAlignment(Qt::AlignHCenter);
     layout = new QVBoxLayout(this);
     answer_frame = new AnswerFrame(test, this);
-    init();
-    connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
-}
 
-TestFrame::~TestFrame(){
-    delete request;
-    delete nam;
-    delete reply_list;
-}
+    layout->addWidget(title);
 
-// This function is called every time the user comes back from another view.
-void TestFrame::init() {
-
-	layout->addWidget(title); 
-
-	theme = new QLabel(tr("<i>Choose a theme</i>"), this);
-	layout->addWidget(theme);
-	themes = new QComboBox(this);
+    theme = new QLabel(tr("<i>Choose a theme</i>"), this);
+    layout->addWidget(theme);
+    themes = new QComboBox(this);
     // set the ComboBox to that width.
-	themes->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-	layout->addWidget(themes);
+    themes->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+    layout->addWidget(themes);
 
     back_button = new QPushButton(tr("Go &back to tests list"), this);
     back_button->setIcon(QIcon::fromTheme("go-home", QIcon(getImgPath("go-home.png"))));
@@ -84,6 +72,19 @@ void TestFrame::init() {
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);
 
+    init();
+    connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
+}
+
+TestFrame::~TestFrame(){
+    delete request;
+    delete nam;
+    delete reply_list;
+}
+
+// This function is called every time the user comes back from another view.
+void TestFrame::init()
+{
     question_frame = new QuestionFrame(test, this);
     layout->addWidget(question_frame);
     update_request();
@@ -91,6 +92,15 @@ void TestFrame::init() {
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     nam->get(*request);
     find_themes();
+
+    // Show everything
+    theme->show();
+    themes->show();
+    back_button->show();
+    add_theme_button->show();
+    add_button->show();
+    update_button->show();
+    search_button->show();
 }
 
 void TestFrame::update_request() {
@@ -250,21 +260,15 @@ void TestFrame::read_reply(QString reply_string) {
 
 void TestFrame::remove_widgets()
 {
-    answer_frame->hide();
     delete question_frame;
     question_frame = NULL;
-    delete theme;
-    theme = NULL;
-    delete themes;
-    themes = NULL;
-    delete back_button;
-    back_button = NULL;
-    delete add_theme_button;
-    add_theme_button = NULL;
-    delete add_button;
-    add_button = NULL;
-    delete update_button;
-    update_button = NULL;
-    delete search_button;
-    search_button = NULL;
+    delete answer_frame;
+    answer_frame = NULL;
+    theme->hide();
+    themes->hide();
+    back_button->hide();
+    add_theme_button->hide();
+    add_button->hide();
+    update_button->hide();
+    search_button->hide();
 }
