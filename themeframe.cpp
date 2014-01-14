@@ -68,13 +68,13 @@ void ThemeFrame::edit_theme(){
     status->setText(tr("Sending data..."));
 	if (!test.isRemoteWork()) {
         // Offline
-		Parser* p = new Parser(test.getSrc() + test.getDst());
+        Parser p(test.getSrc() + test.getDst());
 
 		// Will show confirmation when loading of reply is finished
-		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
+        connect(&p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1)) + endline;
-		p->appendInFile(line, Parser::getThemeFile());
-		p->deleteLineId(default_values.at(0).toInt(), p->getFilein());
+        p.appendInFile(line, Parser::getThemeFile());
+        p.deleteLineId(default_values.at(0).toInt(), p.getFilein());
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
@@ -152,8 +152,8 @@ void ThemeFrame::reset(){
 void ThemeFrame::find_themes() {
 	if (!test.isRemoteWork()) {
         // Offline
-        Parser* p = new Parser(test.getSrc() + test.getDst());
-		read_reply(p->search("", Parser::getThemeFile()));
+        Parser p(test.getSrc() + test.getDst());
+        read_reply(p.search("", Parser::getThemeFile()));
 	} else { 
 		// Request to PHP file
         const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");

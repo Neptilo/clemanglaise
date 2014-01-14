@@ -19,7 +19,6 @@ public:
 
 private:
     QLineEdit* search_bar;
-    QNetworkRequest* request;
     QNetworkAccessManager nam;
     QTableWidget* result;
     Test test;

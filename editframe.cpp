@@ -107,10 +107,10 @@ void EditFrame::edit_word(){
 	if (!test.isRemoteWork()) {
 		// Offline
 		QString separator("\t:\t");
-		Parser* p = new Parser(test.getSrc() + test.getDst());
+        Parser p(test.getSrc() + test.getDst());
 		QString pronunciation_line = isKirshenbaum(pronunciation_edit->text())?kirshenbaum2IPA(pronunciation_edit->text()):colon_unescape(pronunciation_edit->text());
 		// Will show confirmation when loading of reply is finished
-		connect(p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
+        connect(&p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
 		QString line = colon_unescape(word_edit->text()) + separator + 
 			colon_unescape(meaning_edit->text()) + separator +
 			nature_edit->itemData(nature_edit->currentIndex()).toString() + separator +	
@@ -121,12 +121,12 @@ void EditFrame::edit_word(){
 			endline;
 		int id = default_values.at(0).toInt();
 		if (themes->currentIndex()>0) {
-			QString theme_file = p->getSrcDst() + "/" + themes->itemData(themes->currentIndex()).toString() + "_" + themes->itemText(themes->currentIndex());
-			p->deleteLineId(id, theme_file);
-			p->appendInFile(line, theme_file);
+            QString theme_file = p.getSrcDst() + "/" + themes->itemData(themes->currentIndex()).toString() + "_" + themes->itemText(themes->currentIndex());
+            p.deleteLineId(id, theme_file);
+            p.appendInFile(line, theme_file);
 		} 
-		p->deleteLineId(id, p->getFilein());
-		p->appendInFile(line, p->getFilein());
+        p.deleteLineId(id, p.getFilein());
+        p.appendInFile(line, p.getFilein());
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;
@@ -235,10 +235,10 @@ void EditFrame::reset(){
 
 void EditFrame::find_themes() {
 	if (!test.isRemoteWork()) {
-		Parser* p = new Parser(test.getSrc() + test.getDst());
+        Parser p(test.getSrc() + test.getDst());
 		// Offline
-		read_reply(p->search("", p->getThemeFile()));
-	} else { 
+        read_reply(p.search("", p.getThemeFile()));
+    } else {
 		// Request to PHP file
 		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
 		QNetworkRequest request(url);

@@ -81,7 +81,9 @@ int main(int argc, char *argv[])
 
 	srand(time(0));
 
-	if(use_password){
+    QNetworkAccessManager nam(0); // Before the conditional because it has to be still there during the execution of the app after the conditional.
+    NetworkReplyReader reply_reader(0); // Same as above
+    if(use_password){
 
 		// Connect as administrator
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
@@ -93,19 +95,17 @@ int main(int argc, char *argv[])
 		const QUrl url("http://neptilo.com/php/clemanglaise/login.php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-        QNetworkAccessManager* nam = new QNetworkAccessManager(); // FIXME: Memory leak
-		nam->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-		nam->cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
-		NetworkReplyReader* reply_reader = new NetworkReplyReader(); // TODO: To delete later
+        nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
+        nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
 		// Will show confirmation when loading of reply is finished
-		QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), reply_reader, SLOT(read_reply(QNetworkReply*)));
+        QObject::connect(&nam, SIGNAL(finished(QNetworkReply*)), &reply_reader, SLOT(read_reply(QNetworkReply*)));
 
 		// Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-		nam->post(request, post_data.encodedQuery());
+        nam.post(request, post_data.encodedQuery());
 #else
-		nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 
 		// Then we wait for the NetworkReplyReader to answer yes.

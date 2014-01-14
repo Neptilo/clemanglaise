@@ -14,7 +14,6 @@
 SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
     QWidget(parent),
     search_bar(NULL),
-    request(NULL),
     nam(),
     result(NULL),
     test(test),
@@ -42,18 +41,17 @@ SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
 }
 
 SearchFrame::~SearchFrame() {
-    if(result){
-        disconnect(result);
+    if(result)
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.
-    }
 }
 
 void SearchFrame::search() {
 	if (!test.isRemoteWork()) {
-		Parser* p = new Parser(test.getSrc() + test.getDst());
-		//offline
+        Parser p(test.getSrc() + test.getDst());
+
+        // Offline
 		QString search_str = ampersand_unescape(search_bar->text());
-		read_reply(p->search(search_str, p->getFilein()));
+        read_reply(p.search(search_str, p.getFilein()));
 	} else {
 
 		// Standardization of search string
@@ -61,9 +59,7 @@ void SearchFrame::search() {
 
 		// Request to PHP file
 		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test.getSrc() + test.getDst() + "&string=" + search_str);
-        request = new QNetworkRequest(url); // FIXME: Memory leak
-
-		nam.get(*request);
+        nam.get(QNetworkRequest(url));
 	}
 }
 
@@ -79,9 +75,9 @@ void SearchFrame::read_reply(QString reply_string) {
     int nb_cols(10);
     reply_list = QStringList(reply_string.split('\n'));
 	if(result){
-        disconnect(result);
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 		delete result;
+        result = NULL;
 	}
     int result_nb_rows(reply_list.count()/nb_cols), result_nb_cols(modifiable?nb_cols:(nb_cols-2));
     result = new QTableWidget(result_nb_rows, result_nb_cols, this);
@@ -115,7 +111,7 @@ void SearchFrame::read_reply(QString reply_string) {
             if(col_ind == 9 && !test.isRemoteWork()){ // Theme
                 item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list.at(i-3).toInt())));
             }else{
-                item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i))); // FIXME: Memory leak
+                item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i)));
             }
             result->setItem(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
@@ -174,8 +170,8 @@ void SearchFrame::action(int row, int col)
 #endif
 		} else {
 			//offline some crash why??
-			Parser* p = new Parser(test.getSrc() + test.getDst());
-            p->deleteLineId(reply_list.at(row*nb_cols).toInt(), p->getFilein());
+            Parser p(test.getSrc() + test.getDst());
+            p.deleteLineId(reply_list.at(row*nb_cols).toInt(), p.getFilein());
 		}
 
         refresh();

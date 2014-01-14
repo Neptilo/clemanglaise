@@ -6,7 +6,7 @@
 
 #include "Parser.h"
 
-Parser::Parser(const QString& srcDst, QObject* parent, QString file_in, QString file_out):QObject(parent) {
+Parser::Parser(const QString& srcDst, QString file_in, QString file_out, QObject* parent): QObject(parent) {
 	m_srcDst = srcDst;
     m_filein = m_srcDst + "/" + file_in;
     m_fileout = m_srcDst + "/" + file_out;

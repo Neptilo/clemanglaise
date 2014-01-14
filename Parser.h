@@ -15,7 +15,7 @@ const QString space(" ");
 class Parser: public QObject {
 	Q_OBJECT
     public:
-		Parser(const QString& srcDst, QObject* parent =0, QString file_in="file_in", QString file_out="file_out");
+        Parser(const QString& srcDst, QString file_in = "file_in", QString file_out = "file_out", QObject* parent = 0);
 		virtual ~Parser();
 		/**
 		 *@return the numberth line of filename

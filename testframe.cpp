@@ -72,12 +72,16 @@ TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent)
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);
 
+    if (!test.isRemoteWork())
+        parser = new Parser(test.getSrc() + test.getDst());
+
     init();
     connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
 
 TestFrame::~TestFrame(){
     delete request;
+    delete parser;
 }
 
 // This function is called every time the user comes back from another view.
@@ -107,14 +111,13 @@ void TestFrame::update_request() {
     // Request to PHP or local file
 	QUrl url;
 	int index = themes->currentIndex();
-	QString root = test.getSrc() + test.getDst(); 
+    QString root = test.getSrc() + test.getDst();
 	if (test.isRemoteWork()) {
         url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + root +"&id_theme="+themes->itemData(index).toString());
 	} else {
-		parser = new Parser(root);
 		if (!index || (index && index < 0)) {
 			parser->parse(parser->getFilein());
-		} else {	
+        } else {
 			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
 		}
 		url = QUrl(Parser::get_working_path(parser->getFileout()));
@@ -233,8 +236,8 @@ void TestFrame::go_back() {
 void TestFrame::find_themes() {
 	if (!test.isRemoteWork()) {
         // Offline
-        Parser* p = new Parser(test.getSrc() + test.getDst());
-		read_reply(p->search("", Parser::getThemeFile()));
+        Parser p(test.getSrc() + test.getDst());
+        read_reply(p.search("", Parser::getThemeFile()));
 	} else { 
 		// Request to PHP file
         const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test.getSrc() + test.getDst());
@@ -259,7 +262,6 @@ void TestFrame::read_reply(QString reply_string) {
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
     }    
-    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(debug(int)));
     connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
 

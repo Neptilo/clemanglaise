@@ -47,7 +47,7 @@ private:
     QPushButton* update_button;
     Test test;
 	QComboBox *themes;
-	Parser* parser;
+    Parser* parser; // pointer because for offline work it doesn't need to be defined.
     bool admin;
     void remove_widgets();
 
