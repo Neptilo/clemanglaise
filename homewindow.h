@@ -17,7 +17,7 @@ private:
     TestFrame* test_frame;
     QLabel* title;
     QLayout* layout;
-    QList<Test>* tests;
+    QList<Test> tests;
     QStringList* mapping_texts;
     QStringList* button_texts;
     LanguageButtons* online_buttons;

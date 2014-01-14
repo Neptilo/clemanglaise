@@ -5,7 +5,7 @@ HomeWindow::HomeWindow(bool admin, QWidget *parent):
     test_frame(NULL),
     title(NULL),
     layout(NULL),
-    tests(NULL),
+    tests(),
     mapping_texts(NULL),
     button_texts(NULL),
     online_buttons(NULL),
@@ -39,7 +39,7 @@ void HomeWindow::init(){
     offline_tests << Test(test_id++, tr("&German to French"), "de", "fr", false);
 	QStringList offline_flags;
     offline_flags << ":/france-img.png" << ":/germany-img.png";
-    tests = new QList<Test>(online_tests+offline_tests); // FIXME: Memory leak
+    tests << online_tests << offline_tests;
 
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);
     title->setAlignment(Qt::AlignHCenter);
@@ -56,7 +56,6 @@ void HomeWindow::init(){
 }
 
 HomeWindow::~HomeWindow(){
-    delete tests;
     delete mapping_texts;
     delete button_texts;
 }
@@ -69,7 +68,7 @@ void HomeWindow::start_test(int i){
     workremote->hide();
     online_buttons->disconnect_all();
     online_buttons->hide();
-    Test test = (*tests)[i];
+    Test test = tests[i];
     // No possible decomposition of the sentence, because of translations in foreign languages that put words in a different order.
     QString str_title = test.isRemoteWork()?
                        tr("<b>You are now working on <br />tests from the remote server.</b>"):

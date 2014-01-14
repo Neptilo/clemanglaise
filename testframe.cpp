@@ -92,12 +92,14 @@ void TestFrame::init()
     find_themes();
 
     // Show everything
+    if(!test.isRemoteWork() || admin){
+        update_button->show();
+        add_theme_button->show();
+        add_button->show();
+    }
     theme->show();
     themes->show();
     back_button->show();
-    add_theme_button->show();
-    add_button->show();
-    update_button->show();
     search_button->show();
 }
 
@@ -165,7 +167,7 @@ void TestFrame::validate_answer() {
 	if (!test.isRemoteWork()) {
 		if (!index || (index && index < 0)) {
 			parser->parse(parser->getFilein());
-		} else {	
+        } else {
 			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
 		}
     }
@@ -250,7 +252,7 @@ void TestFrame::read_reply_themes(QNetworkReply* reply)
 
 void TestFrame::read_reply(QString reply_string) {
     QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
-	themes->addItem("");
+    themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
     }
@@ -263,11 +265,13 @@ void TestFrame::remove_widgets()
     question_frame = NULL;
     delete answer_frame;
     answer_frame = NULL;
+    if(!test.isRemoteWork() || admin){
+        update_button->hide();
+        add_theme_button->hide();
+        add_button->hide();
+    }
     theme->hide();
     themes->hide();
     back_button->hide();
-    add_theme_button->hide();
-    add_button->hide();
-    update_button->hide();
     search_button->hide();
 }
