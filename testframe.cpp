@@ -157,7 +157,8 @@ void TestFrame::validate_answer() {
     // Remove everything
     delete question_frame;
     question_frame = NULL;
-    answer_frame->hide();
+    if(answer_frame)
+        answer_frame->hide();
 
     // Create a new question frame
     question_frame = new QuestionFrame(test, this); // Is it deleted somewhere? It should because of "new".
@@ -252,10 +253,13 @@ void TestFrame::read_reply_themes(QNetworkReply* reply)
 
 void TestFrame::read_reply(QString reply_string) {
     QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
-    themes->addItem("");
+    themes->disconnect();
+    themes->clear();
+    themes->addItem("---");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
-    }
+    }    
+    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(debug(int)));
     connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
 

@@ -176,7 +176,6 @@ void SearchFrame::action(int row, int col)
 			//offline some crash why??
 			Parser* p = new Parser(test.getSrc() + test.getDst());
             p->deleteLineId(reply_list.at(row*nb_cols).toInt(), p->getFilein());
-			//qDebug() << "qdfqsd";
 		}
 
         refresh();

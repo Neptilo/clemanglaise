@@ -1,4 +1,3 @@
-* Solve bug: when changing view and coming back to test frame, the list of themes is bigger than before and clicking on one item makes the app crash.
 * Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: 
   http://www.howdoyousaythatword.com/wp-content/uploads/2012/01/creme-anglaise.jpg, use a vector graphics editor.
 * Treat all cases when there is no Internet connection.
