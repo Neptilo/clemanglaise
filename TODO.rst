@@ -17,7 +17,7 @@
   * Highlight matched strings
   
 * Implement new method for calculating scores:
-  Instead of increasing or descreasing a score when an answer is right or wrong, update two variables in different fields of the table: increase the value of a field `correctly_answered` if the question was answered correctly, increase the value of a field `asked` in both cases, and update a `score` field as correctly_answered/(asked+1). The app will then still ask for the words with the lowest scores.
+  Instead of increasing or descreasing a score when an answer is right or wrong, update two variables in different fields of the table: increase the value of a field ``correctly_answered`` if the question was answered correctly, increase the value of a field ``asked`` in both cases, and update a ``score`` field as correctly_answered/(asked+1). The app will then still ask for the words with the lowest scores.
   Then the words asked are no longer the ones that have been reviewed a long time ago, but the ones that are answered the most frequently wrong.
 * Publicly release the app with an installer
 * Include a field for the gender in German
@@ -25,7 +25,7 @@
 
   * only keep the already existing item if there is a conflict
   * write over existing items
-  * merge them, that is, for a `meaning` field "x" offline, and "y" online, set it to "x, y"
+  * merge them, that is, for a ``meaning`` field "x" offline, and "y" online, set it to "x, y"
   * ask for every item where there is a conflict
   * (edit manually?)
   
