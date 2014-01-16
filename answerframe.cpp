@@ -20,7 +20,6 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QString comment = reply_list.at(4);
     QString example = reply_list.at(5);
     QString pronunciation = reply_list.at(7);
-    int score = reply_list.at(8).toInt();
 
     // Check answer
     QString message;
@@ -57,13 +56,13 @@ AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_an
     QUrl post_data;
     post_data.addQueryItem("id", reply_list.at(0));
     post_data.addQueryItem("lang", test.getSrc() + test.getDst());
-    post_data.addQueryItem("score", QString::number(score+(correct?1:-1)));
+    post_data.addQueryItem("correct", QString::number(correct));
     nam->post(request, post_data.encodedQuery());
 #else
     QUrlQuery post_data;
     post_data.addQueryItem("id", reply_list.at(0));
     post_data.addQueryItem("lang", test.getSrc() + test.getDst());
-    post_data.addQueryItem("score", QString::number(score+(correct?1:-1)));
+    post_data.addQueryItem("correct", QString::number(correct));
     nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 
