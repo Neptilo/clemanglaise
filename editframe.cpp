@@ -1,4 +1,5 @@
 #include <QtNetwork>
+#include <QDebug>
 #include <QTextDocument>
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
@@ -44,7 +45,7 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
     QString comment = default_values.at(4);
     QString example = default_values.at(5);
     QString pronunciation = ampersand_unescape(default_values.at(7));
-	QString theme = default_values.at(9).trimmed();
+	int id_theme = default_values.at(6).toInt();
 
     word_edit = new QLineEdit(word, this);
     layout->addRow(tr("&Word: "), word_edit);
@@ -69,6 +70,8 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
 
 	pronunciation_edit = new QLineEdit(pronunciation, this);
 	layout->addRow(tr("&Pronunciation: "), pronunciation_edit);
+
+	this->id_theme = id_theme;
 
     comment_edit = new QTextEdit(comment, this);
     layout->addRow(tr("&Comment: "), comment_edit);
@@ -117,16 +120,28 @@ void EditFrame::edit_word(){
 			colon_unescape(comment_edit->toPlainText()) + separator + 
 			colon_unescape(example_edit->toPlainText()) + separator + 
 			themes->itemData(themes->currentIndex()).toString() + separator +
-			pronunciation_line + 
-			endline;
+			pronunciation_line;
 		int id = default_values.at(0).toInt();
-		if (themes->currentIndex()>0) {
+		int new_id_theme;
+		if(id==0){//add
+			p.appendInFile(line, p.getFilein());
+		} else { //update
+			p.updateLineId(id, line, p.getFilein());
+		}
+		if ((new_id_theme=themes->currentIndex())>0) {
             QString theme_file = p.getSrcDst() + "/" + themes->itemData(themes->currentIndex()).toString() + "_" + themes->itemText(themes->currentIndex());
-            p.deleteLineId(id, theme_file);
-            p.appendInFile(line, theme_file);
-		} 
-        p.deleteLineId(id, p.getFilein());
-        p.appendInFile(line, p.getFilein());
+            QString old_theme_file = p.getSrcDst() + "/" + QString::number(id_theme) + "_" + themes->itemText(id_theme);
+			if(id==0){//add
+				p.addInFile(p.getLineId(p.getLastId(p.getFilein()), p.getFilein()) , theme_file);
+			} else { //update
+				if (new_id_theme == id_theme){
+					p.updateLineId(id, line, theme_file);
+				} else {
+					p.deleteLineId(id, old_theme_file);	
+					p.addInFile( p.getLineId(id, p.getFilein()), theme_file);
+				}
+			}
+		}
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;

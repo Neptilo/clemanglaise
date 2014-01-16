@@ -1,4 +1,5 @@
 #include <QLabel>
+#include <QDebug>
 #include <QtNetwork>
 #include <QBoxLayout>
 #include <QLineEdit>
@@ -169,9 +170,13 @@ void SearchFrame::action(int row, int col)
         nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 		} else {
-			//offline some crash why??
-            Parser p(test.getSrc() + test.getDst());
+            Parser p(test.getSrc() + test.getDst()); 
+			int id_theme =  reply_list.at(row*nb_cols+6).toInt(); //id_thme
             p.deleteLineId(reply_list.at(row*nb_cols).toInt(), p.getFilein());
+			if(id_theme>0) {
+				QString theme_file = p.getSrcDst() + "/" + QString::number(id_theme) + "_" + p.getTheme(id_theme);
+				p.deleteLineId(reply_list.at(row*nb_cols).toInt(), theme_file);
+			}
 		}
 
         refresh();
