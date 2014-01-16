@@ -30,10 +30,18 @@ class Parser: public QObject {
 		QString getRandomLine(const QString & files) const;
 		QString split_line(QString line) const;
 		QString search(const QString& word, const QString &files) const;
+		/**
+		 * @return the line with the specified id
+		 */
+		QString getLineId(const int & id, const QString& files);
+		int getLastId(const QString& files);
 		void parse(const QString& files);
 		void writeInFile(const QString& text, const QString& files);
 		void appendInFile(const QString& text, const QString& files);
+		void addInFile(const QString& text, const QString& files);
 		void deleteLineId(const int & id, const QString& files);
+		void updateLineId(const int &id, const QString& new_text, const QString& files); 
+
 		static QString get_working_path();
 		static QString get_working_path(const QString& file);
 

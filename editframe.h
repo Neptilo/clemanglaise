@@ -39,6 +39,7 @@ private:
     QPushButton* continue_button;
     QFormLayout* layout;
     Test test;
+    int id_theme;
     QString php_filename;
     QStringList default_values;
     QString success_message;

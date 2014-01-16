@@ -8,13 +8,13 @@
 
 Parser::Parser(const QString& srcDst, QString file_in, QString file_out, QObject* parent): QObject(parent) {
 	m_srcDst = srcDst;
-    m_filein = m_srcDst + "/" + file_in;
-    m_fileout = m_srcDst + "/" + file_out;
+	m_filein = m_srcDst + "/" + file_in;
+	m_fileout = m_srcDst + "/" + file_out;
 	QDir dir(m_srcDst);
 	if (!dir.exists()) {
 		dir.mkpath(".");
 	}
-	
+
 	QFile file(m_filein);
 	if (!file.exists()) {
 		//Opening file in write only mode
@@ -27,16 +27,16 @@ Parser::Parser(const QString& srcDst, QString file_in, QString file_out, QObject
 		// write in file
 		flux << 1 << " : Ball : Balle, Ballon : n" << endl;
 	}
-	
+
 }
 
 Parser::~Parser()
 {
-    //dtor
+	//dtor
 }
 
 QString Parser::getFilein() const {
-    return m_filein;
+	return m_filein;
 }
 
 QString Parser::getSrcDst() const {
@@ -44,7 +44,7 @@ QString Parser::getSrcDst() const {
 }
 
 QString Parser::getFileout() const{
-    return m_fileout;
+	return m_fileout;
 }
 
 QString Parser::getThemeFile() {
@@ -54,15 +54,15 @@ QString Parser::getThemeFile() {
 QString Parser::getTheme(const int & id) {
 	QString theme("");
 	QStringList list = getline(id, getThemeFile()).split(QRegExp("\\s*:\\s*"));
-    if (list.count()>1) {
+	if (list.count()>1) {
 		theme = list.at(1);
 	}
 	return theme;
 }
 
 QString Parser::getline(const unsigned int & number, const QString & filename) {
-    QString currentline("");
-    unsigned int i(0);
+	QString currentline("");
+	unsigned int i(0);
 	QFile file(filename);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return "";
@@ -71,12 +71,12 @@ QString Parser::getline(const unsigned int & number, const QString & filename) {
 		i++;
 		currentline = flux.readLine();
 	}
-    return currentline;
+	return currentline;
 }
 
 unsigned int Parser::nblines(const QString& files) const {
-    QString s;
-    unsigned int count(0);
+	QString s;
+	unsigned int count(0);
 	QFile file(files);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return -1;
@@ -86,13 +86,13 @@ unsigned int Parser::nblines(const QString& files) const {
 		flux.readLine();
 		++count;
 	}
-    return count;
+	return count;
 }
 
 QString Parser::getRandomLine(const QString& files) const {
-    unsigned int line;
-    unsigned int lines(nblines(files));
-    QString const nomFichier(files);
+	unsigned int line;
+	unsigned int lines(nblines(files));
+	QString const nomFichier(files);
 	QFile file(files);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return "";
@@ -111,39 +111,104 @@ void Parser::appendInFile(const QString& text, const QString& files) {
 	// choose codec UTF-8
 	flux.setCodec("UTF-8");
 	// write lines into file
-    int id = getline(nblines(files), files).split(QRegExp("\\s*:\\s*")).at(0).toInt();
-	flux << ++id << " : " << text;
+	int id = getline(nblines(files), files).split(QRegExp("\\s*:\\s*")).at(0).toInt();
+	flux << ++id << " : " << text << endl;
+	emit appendDone();
+}
+
+void Parser::addInFile(const QString& text, const QString& files) {
+	QFile file(files);
+	if (!file.open(QIODevice::Append | QIODevice::Text))
+		return;
+	// Creation of QTextStream from QFile object
+	QTextStream flux(&file);
+	// choose codec UTF-8
+	flux.setCodec("UTF-8");
+	// write lines into file
+	flux << text << endl;
 	emit appendDone();
 }
 
 void Parser::deleteLineId(const int & id, const QString& files) {
 	QString currentline("");
-	bool ok = false;
 	QFile file(files);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return;
 	QTextStream flux0(&file);
 	QStringList file_list = flux0.readAll().split(endline);
-	file.close();
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;
-	QTextStream flux(&file);
-	while(!flux.atEnd() && !ok) {
-		currentline = flux.readLine();
+	for (int i=0, l = file_list.size(); i<l; i++){
+		currentline = file_list[i];
 		if(currentline.split(QRegExp("\\s*:\\s*")).at(0).toInt() == id){
 			file_list.removeOne(currentline);
-			ok = true;
+			break;
 		}
 	}
 	file.close();
 	file.resize(0);
-	
+
 	QString text("");
 	for(int i=0, l = file_list.size(); i<l; i++) {
 		text += (i==l-1)?file_list.at(i) : file_list.at(i) + endline;
-	} 
+	}
 
-	writeInFile(text, files); 
+	writeInFile(text, files);
+}
+
+QString Parser::getLineId(const int &id, const QString& files) {
+	QString currentline("");
+	bool ok = false;
+	QFile file(files);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return "";
+
+	QTextStream flux(&file);
+	while(!flux.atEnd()&& !ok) {
+		currentline = flux.readLine();
+		if(currentline.split(QRegExp("\\s*:\\s*")).at(0).toInt() == id){
+			ok =true;
+		}
+	}
+	return currentline;
+}
+
+int Parser::getLastId(const QString& files)
+{
+	QString currentline("");
+	QFile file(files);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return 0;
+
+	QTextStream flux(&file);
+	while(!flux.atEnd())
+		currentline = flux.readLine();
+
+	return currentline.split(QRegExp("\\s*:\\s*")).at(0).toInt();
+
+}
+void Parser::updateLineId(const int &id, const QString& new_text, const QString& files) {
+	QFile file(files);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return;
+
+	QTextStream flux(&file);
+	QStringList file_list = flux.readAll().split(endline);
+	int textid;
+	for (int i=0, l = file_list.size(); i<l; i++){
+		QString & currentline = file_list[i];//la modif de l'un => modif de l'autre
+		if((textid=currentline.split(QRegExp("\\s*:\\s*")).at(0).toInt()) == id){
+			currentline = QString::number(id) + " : " + new_text;	
+			break;
+		}
+	}
+	file.close();
+	file.resize(0);
+	QString text("");
+	for(int i=0, l = file_list.size(); i<l; i++) {
+		text += (i==l-1)?file_list.at(i) : file_list.at(i) + endline;
+	}
+
+	writeInFile(text, files);
+	emit appendDone();
 }
 
 void Parser::writeInFile(const QString& text, const QString & files) {
@@ -166,7 +231,7 @@ void Parser::parse(const QString &files) {
 }
 
 QString Parser::split_line(QString line) const {
-    QStringList text = line.split(QRegExp("\\s*:\\s*"));
+	QStringList text = line.split(QRegExp("\\s*:\\s*"));
 	QString defaultText("");
 	int l(text.size());
 	int MAX(10);
@@ -188,8 +253,8 @@ QString Parser::split_line(QString line) const {
 	 * temp[7] = pronunciation
 	 * temp[8] = score
 	 * temp[9] = theme
-	 */  
-    	
+	 */
+
 	QString real_text("");
 	for(int k=0; k<MAX; k++) {
 		real_text += temp[k] + endline;
@@ -198,11 +263,11 @@ QString Parser::split_line(QString line) const {
 }
 
 QString Parser::get_working_path() {
-	return QDir::currentPath(); 
+	return QDir::currentPath();
 }
 
 QString Parser::get_working_path(const QString & file) {
-	return "file://" + prec + Parser::get_working_path() + "/" + file; 
+	return "file://" + prec + Parser::get_working_path() + "/" + file;
 }
 
 QString Parser::search(const QString& word, const QString& files) const {
