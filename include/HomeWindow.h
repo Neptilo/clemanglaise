@@ -6,15 +6,15 @@
 #include <QList>
 #include <QRadioButton>
 
-#include <testframe.h>
-#include <languagebuttons.h>
-#include <test.h>
+#include "TestView.h"
+#include "LanguageButtons.h"
+#include "Test.h"
 
 class HomeWindow : public QWidget{
     Q_OBJECT
 
 private:
-    TestFrame* test_frame;
+    TestView* test_frame;
     QLabel* title;
     QLayout* layout;
     QList<Test> tests;

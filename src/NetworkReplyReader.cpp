@@ -3,8 +3,8 @@
 #include <QObject>
 #include <QtNetwork>
 
-#include "networkreplyreader.h"
-#include "homewindow.h"
+#include "NetworkReplyReader.h"
+#include "HomeWindow.h"
 
 NetworkReplyReader::NetworkReplyReader(QObject *parent) :
     QObject(parent)

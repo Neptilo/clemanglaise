@@ -1,7 +1,7 @@
 #include <QObject>
 #include <QStringList>
 
-#include "test.h"
+#include "Test.h"
 
 Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote) {
     this->id = id;

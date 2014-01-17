@@ -4,13 +4,13 @@
 #   include <QUrlQuery>
 #endif
 
-#include "themeframe.h"
-#include "questionframe.h"
+#include "ThemeView.h"
+#include "QuestionView.h"
 #include "string_utils.h"
 #include "Parser.h"
-#include "networkreplyreader.h"
+#include "NetworkReplyReader.h"
 
-ThemeFrame::ThemeFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
+ThemeView::ThemeView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
     QWidget(parent),
     title(NULL),
     status(NULL),
@@ -62,9 +62,9 @@ ThemeFrame::ThemeFrame(Test &test, const QString &title, const QStringList &defa
     layout->addWidget(cancel_button);
 }
 
-ThemeFrame::~ThemeFrame(){}
+ThemeView::~ThemeView(){}
 
-void ThemeFrame::edit_theme(){
+void ThemeView::edit_theme(){
     status->setText(tr("Sending data..."));
 	if (!test.isRemoteWork()) {
         // Offline
@@ -105,7 +105,7 @@ void ThemeFrame::edit_theme(){
 	
 }
 
-void ThemeFrame::show_confirmation(QNetworkReply* reply){
+void ThemeView::show_confirmation(QNetworkReply* reply){
     const QString reply_string(reply->readAll());
     reply->deleteLater();
     if(reply_string.compare("")){
@@ -121,7 +121,7 @@ void ThemeFrame::show_confirmation(QNetworkReply* reply){
     cancel_button->setText(tr("Back to test"));
 }
 
-void ThemeFrame::show_confirmation(){
+void ThemeView::show_confirmation(){
     status->setText(this->success_message);
     delete OK_button;
     continue_button = new QPushButton(tr("Add another theme"), this);
@@ -131,11 +131,11 @@ void ThemeFrame::show_confirmation(){
     cancel_button->setText(tr("Back to test"));
 }
 
-void ThemeFrame::back(){
+void ThemeView::back(){
     delete this;
 }
 
-void ThemeFrame::reset(){
+void ThemeView::reset(){
 
 	theme_edit->setText(default_values.at(1));
     delete continue_button;
@@ -149,7 +149,7 @@ void ThemeFrame::reset(){
 }
 
 
-void ThemeFrame::find_themes() {
+void ThemeView::find_themes() {
 	if (!test.isRemoteWork()) {
         // Offline
         Parser p(test.getSrc() + test.getDst());
@@ -162,7 +162,7 @@ void ThemeFrame::find_themes() {
 	}
 }
 
-void ThemeFrame::read_reply(QNetworkReply* reply)
+void ThemeView::read_reply(QNetworkReply* reply)
 {
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll();
@@ -170,7 +170,7 @@ void ThemeFrame::read_reply(QNetworkReply* reply)
 	read_reply(reply_string);
 }
 
-void ThemeFrame::read_reply(QString reply_string) {
+void ThemeView::read_reply(QString reply_string) {
     QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));

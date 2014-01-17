@@ -5,14 +5,14 @@
 #include <QLineEdit>
 #include <QHeaderView>
 
-#include "editframe.h"
-#include "questionframe.h"
-#include "searchframe.h"
+#include "EditView.h"
+#include "QuestionView.h"
+#include "SearchView.h"
 #include "string_utils.h"
 #include "Parser.h"
-#include "networkreplyreader.h"
+#include "NetworkReplyReader.h"
 
-SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
+SearchView::SearchView(Test& test, bool modifiable, QWidget *parent) :
     QWidget(parent),
     search_bar(NULL),
     nam(),
@@ -41,12 +41,12 @@ SearchFrame::SearchFrame(Test& test, bool modifiable, QWidget *parent) :
     connect(back_button, SIGNAL(clicked()), this, SLOT(back()));
 }
 
-SearchFrame::~SearchFrame() {
+SearchView::~SearchView() {
     if(result)
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 }
 
-void SearchFrame::search() {
+void SearchView::search() {
 	if (!test.isRemoteWork()) {
         Parser p(test.getSrc() + test.getDst());
 
@@ -64,7 +64,7 @@ void SearchFrame::search() {
 	}
 }
 
-void SearchFrame::read_reply(QNetworkReply* reply)
+void SearchView::read_reply(QNetworkReply* reply)
 {
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll();
@@ -72,7 +72,7 @@ void SearchFrame::read_reply(QNetworkReply* reply)
     read_reply(reply_string); // FIXME: Memory leak
 }
 
-void SearchFrame::read_reply(QString reply_string) {
+void SearchView::read_reply(QString reply_string) {
     int nb_cols(10);
     reply_list = QStringList(reply_string.split('\n'));
 	if(result){
@@ -124,12 +124,12 @@ void SearchFrame::read_reply(QString reply_string) {
 }
 
 
-void SearchFrame::back()
+void SearchView::back()
 {
 	delete this;
 }
 
-void SearchFrame::action(int row, int col)
+void SearchView::action(int row, int col)
 {
     int nb_cols(10);
     if(col == 0){
@@ -142,7 +142,7 @@ void SearchFrame::action(int row, int col)
         for(int i=row*nb_cols; i<(row+1)*nb_cols; ++i){
             default_values << reply_list.at(i);
 		}
-		update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), this);
+        update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), this);
 		layout()->addWidget(update_frame);
         connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){
@@ -185,7 +185,7 @@ void SearchFrame::action(int row, int col)
     }
 }
 
-void SearchFrame::refresh(){
+void SearchView::refresh(){
 	result->show();
     search();
 }

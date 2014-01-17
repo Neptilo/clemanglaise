@@ -2,11 +2,11 @@
 #include <QLineEdit>
 #include <QPainter>
 
-#include "questionframe.h"
+#include "QuestionView.h"
 #include "string_utils.h"
 
-QuestionFrame::QuestionFrame(Test &test, QWidget *parent):
-    WordFrame(test, parent),
+QuestionView::QuestionView(Test &test, QWidget *parent):
+    WordView(test, parent),
     label(NULL),
     edit(NULL),
     handwriting_area(NULL)
@@ -15,18 +15,18 @@ QuestionFrame::QuestionFrame(Test &test, QWidget *parent):
     vertical_layout->addWidget(label);
 }
 
-QuestionFrame::~QuestionFrame(){
+QuestionView::~QuestionView(){
     delete label;
     if(edit){
         delete edit;
     }
 }
 
-QString QuestionFrame::getAnswer(){
+QString QuestionView::getAnswer(){
     return ampersand_escape(edit->text());
 }
 
-void QuestionFrame::ask_question(const QString& word, const QString & theme) {
+void QuestionView::ask_question(const QString& word, const QString & theme) {
 
     // Left part
     if(handwriting){
@@ -75,7 +75,7 @@ void QuestionFrame::ask_question(const QString& word, const QString & theme) {
 	OK_button->setEnabled(true);
 }
 
-void QuestionFrame::disable_validation(){
+void QuestionView::disable_validation(){
 	OK_button->disconnect();
 	OK_button->hide();
 	edit->disconnect();

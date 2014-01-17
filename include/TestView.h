@@ -1,12 +1,14 @@
 #ifndef TESTFRAME_H
 #define TESTFRAME_H
+
 #include <QPushButton>
-#include "questionframe.h"
-#include "answerframe.h"
-#include "themeframe.h"
-#include "editframe.h"
-#include "searchframe.h"
-#include "test.h"
+
+#include "QuestionView.h"
+#include "AnswerView.h"
+#include "ThemeView.h"
+#include "EditView.h"
+#include "SearchView.h"
+#include "Test.h"
 #include "Parser.h" 
 
 #if defined(Q_OS_WIN)
@@ -17,22 +19,22 @@ const QString ENDL="\\r";
 const QString ENDL="\\n";
 #endif
 
-class TestFrame : public QWidget{
+class TestView : public QWidget{
     Q_OBJECT
     
 public:
-    TestFrame(Test &test, QString str_title="", bool admin = false, QWidget *parent = 0);
-    ~TestFrame();
+    TestView(Test &test, QString str_title="", bool admin = false, QWidget *parent = 0);
+    ~TestView();
     void read_reply(QString reply_string);
 
 private:
-    QuestionFrame* question_frame;
-    AnswerFrame* answer_frame;
-    ThemeFrame* add_theme_frame;
-    ThemeFrame* update_theme_frame;
-    EditFrame* add_frame;
-    EditFrame* update_frame;
-    SearchFrame* search_frame;
+    QuestionView* question_frame;
+    AnswerView* answer_frame;
+    ThemeView* add_theme_frame;
+    ThemeView* update_theme_frame;
+    EditView* add_frame;
+    EditView* update_frame;
+    SearchView* search_frame;
     QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
     QNetworkAccessManager* nam;
     QNetworkAccessManager nam_themes;

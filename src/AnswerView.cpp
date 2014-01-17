@@ -2,17 +2,18 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
 #endif
-#include "answerframe.h"
-#include "questionframe.h"
+
+#include "AnswerView.h"
+#include "QuestionView.h"
 #include "string_utils.h"
 #include "Parser.h"
 
-AnswerFrame::AnswerFrame(Test &test, QWidget *parent):
-    WordFrame(test, parent)
+AnswerView::AnswerView(Test &test, QWidget *parent):
+    WordView(test, parent)
 {}
 
-AnswerFrame::AnswerFrame(const QStringList &reply_list, const QString &player_answer, Test &test, QWidget *parent):
-    WordFrame(test, parent)
+AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answer, Test &test, QWidget *parent):
+    WordView(test, parent)
 {
     // Define explicit variables for the content of the label
     QString word = reply_list.at(1);

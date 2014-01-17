@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QHash>
+
 extern const QHash<QString, QString> maphash;
 QString ampersand_escape(const QString &string);
 QString colon_unescape(const QString &string);
@@ -14,4 +15,5 @@ QHash<QString, QString> mapping();
 QString X2IPA(const QString &string);
 QString kirshenbaum2IPA(const QString &string);
 bool isKirshenbaum(const QString& string);
+
 #endif // STRING_UTILS_H

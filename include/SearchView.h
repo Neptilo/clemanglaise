@@ -6,15 +6,15 @@
 #include <QTableWidget>
 #include <QPushButton>
 
-#include "test.h"
-#include "editframe.h"
+#include "Test.h"
+#include "EditView.h"
 
-class SearchFrame : public QWidget
+class SearchView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SearchFrame(Test &test, bool modifiable = false, QWidget *parent = 0);
-    ~SearchFrame();
+    explicit SearchView(Test &test, bool modifiable = false, QWidget *parent = 0);
+    ~SearchView();
     void read_reply(QString reply_string);
 
 private:
@@ -23,7 +23,7 @@ private:
     QTableWidget* result;
     Test test;
     QStringList reply_list;
-    EditFrame* update_frame;
+    EditView* update_frame;
     bool modifiable;
 
 public slots:

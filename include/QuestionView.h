@@ -6,15 +6,15 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 
-#include "wordframe.h"
-#include "handwritingarea.h"
+#include "WordView.h"
+#include "HandwritingArea.h"
 
-class QuestionFrame : public WordFrame{
+class QuestionView : public WordView{
     Q_OBJECT
 
 public:
-    QuestionFrame(Test &test, QWidget *parent);
-    ~QuestionFrame();
+    QuestionView(Test &test, QWidget *parent);
+    ~QuestionView();
 
     QString getAnswer();
     void ask_question(const QString& word, const QString& theme);

@@ -2,7 +2,7 @@
 #include <QPushButton>
 #include <QtGui>
 
-#include "languagebuttons.h"
+#include "LanguageButtons.h"
 
 LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent, const QStringList & flags)
     : QWidget(parent),

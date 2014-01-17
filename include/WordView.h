@@ -6,9 +6,9 @@
 #include <QPushButton>
 #include <QtNetwork>
 
-#include "test.h"
+#include "Test.h"
 
-class WordFrame : public QWidget
+class WordView : public QWidget
 {
     Q_OBJECT
 
@@ -22,7 +22,7 @@ protected:
 
 
 public:
-    WordFrame(Test &test, QWidget *parent);
+    WordView(Test &test, QWidget *parent);
     
 signals:
     

@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QSignalMapper>
 
-#include <test.h>
+#include "Test.h"
 
 class LanguageButtons : public QWidget{
     Q_OBJECT

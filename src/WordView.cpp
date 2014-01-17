@@ -1,6 +1,6 @@
-#include "wordframe.h"
+#include "WordView.h"
 
-WordFrame::WordFrame(Test& test, QWidget *parent) :
+WordView::WordView(Test& test, QWidget *parent) :
     QWidget(parent),
     test(test),
     horizontal_layout(NULL),

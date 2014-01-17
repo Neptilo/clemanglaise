@@ -1,7 +1,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-#include "handwritingarea.h"
+#include "HandwritingArea.h"
 
 HandwritingArea::HandwritingArea(QSize size, QWidget *parent)
     : QWidget(parent)

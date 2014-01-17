@@ -1,5 +1,6 @@
-#include "homewindow.h"
+#include "HomeWindow.h"
 #include "string_utils.h"
+
 HomeWindow::HomeWindow(bool admin, QWidget *parent):
     QWidget(parent),
     test_frame(NULL),
@@ -74,7 +75,7 @@ void HomeWindow::start_test(int i){
                        tr("<b>You are now working on <br />tests from the remote server.</b>"):
                        tr("<b>You are now working on <br /> offline tests.</b>");
 	
-    TestFrame* test_frame = new TestFrame(test, str_title, admin, this);
+    TestView* test_frame = new TestView(test, str_title, admin, this);
     connect(test_frame, SIGNAL(destroyed()), SLOT(init()));
     layout->addWidget(test_frame);
 }

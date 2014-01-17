@@ -4,13 +4,14 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
 #endif
-#include "editframe.h"
-#include "questionframe.h"
+
+#include "EditView.h"
+#include "QuestionView.h"
 #include "string_utils.h"
 #include "Parser.h"
-#include "networkreplyreader.h"
+#include "NetworkReplyReader.h"
 
-EditFrame::EditFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
+EditView::EditView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
     QWidget(parent),
     title(NULL),
     status(NULL),
@@ -103,9 +104,9 @@ EditFrame::EditFrame(Test &test, const QString &title, const QStringList &defaul
 	layout->addWidget(cancel_button);
 }
 
-EditFrame::~EditFrame(){}
+EditView::~EditView(){}
 
-void EditFrame::edit_word(){
+void EditView::edit_word(){
 	status->setText(tr("Sending data..."));
 	if (!test.isRemoteWork()) {
 		// Offline
@@ -126,6 +127,7 @@ void EditFrame::edit_word(){
 		int new_id_theme;
 		if(id==0){//add
 			p.appendInFile(line, p.getFilein());
+            p.addInFile(QString::number(p.getLastId(p.getFilein())) + " : 0 : 0 "  , p.getScoreFile());
 		} else { //update
 			p.updateLineId(id, line, p.getFilein());
 		}
@@ -194,7 +196,7 @@ void EditFrame::edit_word(){
 	disable_edition(true);
 }
 
-void EditFrame::show_confirmation(QNetworkReply* reply){
+void EditView::show_confirmation(QNetworkReply* reply){
 	const QString reply_string(reply->readAll());
 	reply->deleteLater();
 	if(reply_string.compare("")){
@@ -211,7 +213,7 @@ void EditFrame::show_confirmation(QNetworkReply* reply){
 	cancel_button->setText(tr("Back"));
 }
 
-void EditFrame::show_confirmation(){
+void EditView::show_confirmation(){
 	status->setText(this->success_message);
 	delete OK_button;
 	continue_button = new QPushButton(tr("Add another word"), this);
@@ -222,11 +224,11 @@ void EditFrame::show_confirmation(){
 	cancel_button->setText(tr("Back"));
 }
 
-void EditFrame::back(){
+void EditView::back(){
 	delete this;
 }
 
-void EditFrame::reset(){
+void EditView::reset(){
 
 	// Very dirty and non-reusable coding, but it works
 	int i = 1;
@@ -249,7 +251,7 @@ void EditFrame::reset(){
 	disable_edition(false);
 }
 
-void EditFrame::find_themes() {
+void EditView::find_themes() {
 	if (!test.isRemoteWork()) {
         Parser p(test.getSrc() + test.getDst());
 		// Offline
@@ -262,7 +264,7 @@ void EditFrame::find_themes() {
 	}
 }
 
-void EditFrame::read_reply(QNetworkReply* reply)
+void EditView::read_reply(QNetworkReply* reply)
 {
 	// Store the lines of the reply in the "reply_list" attribute
 	QString reply_string = reply->readAll();
@@ -270,7 +272,7 @@ void EditFrame::read_reply(QNetworkReply* reply)
 	read_reply(reply_string);
 }
 
-void EditFrame::read_reply(QString reply_string) {
+void EditView::read_reply(QString reply_string) {
 	QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
 	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
@@ -279,7 +281,7 @@ void EditFrame::read_reply(QString reply_string) {
 	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(6).toInt())));
 }
 
-void EditFrame::disable_edition(bool ok) {
+void EditView::disable_edition(bool ok) {
 	word_edit->setEnabled(!ok);
 	nature_edit->setEnabled(!ok);
 	meaning_edit->setEnabled(!ok);

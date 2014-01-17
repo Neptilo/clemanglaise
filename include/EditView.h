@@ -11,14 +11,14 @@
 #include <QComboBox>
 #include <QTextEdit>
 
-#include "test.h"
+#include "Test.h"
 
-class EditFrame : public QWidget{
+class EditView : public QWidget{
     Q_OBJECT
 
 public:
-    EditFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent);
-    ~EditFrame();
+    EditView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent);
+    ~EditView();
     void read_reply(QString reply_string);
 	void disable_edition(bool ok);
 

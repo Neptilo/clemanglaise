@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -353,7 +354,7 @@ QString Parser::getCellId(const int& id, const int& nb, const QString& files) {
 }
 
 QString Parser::getScoreId(const int& id) {
-	return getCellId(id, 8,getFilein());
+    return (id>0)?getCellId(id, 8,getFilein()):"0";
 }
 
 

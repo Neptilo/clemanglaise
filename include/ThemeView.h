@@ -10,14 +10,14 @@
 #include <QComboBox>
 #include <QTextEdit>
 
-#include "test.h"
+#include "Test.h"
 
-class ThemeFrame : public QWidget{
+class ThemeView : public QWidget{
     Q_OBJECT
 
 public:
-    ThemeFrame(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent);
-    ~ThemeFrame();
+    ThemeView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent);
+    ~ThemeView();
 
     void read_reply(QString reply_string);
 

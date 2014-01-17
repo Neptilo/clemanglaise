@@ -11,9 +11,11 @@
 #include <QApplication>
 #include <QPushButton>
 #include <QObject>
-#include "homewindow.h"
-#include "networkreplyreader.h"
+
+#include "HomeWindow.h"
+#include "NetworkReplyReader.h"
 #include "string_utils.h"
+
 using namespace std;
 
 string tr(const char* s){

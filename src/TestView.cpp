@@ -1,11 +1,11 @@
 #include "string_utils.h"
-#include "testframe.h"
-#include "themeframe.h"
-#include "networkreplyreader.h"
+#include "TestView.h"
+#include "ThemeView.h"
+#include "NetworkReplyReader.h"
 
-#include "iostream"
+//#include "iostream"
 
-TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent):
+TestView::TestView(Test &test, QString str_title, bool admin, QWidget *parent):
     QWidget(parent),
     question_frame(NULL),
     answer_frame(NULL),
@@ -34,7 +34,7 @@ TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent)
     title = new QLabel(str_title, this);
     title->setAlignment(Qt::AlignHCenter);
     layout = new QVBoxLayout(this);
-    answer_frame = new AnswerFrame(test, this);
+    answer_frame = new AnswerView(test, this);
 
     layout->addWidget(title);
 
@@ -79,15 +79,15 @@ TestFrame::TestFrame(Test &test, QString str_title, bool admin, QWidget *parent)
     connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
 
-TestFrame::~TestFrame(){
+TestView::~TestView(){
     delete request;
     delete parser;
 }
 
 // This function is called every time the user comes back from another view.
-void TestFrame::init()
+void TestView::init()
 {
-    question_frame = new QuestionFrame(test, this);
+    question_frame = new QuestionView(test, this);
     layout->addWidget(question_frame);
     update_request();
     nam = new QNetworkAccessManager(this);
@@ -107,7 +107,7 @@ void TestFrame::init()
     search_button->show();
 }
 
-void TestFrame::update_request() {
+void TestView::update_request() {
     // Request to PHP or local file
 	QUrl url;
 	int index = themes->currentIndex();
@@ -126,7 +126,7 @@ void TestFrame::update_request() {
     request = new QNetworkRequest(url);
 }
 
-void TestFrame::read_reply(QNetworkReply* reply){
+void TestView::read_reply(QNetworkReply* reply){
     if(question_frame){ // If question_frame is deleted, that means the user has changed the frame to another one before the NAM request was finished, so we want to ignore the NAM's reply.
         // Store the lines of the reply in the "reply_list" attribute
         QString reply_string(reply->readAll());
@@ -145,15 +145,15 @@ void TestFrame::read_reply(QNetworkReply* reply){
     }
 }
 
-void TestFrame::validate_question(){
+void TestView::validate_question(){
 
     // Create a new answer frame
     delete answer_frame;
-    answer_frame = new AnswerFrame(reply_list, question_frame->getAnswer(), test, this);
+    answer_frame = new AnswerView(reply_list, question_frame->getAnswer(), test, this);
     layout->addWidget(answer_frame);
 }
 
-void TestFrame::validate_answer() {
+void TestView::validate_answer() {
 	int index = themes->currentIndex();
 	QString root = test.getSrc() + test.getDst(); 
 
@@ -164,7 +164,7 @@ void TestFrame::validate_answer() {
         answer_frame->hide();
 
     // Create a new question frame
-    question_frame = new QuestionFrame(test, this); // Is it deleted somewhere? It should because of "new".
+    question_frame = new QuestionView(test, this); // Is it deleted somewhere? It should because of "new".
     layout->addWidget(question_frame);
 
     // Request for a new question
@@ -178,24 +178,24 @@ void TestFrame::validate_answer() {
     nam->get(*request);
 }
 
-void TestFrame::update_question(int){
+void TestView::update_question(int){
     update_request();
     validate_answer();
 }
 
-void TestFrame::add_theme()
+void TestView::add_theme()
 {
     remove_widgets();
 
     // Create a new add frame
     QStringList default_values_list;
     default_values_list << "" << "";
-    add_theme_frame = new ThemeFrame(test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), this);
+    add_theme_frame = new ThemeView(test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), this);
     layout->addWidget(add_theme_frame);
     connect(add_theme_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
-void TestFrame::add_word()
+void TestView::add_word()
 {
     remove_widgets();
 
@@ -204,36 +204,36 @@ void TestFrame::add_word()
 	//word << meaning << nature << comment << exple << id_theme << pronunciation << score<< theme
 
     default_values_list << "" << "" << "" << "" << "" << "" << "" << "" << "" << "";
-    add_frame = new EditFrame(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), this);
+    add_frame = new EditView(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), this);
     layout->addWidget(add_frame);
     connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
-void TestFrame::update_word()
+void TestView::update_word()
 {
     remove_widgets();
 
     // Create a new add frame
-    update_frame = new EditFrame(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
+    update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
     layout->addWidget(update_frame);
     connect(update_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
-void TestFrame::search()
+void TestView::search()
 {
     remove_widgets();
 
     // Create a new search frame
-    search_frame = new SearchFrame(test, !test.isRemoteWork()||admin, this);
+    search_frame = new SearchView(test, !test.isRemoteWork()||admin, this);
     layout->addWidget(search_frame);
     connect(search_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
-void TestFrame::go_back() {
+void TestView::go_back() {
 	delete this;
 }
 
-void TestFrame::find_themes() {
+void TestView::find_themes() {
 	if (!test.isRemoteWork()) {
         // Offline
         Parser p(test.getSrc() + test.getDst());
@@ -246,7 +246,7 @@ void TestFrame::find_themes() {
 	}
 }
 
-void TestFrame::read_reply_themes(QNetworkReply* reply)
+void TestView::read_reply_themes(QNetworkReply* reply)
 {
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll();
@@ -254,7 +254,7 @@ void TestFrame::read_reply_themes(QNetworkReply* reply)
 	read_reply(reply_string);
 }
 
-void TestFrame::read_reply(QString reply_string) {
+void TestView::read_reply(QString reply_string) {
     QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
     themes->disconnect();
     themes->clear();
@@ -265,7 +265,7 @@ void TestFrame::read_reply(QString reply_string) {
     connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
 
-void TestFrame::remove_widgets()
+void TestView::remove_widgets()
 {
     delete question_frame;
     question_frame = NULL;
