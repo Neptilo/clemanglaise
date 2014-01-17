@@ -1,0 +1,38 @@
+<!DOCTYPE RCC>
+<RCC version='1.0'>
+	<qresource>
+		<file alias="clemanglaise-img.png">img/clemanglaise.png</file>
+		<file alias="france-img.png" >img/flags/france.png</file>
+		<file alias="japan-img.png">img/flags/japan.png</file>
+		<file alias="china-img.png">img/flags/china.png</file>
+		<file alias="croatia-img.png">img/flags/croatia.png</file>
+		<file alias="germany-img.png">img/flags/germany.png</file>
+		<file>img/go-home.png</file>
+		<file>img/process-stop.png</file>
+		<file>img/emblem-default.png</file>
+		<file>img/list-add.png</file>
+		<file>img/face-smile.png</file>
+		<file>img/face-crying.png</file>
+		<file>img/accessories-text-editor.png</file>
+		<file>img/edit-find.png</file>
+		<file>img/edit-delete.png</file>
+		<file>img/win/go-home.png</file>
+		<file>img/win/process-stop.png</file>
+		<file>img/win/emblem-default.png</file>
+		<file>img/win/list-add.png</file>
+		<file>img/win/face-smile.png</file>
+		<file>img/win/face-crying.png</file>
+		<file>img/win/accessories-text-editor.png</file>
+		<file>img/win/edit-find.png</file>
+		<file>img/win/edit-delete.png</file>
+		<file>img/macx/go-home.png</file>
+		<file>img/macx/process-stop.png</file>
+		<file>img/macx/emblem-default.png</file>
+		<file>img/macx/list-add.png</file>
+		<file>img/macx/face-smile.png</file>
+		<file>img/macx/face-crying.png</file>
+		<file>img/macx/accessories-text-editor.png</file>
+		<file>img/macx/edit-find.png</file>
+		<file>img/macx/edit-delete.png</file>
+	</qresource>
+</RCC>
