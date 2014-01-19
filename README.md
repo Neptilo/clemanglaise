@@ -28,9 +28,13 @@ to run the application.
 
 To compile it:
 
-  * Check that the location of the `qmake` is in your `$PATH` variable.
+  * Create a directory `bin_clemanglaise` located in the same parent directory as
+    clemanglaise
+  * Check that the location of the `qmake` or `qmake-qt4` is in your `$PATH` variable.
+  * If You have `qmake-qt4` create a symbolic link with `qmake` 
   * Don't regenerate the project file, use the one provided in the repository.
-  * Type `qmake` in the command line.
+  * go to `bin_clemanglaise` directory
+  * Type `qmake <path2clemanglaise.pro>` in the command line.
   * Type `make` in the command line.
 
 To run the application, type `./clemanglaise` in the command line if you are using Linux, or `open clemanglaise.app` if you are using the Mac.
