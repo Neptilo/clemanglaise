@@ -81,11 +81,3 @@ void QuestionView::disable_validation(){
 	edit->disconnect();
 	edit->setEnabled(false);
 }
-/*
-void QuestionFrame::set_button(QToolButton* button, const QString& text, const QString & icon_path) {
-	button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	button->setIcon(QIcon(icon_path));
-	button->setText(text);
-	button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
-}
-*/

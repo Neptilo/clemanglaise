@@ -9,7 +9,8 @@
 #include "EditView.h"
 #include "SearchView.h"
 #include "Test.h"
-#include "Parser.h" 
+#include "Parser.h"
+#include "DatabaseManager.h"
 
 #if defined(Q_OS_WIN)
 const QString ENDL="\\r\\n";
@@ -23,7 +24,7 @@ class TestView : public QWidget{
     Q_OBJECT
     
 public:
-    TestView(Test &test, QString str_title="", bool admin = false, QWidget *parent = 0);
+    TestView(Test &test, DatabaseManager *database_manager, QString str_title = "", bool admin = false, QWidget *parent = 0);
     ~TestView();
     void read_reply(QString reply_string);
 
@@ -51,6 +52,7 @@ private:
 	QComboBox *themes;
     Parser* parser; // pointer because for offline work it doesn't need to be defined.
     bool admin;
+    DatabaseManager *database_manager;
     void remove_widgets();
 
 public slots:

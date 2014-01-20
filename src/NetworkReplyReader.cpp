@@ -4,7 +4,7 @@
 #include <QtNetwork>
 
 #include "NetworkReplyReader.h"
-#include "HomeWindow.h"
+#include "HomeView.h"
 
 NetworkReplyReader::NetworkReplyReader(QObject *parent) :
     QObject(parent)
@@ -18,7 +18,7 @@ void NetworkReplyReader::read_reply(QNetworkReply* reply)
     reply->deleteLater();
     if(reply->readAll().toInt()){
         print(tr("Connection established"));
-        HomeWindow* w = new HomeWindow(true);
+        HomeView* w = new HomeView(true);
         w->show();
     }else{
         print(tr("Wrong password"));

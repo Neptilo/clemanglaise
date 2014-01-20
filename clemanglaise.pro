@@ -10,7 +10,7 @@ INCLUDEPATH += . include
 HEADERS += include/AnswerView.h \
            include/EditView.h \
            include/HandwritingArea.h \
-           include/HomeWindow.h \
+           include/HomeView.h \
            include/LanguageButtons.h \
            include/NetworkReplyReader.h \
            include/Parser.h \
@@ -20,11 +20,12 @@ HEADERS += include/AnswerView.h \
            include/Test.h \
            include/TestView.h \
            include/ThemeView.h \
-           include/WordView.h
+           include/WordView.h \
+    include/DatabaseManager.h
 SOURCES += src/AnswerView.cpp \
            src/EditView.cpp \
            src/HandwritingArea.cpp \
-           src/HomeWindow.cpp \
+           src/HomeView.cpp \
            src/LanguageButtons.cpp \
            src/main.cpp \
            src/NetworkReplyReader.cpp \
@@ -35,9 +36,10 @@ SOURCES += src/AnswerView.cpp \
            src/Test.cpp \
            src/TestView.cpp \
            src/ThemeView.cpp \
-           src/WordView.cpp
+           src/WordView.cpp \
+    src/DatabaseManager.cpp
 RESOURCES += clemanglaise.qrc
 
-QT += network
+QT += network sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): cache()

@@ -1,11 +1,12 @@
+#include <QSqlDatabase>
+#include <QSqlError>
+
 #include "string_utils.h"
 #include "TestView.h"
 #include "ThemeView.h"
 #include "NetworkReplyReader.h"
 
-//#include "iostream"
-
-TestView::TestView(Test &test, QString str_title, bool admin, QWidget *parent):
+TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_title, bool admin, QWidget *parent):
     QWidget(parent),
     question_frame(NULL),
     answer_frame(NULL),
@@ -29,7 +30,8 @@ TestView::TestView(Test &test, QString str_title, bool admin, QWidget *parent):
     test(test),
     themes(NULL),
     parser(NULL),
-    admin(admin)
+    admin(admin),
+    database_manager(database_manager)
 {
     title = new QLabel(str_title, this);
     title->setAlignment(Qt::AlignHCenter);
@@ -87,12 +89,29 @@ TestView::~TestView(){
 // This function is called every time the user comes back from another view.
 void TestView::init()
 {
-    question_frame = new QuestionView(test, this);
-    layout->addWidget(question_frame);
-    update_request();
-    nam = new QNetworkAccessManager(this);
-    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
-    nam->get(*request);
+    if (test.isRemoteWork()) {
+        question_frame = new QuestionView(test, this);
+        layout->addWidget(question_frame);
+        update_request();
+        nam = new QNetworkAccessManager(this);
+        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+        nam->get(*request);
+    }else{
+        int index = themes->currentIndex();
+        QString lang = test.getSrc() + test.getDst();
+        if(database_manager->find_lowest(lang, reply_list, themes->itemData(index).toInt())){
+            QString word = reply_list.at(1);
+            QString theme = reply_list.at(9);
+            question_frame = new QuestionView(test, this);
+            layout->addWidget(question_frame);
+            question_frame->ask_question(word, theme);
+        }else{
+            if(database_manager->get_last_error() == " ")
+                layout->addWidget(new QLabel(tr("The selected list is currently empty."), this));
+            else
+                layout->addWidget(new QLabel(tr("<b>SQLite error: </b>")+database_manager->get_last_error(), this));
+        }
+    }
     find_themes();
 
     // Show everything
@@ -111,17 +130,8 @@ void TestView::update_request() {
     // Request to PHP or local file
 	QUrl url;
 	int index = themes->currentIndex();
-    QString root = test.getSrc() + test.getDst();
-	if (test.isRemoteWork()) {
-        url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + root +"&id_theme="+themes->itemData(index).toString());
-	} else {
-		if (!index || (index && index < 0)) {
-			parser->parse(parser->getFilein());
-        } else {
-			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
-		}
-		url = QUrl(Parser::get_working_path(parser->getFileout()));
-	}
+    QString lang = test.getSrc() + test.getDst();
+    url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + lang +"&id_theme="+themes->itemData(index).toString());
     delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request stays the same.)
     request = new QNetworkRequest(url);
 }
@@ -131,17 +141,12 @@ void TestView::read_reply(QNetworkReply* reply){
         // Store the lines of the reply in the "reply_list" attribute
         QString reply_string(reply->readAll());
         reply->deleteLater();
-        reply_list = test.isRemoteWork()?reply_string.split('\n'):reply_string.split(QRegExp(ENDL));
+        reply_list = reply_string.split('\n');
 
         // Everything is ready for the question frame to ask the question.
         QString word = reply_list.at(1);
-        if (test.isRemoteWork()) {
-            QString theme = reply_list.at(9);
-            question_frame->ask_question(word, theme);
-        } else {
-            int id_theme = reply_list.at(6).toInt();
-            question_frame->ask_question(word, Parser::getTheme(id_theme));
-        }
+        QString theme = reply_list.at(9);
+        question_frame->ask_question(word, theme);
     }
 }
 

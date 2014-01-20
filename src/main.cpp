@@ -12,7 +12,7 @@
 #include <QPushButton>
 #include <QObject>
 
-#include "HomeWindow.h"
+#include "HomeView.h"
 #include "NetworkReplyReader.h"
 #include "string_utils.h"
 
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 
 		// Then we wait for the NetworkReplyReader to answer yes.
 	}else{
-		HomeWindow* w = new HomeWindow(false);
+        HomeView *w = new HomeView(false);
 		w->show();
 	}
 
