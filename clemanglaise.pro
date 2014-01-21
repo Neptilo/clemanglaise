@@ -38,6 +38,6 @@ SOURCES += src/AnswerView.cpp \
            src/WordView.cpp
 RESOURCES += clemanglaise.qrc
 
-QT += network
+QT += network sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): cache()
