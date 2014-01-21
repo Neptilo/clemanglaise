@@ -3,14 +3,14 @@
 
 #include <QPushButton>
 
-#include "QuestionView.h"
 #include "AnswerView.h"
-#include "ThemeView.h"
+#include "DatabaseManager.h"
 #include "EditView.h"
+#include "Parser.h"
+#include "QuestionView.h"
 #include "SearchView.h"
 #include "Test.h"
-#include "Parser.h"
-#include "DatabaseManager.h"
+#include "ThemeView.h"
 
 #if defined(Q_OS_WIN)
 const QString ENDL="\\r\\n";
@@ -29,30 +29,32 @@ public:
     void read_reply(QString reply_string);
 
 private:
-    QuestionView* question_frame;
-    AnswerView* answer_frame;
-    ThemeView* add_theme_frame;
-    ThemeView* update_theme_frame;
+    QPushButton* add_button;
     EditView* add_frame;
-    EditView* update_frame;
-    SearchView* search_frame;
-    QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
+    QPushButton* add_theme_button;
+    ThemeView* add_theme_frame;
+    bool admin;
+    AnswerView* answer_frame;
+    QPushButton* back_button;
+    DatabaseManager *database_manager;
+    QLayout* layout;
     QNetworkAccessManager* nam;
     QNetworkAccessManager nam_themes;
-    QStringList reply_list;
-    QLayout* layout;
-	QLabel* theme;
-	QLabel* title;
-    QPushButton* back_button;
-    QPushButton* add_theme_button;
-    QPushButton* add_button;
-    QPushButton* search_button;
-    QPushButton* update_button;
-    Test test;
-	QComboBox *themes;
     Parser* parser; // pointer because for offline work it doesn't need to be defined.
-    bool admin;
-    DatabaseManager *database_manager;
+    QuestionView* question_frame;
+    QStringList reply_list;
+    QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
+    QPushButton* search_button;
+    SearchView* search_frame;
+    QLabel status;
+    Test test;
+    QLabel* theme;
+    QComboBox *themes;
+    QLabel* title;
+    QPushButton* update_button;
+    EditView* update_frame;
+    ThemeView* update_theme_frame;
+
     void remove_widgets();
 
 public slots:

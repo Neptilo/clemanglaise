@@ -1,37 +1,39 @@
+#include "TestView.h"
+
 #include <QSqlDatabase>
 #include <QSqlError>
 
-#include "string_utils.h"
-#include "TestView.h"
-#include "ThemeView.h"
 #include "NetworkReplyReader.h"
+#include "string_utils.h"
+#include "ThemeView.h"
 
 TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_title, bool admin, QWidget *parent):
     QWidget(parent),
-    question_frame(NULL),
-    answer_frame(NULL),
-    add_theme_frame(NULL),
-    update_theme_frame(NULL),
+    add_button(NULL),
     add_frame(NULL),
-    update_frame(NULL),
-    search_frame(NULL),
-    request(NULL),
+    add_theme_button(NULL),
+    add_theme_frame(NULL),
+    admin(admin),
+    answer_frame(NULL),
+    back_button(NULL),
+    database_manager(database_manager),
+    layout(NULL),
     nam(NULL),
     nam_themes(),
-    reply_list(),
-    layout(NULL),
-    theme(NULL),
-    title(NULL),
-    back_button(NULL),
-    add_theme_button(NULL),
-    add_button(NULL),
-    search_button(NULL),
-    update_button(NULL),
-    test(test),
-    themes(NULL),
     parser(NULL),
-    admin(admin),
-    database_manager(database_manager)
+    question_frame(NULL),
+    reply_list(),
+    request(NULL),
+    search_button(NULL),
+    search_frame(NULL),
+    status(this),
+    test(test),
+    theme(NULL),
+    themes(NULL),
+    title(NULL),
+    update_button(NULL),
+    update_frame(NULL),
+    update_theme_frame(NULL)
 {
     title = new QLabel(str_title, this);
     title->setAlignment(Qt::AlignHCenter);
@@ -107,9 +109,10 @@ void TestView::init()
             question_frame->ask_question(word, theme);
         }else{
             if(database_manager->get_last_error() == " ")
-                layout->addWidget(new QLabel(tr("The selected list is currently empty."), this));
+                status.setText(tr("The selected list is currently empty."));
             else
-                layout->addWidget(new QLabel(tr("<b>SQLite error: </b>")+database_manager->get_last_error(), this));
+                status.setText(tr("<b>SQLite error: </b>")+database_manager->get_last_error());
+            layout->addWidget(&status);
         }
     }
     find_themes();
@@ -124,6 +127,7 @@ void TestView::init()
     themes->show();
     back_button->show();
     search_button->show();
+    status.show();
 }
 
 void TestView::update_request() {
@@ -285,4 +289,5 @@ void TestView::remove_widgets()
     themes->hide();
     back_button->hide();
     search_button->hide();
+    status.hide();
 }
