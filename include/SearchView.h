@@ -13,7 +13,7 @@ class SearchView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SearchView(Test &test, bool modifiable = false, QWidget *parent = 0);
+    explicit SearchView(Test &test, DatabaseManager *database_manager, bool modifiable = false, QWidget *parent = 0);
     ~SearchView();
     void read_reply(QString reply_string);
 
@@ -25,6 +25,7 @@ private:
     QStringList reply_list;
     EditView* update_frame;
     bool modifiable;
+    DatabaseManager *database_manager;
 
 public slots:
     void search();

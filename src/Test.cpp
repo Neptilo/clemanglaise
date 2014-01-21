@@ -20,15 +20,15 @@ const QString& Test::getName() const{
     return name;
 }
 
-const QString &Test::getSrc(){
+const QString &Test::get_src(){
     return src;
 }
 
-const QString &Test::getDst(){
+const QString &Test::get_dst(){
     return dst;
 }
 
-bool Test::isRemoteWork() const {
+bool Test::is_remote_work() const {
 	return remote;
 }
 

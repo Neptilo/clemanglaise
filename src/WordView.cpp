@@ -13,7 +13,7 @@ WordView::WordView(Test& test, QWidget *parent) :
     // List of languages for which we want a handwriting widget
     QStringList list;
     list << "ja" << "zh";
-    handwriting = list.contains(test.getDst());
+    handwriting = list.contains(test.get_dst());
     if(handwriting){
         // We want a place for a character handwriting widget.
         // Layout is a horizontal one composed of two vertical layouts. The one on the right is for character handwriting.

@@ -67,7 +67,7 @@ void HomeView::start_test(int i){
     online_buttons->hide();
     Test test = tests[i];
     // No possible decomposition of the sentence, because of translations in foreign languages that put words in a different order.
-    QString str_title = test.isRemoteWork()?
+    QString str_title = test.is_remote_work()?
                 tr("<b>You are now working on <br />tests from the remote server.</b>"):
                 tr("<b>You are now working on <br /> offline tests.</b>");
 

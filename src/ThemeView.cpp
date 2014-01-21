@@ -66,9 +66,9 @@ ThemeView::~ThemeView(){}
 
 void ThemeView::edit_theme(){
     status->setText(tr("Sending data..."));
-	if (!test.isRemoteWork()) {
+	if (!test.is_remote_work()) {
         // Offline
-        Parser p(test.getSrc() + test.getDst());
+        Parser p(test.get_src() + test.get_dst());
 
 		// Will show confirmation when loading of reply is finished
         connect(&p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
@@ -150,9 +150,9 @@ void ThemeView::reset(){
 
 
 void ThemeView::find_themes() {
-	if (!test.isRemoteWork()) {
+	if (!test.is_remote_work()) {
         // Offline
-        Parser p(test.getSrc() + test.getDst());
+        Parser p(test.get_src() + test.get_dst());
         read_reply(p.search("", Parser::getThemeFile()));
 	} else { 
 		// Request to PHP file

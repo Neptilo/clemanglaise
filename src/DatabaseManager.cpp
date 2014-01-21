@@ -3,6 +3,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlRecord>
 
 #include "DatabaseManager.h"
 
@@ -27,6 +28,27 @@ DatabaseManager::DatabaseManager(QObject *parent) :
 
     // Open database
     db.open();
+}
+
+bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
+{
+    // Check if table exists, else create it
+    QString lang = word_data["lang"];
+    QSqlQuery query(QString("SELECT name FROM sqlite_master WHERE type='table' AND name='words_%1'").arg(lang));
+    if(!query.next())
+        if(!create_word_table(lang))
+            return false;
+
+    bool success = query.prepare(QString("INSERT INTO words_%1(word, meaning, nature, pronunciation, comment, example, id_theme)"
+                                 "VALUES(:word, :meaning, :nature, :pronunciation, :comment, :example, :theme)").arg(lang));
+    for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i)
+        query.bindValue(":"+i.key(), i.value());
+
+    query.exec();
+
+    if(!success)
+        last_error = query.lastError().text();
+    return success;
 }
 
 bool DatabaseManager::create_theme_table()
@@ -71,13 +93,12 @@ bool DatabaseManager::find_lowest(QString& lang, QStringList& reply_list, int id
 {
     // Check if table exists, else create it
     QSqlQuery query(QString("SELECT name FROM sqlite_master WHERE type='table' AND name='words_%1'").arg(lang));
-
     if(!query.next())
         if(!create_word_table(lang))
             return false;
 
-    // id_theme = -1 if no theme was selected
-    QString cond = (id_theme >= 0)? QString("id_theme = %1").arg(id_theme): "1";
+    // id_theme = 0 if no theme was selected
+    QString cond = (id_theme > 0)? QString("id_theme = %1").arg(id_theme): "1";
 
     query = QSqlQuery(QString("SELECT words_%1.ID, word, meaning, nature, comment, example, id_theme, pronunciation, score, name "
                               "FROM words_%1 "
@@ -86,12 +107,12 @@ bool DatabaseManager::find_lowest(QString& lang, QStringList& reply_list, int id
                               "WHERE score=(SELECT MIN(score) FROM words_%1 WHERE %2) AND %2 "
                               "ORDER BY RANDOM() LIMIT 1"
                               ).arg(lang).arg(cond));
-
     if (query.next())
     {
-        qDebug() << query.boundValues().values();
-        //reply_list = query.boundValues().values<QList<QString>();
-        // TODO: uncomment and fix line above
+        reply_list = QStringList();
+        for(int i = 0; i < 10; ++i){
+            reply_list << query.value(i).toString();
+        }
         return true;
     }else{
         last_error = query.lastError().text();
@@ -103,3 +124,10 @@ QString DatabaseManager::get_last_error() const
 {
     return last_error;
 }
+
+/*
+bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
+{
+    return false;
+}
+*/

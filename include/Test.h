@@ -18,9 +18,9 @@ public:
     explicit Test(int id, const QString &name, const QString &src, const QString &dst, bool remote=true);
     int getId() const;
     const QString& getName() const;
-    const QString& getSrc();
-    const QString& getDst();
-	bool isRemoteWork() const;
+    const QString& get_src();
+    const QString& get_dst();
+	bool is_remote_work() const;
 	void setRemoteWork(bool where);
 	void addTheme(const QString& theme);
 	QSet<QString>& getThemes();

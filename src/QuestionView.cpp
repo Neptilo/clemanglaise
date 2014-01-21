@@ -43,13 +43,13 @@ void QuestionView::ask_question(const QString& word, const QString & theme) {
     // Display question
 	QString context("");
     context = (theme.isEmpty())? "" : "<i>context: " + theme+"</i><br />";
-    if(test.getDst() == "fr") {
+    if(test.get_dst() == "fr") {
         label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + context);
-    }else if(test.getDst() == "ja"){
+    }else if(test.get_dst() == "ja"){
         label->setText("<b>"+word + "</b><br />" + context + tr("<br/>Write the pronunciation of this word in r&#333;maji."));
-    }else if(test.getDst() == "zh"){
+    }else if(test.get_dst() == "zh"){
         label->setText("<b>"+word + "</b><br />" + context + tr("<br/>Write the pronunciation of this word in pinyin."));
-    }else if(test.getDst() == "hr"){
+    }else if(test.get_dst() == "hr"){
         label->setText(tr("Translate <b>") + word + tr("</b> into Croatian.<br />") + context);
     }else{
         label->setText(tr("Translate <b>") + word + tr("</b>.<br />")+ context);

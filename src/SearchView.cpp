@@ -12,7 +12,7 @@
 #include "Parser.h"
 #include "NetworkReplyReader.h"
 
-SearchView::SearchView(Test& test, bool modifiable, QWidget *parent) :
+SearchView::SearchView(Test& test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
     QWidget(parent),
     search_bar(NULL),
     nam(),
@@ -20,7 +20,8 @@ SearchView::SearchView(Test& test, bool modifiable, QWidget *parent) :
     test(test),
     reply_list(),
     update_frame(NULL),
-    modifiable(modifiable)
+    modifiable(modifiable),
+    database_manager(database_manager)
 {
     QLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
@@ -47,8 +48,8 @@ SearchView::~SearchView() {
 }
 
 void SearchView::search() {
-	if (!test.isRemoteWork()) {
-        Parser p(test.getSrc() + test.getDst());
+	if (!test.is_remote_work()) {
+        Parser p(test.get_src() + test.get_dst());
 
         // Offline
 		QString search_str = ampersand_unescape(search_bar->text());
@@ -59,7 +60,7 @@ void SearchView::search() {
 		QString search_str = ampersand_escape(search_bar->text());
 
 		// Request to PHP file
-		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test.getSrc() + test.getDst() + "&string=" + search_str);
+		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test.get_src() + test.get_dst() + "&string=" + search_str);
         nam.get(QNetworkRequest(url));
 	}
 }
@@ -109,7 +110,7 @@ void SearchView::read_reply(QString reply_string) {
             col_ind = (col_ind+1)%result_nb_cols;
         }
         if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
-            if(col_ind == 9 && !test.isRemoteWork()){ // Theme
+            if(col_ind == 9 && !test.is_remote_work()){ // Theme
                 item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list.at(i-3).toInt())));
             }else{
                 item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i)));
@@ -142,20 +143,20 @@ void SearchView::action(int row, int col)
         for(int i=row*nb_cols; i<(row+1)*nb_cols; ++i){
             default_values << reply_list.at(i);
 		}
-        update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), this);
+        update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
 		layout()->addWidget(update_frame);
         connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){
         result->disconnect();
 
-		if (test.isRemoteWork()) {
+		if (test.is_remote_work()) {
 
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
 #else
         QUrlQuery post_data;
 #endif
-        post_data.addQueryItem("lang", test.getSrc() + test.getDst());
+        post_data.addQueryItem("lang", test.get_src() + test.get_dst());
         post_data.addQueryItem("id", reply_list.at(row*nb_cols));
         const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
         QNetworkRequest request(url);
@@ -170,7 +171,7 @@ void SearchView::action(int row, int col)
         nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 		} else {
-            Parser p(test.getSrc() + test.getDst()); 
+            Parser p(test.get_src() + test.get_dst()); 
 			int id_theme =  reply_list.at(row*nb_cols+6).toInt(); //id_theme
 			int id = reply_list.at(row*nb_cols).toInt();
             p.deleteLineId( id, p.getFilein());

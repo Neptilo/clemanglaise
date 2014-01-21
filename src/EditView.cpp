@@ -11,7 +11,7 @@
 #include "Parser.h"
 #include "NetworkReplyReader.h"
 
-EditView::EditView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
+EditView::EditView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent) :
     QWidget(parent),
     title(NULL),
     status(NULL),
@@ -28,7 +28,8 @@ EditView::EditView(Test &test, const QString &title, const QStringList &default_
     cancel_button(NULL),
     continue_button(NULL),
     layout(NULL),
-    test(test)
+    test(test),
+    database_manager(database_manager)
 {
     this->php_filename = php_filename;
     this->default_values = default_values;
@@ -108,76 +109,62 @@ EditView::~EditView(){}
 
 void EditView::edit_word(){
 	status->setText(tr("Sending data..."));
-	if (!test.isRemoteWork()) {
+
+    // Standardize pronunciation to save into database
+    QString standardized_pronunciation;
+    if(test.get_dst() == "ja"){
+        standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
+        standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
+        standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
+        standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
+        standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
+    }else if(test.get_dst() == "zh"){
+        standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
+    } else {
+        standardized_pronunciation = isKirshenbaum(pronunciation_edit->text())?ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text())):ampersand_escape(pronunciation_edit->text());
+    }
+
+    // Define data to send
+    QHash<QString, QString> word_data;
+    word_data["id"] = this->default_values.at(0);
+    word_data["word"] = ampersand_escape(word_edit->text());
+    word_data["nature"] = nature_edit->itemData(nature_edit->currentIndex()).toString();
+    word_data["meaning"] = ampersand_escape(meaning_edit->text());
+    word_data["pronunciation"] = standardized_pronunciation;
+    word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
+    word_data["example"] = ampersand_escape(example_edit->toPlainText());
+    word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
+    word_data["lang"] = test.get_src() + test.get_dst();
+
+    if (!test.is_remote_work()) {
+
 		// Offline
-		QString separator("\t:\t");
-		int id = default_values.at(0).toInt();
-        Parser p(test.getSrc() + test.getDst());
-		QString pronunciation_line = isKirshenbaum(pronunciation_edit->text())?kirshenbaum2IPA(pronunciation_edit->text()):colon_unescape(pronunciation_edit->text());
-		// Will show confirmation when loading of reply is finished
-        connect(&p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
-		QString line = colon_unescape(word_edit->text()) + separator + 
-			colon_unescape(meaning_edit->text()) + separator +
-			nature_edit->itemData(nature_edit->currentIndex()).toString() + separator +	
-			colon_unescape(comment_edit->toPlainText()) + separator + 
-			colon_unescape(example_edit->toPlainText()) + separator + 
-			themes->itemData(themes->currentIndex()).toString() + separator +
-			pronunciation_line + separator +
-			p.getScoreId(id);
-		int new_id_theme;
-		if(id==0){//add
-			p.appendInFile(line, p.getFilein());
-            p.addInFile(QString::number(p.getLastId(p.getFilein())) + " : 0 : 0 "  , p.getScoreFile());
-		} else { //update
-			p.updateLineId(id, line, p.getFilein());
-		}
-		if ((new_id_theme=themes->currentIndex())>0) {
-            QString theme_file = p.getSrcDst() + "/" + themes->itemData(themes->currentIndex()).toString() + "_" + themes->itemText(themes->currentIndex());
-            QString old_theme_file = p.getSrcDst() + "/" + QString::number(id_theme) + "_" + themes->itemText(id_theme);
-			if(id==0){//add
-				p.addInFile(p.getLineId(p.getLastId(p.getFilein()), p.getFilein()) , theme_file);
-			} else { //update
-				if (new_id_theme == id_theme){
-					p.updateLineId(id, line, theme_file);
-				} else {
-					p.deleteLineId(id, old_theme_file);	
-					p.addInFile( p.getLineId(id, p.getFilein()), theme_file);
-				}
-			}
-		}
+        if(word_data["id"].toInt() == 0) // Add word
+            database_manager->add_word(word_data);
+        else // Update word
+            // database_manager->update_word(word_data);
+
+        // Show confirmation
+        if(database_manager->get_last_error() == " ")
+            status->setText(success_message);
+        else
+            status->setText(tr("<b>SQLite error: </b>")+database_manager->get_last_error());
+
+        delete OK_button;
+        continue_button = new QPushButton(tr("Add another word"), this);
+        continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
+
+        layout->addWidget(continue_button);
+        connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
+        cancel_button->setText(tr("Back"));
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;
 #else
 		QUrlQuery post_data;
 #endif
-		post_data.addQueryItem("id", this->default_values.at(0));
-		post_data.addQueryItem("word", ampersand_escape(word_edit->text()));
-		post_data.addQueryItem("nature", nature_edit->itemData(nature_edit->currentIndex()).toString());
-		post_data.addQueryItem("meaning", ampersand_escape(meaning_edit->text()));
-
-		// Standardize pronunciation to save into database
-		QString standardized_pronunciation;
-
-
-		if(test.getDst() == "ja"){
-			standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
-			standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
-			standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
-			standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
-			standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
-		}else if(test.getDst() == "zh"){
-			standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
-		} else {
-			standardized_pronunciation = isKirshenbaum(pronunciation_edit->text())?ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text())):ampersand_escape(pronunciation_edit->text());
-		}
-
-
-		post_data.addQueryItem("pronunciation", standardized_pronunciation);
-		post_data.addQueryItem("comment", ampersand_escape(comment_edit->toPlainText()));
-		post_data.addQueryItem("example", ampersand_escape(example_edit->toPlainText()));
-		post_data.addQueryItem("theme", themes->itemData(themes->currentIndex()).toString());
-		post_data.addQueryItem("lang", test.getSrc() + test.getDst());
+        for (QHash<QString, QString>::iterator i = word_data.begin(); i != word_data.end(); ++i)
+            post_data.addQueryItem(i.key(), i.value());
 
 		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
 		QNetworkRequest request(url);
@@ -202,7 +189,7 @@ void EditView::show_confirmation(QNetworkReply* reply){
 	if(reply_string.compare("")){
 		status->setText(reply_string);
 	}else{
-		status->setText(this->success_message);
+        status->setText(success_message);
 	}
 	delete OK_button;
 	continue_button = new QPushButton(tr("Add another word"), this);
@@ -214,7 +201,7 @@ void EditView::show_confirmation(QNetworkReply* reply){
 }
 
 void EditView::show_confirmation(){
-	status->setText(this->success_message);
+    status->setText(success_message);
 	delete OK_button;
 	continue_button = new QPushButton(tr("Add another word"), this);
 	continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
@@ -252,8 +239,8 @@ void EditView::reset(){
 }
 
 void EditView::find_themes() {
-	if (!test.isRemoteWork()) {
-        Parser p(test.getSrc() + test.getDst());
+	if (!test.is_remote_work()) {
+        Parser p(test.get_src() + test.get_dst());
 		// Offline
         read_reply(p.search("", p.getThemeFile()));
     } else {

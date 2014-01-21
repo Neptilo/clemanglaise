@@ -26,16 +26,16 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     // Check answer
     QString message;
     bool correct;
-    if(test.getDst()=="ja" || test.getDst()=="zh"){
+    if(test.get_dst()=="ja" || test.get_dst()=="zh"){
         // Standardize player answer before checking
         QString standardized_answer = QString(player_answer);
 
-        if(test.getDst() == "ja"){
+        if(test.get_dst() == "ja"){
             standardized_answer.replace(QString("ou"), QString("&#333;"));
             standardized_answer.replace(QString("uu"), QString("&#363;"));
             standardized_answer.replace(QString("aa"), QString("&#257;"));
             standardized_answer.replace(QString("ee"), QString("&#275;"));
-        }else if(test.getDst() == "zh"){
+        }else if(test.get_dst() == "zh"){
             standardized_answer = numbers_to_accents(standardized_answer);
         }
 
@@ -49,9 +49,9 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     message = correct ? tr("Right!") : tr("Wrong!");
 
     // Update score
-	if (!test.isRemoteWork()) {
+	if (!test.is_remote_work()) {
 		//Offline
-		Parser p(test.getSrc() + test.getDst());
+		Parser p(test.get_src() + test.get_dst());
 		p.update_score(reply_list.at(0).toInt(), int(correct));	
 	} else {
 		const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
@@ -68,7 +68,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
 #else
 		QUrlQuery post_data;
 		post_data.addQueryItem("id", reply_list.at(0));
-		post_data.addQueryItem("lang", test.getSrc() + test.getDst());
+		post_data.addQueryItem("lang", test.get_src() + test.get_dst());
 		post_data.addQueryItem("correct", QString::number(correct));
 		nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
@@ -102,7 +102,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     vertical_layout->addWidget(display_icon_answer);
     vertical_layout->addWidget(display_answer);
 
-    if(test.getDst()=="ja" || test.getDst()=="zh"){
+    if(test.get_dst()=="ja" || test.get_dst()=="zh"){
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
     }else{
 		QString answithoutpron = "<b>"+word+"</b> <i>"+nature+"</i>: "+meaning;
