@@ -15,7 +15,7 @@ class SearchView : public QWidget
 public:
     explicit SearchView(Test &test, DatabaseManager *database_manager, bool modifiable = false, QWidget *parent = 0);
     ~SearchView();
-    void read_reply(QString reply_string);
+    void read_reply(QString reply_string="");
 
 private:
     QLineEdit* search_bar;

@@ -38,11 +38,20 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 			query.bindValue(":"+i.key(), i.value());
 		}
 	}
-	query.exec();
 
 	if(!success)
 		last_error = query.lastError().text();
-	return success;
+	return query.exec();
+}
+
+bool DatabaseManager::delete_word(const QString& lang, const int& id) {
+	QSqlQuery query;
+	bool success = query.prepare(QString("DELETE FROM words_%1 WHERE id = :id").arg(lang));
+	query.bindValue(":id", id);
+
+	if (!success)
+		last_error = query.lastError().text();
+	return query.exec(); 
 }
 
 bool DatabaseManager::add_theme(const QString theme) {
@@ -163,7 +172,7 @@ QSqlQuery DatabaseManager::find_used_themes(const QString& lang) {
 	return query;
 }
 
-QSqlQuery DatabaseManager::search(const QString& lang, const QString& expr){
+void DatabaseManager::search(const QString& lang, const QString& expr, QStringList& reply_list){
 	QSqlQuery query(
 			QString ("select words_%1.id, word, meaning, nature, comment, example, id_theme, name, pronunciation, score " 
 				"from words_%1 " 
@@ -172,7 +181,12 @@ QSqlQuery DatabaseManager::search(const QString& lang, const QString& expr){
 				"where word like '%%2%' or "
 				"meaning like '%%2%' or "
 				"pronunciation like '%%2%'").arg(lang).arg(expr));
-	return query;
+	while (query.next()) {
+		reply_list = QStringList();
+		for(int i = 0; i < 10; ++i)
+			reply_list << query.value(i).toString();
+		
+	}
 }
 
 

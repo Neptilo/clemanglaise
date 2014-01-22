@@ -9,7 +9,6 @@
 #include "QuestionView.h"
 #include "SearchView.h"
 #include "string_utils.h"
-#include "Parser.h"
 #include "NetworkReplyReader.h"
 
 SearchView::SearchView(Test& test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
@@ -49,11 +48,10 @@ SearchView::~SearchView() {
 
 void SearchView::search() {
 	if (!test.is_remote_work()) {
-        Parser p(test.get_src() + test.get_dst());
-
         // Offline
 		QString search_str = ampersand_unescape(search_bar->text());
-        read_reply(p.search(search_str, p.getFilein()));
+		database_manager->search(test.get_src()+test.get_dst(), search_str, reply_list);
+		read_reply();
 	} else {
 
 		// Standardization of search string
@@ -75,7 +73,8 @@ void SearchView::read_reply(QNetworkReply* reply)
 
 void SearchView::read_reply(QString reply_string) {
     int nb_cols(10);
-    reply_list = QStringList(reply_string.split('\n'));
+	if (test.is_remote_work())
+		reply_list = QStringList(reply_string.split('\n'));
 	if(result){
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 		delete result;
@@ -110,11 +109,7 @@ void SearchView::read_reply(QString reply_string) {
             col_ind = (col_ind+1)%result_nb_cols;
         }
         if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
-            if(col_ind == 9 && !test.is_remote_work()){ // Theme
-                item = new QTableWidgetItem(ampersand_unescape(Parser::getTheme(reply_list.at(i-3).toInt())));
-            }else{
-                item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i)));
-            }
+			item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i))); 
             result->setItem(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
         }
@@ -171,15 +166,8 @@ void SearchView::action(int row, int col)
         nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 		} else {
-            Parser p(test.get_src() + test.get_dst()); 
-			int id_theme =  reply_list.at(row*nb_cols+6).toInt(); //id_theme
 			int id = reply_list.at(row*nb_cols).toInt();
-            p.deleteLineId( id, p.getFilein());
-            p.deleteLineId(id, p.getScoreFile());
-			if(id_theme>0) {
-				QString theme_file = p.getSrcDst() + "/" + QString::number(id_theme) + "_" + p.getTheme(id_theme);
-				p.deleteLineId(id, theme_file);
-			}
+			database_manager->delete_word(test.get_src()+test.get_dst(), id);
 		}
 
         refresh();
