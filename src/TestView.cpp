@@ -126,13 +126,13 @@ void TestView::init()
 }
 
 void TestView::update_request() {
-    // Request to PHP or local file
-	QUrl url;
 	int index = themes->currentIndex();
-    QString lang = test.get_src() + test.get_dst();
-    url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + lang +"&id_theme="+themes->itemData(index).toString());
-    delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request stays the same.)
-    request = new QNetworkRequest(url);
+	QString lang = test.get_src() + test.get_dst();
+	// Request to PHP or local file
+	QUrl url;
+	url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + lang +"&id_theme="+themes->itemData(index).toString());
+	delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request stays the same.)
+	request = new QNetworkRequest(url);
 }
 
 void TestView::read_reply(QNetworkReply* reply){
@@ -159,7 +159,6 @@ void TestView::validate_question(){
 
 void TestView::validate_answer() {
 	int index = themes->currentIndex();
-    QString root = test.get_src() + test.get_dst();
 
     // Remove everything
     delete question_frame;
@@ -173,13 +172,11 @@ void TestView::validate_answer() {
 
     // Request for a new question
     if (!test.is_remote_work()) {
-		if (!index || (index && index < 0)) {
-			//parser->parse(parser->getFilein());
-        } else {
-			//parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
-		}
-    }
-    nam->get(*request);
+		QString lang = test.get_src() + test.get_dst();
+		database_manager->find_lowest(lang, reply_list, themes->itemData(index).toInt());
+    } 
+	else 
+		nam->get(*request);
 }
 
 void TestView::update_question(int){

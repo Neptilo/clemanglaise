@@ -125,9 +125,7 @@ bool DatabaseManager::find_lowest(QString& lang, QStringList& reply_list, int id
 }
 
 bool DatabaseManager::set_score(const QString& lang, const QString& id, const int& correct) {
-	qDebug() << "call " << "correct: "<< correct;
 	QSqlQuery query;
-	//ROUND((correctly_answered) * 1.0 /(asked+2), 2)
 	bool success = query.prepare(
 			QString("UPDATE words_%1 " 
 				"SET correctly_answered = correctly_answered + :correct, "
@@ -199,7 +197,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
 	}
 	if(!success)
 		last_error = query.lastError().text();
-	qDebug() << query.exec();
+	query.exec();
 
 	return success;
 
