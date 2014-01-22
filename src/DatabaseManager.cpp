@@ -184,7 +184,7 @@ void DatabaseManager::find_used_themes(const QString& lang, QStringList& reply_l
 
 void DatabaseManager::search(const QString& lang, const QString& expr, QStringList& reply_list){
 	QSqlQuery query(
-			QString ("select words_%1.id, word, meaning, nature, comment, example, id_theme, name, pronunciation, score " 
+			QString ("select words_%1.id, word, meaning, nature, comment, example, id_theme, pronunciation, score, name " 
 				"from words_%1 " 
 				"left outer join themes "
 				"on themes.id = words_%1.id_theme " 
