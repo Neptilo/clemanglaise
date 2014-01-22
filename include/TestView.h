@@ -25,7 +25,7 @@ class TestView : public QWidget{
 public:
     TestView(Test &test, DatabaseManager *database_manager, QString str_title = "", bool admin = false, QWidget *parent = 0);
     ~TestView();
-    void read_reply(QString reply_string);
+    void read_reply(QString reply_string="");
 
 private:
     QPushButton* add_button;
@@ -41,6 +41,7 @@ private:
     QNetworkAccessManager nam_themes;
     QuestionView* question_frame;
     QStringList reply_list;
+	QStringList reply_list_theme; 
     QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
     QPushButton* search_button;
     SearchView* search_frame;

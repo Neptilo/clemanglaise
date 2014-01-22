@@ -28,6 +28,7 @@ EditView::EditView(Test &test, const QString &title, const QStringList &default_
     continue_button(NULL),
     layout(NULL),
     test(test),
+	reply_list(),
     database_manager(database_manager)
 {
     this->php_filename = php_filename;
@@ -239,9 +240,9 @@ void EditView::reset(){
 
 void EditView::find_themes() {
 	if (!test.is_remote_work()) {
-        //Parser p(test.get_src() + test.get_dst());
 		// Offline
-        //read_reply(p.search("", p.getThemeFile()));
+		database_manager->find_themes(reply_list);
+		read_reply();
     } else {
 		// Request to PHP file
 		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
@@ -259,7 +260,8 @@ void EditView::read_reply(QNetworkReply* reply)
 }
 
 void EditView::read_reply(QString reply_string) {
-	QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
+	if(test.is_remote_work())
+		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1).trimmed(), QVariant(reply_list.at(i).toInt()));

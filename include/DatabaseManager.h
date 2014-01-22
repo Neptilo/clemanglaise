@@ -22,7 +22,7 @@ public:
     bool find_lowest(QString &lang, QStringList &reply_list, int id_theme = -1);
 	bool set_score(const QString& lang, const QString& id, const int& correct);
 	void find_themes(QStringList& reply_list);
-	QSqlQuery find_used_themes(const QString& lang);
+	void find_used_themes(const QString& lang, QStringList& reply_list);
 	void search(const QString& lang, const QString& expr, QStringList& reply_list);
     QString get_last_error() const;
     bool update_word(const QHash<QString, QString> &word_data);

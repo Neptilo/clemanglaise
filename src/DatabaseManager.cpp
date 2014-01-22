@@ -38,10 +38,11 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 			query.bindValue(":"+i.key(), i.value());
 		}
 	}
+	query.exec();
 
 	if(!success)
 		last_error = query.lastError().text();
-	return query.exec();
+	return success;
 }
 
 bool DatabaseManager::delete_word(const QString& lang, const int& id) {
@@ -166,7 +167,7 @@ void DatabaseManager::find_themes(QStringList& reply_list) {
 		
 }
 
-QSqlQuery DatabaseManager::find_used_themes(const QString& lang) {
+void DatabaseManager::find_used_themes(const QString& lang, QStringList& reply_list) {
 	QSqlQuery query(
 			QString("SELECT DISTINCT (themes.id), name "
 				"FROM words_%1 " 
@@ -174,7 +175,11 @@ QSqlQuery DatabaseManager::find_used_themes(const QString& lang) {
 				"ON themes.id = words_%1.id_theme "
 				"ORDER BY name ASC").arg(lang)
 			);
-	return query;
+	if (query.size()>0)
+		reply_list = QStringList();
+	while (query.next())
+		for(int i = 0; i < 2; ++i)
+			reply_list << query.value(i).toString();
 }
 
 void DatabaseManager::search(const QString& lang, const QString& expr, QStringList& reply_list){

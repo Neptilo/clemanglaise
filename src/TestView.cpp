@@ -22,6 +22,7 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     nam_themes(),
     question_frame(NULL),
     reply_list(),
+    reply_list_theme(),
     request(NULL),
     search_button(NULL),
     search_frame(NULL),
@@ -237,8 +238,8 @@ void TestView::go_back() {
 void TestView::find_themes() {
     if (!test.is_remote_work()) {
         // Offline
-        //Parser p(test.get_src() + test.get_dst());
-        //read_reply(p.search("", Parser::getThemeFile()));
+		database_manager->find_used_themes(test.get_src()+test.get_dst(), reply_list_theme);
+		read_reply();
 	} else { 
 		// Request to PHP file
         const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test.get_src() + test.get_dst());
@@ -256,12 +257,13 @@ void TestView::read_reply_themes(QNetworkReply* reply)
 }
 
 void TestView::read_reply(QString reply_string) {
-    QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
+	if (test.is_remote_work())
+		reply_list_theme = reply_string.split('\n', QString::SkipEmptyParts);
     themes->disconnect();
     themes->clear();
     themes->addItem("---");
-	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
-		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
+	for(int i=0, l = reply_list_theme.count(); i<l-1; i+=2) {
+		themes->addItem(reply_list_theme.at(i+1), QVariant(reply_list_theme.at(i).toInt()));
     }    
     connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
