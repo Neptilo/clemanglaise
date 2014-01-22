@@ -8,7 +8,6 @@
 #include "EditView.h"
 #include "QuestionView.h"
 #include "string_utils.h"
-#include "Parser.h"
 #include "NetworkReplyReader.h"
 
 EditView::EditView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent) :
@@ -142,7 +141,7 @@ void EditView::edit_word(){
         if(word_data["id"].toInt() == 0) // Add word
             database_manager->add_word(word_data);
         else // Update word
-            // database_manager->update_word(word_data);
+             database_manager->update_word(word_data);
 
         // Show confirmation
         if(database_manager->get_last_error() == " ")
@@ -240,9 +239,9 @@ void EditView::reset(){
 
 void EditView::find_themes() {
 	if (!test.is_remote_work()) {
-        Parser p(test.get_src() + test.get_dst());
+        //Parser p(test.get_src() + test.get_dst());
 		// Offline
-        read_reply(p.search("", p.getThemeFile()));
+        //read_reply(p.search("", p.getThemeFile()));
     } else {
 		// Request to PHP file
 		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");

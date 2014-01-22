@@ -6,7 +6,6 @@
 #include "AnswerView.h"
 #include "DatabaseManager.h"
 #include "EditView.h"
-#include "Parser.h"
 #include "QuestionView.h"
 #include "SearchView.h"
 #include "Test.h"
@@ -40,7 +39,6 @@ private:
     QLayout* layout;
     QNetworkAccessManager* nam;
     QNetworkAccessManager nam_themes;
-    Parser* parser; // pointer because for offline work it doesn't need to be defined.
     QuestionView* question_frame;
     QStringList reply_list;
     QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL

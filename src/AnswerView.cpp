@@ -6,14 +6,14 @@
 #include "AnswerView.h"
 #include "QuestionView.h"
 #include "string_utils.h"
-#include "Parser.h"
 
 AnswerView::AnswerView(Test &test, QWidget *parent):
     WordView(test, parent)
 {}
 
-AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answer, Test &test, QWidget *parent):
-    WordView(test, parent)
+AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answer, Test &test, DatabaseManager *database_manager, QWidget *parent):
+    WordView(test, parent),
+	database_manager(database_manager)
 {
     // Define explicit variables for the content of the label
     QString word = reply_list.at(1);
@@ -51,8 +51,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     // Update score
 	if (!test.is_remote_work()) {
 		//Offline
-		Parser p(test.get_src() + test.get_dst());
-		p.update_score(reply_list.at(0).toInt(), int(correct));	
+		database_manager->set_score(test.get_src()+test.get_dst(), reply_list.at(0), correct);	
 	} else {
 		const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
 		QNetworkRequest request(url);
@@ -62,7 +61,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;
 		post_data.addQueryItem("id", reply_list.at(0));
-		post_data.addQueryItem("lang", test.getSrc() + test.getDst());
+		post_data.addQueryItem("lang", test.get_src() + test.get_dst());
 		post_data.addQueryItem("correct", QString::number(correct));
 		nam->post(request, post_data.encodedQuery());
 #else
