@@ -20,7 +20,6 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     layout(NULL),
     nam(NULL),
     nam_themes(),
-    parser(NULL),
     question_frame(NULL),
     reply_list(),
     request(NULL),
