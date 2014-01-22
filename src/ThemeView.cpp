@@ -7,10 +7,9 @@
 #include "ThemeView.h"
 #include "QuestionView.h"
 #include "string_utils.h"
-#include "Parser.h"
 #include "NetworkReplyReader.h"
 
-ThemeView::ThemeView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, QWidget *parent) :
+ThemeView::ThemeView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager* database_manager, QWidget *parent) :
     QWidget(parent),
     title(NULL),
     status(NULL),
@@ -21,8 +20,10 @@ ThemeView::ThemeView(Test &test, const QString &title, const QStringList &defaul
     continue_button(NULL),
     layout(NULL),
     test(test),
+	reply_list(),
     theme(NULL),
-    themes(NULL)
+    themes(NULL),
+	database_manager(database_manager)
 {
     this->php_filename = php_filename;
     this->default_values = default_values;
@@ -68,13 +69,9 @@ void ThemeView::edit_theme(){
     status->setText(tr("Sending data..."));
 	if (!test.is_remote_work()) {
         // Offline
-        Parser p(test.get_src() + test.get_dst());
-
 		// Will show confirmation when loading of reply is finished
-        connect(&p, SIGNAL(appendDone()), this, SLOT(show_confirmation()));
-		QString line = colon_unescape(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1)) + endline;
-        p.appendInFile(line, Parser::getThemeFile());
-        p.deleteLineId(default_values.at(0).toInt(), p.getFilein());
+		database_manager->add_theme(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1));
+        show_confirmation();
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
@@ -113,16 +110,11 @@ void ThemeView::show_confirmation(QNetworkReply* reply){
     }else{
         status->setText(this->success_message);
     }
-    delete OK_button;
-    continue_button = new QPushButton(tr("Add another theme"), this);
-	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
-    layout->addWidget(continue_button);
-    connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-    cancel_button->setText(tr("Back to test"));
+	show_confirmation();
 }
 
 void ThemeView::show_confirmation(){
-    status->setText(this->success_message);
+	status->setText(this->success_message);
     delete OK_button;
     continue_button = new QPushButton(tr("Add another theme"), this);
 	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
@@ -152,8 +144,8 @@ void ThemeView::reset(){
 void ThemeView::find_themes() {
 	if (!test.is_remote_work()) {
         // Offline
-        Parser p(test.get_src() + test.get_dst());
-        read_reply(p.search("", Parser::getThemeFile()));
+		database_manager->find_themes(reply_list);
+		read_reply();
 	} else { 
 		// Request to PHP file
         const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
@@ -171,8 +163,8 @@ void ThemeView::read_reply(QNetworkReply* reply)
 }
 
 void ThemeView::read_reply(QString reply_string) {
-    QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
-	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
+	if (test.is_remote_work())
+		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+	for(int i=0, l = reply_list.count(); i<l-1; i+=2)
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
-	}
 }

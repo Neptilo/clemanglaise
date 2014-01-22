@@ -191,7 +191,7 @@ void TestView::add_theme()
     // Create a new add frame
     QStringList default_values_list;
     default_values_list << "" << "";
-    add_theme_frame = new ThemeView(test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), this);
+    add_theme_frame = new ThemeView(test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), database_manager, this);
     layout->addWidget(add_theme_frame);
     connect(add_theme_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }

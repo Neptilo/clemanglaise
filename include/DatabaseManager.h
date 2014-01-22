@@ -21,7 +21,7 @@ public:
     bool create_word_table(const QString &lang);
     bool find_lowest(QString &lang, QStringList &reply_list, int id_theme = -1);
 	bool set_score(const QString& lang, const QString& id, const int& correct);
-	QSqlQuery find_themes();
+	void find_themes(QStringList& reply_list);
 	QSqlQuery find_used_themes(const QString& lang);
 	void search(const QString& lang, const QString& expr, QStringList& reply_list);
     QString get_last_error() const;

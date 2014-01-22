@@ -156,9 +156,14 @@ QString DatabaseManager::get_last_error() const
 	return last_error;
 }
 
-QSqlQuery DatabaseManager::find_themes() { 
+void DatabaseManager::find_themes(QStringList& reply_list) { 
 	QSqlQuery query("SELECT * FROM themes ORDER BY name ASC");
-	return query; 
+	if (query.size()>0)
+		reply_list = QStringList();
+	while (query.next())
+		for(int i = 0; i < 2; ++i)
+			reply_list << query.value(i).toString();
+		
 }
 
 QSqlQuery DatabaseManager::find_used_themes(const QString& lang) {
@@ -181,12 +186,12 @@ void DatabaseManager::search(const QString& lang, const QString& expr, QStringLi
 				"where word like '%%2%' or "
 				"meaning like '%%2%' or "
 				"pronunciation like '%%2%'").arg(lang).arg(expr));
-	while (query.next()) {
+	if (query.size()>0)
 		reply_list = QStringList();
+	while (query.next())
 		for(int i = 0; i < 10; ++i)
 			reply_list << query.value(i).toString();
 		
-	}
 }
 
 
