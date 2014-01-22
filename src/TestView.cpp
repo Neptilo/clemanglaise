@@ -1,4 +1,4 @@
-#include "TestView.h"
+
 
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -181,54 +181,55 @@ void TestView::validate_answer() {
 }
 
 void TestView::update_question(int){
-    update_request();
-    validate_answer();
+	if (test.is_remote_work())
+		update_request();
+	validate_answer();
 }
 
 void TestView::add_theme()
 {
-    remove_widgets();
+	remove_widgets();
 
-    // Create a new add frame
-    QStringList default_values_list;
-    default_values_list << "" << "";
-    add_theme_frame = new ThemeView(test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), database_manager, this);
-    layout->addWidget(add_theme_frame);
-    connect(add_theme_frame, SIGNAL(destroyed()), this, SLOT(init()));
+	// Create a new add frame
+	QStringList default_values_list;
+	default_values_list << "" << "";
+	add_theme_frame = new ThemeView(test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), database_manager, this);
+	layout->addWidget(add_theme_frame);
+	connect(add_theme_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::add_word()
 {
-    remove_widgets();
+	remove_widgets();
 
-    // Create a new add frame
-    QStringList default_values_list;
+	// Create a new add frame
+	QStringList default_values_list;
 	//word << meaning << nature << comment << exple << id_theme << pronunciation << score<< theme
 
-    default_values_list << "" << "" << "" << "" << "" << "" << "" << "" << "" << "";
-    add_frame = new EditView(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), database_manager, this);
-    layout->addWidget(add_frame);
-    connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
+	default_values_list << "" << "" << "" << "" << "" << "" << "" << "" << "" << "";
+	add_frame = new EditView(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), database_manager, this);
+	layout->addWidget(add_frame);
+	connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::update_word()
 {
-    remove_widgets();
+	remove_widgets();
 
-    // Create a new add frame
-    update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
-    layout->addWidget(update_frame);
-    connect(update_frame, SIGNAL(destroyed()), this, SLOT(init()));
+	// Create a new add frame
+	update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
+	layout->addWidget(update_frame);
+	connect(update_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::search()
 {
-    remove_widgets();
+	remove_widgets();
 
-    // Create a new search frame
-    search_frame = new SearchView(test, database_manager, !test.is_remote_work()||admin, this);
-    layout->addWidget(search_frame);
-    connect(search_frame, SIGNAL(destroyed()), this, SLOT(init()));
+	// Create a new search frame
+	search_frame = new SearchView(test, database_manager, !test.is_remote_work()||admin, this);
+	layout->addWidget(search_frame);
+	connect(search_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::go_back() {
@@ -236,13 +237,13 @@ void TestView::go_back() {
 }
 
 void TestView::find_themes() {
-    if (!test.is_remote_work()) {
-        // Offline
+	if (!test.is_remote_work()) {
+		// Offline
 		database_manager->find_used_themes(test.get_src()+test.get_dst(), reply_list_theme);
 		read_reply();
 	} else { 
 		// Request to PHP file
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test.get_src() + test.get_dst());
+		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test.get_src() + test.get_dst());
 		QNetworkRequest request(url);
 		nam_themes.get(request);
 	}
@@ -250,38 +251,38 @@ void TestView::find_themes() {
 
 void TestView::read_reply_themes(QNetworkReply* reply)
 {
-    // Store the lines of the reply in the "reply_list" attribute
-    QString reply_string = reply->readAll();
-    reply->deleteLater();
+	// Store the lines of the reply in the "reply_list" attribute
+	QString reply_string = reply->readAll();
+	reply->deleteLater();
 	read_reply(reply_string);
 }
 
 void TestView::read_reply(QString reply_string) {
 	if (test.is_remote_work())
 		reply_list_theme = reply_string.split('\n', QString::SkipEmptyParts);
-    themes->disconnect();
-    themes->clear();
-    themes->addItem("---");
+	themes->disconnect();
+	themes->clear();
+	themes->addItem("---");
 	for(int i=0, l = reply_list_theme.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list_theme.at(i+1), QVariant(reply_list_theme.at(i).toInt()));
-    }    
-    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
+	}    
+	connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
 
 void TestView::remove_widgets()
 {
-    delete question_frame;
-    question_frame = NULL;
-    delete answer_frame;
-    answer_frame = NULL;
-    if(!test.is_remote_work() || admin){
-        update_button->hide();
-        add_theme_button->hide();
-        add_button->hide();
-    }
-    theme->hide();
-    themes->hide();
-    back_button->hide();
-    search_button->hide();
-    status.hide();
+	delete question_frame;
+	question_frame = NULL;
+	delete answer_frame;
+	answer_frame = NULL;
+	if(!test.is_remote_work() || admin){
+		update_button->hide();
+		add_theme_button->hide();
+		add_button->hide();
+	}
+	theme->hide();
+	themes->hide();
+	back_button->hide();
+	search_button->hide();
+	status.hide();
 }
