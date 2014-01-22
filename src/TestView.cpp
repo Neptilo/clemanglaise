@@ -29,7 +29,6 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     update_button(NULL),
     test(test),
     themes(NULL),
-    parser(NULL),
     admin(admin),
     database_manager(database_manager)
 {
@@ -74,16 +73,12 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);
 
-    if (!test.is_remote_work())
-        parser = new Parser(test.get_src() + test.get_dst());
-
     init();
     connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
 
 TestView::~TestView(){
     delete request;
-    delete parser;
 }
 
 // This function is called every time the user comes back from another view.
@@ -154,7 +149,7 @@ void TestView::validate_question(){
 
     // Create a new answer frame
     delete answer_frame;
-    answer_frame = new AnswerView(reply_list, question_frame->getAnswer(), test, this);
+    answer_frame = new AnswerView(reply_list, question_frame->getAnswer(), test, database_manager, this);
     layout->addWidget(answer_frame);
 }
 
@@ -175,9 +170,9 @@ void TestView::validate_answer() {
     // Request for a new question
     if (!test.is_remote_work()) {
 		if (!index || (index && index < 0)) {
-			parser->parse(parser->getFilein());
+			//parser->parse(parser->getFilein());
         } else {
-			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
+			//parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
 		}
     }
     nam->get(*request);
@@ -241,8 +236,8 @@ void TestView::go_back() {
 void TestView::find_themes() {
     if (!test.is_remote_work()) {
         // Offline
-        Parser p(test.get_src() + test.get_dst());
-        read_reply(p.search("", Parser::getThemeFile()));
+        //Parser p(test.get_src() + test.get_dst());
+        //read_reply(p.search("", Parser::getThemeFile()));
 	} else { 
 		// Request to PHP file
         const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test.get_src() + test.get_dst());

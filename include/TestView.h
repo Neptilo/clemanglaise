@@ -9,7 +9,6 @@
 #include "EditView.h"
 #include "SearchView.h"
 #include "Test.h"
-#include "Parser.h"
 #include "DatabaseManager.h"
 
 #if defined(Q_OS_WIN)
@@ -50,7 +49,6 @@ private:
     QPushButton* update_button;
     Test test;
 	QComboBox *themes;
-    Parser* parser; // pointer because for offline work it doesn't need to be defined.
     bool admin;
     DatabaseManager *database_manager;
     void remove_widgets();
