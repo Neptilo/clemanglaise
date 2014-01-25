@@ -26,10 +26,10 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     // Check answer
     QString message;
     bool correct;
+    QString standardized_answer = player_answer.trimmed();
+    QString correct_answers; // can be the correct meaning or the pronunciation according to the language
     if(test.get_dst()=="ja" || test.get_dst()=="zh"){
         // Standardize player answer before checking
-        QString standardized_answer = QString(player_answer);
-
         if(test.get_dst() == "ja"){
             standardized_answer.replace(QString("ou"), QString("&#333;"));
             standardized_answer.replace(QString("uu"), QString("&#363;"));
@@ -38,15 +38,17 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
         }else if(test.get_dst() == "zh"){
             standardized_answer = numbers_to_accents(standardized_answer);
         }
-
-        correct = (pronunciation.split(", ").contains(standardized_answer, Qt::CaseInsensitive));
+        correct_answers = pronunciation;
     }else{
-        QString standard_answer = ampersand_unescape(player_answer);
-        QString meaning_standard_answer = ampersand_unescape(meaning);
-        correct = (meaning_standard_answer.split(", ").contains(standard_answer, Qt::CaseInsensitive));
+        standardized_answer = ampersand_unescape(standardized_answer);
+        correct_answers = ampersand_unescape(meaning);
     }
+    QStringList correct_answer_list = correct_answers.split(",");
+    for(int i = 0; i < correct_answer_list.size(); ++i)
+        correct_answer_list.replace(i, correct_answer_list.at(i).trimmed());
+    correct = correct_answer_list.contains(standardized_answer, Qt::CaseInsensitive);
 
-    message = correct ? tr("Right!") : tr("Wrong!");
+    message = correct? tr("Right!"): tr("Wrong!");
 
     // Update score
 	if (!test.is_remote_work()) {
