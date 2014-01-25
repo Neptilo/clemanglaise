@@ -1,3 +1,5 @@
+* When you delete a word sometimes app crashes or the refresh function doesn't work
+  correctly. Fix it 
 * Fix this bug: on online tests (I don't know about offline), when you add a theme which the database assigns an ID that is not equal to (the last ID+1), and you go back to the test to select the new theme, it crashes.
 * Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: 
   http://www.howdoyousaythatword.com/wp-content/uploads/2012/01/creme-anglaise.jpg, use a vector graphics editor.
