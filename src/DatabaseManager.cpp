@@ -38,10 +38,13 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 			query.bindValue(":"+i.key(), i.value());
 		}
 	}
-	query.exec();
+
+	success = success && query.exec();
 
 	if(!success)
 		last_error = query.lastError().text();
+
+
 	return success;
 }
 
@@ -50,9 +53,11 @@ bool DatabaseManager::delete_word(const QString& lang, const int& id) {
 	bool success = query.prepare(QString("DELETE FROM words_%1 WHERE id = :id").arg(lang));
 	query.bindValue(":id", id);
 
+
+	success = success && query.exec();
 	if (!success)
 		last_error = query.lastError().text();
-	return query.exec(); 
+	return success; 
 }
 
 bool DatabaseManager::add_theme(const QString theme) {
@@ -60,9 +65,11 @@ bool DatabaseManager::add_theme(const QString theme) {
 		"(name) "
 		"values (:name)";	
 	QSqlQuery query;
-	query.prepare(str);
+	bool success = query.prepare(str);
 	query.bindValue(":name", theme);
-	bool success = query.exec();
+
+
+	success = success && query.exec();
 	if (!success)
 		last_error = query.lastError().text();
 	return success;
@@ -105,16 +112,10 @@ bool DatabaseManager::create_word_table(const QString &lang)
 
 bool DatabaseManager::find_lowest(QString& lang, QStringList& reply_list, int id_theme)
 {
-	// Check if table exists, else create it
-	QSqlQuery query(QString("SELECT name FROM sqlite_master WHERE type='table' AND name='words_%1'").arg(lang));
-	if(!query.next())
-		if(!create_word_table(lang))
-			return false;
-
 	// id_theme = 0 if no theme was selected
 	QString cond = (id_theme > 0)? QString("id_theme = %1").arg(id_theme): "1";
 
-	query = QSqlQuery(QString("SELECT words_%1.ID, word, meaning, nature, comment, example, id_theme, pronunciation, score, name "
+	QSqlQuery query = QSqlQuery(QString("SELECT words_%1.ID, word, meaning, nature, comment, example, id_theme, pronunciation, score, name "
 				"FROM words_%1 "
 				"LEFT OUTER JOIN themes "
 				"ON themes.ID = words_%1.id_theme "
@@ -145,9 +146,9 @@ bool DatabaseManager::set_score(const QString& lang, const QString& id, const in
 	query.bindValue(":id", id.toInt());
 	query.bindValue(":correct", correct);
 	query.bindValue(":cor", correct);
+	success = success && query.exec();
 	if(!success)
 		last_error = query.lastError().text(); 
-	query.exec(); 
 
 	return success;
 }
@@ -159,8 +160,7 @@ QString DatabaseManager::get_last_error() const
 
 void DatabaseManager::find_themes(QStringList& reply_list) { 
 	QSqlQuery query("SELECT * FROM themes ORDER BY name ASC");
-	if (query.size()>0)
-		reply_list = QStringList();
+	reply_list = QStringList();
 	while (query.next())
 		for(int i = 0; i < 2; ++i)
 			reply_list << query.value(i).toString();
@@ -175,8 +175,7 @@ void DatabaseManager::find_used_themes(const QString& lang, QStringList& reply_l
 				"ON themes.id = words_%1.id_theme "
 				"ORDER BY name ASC").arg(lang)
 			);
-	if (query.size()>0)
-		reply_list = QStringList();
+	reply_list = QStringList();
 	while (query.next())
 		for(int i = 0; i < 2; ++i)
 			reply_list << query.value(i).toString();
@@ -219,9 +218,9 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
 			query.bindValue(":"+i.key(), i.value());
 		}
 	}
+	success = success && query.exec();
 	if(!success)
 		last_error = query.lastError().text();
-	query.exec();
 
 	return success;
 
@@ -230,11 +229,12 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
 void DatabaseManager::init()
 {
 	if(!open_db()) {
-		qDebug() << "Error while opening the database";
+		//"Error while opening the database";
 		return;
 	} 
 
 	create_theme_table();
+	create_word_table("defr");
 	create_word_table("enfr");
 	create_word_table("enja");
 	create_word_table("enzh");

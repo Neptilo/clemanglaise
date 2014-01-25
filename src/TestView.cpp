@@ -173,8 +173,18 @@ void TestView::validate_answer() {
 
     // Request for a new question
     if (!test.is_remote_work()) {
-		QString lang = test.get_src() + test.get_dst();
-		database_manager->find_lowest(lang, reply_list, themes->itemData(index).toInt());
+        QString lang = test.get_src() + test.get_dst();
+        if(database_manager->find_lowest(lang, reply_list, themes->itemData(index).toInt())){
+            QString word = reply_list.at(1);
+            QString theme = reply_list.at(9);
+            question_frame->ask_question(word, theme);
+        }else{
+            if(database_manager->get_last_error() == " ")
+                status.setText(tr("The selected list is currently empty."));
+            else
+                status.setText(tr("<b>SQLite error: </b>")+database_manager->get_last_error());
+            layout->addWidget(&status);
+        }
     } 
 	else 
 		nam->get(*request);

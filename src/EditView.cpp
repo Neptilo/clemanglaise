@@ -137,15 +137,16 @@ void EditView::edit_word(){
     word_data["lang"] = test.get_src() + test.get_dst();
 
     if (!test.is_remote_work()) {
+		bool success;
 
 		// Offline
         if(word_data["id"].toInt() == 0) // Add word
-            database_manager->add_word(word_data);
+            success = database_manager->add_word(word_data);
         else // Update word
-             database_manager->update_word(word_data);
+             success = database_manager->update_word(word_data);
 
         // Show confirmation
-        if(database_manager->get_last_error() == " ")
+        if(success)
             status->setText(success_message);
         else
             status->setText(tr("<b>SQLite error: </b>")+database_manager->get_last_error());
