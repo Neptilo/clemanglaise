@@ -107,13 +107,13 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
     }else{
 		QString answithoutpron = "<b>"+word+"</b> <i>"+nature+"</i>: "+meaning;
-		QString answithpron = pronunciation.isEmpty()?answithoutpron:answithoutpron+"\n<b>["+ pronunciation +"]</b>";
+        QString answithpron = pronunciation.isEmpty()? answithoutpron: answithoutpron+"\n<b>["+ pronunciation +"]</b>";
         vertical_layout->addWidget(new QLabel(answithpron, this));
     }
-    vertical_layout->addWidget(new QLabel("<i>"+comment+"</i>", this));
+    vertical_layout->addWidget(new QLabel("<i>"+comment.replace("\n", "<br />")+"</i>", this)); // TODO: what about \r?
     if(example.compare("")){
         QTextBrowser * qtb = new QTextBrowser(this);
-        qtb->setHtml("<b>Example:</b> "+ example);
+        qtb->setHtml("<b>Example:</b> "+ example.replace("\n", "<br />")); // TODO: what about \r?
         vertical_layout->addWidget(qtb);
     }
 

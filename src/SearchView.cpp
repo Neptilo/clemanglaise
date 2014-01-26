@@ -90,31 +90,32 @@ void SearchView::read_reply(QString reply_string) {
 	result->verticalHeader()->hide();
 	layout()->addWidget(result);
     for(int i=0, col_ind=0; i<reply_list.count()-1; ++i){ // -1 because the last string is an empty string.
-		QTableWidgetItem* item;
+        QLabel* item;
         if(modifiable && (col_ind==0 || col_ind==1)){
-            QLabel* action_label = new QLabel(this);
+            item = new QLabel(this);
             switch(col_ind){
             case 0:
-                action_label->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))).pixmap(16));
-                action_label->setToolTip(tr("Edit"));
+                item->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))).pixmap(16));
+                item->setToolTip(tr("Edit"));
                 break;
             case 1:
-                action_label->setPixmap(QIcon::fromTheme("edit-delete", QIcon(getImgPath("edit-delete.png"))).pixmap(16));
-                action_label->setToolTip(tr("Delete"));
+                item->setPixmap(QIcon::fromTheme("edit-delete", QIcon(getImgPath("edit-delete.png"))).pixmap(16));
+                item->setToolTip(tr("Delete"));
                 break;
             default:;
             }
-            action_label->setAlignment(Qt::AlignCenter);
-            result->setCellWidget(i/nb_cols, col_ind, action_label);
+            item->setAlignment(Qt::AlignCenter);
+            result->setCellWidget(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
         }
         if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
-			item = new QTableWidgetItem(ampersand_unescape(reply_list.at(i))); 
-            result->setItem(i/nb_cols, col_ind, item);
+            item = new QLabel(ampersand_unescape(reply_list.at(i)).replace("\n", "<br />"), this); // TODO: what about \r?
+            result->setCellWidget(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
         }
 	}
 	result->resizeColumnsToContents();
+    result->resizeRowsToContents();
 	disconnect(result);
     connect(result, SIGNAL(cellClicked(int,int)), this, SLOT(action(int, int)));
 }
