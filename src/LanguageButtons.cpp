@@ -1,8 +1,7 @@
+#include "LanguageButtons.h"
+
 #include <QGridLayout>
 #include <QPushButton>
-#include <QtGui>
-
-#include "LanguageButtons.h"
 
 LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent, const QStringList & flags)
     : QWidget(parent),

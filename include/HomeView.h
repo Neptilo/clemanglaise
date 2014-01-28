@@ -6,6 +6,7 @@
 #include <QList>
 #include <QRadioButton>
 
+#include "AddListView.h"
 #include "TestView.h"
 #include "LanguageButtons.h"
 #include "Test.h"
@@ -15,6 +16,8 @@ class HomeView : public QWidget{
     Q_OBJECT
 
 private:
+    QPushButton add_list_button;
+    AddListView *add_list_view;
     bool admin;
     DatabaseManager database_manager;
     QLayout *layout;
@@ -32,6 +35,8 @@ public:
 signals:
     
 public slots:
+    void add_list();
+    void remove_add_list_view();
     void start_test(int i);
     void init();
 };

@@ -3,6 +3,8 @@
 
 HomeView::HomeView(bool admin, QWidget *parent):
     QWidget(parent),
+    add_list_button(tr("Create a vocabulary list"), this),
+    add_list_view(NULL),
     admin(admin),
     database_manager(this),
     layout(NULL),
@@ -17,6 +19,23 @@ HomeView::HomeView(bool admin, QWidget *parent):
     setWindowIcon(QIcon(":/clemanglaise-img.png"));
     layout = new QVBoxLayout(this);
 	init();
+}
+
+HomeView::~HomeView()
+{}
+
+void HomeView::add_list()
+{
+    add_list_button.hide();
+    add_list_view = new AddListView(&database_manager, this);
+    layout->addWidget(add_list_view);
+}
+
+void HomeView::remove_add_list_view()
+{
+    delete add_list_view;
+    add_list_view = NULL;
+    add_list_button.show();
 }
 
 void HomeView::init(){
@@ -52,10 +71,9 @@ void HomeView::init(){
     layout->addWidget(online_buttons);
     layout->addWidget(work_offline);
     layout->addWidget(offline_buttons);
+    layout->addWidget(&add_list_button);
+    connect(&add_list_button, SIGNAL(clicked()), this, SLOT(add_list()));
 }
-
-HomeView::~HomeView()
-{}
 
 void HomeView::start_test(int i){
 	title->hide();
@@ -65,6 +83,8 @@ void HomeView::start_test(int i){
     work_remote->hide();
     online_buttons->disconnect_all();
     online_buttons->hide();
+    add_list_button.hide();
+    delete add_list_view;
     Test test = tests[i];
     // No possible decomposition of the sentence, because of translations in foreign languages that put words in a different order.
     QString str_title = test.is_remote_work()?

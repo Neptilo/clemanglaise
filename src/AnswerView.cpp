@@ -27,7 +27,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     QString message;
     bool correct;
     QString standardized_answer = player_answer.trimmed();
-    QString correct_answers; // can be the correct meaning or the pronunciation according to the language
+    QString correct_answers; // can be the correct meaning or pronunciation according to the language
     if(test.get_dst()=="ja" || test.get_dst()=="zh"){
         // Standardize player answer before checking
         if(test.get_dst() == "ja"){

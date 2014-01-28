@@ -149,7 +149,7 @@ void EditView::edit_word(){
         if(success)
             status->setText(success_message);
         else
-            status->setText(tr("<b>SQLite error: </b>")+database_manager->get_last_error());
+            status->setText(tr("<b>SQLite error: </b>")+database_manager->pop_last_error());
 
         delete OK_button;
         continue_button = new QPushButton(tr("Add another word"), this);

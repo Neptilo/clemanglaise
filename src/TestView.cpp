@@ -104,10 +104,11 @@ void TestView::init()
             layout->addWidget(question_frame);
             question_frame->ask_question(word, theme);
         }else{
-            if(database_manager->get_last_error() == " ")
+            QString error(database_manager->pop_last_error());
+            if(error == "")
                 status.setText(tr("The selected list is currently empty."));
             else
-                status.setText(tr("<b>SQLite error: </b>")+database_manager->get_last_error());
+                status.setText(tr("<b>SQLite error: </b>")+error);
             layout->addWidget(&status);
         }
     }
@@ -179,10 +180,11 @@ void TestView::validate_answer() {
             QString theme = reply_list.at(9);
             question_frame->ask_question(word, theme);
         }else{
-            if(database_manager->get_last_error() == " ")
+            QString error(database_manager->pop_last_error());
+            if(error == "")
                 status.setText(tr("The selected list is currently empty."));
             else
-                status.setText(tr("<b>SQLite error: </b>")+database_manager->get_last_error());
+                status.setText(tr("<b>SQLite error: </b>")+error);
             layout->addWidget(&status);
         }
     } 

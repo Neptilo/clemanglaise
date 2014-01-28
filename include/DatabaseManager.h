@@ -13,24 +13,24 @@ class DatabaseManager : public QObject
     Q_OBJECT
 public:
     explicit DatabaseManager(QObject *parent = 0);
-	bool open_db();
+    bool add_list(const QString &name, const QString &src, const QString &dst);
     bool add_word(const QHash<QString, QString> &word_data);
-    bool delete_word(const QString& lang, const int& id);
-	bool add_theme(const QString theme);
+    bool add_theme(const QString &theme);
+    bool create_list_table();
     bool create_theme_table();
-    bool create_word_table(const QString &lang);
-    bool find_lowest(QString &lang, QStringList &reply_list, int id_theme = -1);
-	bool set_score(const QString& lang, const QString& id, const int& correct);
+    bool delete_word(const QString& name, const int& id);
+    bool find_lowest(QString &name, QStringList &reply_list, int id_theme = -1);
 	void find_themes(QStringList& reply_list);
-	void find_used_themes(const QString& lang, QStringList& reply_list);
-	void search(const QString& lang, const QString& expr, QStringList& reply_list);
-    QString get_last_error() const;
+    void find_used_themes(const QString& name, QStringList& reply_list);
+    QString pop_last_error();
+    bool open_db();
+    void search(const QString& name, const QString& expr, QStringList& reply_list);
+    bool set_score(const QString& name, const QString& id, const int& correct);
     bool update_word(const QHash<QString, QString> &word_data);
 
 private:
     QSqlDatabase db;
     QString last_error;
-	void init();
 
 signals:
 
