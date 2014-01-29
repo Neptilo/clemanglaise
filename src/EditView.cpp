@@ -134,7 +134,7 @@ void EditView::edit_word(){
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
-    word_data["lang"] = test.get_src() + test.get_dst();
+    word_data["name"] = test.get_name();
 
     if (!test.is_remote_work()) {
 		bool success;

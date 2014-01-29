@@ -11,20 +11,20 @@ Test::Test(int id, const QString& name, const QString& src, const QString& dst, 
     this->remote = remote;
 }
 
-int Test::getId() const
+int Test::get_id() const
 {
     return id;
 }
 
-const QString& Test::getName() const{
+QString Test::get_name() const{
     return name;
 }
 
-const QString &Test::get_src(){
+QString Test::get_src() const{
     return src;
 }
 
-const QString &Test::get_dst(){
+QString Test::get_dst() const{
     return dst;
 }
 
@@ -32,14 +32,14 @@ bool Test::is_remote_work() const {
 	return remote;
 }
 
-void Test::setRemoteWork(bool where) {
+void Test::set_remote_work(bool where) {
     this->remote = where;
 }
 
-void Test::addTheme(const QString& theme) {
+void Test::add_theme(const QString& theme) {
 	this->themes.insert(theme);
 }
 
-QSet<QString>& Test::getThemes() {
+QSet<QString> Test::get_themes() const{
 	return this->themes;
 }

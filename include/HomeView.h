@@ -36,9 +36,10 @@ signals:
     
 public slots:
     void add_list();
+    void init();
+    void init_test_buttons();
     void remove_add_list_view();
     void start_test(int i);
-    void init();
 };
 
 #endif // HOMEWINDOW_H

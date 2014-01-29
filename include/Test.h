@@ -16,14 +16,14 @@ private:
 
 public:
     explicit Test(int id, const QString &name, const QString &src, const QString &dst, bool remote=true);
-    int getId() const;
-    const QString& getName() const;
-    const QString& get_src();
-    const QString& get_dst();
-	bool is_remote_work() const;
-	void setRemoteWork(bool where);
-	void addTheme(const QString& theme);
-	QSet<QString>& getThemes();
+    int get_id() const;
+    QString get_name() const;
+    QString get_src() const;
+    QString get_dst() const;
+    QSet<QString> get_themes() const;
+    bool is_remote_work() const;
+    void set_remote_work(bool where);
+    void add_theme(const QString& theme);
 };
 
 #endif // TEST_H

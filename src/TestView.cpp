@@ -96,8 +96,7 @@ void TestView::init()
         nam->get(*request);
     }else{
         int index = themes->currentIndex();
-        QString lang = test.get_src() + test.get_dst();
-        if(database_manager->find_lowest(lang, reply_list, themes->itemData(index).toInt())){
+        if(database_manager->find_lowest(test.get_name(), reply_list, themes->itemData(index).toInt())){
             QString word = reply_list.at(1);
             QString theme = reply_list.at(9);
             question_frame = new QuestionView(test, this);
@@ -174,8 +173,7 @@ void TestView::validate_answer() {
 
     // Request for a new question
     if (!test.is_remote_work()) {
-        QString lang = test.get_src() + test.get_dst();
-        if(database_manager->find_lowest(lang, reply_list, themes->itemData(index).toInt())){
+        if(database_manager->find_lowest(test.get_name(), reply_list, themes->itemData(index).toInt())){
             QString word = reply_list.at(1);
             QString theme = reply_list.at(9);
             question_frame->ask_question(word, theme);

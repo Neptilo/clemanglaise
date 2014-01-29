@@ -6,6 +6,8 @@
 #include <QSqlQuery>
 #include <QHash>
 
+#include "Test.h"
+
 const QString DBNAME="clemanglaise.db.sqlite";
 
 class DatabaseManager : public QObject
@@ -19,11 +21,12 @@ public:
     bool create_list_table();
     bool create_theme_table();
     bool delete_word(const QString& name, const int& id);
-    bool find_lowest(QString &name, QStringList &reply_list, int id_theme = -1);
+    bool find_lowest(const QString &name, QStringList &reply_list, int id_theme = -1);
 	void find_themes(QStringList& reply_list);
     void find_used_themes(const QString& name, QStringList& reply_list);
-    QString pop_last_error();
+    QList<Test> get_lists();
     bool open_db();
+    QString pop_last_error();
     void search(const QString& name, const QString& expr, QStringList& reply_list);
     bool set_score(const QString& name, const QString& id, const int& correct);
     bool update_word(const QHash<QString, QString> &word_data);

@@ -26,53 +26,64 @@ HomeView::~HomeView()
 
 void HomeView::add_list()
 {
+    add_list_button.disconnect();
     add_list_button.hide();
     add_list_view = new AddListView(&database_manager, this);
-    layout->addWidget(add_list_view);
+    layout->addWidget(add_list_view);qDebug() << "added";
 }
 
 void HomeView::remove_add_list_view()
 {
+    if(add_list_view)
+        layout->removeWidget(add_list_view);
     delete add_list_view;
     add_list_view = NULL;
+    init_test_buttons();
     add_list_button.show();
 }
 
 void HomeView::init(){
-    int test_id = 0;
-
-    // No need to delete tests in a destructor because they are directly referenced, not by a pointer
-	// remote is true by default
-    QList<Test> online_tests;
-    online_tests << Test(test_id++, tr("English to &French"), "en", "fr");
-    online_tests << Test(test_id++, tr("English to &Japanese"), "en", "ja");
-    online_tests << Test(test_id++, tr("English to &Chinese"), "en", "zh");
-    online_tests << Test(test_id++, tr("English to C&roatian"), "en", "hr");
-
-	QStringList online_flags;
-    online_flags << ":/france-img.png" << ":/japan-img.png" << ":/china-img.png" <<":/croatia-img.png";
-
-    QList<Test> offline_tests;
-    offline_tests << Test(test_id++, tr("English to Fr&ench"), "en", "fr", false);
-    offline_tests << Test(test_id++, tr("&German to French"), "de", "fr", false);
-	QStringList offline_flags;
-    offline_flags << ":/france-img.png" << ":/germany-img.png";
-    tests << online_tests << offline_tests;
 
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);
     title->setAlignment(Qt::AlignHCenter);
     layout->addWidget(title);
-    work_remote = new QLabel(tr("Tests on remote server:"), this);
-    online_buttons = new LanguageButtons(online_tests, this, online_flags);
-    work_offline = new QLabel(tr("Offline tests:"), this);
-    offline_buttons = new LanguageButtons(offline_tests, this, offline_flags);
+    work_remote = new QLabel(tr("<b>Tests on remote server:</b>"), this);
+    work_offline = new QLabel(tr("<b>Offline tests:</b>"), this);
+
+    init_test_buttons();
 
     layout->addWidget(work_remote);
     layout->addWidget(online_buttons);
     layout->addWidget(work_offline);
     layout->addWidget(offline_buttons);
     layout->addWidget(&add_list_button);
+    add_list_button.show();
     connect(&add_list_button, SIGNAL(clicked()), this, SLOT(add_list()));
+}
+
+void HomeView::init_test_buttons()
+{
+    int test_id = 0;
+
+    /* No need to delete tests in a destructor because they are directly
+     * referenced, not by a pointer */
+    // remote is true by default
+    QList<Test> online_tests;
+    // TODO: Make it dynamic: call a "get_lists.php" file
+    online_tests << Test(test_id++, tr("French"), "en", "fr");
+    online_tests << Test(test_id++, tr("Japanese"), "en", "ja");
+    online_tests << Test(test_id++, tr("Chinese"), "en", "zh");
+    online_tests << Test(test_id++, tr("Croatian"), "en", "hr");
+
+    QList<Test> offline_tests(database_manager.get_lists());
+
+    tests.clear();
+    tests << online_tests << offline_tests;
+    delete online_buttons;
+    online_buttons = new LanguageButtons(online_tests, this);
+    delete offline_buttons;
+    offline_buttons = new LanguageButtons(offline_tests, this);
+
 }
 
 void HomeView::start_test(int i){
@@ -83,10 +94,12 @@ void HomeView::start_test(int i){
     work_remote->hide();
     online_buttons->disconnect_all();
     online_buttons->hide();
+    add_list_button.disconnect();
     add_list_button.hide();
     delete add_list_view;
     Test test = tests[i];
-    // No possible decomposition of the sentence, because of translations in foreign languages that put words in a different order.
+    /* No possible decomposition of the sentence, because of translations in
+     * foreign languages that put words in a different order. */
     QString str_title = test.is_remote_work()?
                 tr("<b>You are now working on <br />tests from the remote server.</b>"):
                 tr("<b>You are now working on <br /> offline tests.</b>");

@@ -1,9 +1,10 @@
 #include "LanguageButtons.h"
 
 #include <QGridLayout>
+#include <QLabel>
 #include <QPushButton>
 
-LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent, const QStringList & flags)
+LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent)
     : QWidget(parent),
       signal_mapper(NULL)
 {
@@ -12,14 +13,18 @@ LanguageButtons::LanguageButtons(const QList<Test>& tests, QWidget *parent, cons
 
     QGridLayout *layout = new QGridLayout(this);
 
-    for (int i = 0, l=tests.size(); i < l; ++i) {
-        const Test& test = tests[i];
-        QString button_text = test.getName();
-        QPushButton *button = new QPushButton(button_text);
-        button->setIcon(QIcon(flags.at(i)));
-        connect(button, SIGNAL(clicked()), signal_mapper, SLOT(map()));
-        signal_mapper->setMapping(button, test.getId());
-        layout->addWidget(button, 0, i);
+    if(tests.isEmpty())
+        layout->addWidget(new QLabel(tr("You have not created any vocabulary list yet.")), 0, 0);
+    else{
+        for (int i = 0, l=tests.size(); i < l; ++i) {
+            const Test& test = tests[i];
+            QPushButton *button = new QPushButton(test.get_name(), this);
+            button->setIcon(QIcon(":/" + test.get_dst() + "-img.png"));
+            button->setToolTip(tr("from ") + test.get_src() + tr(" to ") + test.get_dst());
+            connect(button, SIGNAL(clicked()), signal_mapper, SLOT(map()));
+            signal_mapper->setMapping(button, test.get_id());
+            layout->addWidget(button, 0, i);
+        }
     }
 
     connect(signal_mapper, SIGNAL(mapped(int)), parent, SLOT(start_test(int)));

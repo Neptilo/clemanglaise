@@ -9,7 +9,7 @@
 class LanguageButtons : public QWidget{
     Q_OBJECT
 public:
-    LanguageButtons(const QList<Test>& tests, QWidget *parent, const QStringList & flags);
+    LanguageButtons(const QList<Test>& tests, QWidget *parent);
     void disconnect_all();
 
 signals:

@@ -85,7 +85,7 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 {
 
     QSqlQuery query;
-    QString name = word_data["lang"]; // TODO: name will have to be any name, not just a language code.
+    QString name = word_data["name"];
     bool success = query.prepare(QString("INSERT INTO words_%1(word, meaning, nature, pronunciation, comment, example, id_theme) "
                                          "VALUES(:word, :meaning, :nature, :pronunciation, :comment, :example, :theme)").arg(name));
 
@@ -142,7 +142,7 @@ bool DatabaseManager::delete_word(const QString& name, const int& id) { // TODO:
     return success;
 }
 
-bool DatabaseManager::find_lowest(QString& name, QStringList& reply_list, int id_theme) // TODO: name will have to be any name, not just a language code.
+bool DatabaseManager::find_lowest(const QString &name, QStringList &reply_list, int id_theme)
 {
     // id_theme = 0 if no theme was selected
     QString cond = (id_theme > 0)? QString("id_theme = %1").arg(id_theme): "1";
@@ -170,8 +170,9 @@ bool DatabaseManager::find_lowest(QString& name, QStringList& reply_list, int id
 void DatabaseManager::find_themes(QStringList& reply_list) { 
     QSqlQuery query("SELECT * FROM themes ORDER BY name ASC");
     reply_list = QStringList();
+    int nb_fields = query.boundValues().size();
     while (query.next())
-        for(int i = 0; i < 2; ++i)
+        for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
 
 }
@@ -185,16 +186,20 @@ void DatabaseManager::find_used_themes(const QString& name, QStringList& reply_l
                         "ORDER BY name ASC").arg(name)
                 );
     reply_list = QStringList();
+    int nb_fields = query.boundValues().size();
     while (query.next())
-        for(int i = 0; i < 2; ++i)
+        for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
 }
 
-QString DatabaseManager::pop_last_error()
+QList<Test> DatabaseManager::get_lists()
 {
-    QString err = last_error.trimmed(); // "Because it can sometimes be "" or " ".
-    last_error = " ";
-    return err;
+    QSqlQuery query("SELECT name, src, dst FROM lists");
+    QList<Test> test_list;
+    int id = 4; // TODO: make it dynamic
+    while (query.next())
+        test_list << Test(id++, query.value(0).toString(), query.value(1).toString(), query.value(2).toString(), false);
+    return test_list;
 }
 
 bool DatabaseManager::open_db()
@@ -207,6 +212,13 @@ bool DatabaseManager::open_db()
 
     // Open databasee
     return db.open();
+}
+
+QString DatabaseManager::pop_last_error()
+{
+    QString err = last_error.trimmed(); // "Because it can sometimes be "" or " ".
+    last_error = " ";
+    return err;
 }
 
 void DatabaseManager::search(const QString& name, const QString& expr, QStringList& reply_list){ // TODO: name will have to be any name, not just a language code.
