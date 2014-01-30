@@ -17,7 +17,7 @@ class ThemeView : public QWidget{
     Q_OBJECT
 
 public:
-    ThemeView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager * database_manager, QWidget *parent);
+    ThemeView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager * database_manager, QWidget *parent);
     ~ThemeView();
 
     void read_reply(QString reply_string="");
@@ -31,7 +31,7 @@ private:
     QPushButton* cancel_button;
     QPushButton* continue_button;
     QFormLayout* layout;
-    Test test;
+    Test *test;
     QString php_filename;
     QStringList default_values;
 	QStringList reply_list; 

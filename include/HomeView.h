@@ -39,7 +39,7 @@ public slots:
     void init();
     void init_test_buttons();
     void remove_add_list_view();
-    void start_test(int i);
+    void start_test(QObject *obj);
 };
 
 #endif // HOMEWINDOW_H

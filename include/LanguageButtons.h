@@ -16,7 +16,7 @@ signals:
     void clicked(const QString &text);
 
 private:
-    QSignalMapper *signal_mapper;
+    QSignalMapper signal_mapper;
     
 };
 

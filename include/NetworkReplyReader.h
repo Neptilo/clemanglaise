@@ -7,6 +7,7 @@
 class NetworkReplyReader : public QObject
 {
     Q_OBJECT
+
 public:
     explicit NetworkReplyReader(QObject *parent = 0);
     static QNetworkCookieJar* cookie_jar;

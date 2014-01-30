@@ -13,7 +13,7 @@ class WordView : public QWidget
     Q_OBJECT
 
 protected:
-    Test test;
+    Test *test;
     QHBoxLayout* horizontal_layout;
     QVBoxLayout* right_vertical_layout;
     QVBoxLayout* vertical_layout;
@@ -22,7 +22,7 @@ protected:
 
 
 public:
-    WordView(Test &test, QWidget *parent);
+    WordView(Test *test, QWidget *parent);
     
 signals:
     

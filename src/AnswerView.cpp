@@ -7,11 +7,11 @@
 #include "QuestionView.h"
 #include "string_utils.h"
 
-AnswerView::AnswerView(Test &test, QWidget *parent):
+AnswerView::AnswerView(Test *test, QWidget *parent):
     WordView(test, parent)
 {}
 
-AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answer, Test &test, DatabaseManager *database_manager, QWidget *parent):
+AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answer, Test *test, DatabaseManager *database_manager, QWidget *parent):
     WordView(test, parent),
 	database_manager(database_manager)
 {
@@ -28,14 +28,14 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     bool correct;
     QString standardized_answer = player_answer.trimmed();
     QString correct_answers; // can be the correct meaning or pronunciation according to the language
-    if(test.get_dst()=="ja" || test.get_dst()=="zh"){
+    if(test->get_dst()=="ja" || test->get_dst()=="zh"){
         // Standardize player answer before checking
-        if(test.get_dst() == "ja"){
+        if(test->get_dst() == "ja"){
             standardized_answer.replace(QString("ou"), QString("&#333;"));
             standardized_answer.replace(QString("uu"), QString("&#363;"));
             standardized_answer.replace(QString("aa"), QString("&#257;"));
             standardized_answer.replace(QString("ee"), QString("&#275;"));
-        }else if(test.get_dst() == "zh"){
+        }else if(test->get_dst() == "zh"){
             standardized_answer = numbers_to_accents(standardized_answer);
         }
         correct_answers = pronunciation;
@@ -51,9 +51,9 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     message = correct? tr("Right!"): tr("Wrong!");
 
     // Update score
-	if (!test.is_remote_work()) {
+    if (!test->is_remote_work()) {
 		//Offline
-		database_manager->set_score(test.get_src()+test.get_dst(), reply_list.at(0), correct);	
+        database_manager->set_score(test->get_id(), reply_list.at(0).toInt(), correct);
 	} else {
 		const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
 		QNetworkRequest request(url);
@@ -69,9 +69,9 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
 #else
 		QUrlQuery post_data;
 		post_data.addQueryItem("id", reply_list.at(0));
-		post_data.addQueryItem("lang", test.get_src() + test.get_dst());
+        post_data.addQueryItem("lang", test->get_src() + test->get_dst());
 		post_data.addQueryItem("correct", QString::number(correct));
-		nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 	}
     // Left part
@@ -103,7 +103,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     vertical_layout->addWidget(display_icon_answer);
     vertical_layout->addWidget(display_answer);
 
-    if(test.get_dst()=="ja" || test.get_dst()=="zh"){
+    if(test->get_dst()=="ja" || test->get_dst()=="zh"){
         vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
     }else{
 		QString answithoutpron = "<b>"+word+"</b> <i>"+nature+"</i>: "+meaning;

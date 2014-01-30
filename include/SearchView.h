@@ -13,17 +13,17 @@ class SearchView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SearchView(Test &test, DatabaseManager *database_manager, bool modifiable = false, QWidget *parent = 0);
+    explicit SearchView(Test *test, DatabaseManager *database_manager, bool modifiable = false, QWidget *parent = 0);
     ~SearchView();
     void read_reply(QString reply_string="");
 
 private:
-    QLineEdit* search_bar;
+    QLineEdit *search_bar;
     QNetworkAccessManager nam;
-    QTableWidget* result;
-    Test test;
+    QTableWidget *result;
+    Test *test;
     QStringList reply_list;
-    EditView* update_frame;
+    EditView *update_frame;
     bool modifiable;
     DatabaseManager *database_manager;
 

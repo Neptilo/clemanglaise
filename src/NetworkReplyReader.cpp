@@ -1,15 +1,15 @@
+#include "NetworkReplyReader.h"
+
 #include <iostream>
 
 #include <QObject>
 #include <QtNetwork>
 
-#include "NetworkReplyReader.h"
 #include "HomeView.h"
 
 NetworkReplyReader::NetworkReplyReader(QObject *parent) :
     QObject(parent)
-{
-}
+{}
 
 QNetworkCookieJar* NetworkReplyReader::cookie_jar = new QNetworkCookieJar(0);
 

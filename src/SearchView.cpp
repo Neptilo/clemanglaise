@@ -11,7 +11,7 @@
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
 
-SearchView::SearchView(Test& test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
+SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
     QWidget(parent),
     search_bar(NULL),
     nam(),
@@ -47,10 +47,10 @@ SearchView::~SearchView() {
 }
 
 void SearchView::search() {
-	if (!test.is_remote_work()) {
+    if (!test->is_remote_work()) {
         // Offline
 		QString search_str = ampersand_unescape(search_bar->text());
-		database_manager->search(test.get_src()+test.get_dst(), search_str, reply_list);
+        database_manager->search(test->get_id(), search_str, reply_list);
 		read_reply();
 	} else {
 
@@ -58,7 +58,7 @@ void SearchView::search() {
 		QString search_str = ampersand_escape(search_bar->text());
 
 		// Request to PHP file
-		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test.get_src() + test.get_dst() + "&string=" + search_str);
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test->get_src() + test->get_dst() + "&string=" + search_str);
         nam.get(QNetworkRequest(url));
 	}
 }
@@ -73,7 +73,7 @@ void SearchView::read_reply(QNetworkReply* reply)
 
 void SearchView::read_reply(QString reply_string) {
     int nb_cols(10);
-	if (test.is_remote_work())
+    if (test->is_remote_work())
 		reply_list = QStringList(reply_string.split('\n'));
 	if(result){
 		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
@@ -145,14 +145,14 @@ void SearchView::action(int row, int col)
     }else if(col == 1){
         result->disconnect();
 
-		if (test.is_remote_work()) {
+        if (test->is_remote_work()) {
 
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
 #else
         QUrlQuery post_data;
 #endif
-        post_data.addQueryItem("lang", test.get_src() + test.get_dst());
+        post_data.addQueryItem("lang", test->get_src() + test->get_dst());
         post_data.addQueryItem("id", reply_list.at(row*nb_cols));
         const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
         QNetworkRequest request(url);
@@ -168,7 +168,7 @@ void SearchView::action(int row, int col)
 #endif
 		} else {
 			int id = reply_list.at(row*nb_cols).toInt();
-			database_manager->delete_word(test.get_src()+test.get_dst(), id);
+            database_manager->delete_word(test->get_id(), id);
 		}
 
         refresh();

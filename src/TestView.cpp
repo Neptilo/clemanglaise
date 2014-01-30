@@ -7,7 +7,7 @@
 #include "string_utils.h"
 #include "ThemeView.h"
 
-TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_title, bool admin, QWidget *parent):
+TestView::TestView(Test *test, DatabaseManager *database_manager, QString str_title, bool admin, QWidget *parent):
     QWidget(parent),
     add_button(NULL),
     add_frame(NULL),
@@ -54,7 +54,7 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
     layout->addWidget(back_button);
 
-    if(!test.is_remote_work() || admin){
+    if(!test->is_remote_work() || admin){
         add_theme_button = new QPushButton(tr("Add a &theme"), this);
         add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
         connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
@@ -87,7 +87,7 @@ TestView::~TestView(){
 // This function is called every time the user comes back from another view.
 void TestView::init()
 {
-    if (test.is_remote_work()) {
+    if (test->is_remote_work()) {
         question_frame = new QuestionView(test, this);
         layout->addWidget(question_frame);
         update_request();
@@ -96,7 +96,7 @@ void TestView::init()
         nam->get(*request);
     }else{
         int index = themes->currentIndex();
-        if(database_manager->find_lowest(test.get_name(), reply_list, themes->itemData(index).toInt())){
+        if(database_manager->find_lowest(test->get_id(), reply_list, themes->itemData(index).toInt())){
             QString word = reply_list.at(1);
             QString theme = reply_list.at(9);
             question_frame = new QuestionView(test, this);
@@ -114,7 +114,7 @@ void TestView::init()
     find_themes();
 
     // Show everything
-    if(!test.is_remote_work() || admin){
+    if(!test->is_remote_work() || admin){
         update_button->show();
         add_theme_button->show();
         add_button->show();
@@ -128,7 +128,7 @@ void TestView::init()
 
 void TestView::update_request() {
 	int index = themes->currentIndex();
-	QString lang = test.get_src() + test.get_dst();
+    QString lang = test->get_src() + test->get_dst();
 	// Request to PHP or local file
 	QUrl url;
 	url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + lang +"&id_theme="+themes->itemData(index).toString());
@@ -172,8 +172,8 @@ void TestView::validate_answer() {
     layout->addWidget(question_frame);
 
     // Request for a new question
-    if (!test.is_remote_work()) {
-        if(database_manager->find_lowest(test.get_name(), reply_list, themes->itemData(index).toInt())){
+    if (!test->is_remote_work()) {
+        if(database_manager->find_lowest(test->get_id(), reply_list, themes->itemData(index).toInt())){
             QString word = reply_list.at(1);
             QString theme = reply_list.at(9);
             question_frame->ask_question(word, theme);
@@ -191,7 +191,7 @@ void TestView::validate_answer() {
 }
 
 void TestView::update_question(int){
-	if (test.is_remote_work())
+    if (test->is_remote_work())
 		update_request();
 	validate_answer();
 }
@@ -217,7 +217,7 @@ void TestView::add_word()
 	//word << meaning << nature << comment << exple << id_theme << pronunciation << score<< theme
 
 	default_values_list << "" << "" << "" << "" << "" << "" << "" << "" << "" << "";
-	add_frame = new EditView(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), database_manager, this);
+    add_frame = new EditView(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), database_manager, this);
 	layout->addWidget(add_frame);
 	connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
@@ -227,7 +227,7 @@ void TestView::update_word()
 	remove_widgets();
 
 	// Create a new add frame
-	update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
+    update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
 	layout->addWidget(update_frame);
 	connect(update_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
@@ -237,7 +237,7 @@ void TestView::search()
 	remove_widgets();
 
 	// Create a new search frame
-	search_frame = new SearchView(test, database_manager, !test.is_remote_work()||admin, this);
+    search_frame = new SearchView(test, database_manager, !test->is_remote_work()||admin, this);
 	layout->addWidget(search_frame);
 	connect(search_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
@@ -247,13 +247,13 @@ void TestView::go_back() {
 }
 
 void TestView::find_themes() {
-	if (!test.is_remote_work()) {
+    if (!test->is_remote_work()) {
 		// Offline
-		database_manager->find_used_themes(test.get_src()+test.get_dst(), reply_list_theme);
+        database_manager->find_used_themes(test->get_id(), reply_list_theme);
 		read_reply();
 	} else { 
 		// Request to PHP file
-		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test.get_src() + test.get_dst());
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test->get_src() + test->get_dst());
 		QNetworkRequest request(url);
 		nam_themes.get(request);
 	}
@@ -268,7 +268,7 @@ void TestView::read_reply_themes(QNetworkReply* reply)
 }
 
 void TestView::read_reply(QString reply_string) {
-	if (test.is_remote_work())
+    if (test->is_remote_work())
 		reply_list_theme = reply_string.split('\n', QString::SkipEmptyParts);
 	themes->disconnect();
 	themes->clear();
@@ -285,7 +285,7 @@ void TestView::remove_widgets()
 	question_frame = NULL;
 	delete answer_frame;
 	answer_frame = NULL;
-	if(!test.is_remote_work() || admin){
+    if(!test->is_remote_work() || admin){
 		update_button->hide();
 		add_theme_button->hide();
 		add_button->hide();

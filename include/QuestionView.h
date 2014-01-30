@@ -13,7 +13,7 @@ class QuestionView : public WordView{
     Q_OBJECT
 
 public:
-    QuestionView(Test &test, QWidget *parent);
+    QuestionView(Test *test, QWidget *parent);
     ~QuestionView();
 
     QString getAnswer();

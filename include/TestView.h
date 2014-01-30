@@ -23,7 +23,7 @@ class TestView : public QWidget{
     Q_OBJECT
     
 public:
-    TestView(Test &test, DatabaseManager *database_manager, QString str_title = "", bool admin = false, QWidget *parent = 0);
+    TestView(Test *test, DatabaseManager *database_manager, QString str_title = "", bool admin = false, QWidget *parent = 0);
     ~TestView();
     void read_reply(QString reply_string="");
 
@@ -46,7 +46,7 @@ private:
     QPushButton* search_button;
     SearchView* search_frame;
     QLabel status;
-    Test test;
+    Test *test;
     QLabel* theme;
     QComboBox *themes;
     QLabel* title;

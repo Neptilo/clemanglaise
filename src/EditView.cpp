@@ -10,7 +10,7 @@
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
 
-EditView::EditView(Test &test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent) :
+EditView::EditView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent) :
     QWidget(parent),
     title(NULL),
     status(NULL),
@@ -27,14 +27,13 @@ EditView::EditView(Test &test, const QString &title, const QStringList &default_
     cancel_button(NULL),
     continue_button(NULL),
     layout(NULL),
-    test(test),
-	reply_list(),
-    database_manager(database_manager)
+    php_filename(php_filename),
+    default_values(default_values),
+    reply_list(),
+    success_message(success_message),
+    database_manager(database_manager),
+    test(test)
 {
-    this->php_filename = php_filename;
-    this->default_values = default_values;
-    this->success_message = success_message;
-
     layout = new QFormLayout(this);
 
     this->title = new QLabel(title, this);
@@ -112,13 +111,13 @@ void EditView::edit_word(){
 
     // Standardize pronunciation to save into database
     QString standardized_pronunciation;
-    if(test.get_dst() == "ja"){
+    if(test->get_dst() == "ja"){
         standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
         standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
         standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
         standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
         standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
-    }else if(test.get_dst() == "zh"){
+    }else if(test->get_dst() == "zh"){
         standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
     } else {
         standardized_pronunciation = isKirshenbaum(pronunciation_edit->text())?ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text())):ampersand_escape(pronunciation_edit->text());
@@ -134,16 +133,16 @@ void EditView::edit_word(){
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
-    word_data["name"] = test.get_name();
+    word_data["test_id"] = test->get_id();
 
-    if (!test.is_remote_work()) {
+    if (!test->is_remote_work()) {
 		bool success;
 
-		// Offline
+        // Offline
         if(word_data["id"].toInt() == 0) // Add word
             success = database_manager->add_word(word_data);
         else // Update word
-             success = database_manager->update_word(word_data);
+            success = database_manager->update_word(word_data);
 
         // Show confirmation
         if(success)
@@ -240,7 +239,7 @@ void EditView::reset(){
 }
 
 void EditView::find_themes() {
-	if (!test.is_remote_work()) {
+    if (!test->is_remote_work()) {
 		// Offline
 		database_manager->find_themes(reply_list);
 		read_reply();
@@ -261,7 +260,7 @@ void EditView::read_reply(QNetworkReply* reply)
 }
 
 void EditView::read_reply(QString reply_string) {
-	if(test.is_remote_work())
+    if(test->is_remote_work())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
