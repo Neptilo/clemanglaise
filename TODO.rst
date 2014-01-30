@@ -1,3 +1,12 @@
+* Use `last_insert_rowid()` when adding a vocabulary list
+* Replace "BEGIN/COMMIT" by "ROLLBACK" queries when queries fail. Failed transaction should not be commited.
+* Alert popup window to ask confirmation to delete ocabulary lists
+* Button to delete a word
+* Move word-specific buttons inside question/answer views
+* Online: create `lists` table properly initialized with existing lists
+  Create all php files corresponding to DatabaseManager's methods
+  Rename `clemanglaise_????` tables as `clemanglaise_words_<id>`
+* Find a way to map language ISO codes to their names
 * Fix this bug: on online tests (I don't know about offline), when you add a theme which the database assigns an ID that is not equal to (the last ID+1), and you go back to the test to select the new theme, it crashes.
 * Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: 
   http://www.howdoyousaythatword.com/wp-content/uploads/2012/01/creme-anglaise.jpg, use a vector graphics editor.
