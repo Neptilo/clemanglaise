@@ -115,6 +115,7 @@ void TestView::init()
             else
                 status.setText(tr("<b>SQLite error: </b>")+error);
             layout->addWidget(&status);
+            status.show();
         }
     }
     find_themes();
@@ -130,7 +131,6 @@ void TestView::init()
     themes->show();
     back_button->show();
     search_button->show();
-    status.show();
 }
 
 void TestView::update_request() {
@@ -191,6 +191,7 @@ void TestView::validate_answer() {
             else
                 status.setText(tr("<b>SQLite error: </b>")+error);
             layout->addWidget(&status);
+            status.show();
         }
     } 
 	else 
@@ -214,6 +215,7 @@ void TestView::delete_list()
         else
             status.setText(tr("<b>SQLite error: </b>")+error);
         layout->addWidget(&status);
+        status.show();
     }
 }
 
@@ -316,5 +318,5 @@ void TestView::remove_widgets()
 	themes->hide();
 	back_button->hide();
 	search_button->hide();
-	status.hide();
+    status.hide();
 }

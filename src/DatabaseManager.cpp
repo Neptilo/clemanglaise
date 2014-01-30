@@ -59,7 +59,7 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
                  "word VARCHAR(50) NOT NULL DEFAULT '', "
                  "meaning VARCHAR(100) NOT NULL DEFAULT '', "
                  "pronunciation VARCHAR(100) DEFAULT '', "
-                 "nature VARCHAR(5) NOT NULL DEFAULT '', "
+                 "nature VARCHAR(5) DEFAULT '', "
                  "comment TEXT DEFAULT '', "
                  "example TEXT DEFAULT '', "
                  "correctly_answered INTEGER NOT NULL DEFAULT 0, "
@@ -99,7 +99,6 @@ bool DatabaseManager::add_theme(const QString &theme) {
 
 bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 {
-
     QSqlQuery query;
     QString test_id(word_data["test_id"]);
     bool success = query.prepare(QString("INSERT INTO words_%1(word, meaning, nature, pronunciation, comment, example, id_theme) "
@@ -115,7 +114,6 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 
     if(!success)
         last_error = query.lastError().text();
-
 
     return success;
 }
