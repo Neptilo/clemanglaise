@@ -17,6 +17,7 @@ TestView::TestView(Test *test, DatabaseManager *database_manager, QString str_ti
     answer_frame(NULL),
     back_button(NULL),
     database_manager(database_manager),
+    delete_list_button(NULL),
     layout(NULL),
     nam(NULL),
     nam_themes(),
@@ -69,6 +70,11 @@ TestView::TestView(Test *test, DatabaseManager *database_manager, QString str_ti
         update_button->setIcon(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))));
         connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
         layout->addWidget(update_button);
+
+        delete_list_button = new QPushButton(tr("&Delete this vocabulary list"), this);
+        delete_list_button->setIcon(QIcon::fromTheme("process-stop", QIcon(getImgPath("process-stop.png"))));
+        connect(delete_list_button, SIGNAL(clicked()), this, SLOT(delete_list()));
+        layout->addWidget(delete_list_button);
     }
 
     search_button = new QPushButton(tr("&Search for words"), this);
@@ -118,6 +124,7 @@ void TestView::init()
         update_button->show();
         add_theme_button->show();
         add_button->show();
+        delete_list_button->show();
     }
     theme->show();
     themes->show();
@@ -193,7 +200,21 @@ void TestView::validate_answer() {
 void TestView::update_question(int){
     if (test->is_remote_work())
 		update_request();
-	validate_answer();
+    validate_answer();
+}
+
+void TestView::delete_list()
+{
+    if (database_manager->delete_list(test->get_id()))
+        delete this;
+    else {
+        QString error(database_manager->pop_last_error());
+        if(error == "")
+            status.setText(tr("Deletion failed."));
+        else
+            status.setText(tr("<b>SQLite error: </b>")+error);
+        layout->addWidget(&status);
+    }
 }
 
 void TestView::add_theme()
@@ -289,6 +310,7 @@ void TestView::remove_widgets()
 		update_button->hide();
 		add_theme_button->hide();
 		add_button->hide();
+        delete_list_button->hide();
 	}
 	theme->hide();
 	themes->hide();

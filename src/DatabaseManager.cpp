@@ -146,6 +146,37 @@ bool DatabaseManager::create_theme_table()
     return success;
 }
 
+bool DatabaseManager::delete_list(int test_id)
+{
+    QSqlQuery query;
+    bool commit_success;
+    query.exec("BEGIN");
+    bool success = query.exec(QString("DELETE FROM lists "
+                                      "WHERE ID=%1").arg(test_id));
+    if (!success){
+        last_error = query.lastError().text();
+        commit_success = query.exec("COMMIT");
+        if (!commit_success){
+            last_error = query.lastError().text();
+        }
+        return success && commit_success;
+    }
+    if (query.numRowsAffected() != 1){
+        last_error = tr("%1 list(s) seem to be affected by the deletion.").arg(query.numRowsAffected());
+        commit_success = query.exec("COMMIT");
+        if (!commit_success){
+            last_error = query.lastError().text();
+        }
+        return false;
+    }
+
+    success = query.exec("COMMIT");
+    if (!success){
+        last_error = query.lastError().text();
+    }
+    return success;
+}
+
 bool DatabaseManager::delete_word(int test_id, const int& id) {
     QSqlQuery query;
     bool success = query.prepare(QString("DELETE FROM words_%1 WHERE id = :id").arg(test_id));

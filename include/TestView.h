@@ -36,6 +36,7 @@ private:
     AnswerView* answer_frame;
     QPushButton* back_button;
     DatabaseManager *database_manager;
+    QPushButton * delete_list_button;
     QLayout* layout;
     QNetworkAccessManager* nam;
     QNetworkAccessManager nam_themes;
@@ -70,6 +71,7 @@ public slots:
     void search();
 	void go_back();
     void update_question(int);
+    void delete_list();
 };
 
 #endif // TESTFRAME_H
