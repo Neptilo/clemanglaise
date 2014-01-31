@@ -49,9 +49,9 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
      * instead of calling it the name given by the user. */
     success = query.exec(QString("CREATE TABLE IF NOT EXISTS words_%1("
                  "id INTEGER PRIMARY KEY, "
-                 "word VARCHAR(50) NOT NULL DEFAULT '', "
-                 "meaning VARCHAR(100) NOT NULL DEFAULT '', "
-                 "pronunciation VARCHAR(100) DEFAULT '', "
+                 "word TEXT NOT NULL DEFAULT '', "
+                 "meaning TEXT NOT NULL DEFAULT '', "
+                 "pronunciation TEXT DEFAULT '', "
                  "nature VARCHAR(5) DEFAULT '', "
                  "comment TEXT DEFAULT '', "
                  "example TEXT DEFAULT '', "
@@ -144,6 +144,13 @@ bool DatabaseManager::delete_list(int test_id)
     }
     if (query.numRowsAffected() != 1){
         last_error = tr("%1 list(s) seem to be affected by the deletion.").arg(query.numRowsAffected());
+        query.exec("ROLLBACK");
+        return false;
+    }
+
+    success = query.exec(QString("DROP TABLE words_%1").arg(test_id));
+    if (!success){
+        last_error = query.lastError().text();
         query.exec("ROLLBACK");
         return false;
     }
