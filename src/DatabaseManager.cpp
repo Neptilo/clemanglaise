@@ -21,7 +21,6 @@ DatabaseManager::DatabaseManager(QObject *parent) :
 bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst) {
     QSqlQuery query;
     query.exec("BEGIN");
-    bool commit_success;
     bool success = query.prepare("INSERT INTO lists "
                             "(name, src, dst) "
                             "VALUES(:name, :src, :dst)");
@@ -31,24 +30,18 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
     success &= query.exec();
     if (!success){
         last_error = query.lastError().text();
-        commit_success = query.exec("COMMIT");
-        if (!commit_success){
-            last_error = query.lastError().text();
-        }
-        return success&&commit_success;
+        query.exec("ROLLBACK");
+        return false;
     }
 
     // Get last inserted ID
     int test_id;
-    query.exec("SELECT ID FROM lists ORDER BY ID DESC LIMIT 1");
+    query.exec("SELECT LAST_INSERT_ROWID()");
     if (query.next())
         test_id = query.value(0).toInt();
     else{
         last_error = query.lastError().text();
-        commit_success = query.exec("COMMIT");
-        if (!commit_success){
-            last_error = query.lastError().text();
-        }
+        query.exec("ROLLBACK");
         return false;
     }
 
@@ -70,16 +63,10 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
                  ).arg(test_id));
     if (!success){
         last_error = query.lastError().text();
-        commit_success = query.exec("COMMIT");
-        if (!commit_success){
-            last_error = query.lastError().text();
-        }
-        return success&&commit_success;
+        query.exec("ROLLBACK");
+        return false;
     }
-    success = query.exec("COMMIT");
-    if (!success){
-        last_error = query.lastError().text();
-    }
+    query.exec("COMMIT");
     return success;
 }
 
@@ -147,31 +134,21 @@ bool DatabaseManager::create_theme_table()
 bool DatabaseManager::delete_list(int test_id)
 {
     QSqlQuery query;
-    bool commit_success;
     query.exec("BEGIN");
     bool success = query.exec(QString("DELETE FROM lists "
                                       "WHERE ID=%1").arg(test_id));
     if (!success){
         last_error = query.lastError().text();
-        commit_success = query.exec("COMMIT");
-        if (!commit_success){
-            last_error = query.lastError().text();
-        }
-        return success && commit_success;
+        query.exec("ROLLBACK");
+        return false;
     }
     if (query.numRowsAffected() != 1){
         last_error = tr("%1 list(s) seem to be affected by the deletion.").arg(query.numRowsAffected());
-        commit_success = query.exec("COMMIT");
-        if (!commit_success){
-            last_error = query.lastError().text();
-        }
+        query.exec("ROLLBACK");
         return false;
     }
 
-    success = query.exec("COMMIT");
-    if (!success){
-        last_error = query.lastError().text();
-    }
+    query.exec("COMMIT");
     return success;
 }
 
@@ -281,7 +258,7 @@ void DatabaseManager::search(int test_id, const QString& expr, QStringList& repl
 
 }
 
-bool DatabaseManager::set_score(int test_id, int id, const int& correct) {
+bool DatabaseManager::set_score(int test_id, int id, const int &correct) {
     QSqlQuery query;
     bool success = query.prepare(
                 QString("UPDATE words_%1 "
