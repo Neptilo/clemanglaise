@@ -22,8 +22,8 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
     QSqlQuery query;
     query.exec("BEGIN");
     bool success = query.prepare("INSERT INTO lists "
-                            "(name, src, dst) "
-                            "VALUES(:name, :src, :dst)");
+                                 "(name, src, dst) "
+                                 "VALUES(:name, :src, :dst)");
     query.bindValue(":name", name);
     query.bindValue(":src", src);
     query.bindValue(":dst", dst);
@@ -48,19 +48,19 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
     /* We call the list table "words_<id>" with <id> its ID in the list table,
      * instead of calling it the name given by the user. */
     success = query.exec(QString("CREATE TABLE IF NOT EXISTS words_%1("
-                 "id INTEGER PRIMARY KEY, "
-                 "word TEXT NOT NULL DEFAULT '', "
-                 "meaning TEXT NOT NULL DEFAULT '', "
-                 "pronunciation TEXT DEFAULT '', "
-                 "nature VARCHAR(5) DEFAULT '', "
-                 "comment TEXT DEFAULT '', "
-                 "example TEXT DEFAULT '', "
-                 "correctly_answered INTEGER NOT NULL DEFAULT 0, "
-                 "asked INTEGER NOT NULL DEFAULT 0, "
-                 "score DECIMAL(2,2) DEFAULT 0, "
-                 "id_theme INTEGER NULL, "
-                 "FOREIGN KEY(id_theme) REFERENCES themes(id) ON DELETE SET NULL)"
-                 ).arg(test_id));
+                                 "id INTEGER PRIMARY KEY, "
+                                 "word TEXT NOT NULL DEFAULT '', "
+                                 "meaning TEXT NOT NULL DEFAULT '', "
+                                 "pronunciation TEXT DEFAULT '', "
+                                 "nature VARCHAR(5) DEFAULT '', "
+                                 "comment TEXT DEFAULT '', "
+                                 "example TEXT DEFAULT '', "
+                                 "correctly_answered INTEGER NOT NULL DEFAULT 0, "
+                                 "asked INTEGER NOT NULL DEFAULT 0, "
+                                 "score DECIMAL(2,2) DEFAULT 0, "
+                                 "id_theme INTEGER NULL, "
+                                 "FOREIGN KEY(id_theme) REFERENCES themes(id) ON DELETE SET NULL)"
+                                 ).arg(test_id));
     if (!success){
         last_error = query.lastError().text();
         query.exec("ROLLBACK");
@@ -176,12 +176,12 @@ bool DatabaseManager::find_lowest(int test_id, QStringList &reply_list, int id_t
     QString cond = (id_theme > 0)? QString("id_theme = %1").arg(id_theme): "1";
 
     QSqlQuery query(QString("SELECT words_%1.ID, word, meaning, nature, comment, example, id_theme, pronunciation, score, name "
-                                        "FROM words_%1 "
-                                        "LEFT OUTER JOIN themes "
-                                        "ON themes.ID = words_%1.id_theme "
-                                        "WHERE score=(SELECT MIN(score) FROM words_%1 WHERE %2) AND %2 "
-                                        "ORDER BY RANDOM() LIMIT 1"
-                                        ).arg(test_id).arg(cond));
+                            "FROM words_%1 "
+                            "LEFT OUTER JOIN themes "
+                            "ON themes.ID = words_%1.id_theme "
+                            "WHERE score=(SELECT MIN(score) FROM words_%1 WHERE %2) AND %2 "
+                            "ORDER BY RANDOM() LIMIT 1"
+                            ).arg(test_id).arg(cond));
     if (query.next())
     {
         reply_list = QStringList();
@@ -234,7 +234,20 @@ bool DatabaseManager::open_db()
     // Find QSLite driver
     db = QSqlDatabase::addDatabase("QSQLITE");
 
-    db.setDatabaseName(DBNAME);
+#ifdef Q_OS_LINUX
+    // NOTE: We have to store database file into user home folder in Linux
+    QString path(QDir::home().path());
+    path.append(QDir::separator()).append(".clemanglaise");
+    // Create Clemanglaise folder if it doesn't exist
+    if(!QDir(path).exists())
+        QDir(path).mkpath(".");
+    path.append(QDir::separator()).append("clemanglaise.sqlite");
+    path = QDir::toNativeSeparators(path);
+    db.setDatabaseName(path);
+#else
+    // NOTE: File exists in the application private folder, in Symbian Qt implementation
+    db.setDatabaseName("clemanglaise.sqlite");
+#endif
     db.setConnectOptions("foreign_keys = ON");
 
     // Open databasee

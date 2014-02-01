@@ -8,8 +8,6 @@
 
 #include "Test.h"
 
-const QString DBNAME="clemanglaise.db.sqlite";
-
 class DatabaseManager : public QObject
 {
     Q_OBJECT

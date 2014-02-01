@@ -21,9 +21,8 @@ HEADERS += include/AnswerView.h \
            include/TestView.h \
            include/ThemeView.h \
            include/WordView.h \
-    include/DatabaseManager.h \
-    src/AddListView.h \
-    include/AddListView.h
+           include/DatabaseManager.h \
+           include/AddListView.h
 SOURCES += src/AnswerView.cpp \
            src/EditView.cpp \
            src/HandwritingArea.cpp \
@@ -39,8 +38,8 @@ SOURCES += src/AnswerView.cpp \
            src/TestView.cpp \
            src/ThemeView.cpp \
            src/WordView.cpp \
-    src/DatabaseManager.cpp \
-    src/AddListView.cpp
+           src/DatabaseManager.cpp \
+           src/AddListView.cpp
 RESOURCES += clemanglaise.qrc
 
 QT += network sql
