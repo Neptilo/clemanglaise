@@ -1,4 +1,6 @@
 * Don't care for spaces in correct pronunciation of an asked word (standardize it in a form that doesn't contain spaces)
+* When you delete a word sometimes app crashes or the refresh function doesn't work
+  correctly. Fix it 
 * Alert popup window to ask confirmation to delete ocabulary lists
 * Button to delete a word
 * Move word-specific buttons inside question/answer views

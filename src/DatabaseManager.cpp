@@ -270,8 +270,7 @@ void DatabaseManager::search(int test_id, const QString& expr, QStringList& repl
                          "WHERE word LIKE '%%2%' or "
                          "meaning LIKE '%%2%' or "
                          "pronunciation LIKE '%%2%'").arg(test_id).arg(expr));
-    if (query.size()>0)
-        reply_list = QStringList();
+    reply_list = QStringList();
     while (query.next())
         for(int i = 0; i < 10; ++i)
             reply_list << query.value(i).toString();
