@@ -63,13 +63,7 @@ void HomeView::init_test_buttons()
     // remote is true by default
     QList<Test> online_tests;
     // TODO: Make it dynamic: call a "get_lists.php" file
-    online_tests << Test(0, tr("French"), "en", "fr", this);
-
-    QList<QString> truc;
-    truc << "rien";
-    /*online_tests << Test(1, tr("Japanese"), "en", "ja", this);
-    online_tests << Test(2, tr("Chinese"), "en", "zh", this);
-    online_tests << Test(3, tr("Croatian"), "en", "hr", this);*/
+    online_tests << Test(1, tr("French"), "en", "fr", this);
 
     QList<Test> offline_tests(database_manager.get_lists());
 

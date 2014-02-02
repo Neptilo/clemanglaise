@@ -1,12 +1,10 @@
+* Create all php files corresponding to DatabaseManager's methods
 * Don't care for spaces in correct pronunciation of an asked word (standardize it in a form that doesn't contain spaces)
 * When you delete a word sometimes app crashes or the refresh function doesn't work
   correctly. Fix it 
 * Alert popup window to ask confirmation to delete ocabulary lists
 * Button to delete a word
 * Move word-specific buttons inside question/answer views
-* Online: create `lists` table properly initialized with existing lists
-  Create all php files corresponding to DatabaseManager's methods
-  Rename `clemanglaise_????` tables as `clemanglaise_words_<id>`
 * Find a way to map language ISO codes to their names
 * Fix this bug: on online tests (I don't know about offline), when you add a theme which the database assigns an ID that is not equal to (the last ID+1), and you go back to the test to select the new theme, it crashes.
 * Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: 

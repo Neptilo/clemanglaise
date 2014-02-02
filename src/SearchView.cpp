@@ -58,7 +58,7 @@ void SearchView::search() {
 		QString search_str = ampersand_escape(search_bar->text());
 
 		// Request to PHP file
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/search.php?lang=" + test->get_src() + test->get_dst() + "&string=" + search_str);
+        const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?test_id=%1&string=%2").arg(test->get_id()).arg(search_str));
         nam.get(QNetworkRequest(url));
 	}
 }
@@ -152,7 +152,7 @@ void SearchView::action(int row, int col)
 #else
         QUrlQuery post_data;
 #endif
-        post_data.addQueryItem("lang", test->get_src() + test->get_dst());
+        post_data.addQueryItem("test_id", QString::number(test->get_id()));
         post_data.addQueryItem("id", reply_list.at(row*nb_cols));
         const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
         QNetworkRequest request(url);

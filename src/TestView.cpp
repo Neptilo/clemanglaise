@@ -135,10 +135,9 @@ void TestView::init()
 
 void TestView::update_request() {
 	int index = themes->currentIndex();
-    QString lang = test->get_src() + test->get_dst();
 	// Request to PHP or local file
 	QUrl url;
-	url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + lang +"&id_theme="+themes->itemData(index).toString());
+    url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_lowest.php?test_id=%1&id_theme=%2").arg(test->get_id()).arg(themes->itemData(index).toString()));
 	delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request stays the same.)
 	request = new QNetworkRequest(url);
 }
@@ -276,7 +275,7 @@ void TestView::find_themes() {
 		read_reply();
 	} else { 
 		// Request to PHP file
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test->get_src() + test->get_dst());
+        const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_themes.php?test_id=%1").arg(test->get_id()));
 		QNetworkRequest request(url);
 		nam_themes.get(request);
 	}

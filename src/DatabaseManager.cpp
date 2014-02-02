@@ -92,7 +92,7 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
                                          "VALUES(:word, :meaning, :nature, :pronunciation, :comment, :example, :theme)").arg(test_id));
 
     for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
-        if(i.key() != "lang" && i.key() != "id") {
+        if(i.key() != "test_id" && i.key() != "id") {
             query.bindValue(":"+i.key(), i.value());
         }
     }
@@ -310,7 +310,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
                                          "pronunciation=:pronunciation "
                                          "WHERE id=:id").arg(test_id));
     for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
-        if(i.key() != "lang") {
+        if(i.key() != "test_id") {
             query.bindValue(":"+i.key(), i.value());
         }
     }

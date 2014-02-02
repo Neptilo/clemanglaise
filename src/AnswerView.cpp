@@ -63,13 +63,13 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;
 		post_data.addQueryItem("id", reply_list.at(0));
-		post_data.addQueryItem("lang", test.get_src() + test.get_dst());
-		post_data.addQueryItem("correct", QString::number(correct));
+        post_data.addQueryItem("test_id", QString::number(test->get_id()));
+        post_data.addQueryItem("correct", QString::number(correct));
 		nam->post(request, post_data.encodedQuery());
 #else
 		QUrlQuery post_data;
 		post_data.addQueryItem("id", reply_list.at(0));
-        post_data.addQueryItem("lang", test->get_src() + test->get_dst());
+        post_data.addQueryItem("test_id", QString::number(test->get_id()));
 		post_data.addQueryItem("correct", QString::number(correct));
         nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif

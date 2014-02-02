@@ -133,7 +133,7 @@ void EditView::edit_word(){
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
-    word_data["test_id"] = QString("%1").arg(test->get_id());
+    word_data["test_id"] = QString::number(test->get_id());
 
     if (!test->is_remote_work()) {
 		bool success;
