@@ -21,9 +21,9 @@ private:
     bool admin;
     DatabaseManager database_manager;
     QLayout *layout;
+    QNetworkAccessManager nam;
     LanguageButtons *offline_buttons;
     LanguageButtons *online_buttons;
-    QList<Test> tests;
     QLabel *title;
     QLabel *work_offline;
     QLabel *work_remote;
@@ -37,9 +37,10 @@ signals:
 public slots:
     void add_list();
     void init();
-    void init_test_buttons();
+    void init_offline_test_buttons();
     void remove_add_list_view();
     void start_test(QObject *obj);
+    void read_reply_lists(QNetworkReply *reply);
 };
 
 #endif // HOMEWINDOW_H
