@@ -29,31 +29,31 @@ public:
 
 private:
     QPushButton* add_button;
-    EditView* add_frame;
+    EditView* add_view;
     QPushButton* add_theme_button;
     ThemeView* add_theme_frame;
     bool admin;
-    AnswerView* answer_frame;
+    AnswerView* answer_view;
     QPushButton* back_button;
     DatabaseManager *database_manager;
     QPushButton * delete_list_button;
     QLayout* layout;
     QNetworkAccessManager* nam;
     QNetworkAccessManager nam_themes;
-    QuestionView* question_frame;
+    QuestionView* question_view;
     QStringList reply_list;
 	QStringList reply_list_theme; 
     QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
     QPushButton* search_button;
-    SearchView* search_frame;
+    SearchView* search_view;
     QLabel status;
     Test *test;
     QLabel* theme;
     QComboBox *themes;
     QLabel* title;
     QPushButton* update_button;
-    EditView* update_frame;
-    ThemeView* update_theme_frame;
+    EditView* update_view;
+    ThemeView* update_theme_view;
 
     void remove_widgets();
 

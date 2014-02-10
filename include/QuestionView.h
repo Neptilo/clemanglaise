@@ -17,7 +17,8 @@ public:
     ~QuestionView();
 
     QString getAnswer();
-    void ask_question(const QString& word, const QString& theme);
+    void ask_question(const QString &word, const QString &theme);
+    void show_error(const QString &error);
 
 private:
     QLabel *label;

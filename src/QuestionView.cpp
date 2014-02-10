@@ -72,7 +72,14 @@ void QuestionView::ask_question(const QString& word, const QString & theme) {
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(disable_validation()));
 	OK_button->setDefault(true);
 	edit->setFocus();
-	OK_button->setEnabled(true);
+    OK_button->setEnabled(true);
+}
+
+void QuestionView::show_error(const QString &error)
+{
+    delete label;
+    label = new QLabel(error, this);
+    vertical_layout->addWidget(label);
 }
 
 void QuestionView::disable_validation(){

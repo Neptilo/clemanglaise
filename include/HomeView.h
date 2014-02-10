@@ -16,8 +16,10 @@ class HomeView : public QWidget{
     Q_OBJECT
 
 private:
-    QPushButton add_list_button;
-    AddListView *add_list_view;
+    AddListView *add_offline_list_view;
+    AddListView *add_online_list_view;
+    QPushButton add_offline_list_button;
+    QPushButton add_online_list_button;
     bool admin;
     DatabaseManager database_manager;
     QLayout *layout;
@@ -35,7 +37,8 @@ public:
 signals:
     
 public slots:
-    void add_list();
+    void add_offline_list();
+    void add_online_list();
     void init();
     void init_offline_test_buttons();
     void remove_add_list_view();
