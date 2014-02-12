@@ -51,8 +51,6 @@ void HomeView::add_online_list()
 
 void HomeView::remove_add_list_view()
 {
-    /*if(add_offline_list_view)
-        layout->removeWidget(add_offline_list_view);*/
     delete add_offline_list_view;
     add_offline_list_view = NULL;
     delete add_online_list_view;
@@ -117,7 +115,8 @@ void HomeView::read_reply_lists(QNetworkReply *reply)
     if(admin){
         layout->addWidget(&add_online_list_button);
         connect(&add_online_list_button, SIGNAL(clicked()), this, SLOT(add_online_list()));
-    }
+    }else
+        add_online_list_button.hide();
 }
 
 void HomeView::start_test(QObject *obj){
