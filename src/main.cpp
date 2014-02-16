@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
 		// Then we wait for the NetworkReplyReader to answer yes.
 	}else{
         HomeView *w = new HomeView(false);
+        w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		w->show();
 	}
 

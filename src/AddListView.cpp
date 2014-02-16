@@ -33,7 +33,7 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
         connect(&create_button, SIGNAL(clicked()), this, SLOT(add_online_list()));
     else
         connect(&create_button, SIGNAL(clicked()), this, SLOT(add_offline_list()));
-    connect(this, SIGNAL(add_list_success()), parent, SLOT(remove_add_list_view()));
+    connect(this, SIGNAL(add_list_success()), parent, SLOT(init()));
     connect(&cancel_button, SIGNAL(clicked()), parent, SLOT(remove_add_list_view()));
 }
 

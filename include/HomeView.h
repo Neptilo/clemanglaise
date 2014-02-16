@@ -1,34 +1,34 @@
 #ifndef HOMEWINDOW_H
 #define HOMEWINDOW_H
 
-#include <QWidget>
 #include <QLabel>
 #include <QList>
 #include <QRadioButton>
+#include <QSlider>
+#include <QWidget>
 
 #include "AddListView.h"
-#include "TestView.h"
-#include "LanguageButtons.h"
-#include "Test.h"
 #include "DatabaseManager.h"
+#include "LanguageButtons.h"
+#include "Switcher.h"
+#include "Test.h"
+#include "TestView.h"
 
 class HomeView : public QWidget{
     Q_OBJECT
 
 private:
-    AddListView *add_offline_list_view;
-    AddListView *add_online_list_view;
-    QPushButton add_offline_list_button;
-    QPushButton add_online_list_button;
+    AddListView *add_list_view;
+    QPushButton add_list_button;
     bool admin;
     DatabaseManager database_manager;
     QLayout *layout;
     QNetworkAccessManager nam;
-    LanguageButtons *offline_buttons;
-    LanguageButtons *online_buttons;
+    bool remote;
+    LanguageButtons *test_buttons;
+    Switcher test_source_switcher; // switches between a local source and an online server to fetch the list of tests
     QLabel *title;
-    QLabel *work_offline;
-    QLabel *work_remote;
+    QLabel info_label;
 
 public:
     explicit HomeView(bool admin = false, QWidget *parent = 0);
@@ -37,13 +37,12 @@ public:
 signals:
     
 public slots:
-    void add_offline_list();
-    void add_online_list();
+    void add_list();
     void init();
-    void init_offline_test_buttons();
-    void remove_add_list_view();
     void start_test(QObject *obj);
     void read_reply_lists(QNetworkReply *reply);
+    void remove_add_list_view();
+    void set_test_source(bool remote);
 };
 
 #endif // HOMEWINDOW_H

@@ -1,29 +1,36 @@
 #include "HomeView.h"
+
 #include "string_utils.h"
 
 HomeView::HomeView(bool admin, QWidget *parent):
     QWidget(parent),
-    add_offline_list_view(NULL),
-    add_online_list_view(NULL),
-    add_offline_list_button(tr("Create a local vocabulary list"), this),
-    add_online_list_button(tr("Create an online vocabulary list"), this),
+    add_list_view(NULL),
     admin(admin),
     database_manager(this),
     layout(NULL),
-    offline_buttons(NULL),
-    online_buttons(NULL),
-    title(NULL),
-    work_offline(NULL),
-    work_remote(NULL)
+    test_buttons(NULL),
+    test_source_switcher(Qt::Horizontal, tr("Local tests"), tr("Online tests"), this),
+    title(NULL)
 {
     setWindowTitle("Clemanglaise");
     setWindowIcon(QIcon(":/clemanglaise-img.png"));
     layout = new QVBoxLayout(this);
+
+    // title
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);
     title->setAlignment(Qt::AlignHCenter);
     layout->addWidget(title);
-    work_remote = new QLabel(tr("<b>Tests on remote server:</b>"), this);
-    work_offline = new QLabel(tr("<b>Offline tests:</b>"), this);
+
+    // test source switcher
+    layout->addWidget(&test_source_switcher);
+    set_test_source(test_source_switcher.value());
+
+    // info label
+    layout->addWidget(&info_label);
+
+    // add list button
+    layout->addWidget(&add_list_button);
+    add_list_button.hide();
 
     connect(&nam, SIGNAL(finished(QNetworkReply *)), this, SLOT(read_reply_lists(QNetworkReply *)));
 
@@ -33,70 +40,50 @@ HomeView::HomeView(bool admin, QWidget *parent):
 HomeView::~HomeView()
 {}
 
-void HomeView::add_offline_list()
+void HomeView::add_list()
 {
-    add_offline_list_button.disconnect();
-    add_offline_list_button.hide();
-    add_offline_list_view = new AddListView(&database_manager, false, this);
-    layout->addWidget(add_offline_list_view);
-}
-
-void HomeView::add_online_list()
-{
-    add_online_list_button.disconnect();
-    add_online_list_button.hide();
-    add_online_list_view = new AddListView(&database_manager, true, this); // database_manager is useless.
-    layout->addWidget(add_online_list_view);
-}
-
-void HomeView::remove_add_list_view()
-{
-    delete add_offline_list_view;
-    add_offline_list_view = NULL;
-    delete add_online_list_view;
-    add_online_list_view = NULL;
-    init_offline_test_buttons();
-    add_offline_list_button.show();
-    connect(&add_offline_list_button, SIGNAL(clicked()), this, SLOT(add_offline_list()));
-    if(admin){
-        add_online_list_button.show();
-        connect(&add_online_list_button, SIGNAL(clicked()), this, SLOT(add_online_list()));
-    }
+    add_list_button.disconnect();
+    add_list_button.hide();
+    add_list_view = new AddListView(&database_manager, remote, this); // database_manager is useless for online tests
+    layout->addWidget(add_list_view);
 }
 
 void HomeView::init()
 {
+    delete test_buttons;
+    test_buttons = NULL;
+
+    delete add_list_view;
+    add_list_view = NULL;
+
     title->show();
 
-    // Offline part
-    init_offline_test_buttons();
-    connect(&add_offline_list_button, SIGNAL(clicked()), this, SLOT(add_offline_list()));
+    test_source_switcher.show();
+    connect(&test_source_switcher, SIGNAL(value_changed(bool)), this, SLOT(set_test_source(bool)));
 
-    // Online part
-    if(work_remote)
-        work_remote->show();
-    if(online_buttons)
-        online_buttons->show();
-    if(admin){
-        add_online_list_button.show();
-        connect(&add_online_list_button, SIGNAL(clicked()), this, SLOT(add_online_list()));
+    info_label.setText(tr("Loading..."));
+    info_label.show();
+
+    if(remote){
+        // Request to PHP file to get the list of online vocabulary lists
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/get_lists.php");
+        QNetworkRequest request(url);
+        nam.get(request);
+    }else{
+        // test buttons
+        QList<Test> offline_tests(database_manager.get_lists());
+        delete test_buttons;
+        test_buttons = new LanguageButtons(offline_tests, this);
+        layout->addWidget(test_buttons);
+
+        // info label
+        info_label.setText(tr("<b>Offline tests:</b>"));
+
+        // add list buttons
+        add_list_button.setText(tr("Create a local vocabulary list"));
+        add_list_button.show();
+        connect(&add_list_button, SIGNAL(clicked()), this, SLOT(add_list()));
     }
-    // Request to PHP file to get the list of online vocabulary lists
-    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/get_lists.php");
-    QNetworkRequest request(url);
-    nam.get(request);
-}
-
-void HomeView::init_offline_test_buttons()
-{
-    QList<Test> offline_tests(database_manager.get_lists());
-    delete offline_buttons;
-    offline_buttons = new LanguageButtons(offline_tests, this);
-    work_offline->show();
-    layout->addWidget(work_offline);
-    layout->addWidget(offline_buttons);
-    layout->addWidget(&add_offline_list_button);
-    add_offline_list_button.show();
 }
 
 void HomeView::read_reply_lists(QNetworkReply *reply)
@@ -108,37 +95,59 @@ void HomeView::read_reply_lists(QNetworkReply *reply)
     for(int i = 0; i < reply_list.count(); i+=4) {
         online_tests << Test(reply_list.at(i).toInt(), reply_list.at(i+1), reply_list.at(i+2), reply_list.at(i+3), this);
     }
-    delete online_buttons;
-    online_buttons = new LanguageButtons(online_tests, this);
-    layout->addWidget(work_remote);
-    layout->addWidget(online_buttons);
+
+    // test buttons
+    delete test_buttons;
+    test_buttons = new LanguageButtons(online_tests, this);
+    layout->addWidget(test_buttons);
+
+    // info label
+    info_label.setText(tr("<b>Tests on remote server:</b>"));
+
+    // add list button
     if(admin){
-        layout->addWidget(&add_online_list_button);
-        connect(&add_online_list_button, SIGNAL(clicked()), this, SLOT(add_online_list()));
-    }else
-        add_online_list_button.hide();
+        add_list_button.setText(tr("Create an online vocabulary list"));
+        add_list_button.show();
+        connect(&add_list_button, SIGNAL(clicked()), this, SLOT(add_list()));
+    }
+}
+
+void HomeView::remove_add_list_view()
+{
+    delete add_list_view;
+    add_list_view = NULL;
+
+    // show add list button again
+    if(admin || !remote){
+        add_list_button.show();
+        connect(&add_list_button, SIGNAL(clicked()), this, SLOT(add_list()));
+    }
+}
+
+void HomeView::set_test_source(bool remote)
+{
+    this->remote = remote;
+    init();
 }
 
 void HomeView::start_test(QObject *obj){
     Test *test((Test *) obj);
+
     title->hide();
 
-    work_offline->hide();
-    offline_buttons->disconnect_all();
-    offline_buttons->hide();
+    test_source_switcher.hide();
+    test_source_switcher.disconnect();
 
-    if(work_remote)
-        work_remote->hide();
-    if(online_buttons)
-        online_buttons->hide();
-    add_online_list_button.disconnect();
-    add_online_list_button.hide();
-    add_offline_list_button.disconnect();
-    add_offline_list_button.hide();
-    delete add_offline_list_view;
-    add_offline_list_view = NULL;
-    delete add_online_list_view;
-    add_online_list_view = NULL;
+    info_label.hide();
+
+    test_buttons->disconnect_all();
+    test_buttons->hide();
+
+    add_list_button.disconnect();
+    add_list_button.hide();
+
+    delete add_list_view;
+    add_list_view = NULL;
 
     /* No possible decomposition of the sentence, because of translations in
      * foreign languages that put words in a different order. */
