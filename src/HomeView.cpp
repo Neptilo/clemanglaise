@@ -23,7 +23,6 @@ HomeView::HomeView(bool admin, QWidget *parent):
 
     // test source switcher
     layout->addWidget(&test_source_switcher);
-    set_test_source(test_source_switcher.value());
 
     // info label
     layout->addWidget(&info_label);
@@ -34,7 +33,7 @@ HomeView::HomeView(bool admin, QWidget *parent):
 
     connect(&nam, SIGNAL(finished(QNetworkReply *)), this, SLOT(read_reply_lists(QNetworkReply *)));
 
-    init();
+    set_test_source(test_source_switcher.value()); // calls init()
 }
 
 HomeView::~HomeView()
@@ -59,7 +58,7 @@ void HomeView::init()
     title->show();
 
     test_source_switcher.show();
-    connect(&test_source_switcher, SIGNAL(value_changed(bool)), this, SLOT(set_test_source(bool)));
+    connect(&test_source_switcher, SIGNAL(value_changed(bool)), this, SLOT(set_test_source(bool)), Qt::UniqueConnection);
 
     info_label.setText(tr("Loading..."));
     info_label.show();
@@ -88,27 +87,29 @@ void HomeView::init()
 
 void HomeView::read_reply_lists(QNetworkReply *reply)
 {
-    QString reply_string = reply->readAll();
-    reply->deleteLater();
-    QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
-    QList<Test> online_tests;
-    for(int i = 0; i < reply_list.count(); i+=4) {
-        online_tests << Test(reply_list.at(i).toInt(), reply_list.at(i+1), reply_list.at(i+2), reply_list.at(i+3), this);
-    }
+    if(remote){ // verification in case user clicked switch button before NAM's reply
+        QString reply_string = reply->readAll();
+        reply->deleteLater();
+        QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
+        QList<Test> online_tests;
+        for(int i = 0; i < reply_list.count(); i+=4) {
+            online_tests << Test(reply_list.at(i).toInt(), reply_list.at(i+1), reply_list.at(i+2), reply_list.at(i+3), this);
+        }
 
-    // test buttons
-    delete test_buttons;
-    test_buttons = new LanguageButtons(online_tests, this);
-    layout->addWidget(test_buttons);
+        // test buttons
+        delete test_buttons;
+        test_buttons = new LanguageButtons(online_tests, this);
+        layout->addWidget(test_buttons);
 
-    // info label
-    info_label.setText(tr("<b>Tests on remote server:</b>"));
+        // info label
+        info_label.setText(tr("<b>Tests on remote server:</b>"));
 
-    // add list button
-    if(admin){
-        add_list_button.setText(tr("Create an online vocabulary list"));
-        add_list_button.show();
-        connect(&add_list_button, SIGNAL(clicked()), this, SLOT(add_list()));
+        // add list button
+        if(admin){
+            add_list_button.setText(tr("Create an online vocabulary list"));
+            add_list_button.show();
+            connect(&add_list_button, SIGNAL(clicked()), this, SLOT(add_list()));
+        }
     }
 }
 
