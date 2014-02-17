@@ -23,7 +23,8 @@ HEADERS += include/AnswerView.h \
            include/WordView.h \
            include/DatabaseManager.h \
            include/AddListView.h \
-           include/Switcher.h
+           include/Switcher.h \
+    include/ClickableLabel.h
 SOURCES += src/AnswerView.cpp \
            src/EditView.cpp \
            src/HandwritingArea.cpp \
@@ -41,7 +42,8 @@ SOURCES += src/AnswerView.cpp \
            src/WordView.cpp \
            src/DatabaseManager.cpp \
            src/AddListView.cpp \
-           src/Switcher.cpp
+           src/Switcher.cpp \
+    src/ClickableLabel.cpp
 
 RESOURCES += clemanglaise.qrc
 

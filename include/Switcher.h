@@ -1,10 +1,11 @@
 #ifndef SWITCHER_H
 #define SWITCHER_H
 
-#include <QLabel>
 #include <QSlider>
 #include <QString>
 #include <QWidget>
+
+#include "ClickableLabel.h"
 
 class Switcher : public QWidget
 {
@@ -14,8 +15,8 @@ public:
     bool value() const;
 
 private:
-    QLabel *first_label;
-    QLabel *last_label;
+    ClickableLabel *first_label;
+    ClickableLabel *last_label;
     QSlider slider;
 
 signals:
@@ -23,7 +24,8 @@ signals:
 
 public slots:
     void emit_value_changed(int value);
-
+    void set_to_first();
+    void set_to_last();
 };
 
 #endif // SWITCHER_H

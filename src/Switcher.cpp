@@ -25,8 +25,10 @@ Switcher::Switcher(Qt::Orientation orientation, const QString &first_str, const 
         layout = NULL;
         break;
     }
+
+    // first label
     if(!first_str.isEmpty()){
-        first_label = new QLabel(first_str, this);
+        first_label = new ClickableLabel(first_str, this);
         switch (orientation) {
         case Qt::Horizontal:
             first_label->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -40,10 +42,16 @@ Switcher::Switcher(Qt::Orientation orientation, const QString &first_str, const 
         if(orientation == Qt::Horizontal)
         layout->addWidget(first_label);
     }
+    connect(first_label, SIGNAL(clicked()), this, SLOT(set_to_first()));
+
+    // slider
     slider.setMaximum(1);
     layout->addWidget(&slider);
+    connect(&slider, SIGNAL(valueChanged(int)), this, SLOT(emit_value_changed(int)));
+
+    // last label
     if(!last_str.isEmpty()){
-        last_label = new QLabel(last_str, this);
+        last_label = new ClickableLabel(last_str, this);
         switch (orientation) {
         case Qt::Horizontal:
             last_label->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
@@ -56,8 +64,9 @@ Switcher::Switcher(Qt::Orientation orientation, const QString &first_str, const 
         }
         layout->addWidget(last_label);
     }
+    connect(last_label, SIGNAL(clicked()), this, SLOT(set_to_last()));
+
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    connect(&slider, SIGNAL(valueChanged(int)), this, SLOT(emit_value_changed(int)));
 }
 
 bool Switcher::value() const{
@@ -66,4 +75,14 @@ bool Switcher::value() const{
 
 void Switcher::emit_value_changed(int value){
     emit value_changed(value);
+}
+
+void Switcher::set_to_first()
+{
+    slider.setSliderPosition(0);
+}
+
+void Switcher::set_to_last()
+{
+    slider.setSliderPosition(1);
 }
