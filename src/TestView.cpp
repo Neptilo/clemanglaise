@@ -1,5 +1,6 @@
 #include "TestView.h"
 
+#include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
 
@@ -209,16 +210,23 @@ void TestView::update_question(int){
 
 void TestView::delete_list()
 {
-    if (database_manager->delete_list(test->get_id()))
-        delete this;
-    else {
-        QString error(database_manager->pop_last_error());
-        if(error == "")
-            status.setText(tr("Deletion failed."));
-        else
-            status.setText(tr("<b>SQLite error: </b>")+error);
-        layout->addWidget(&status);
-        status.show();
+    QMessageBox::StandardButton ret = QMessageBox::question(
+                this,
+                tr("Confirm deletion"),
+                tr("Are you sure you want to delete the vocabulary list \"<b>%1</b>\"?").arg(test->get_name())
+                );
+    if(ret == QMessageBox::Yes){
+        if (database_manager->delete_list(test->get_id()))
+            delete this;
+        else {
+            QString error(database_manager->pop_last_error());
+            if(error == "")
+                status.setText(tr("Deletion failed."));
+            else
+                status.setText(tr("<b>SQLite error: </b>")+error);
+            layout->addWidget(&status);
+            status.show();
+        }
     }
 }
 
