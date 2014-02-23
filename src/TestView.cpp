@@ -214,6 +214,9 @@ void TestView::delete_list()
                 this,
                 tr("Confirm deletion"),
                 tr("Are you sure you want to delete the vocabulary list \"<b>%1</b>\"?").arg(test->get_name())
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+                , QMessageBox::Yes | QMessageBox::No
+            #endif
                 );
     if(ret == QMessageBox::Yes){
         if (database_manager->delete_list(test->get_id()))
