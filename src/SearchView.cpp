@@ -3,6 +3,7 @@
 #include <QtNetwork>
 #include <QBoxLayout>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QHeaderView>
 
 #include "EditView.h"
@@ -143,35 +144,45 @@ void SearchView::action(int row, int col)
 		layout()->addWidget(update_frame);
         connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){
-        result->disconnect();
+        QMessageBox::StandardButton ret = QMessageBox::question(
+                    this,
+                    tr("Confirm deletion"),
+                    tr("Are you sure you want to delete the entry \"<b>%1</b>\"?").arg(reply_list.at(row*nb_cols+1))
+                #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+                    , QMessageBox::Yes | QMessageBox::No
+                #endif
+                    );
+        if(ret == QMessageBox::Yes){
+            result->disconnect();
 
-        if (test->is_remote_work()) {
+            if (test->is_remote_work()) {
 
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        QUrl post_data;
-#else
-        QUrlQuery post_data;
-#endif
-        post_data.addQueryItem("test_id", QString::number(test->get_id()));
-        post_data.addQueryItem("id", reply_list.at(row*nb_cols));
-        const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
-        QNetworkRequest request(url);
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-        nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-        nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+    #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+            QUrl post_data;
+    #else
+            QUrlQuery post_data;
+    #endif
+            post_data.addQueryItem("test_id", QString::number(test->get_id()));
+            post_data.addQueryItem("id", reply_list.at(row*nb_cols));
+            const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
+            QNetworkRequest request(url);
+            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+            nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
+            nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
-        // Send the request
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        nam.post(request, post_data.encodedQuery());
-#else
-        nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
-#endif
-		} else {
-			int id = reply_list.at(row*nb_cols).toInt();
-            database_manager->delete_word(test->get_id(), id);
-		}
+            // Send the request
+    #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+            nam.post(request, post_data.encodedQuery());
+    #else
+            nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+    #endif
+            } else {
+                int id = reply_list.at(row*nb_cols).toInt();
+                database_manager->delete_word(test->get_id(), id);
+            }
 
-        refresh();
+            refresh();
+        }
     }
 }
 
