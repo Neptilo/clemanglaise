@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 
+#include "ImportDialog.h"
 #include "NetworkReplyReader.h"
 #include "string_utils.h"
 #include "ThemeView.h"
@@ -165,7 +166,7 @@ void TestView::validate_question(){
 
     // Create a new answer frame
     delete answer_view;
-    answer_view = new AnswerView(reply_list, question_view->getAnswer(), test, database_manager, this);
+    answer_view = new AnswerView(reply_list, question_view->get_answer(), test, database_manager, this);
     layout->addWidget(answer_view);
 }
 
@@ -333,4 +334,32 @@ void TestView::remove_widgets()
 	back_button->hide();
 	search_button->hide();
     status.hide();
+}
+
+
+void TestView::import_word()
+{
+    ImportDialog dialog(database_manager, this);
+    dialog.setWindowTitle(tr("Configure Options"));
+    if(dialog.exec()){
+        // Define data to send
+        QHash<QString, QString> word_data;
+        word_data["id"] = reply_list.at(0);
+        word_data["word"] = reply_list.at(1);
+        word_data["meaning"] = reply_list.at(2);
+        word_data["nature"] = reply_list.at(3);
+        word_data["comment"] = reply_list.at(4);
+        word_data["example"] = reply_list.at(5);
+        word_data["theme"] = reply_list.at(6);
+        word_data["pronunciation"] = reply_list.at(7);
+        word_data["test_id"] = QString::number(dialog.dst_test_id);
+
+        // Show confirmation
+        if(database_manager->add_word(word_data))
+            status.setText(tr("Word successfully imported!"));
+        else
+            status.setText(tr("<b>SQLite error: </b>")+database_manager->pop_last_error());
+        layout->addWidget(&status);
+        status.show();
+    }
 }

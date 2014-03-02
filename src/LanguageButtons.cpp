@@ -28,8 +28,6 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, QWidget *parent)
             layout->addWidget(button, i/w, i%w); // so height and width of layout are approximately the same
         }
     }
-
-    connect(&signal_mapper, SIGNAL(mapped(QObject*)), parent, SLOT(start_test(QObject*)));
 }
 
 void LanguageButtons::disconnect_all(){

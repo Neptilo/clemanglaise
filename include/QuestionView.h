@@ -1,5 +1,5 @@
-#ifndef QUESTIONFRAME_H
-#define QUESTIONFRAME_H
+#ifndef QUESTIONVIEW_H
+#define QUESTIONVIEW_H
 
 #include <QLabel>
 #include <QLineEdit>
@@ -16,12 +16,13 @@ public:
     QuestionView(Test *test, QWidget *parent);
     ~QuestionView();
 
-    QString getAnswer();
+    QString get_answer();
     void ask_question(const QString &word, const QString &theme);
     void show_error(const QString &error);
 
 private:
     QLabel *label;
+    QPushButton *import_button;
     QLineEdit *edit;
     HandwritingArea *handwriting_area;
 
@@ -29,4 +30,4 @@ public slots:
     void disable_validation();
 };
 
-#endif // QUESTIONFRAME_H
+#endif // QUESTIONVIEW_H

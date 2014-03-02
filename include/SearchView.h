@@ -1,5 +1,5 @@
-#ifndef SEARCHFRAME_H
-#define SEARCHFRAME_H
+#ifndef SEARCHVIEW_H
+#define SEARCHVIEW_H
 
 #include <QWidget>
 #include <QtNetwork>
@@ -35,4 +35,4 @@ public slots:
     void refresh();
 };
 
-#endif // SEARCHFRAME_H
+#endif // SEARCHVIEW_H

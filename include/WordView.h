@@ -1,5 +1,5 @@
-#ifndef WORDFRAME_H
-#define WORDFRAME_H
+#ifndef WORDVIEW_H
+#define WORDVIEW_H
 
 #include <QWidget>
 #include <QBoxLayout>
@@ -30,4 +30,4 @@ public slots:
 
 };
 
-#endif // WORDFRAME_H
+#endif // WORDVIEW_H

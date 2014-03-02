@@ -24,7 +24,8 @@ HEADERS += include/AnswerView.h \
            include/DatabaseManager.h \
            include/AddListView.h \
            include/Switcher.h \
-           include/ClickableLabel.h
+           include/ClickableLabel.h \
+    include/ImportDialog.h
 SOURCES += src/AnswerView.cpp \
            src/EditView.cpp \
            src/HandwritingArea.cpp \
@@ -43,7 +44,8 @@ SOURCES += src/AnswerView.cpp \
            src/DatabaseManager.cpp \
            src/AddListView.cpp \
            src/Switcher.cpp \
-           src/ClickableLabel.cpp
+           src/ClickableLabel.cpp \
+    src/ImportDialog.cpp
 
 RESOURCES += clemanglaise.qrc
 
@@ -52,4 +54,5 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): cache()
 
 OTHER_FILES += \
-    TODO.rst
+    TODO.rst \
+    programming_style.rst

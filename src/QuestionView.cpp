@@ -8,6 +8,7 @@
 QuestionView::QuestionView(Test *test, QWidget *parent):
     WordView(test, parent),
     label(NULL),
+    import_button(NULL),
     edit(NULL),
     handwriting_area(NULL)
 {
@@ -17,12 +18,11 @@ QuestionView::QuestionView(Test *test, QWidget *parent):
 
 QuestionView::~QuestionView(){
     delete label;
-    if(edit){
+    if(edit)
         delete edit;
-    }
 }
 
-QString QuestionView::getAnswer(){
+QString QuestionView::get_answer(){
     return ampersand_escape(edit->text());
 }
 
@@ -53,6 +53,13 @@ void QuestionView::ask_question(const QString& word, const QString & theme) {
         label->setText(tr("Translate <b>") + word + tr("</b> into Croatian.<br />") + context);
     }else{
         label->setText(tr("Translate <b>") + word + tr("</b>.<br />")+ context);
+    }
+
+    // Create import button
+    if(test->is_remote_work()){
+        import_button = new QPushButton(tr("Import this word"), this);
+        vertical_layout->addWidget(import_button);
+        connect(import_button, SIGNAL(clicked()), parent(), SLOT(import_word()));
     }
 
     // Create edit field
@@ -86,5 +93,5 @@ void QuestionView::disable_validation(){
 	OK_button->disconnect();
 	OK_button->hide();
 	edit->disconnect();
-	edit->setEnabled(false);
+    edit->setEnabled(false);
 }

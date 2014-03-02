@@ -1,5 +1,5 @@
-#ifndef TESTFRAME_H
-#define TESTFRAME_H
+#ifndef TESTVIEW_H
+#define TESTVIEW_H
 
 #include <QPushButton>
 
@@ -72,6 +72,7 @@ public slots:
 	void go_back();
     void update_question(int);
     void delete_list();
+    void import_word();
 };
 
-#endif // TESTFRAME_H
+#endif // TESTVIEW_H

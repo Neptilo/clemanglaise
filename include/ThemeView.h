@@ -1,5 +1,5 @@
-#ifndef THEMEFRAME_H
-#define THEMEFRAME_H
+#ifndef THEMEVIEW_H
+#define THEMEVIEW_H
 
 #include <QLabel>
 #include <QLineEdit>
@@ -50,4 +50,4 @@ public slots:
     void reset();
 };
 
-#endif // THEMEFRAME_H
+#endif // THEMEVIEW_H

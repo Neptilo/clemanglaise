@@ -3,7 +3,6 @@ Programming style to use when editing this project
 
 * Name class names and their corresponding files using Camel Case. (This is not QtCreator's default!)
 * Name attributes, methods, signals and slots using underscore style.
-* In both source and header files, sort attributes and sort methods by identifier name.
 * In include lists, put in order includes of:
 
   * the source's header

@@ -1,5 +1,5 @@
-#ifndef ANSWERFRAME_H
-#define ANSWERFRAME_H
+#ifndef ANSWERVIEW_H
+#define ANSWERVIEW_H
 
 #include <QLabel>
 #include <QPushButton>
@@ -20,4 +20,4 @@ private:
     DatabaseManager *database_manager;
 };
 
-#endif // ANSWERFRAME_H
+#endif // ANSWERVIEW_H

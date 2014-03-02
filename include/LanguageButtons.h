@@ -11,13 +11,10 @@ class LanguageButtons : public QWidget{
 public:
     LanguageButtons(const QList<Test>& tests, QWidget *parent);
     void disconnect_all();
+    QSignalMapper signal_mapper;
 
 signals:
-    void clicked(const QString &text);
-
-private:
-    QSignalMapper signal_mapper;
-    
+    void clicked(const QString &text);    
 };
 
 #endif // LANGUAGEBUTTONS_H

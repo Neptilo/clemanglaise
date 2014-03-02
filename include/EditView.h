@@ -1,5 +1,5 @@
-#ifndef EDITFRAME_H
-#define EDITFRAME_H
+#ifndef EDITVIEW_H
+#define EDITVIEW_H
 
 #include <QLabel>
 #include <QLineEdit>
@@ -57,4 +57,4 @@ public slots:
 	void find_themes();
 };
 
-#endif // EDITFRAME_H
+#endif // EDITVIEW_H
