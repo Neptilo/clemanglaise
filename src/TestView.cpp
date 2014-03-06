@@ -3,8 +3,11 @@
 #include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QWizard>
 
-#include "ImportDialog.h"
+#include "import_wizard/DstListPage.h"
+#include "import_wizard/DuplicatePage.h"
+#include "import_wizard/SingleImportWizard.h"
 #include "NetworkReplyReader.h"
 #include "string_utils.h"
 #include "ThemeView.h"
@@ -339,26 +342,10 @@ void TestView::remove_widgets()
 
 void TestView::import_word()
 {
-    ImportDialog dialog(database_manager, this);
-    dialog.setWindowTitle(tr("Configure Options"));
-    if(dialog.exec()){
-        // Define data to send
-        QHash<QString, QString> word_data;
-        word_data["id"] = reply_list.at(0);
-        word_data["word"] = reply_list.at(1);
-        word_data["meaning"] = reply_list.at(2);
-        word_data["nature"] = reply_list.at(3);
-        word_data["comment"] = reply_list.at(4);
-        word_data["example"] = reply_list.at(5);
-        word_data["theme"] = reply_list.at(6);
-        word_data["pronunciation"] = reply_list.at(7);
-        word_data["test_id"] = QString::number(dialog.dst_test_id);
-
+    SingleImportWizard import_wizard(database_manager, reply_list, this);
+    if(import_wizard.exec()){
         // Show confirmation
-        if(database_manager->add_word(word_data))
-            status.setText(tr("Word successfully imported!"));
-        else
-            status.setText(tr("<b>SQLite error: </b>")+database_manager->pop_last_error());
+        status.setText(tr("Import succeeded!"));
         layout->addWidget(&status);
         status.show();
     }

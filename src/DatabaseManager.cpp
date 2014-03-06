@@ -321,3 +321,42 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
     return success;
 
 }
+
+// Two sets of words are considered as possible duplicates of one another if
+// more than half the words of the smaller set are in common with the larger set.
+bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringList &reply_keys, QList<QStringList> &reply_values){
+    QStringList word_list = word.split(",");
+    for (int i = 0; i < word_list.size(); ++i)
+        word_list.replace(i, word_list.at(i).trimmed());
+    reply_keys.clear();
+    reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score";
+    QStringList cond;
+    for (int i = 0; i < word_list.size(); ++i)
+        cond << QString("word LIKE '%%1%'").arg(word_list[i]);
+    cond.join(" OR ");
+    QSqlQuery query(QString("SELECT %3 FROM words_%1 WHERE %2")
+                    .arg(test_id)
+                    .arg(cond.join(" OR "))
+                    .arg(reply_keys.join(", ")));
+    reply_values.clear();
+    while (query.next()){
+        QStringList entry;
+        for(int i = 0; i < 9; ++i)
+            entry << query.value(i).toString();
+
+        // get the word list in this entry
+        // at the same time count words in common with input word list
+        QStringList reply_word_entry = entry.at(1).split(",");
+        int nb_words_in_common = 0;
+        for(int i = 0; i < reply_word_entry.size(); ++i){
+            if(word_list.contains(reply_word_entry.at(i).trimmed(), Qt::CaseInsensitive))
+                ++nb_words_in_common;
+        }
+
+        // insert entry as possible duplicate only if duplicate condition is respected
+        if(2*nb_words_in_common > qMin(word_list.size(), reply_word_entry.size()))
+            reply_values << entry;
+    }
+
+    return true;
+}

@@ -73,7 +73,7 @@ void HomeView::init()
         QList<Test> offline_tests(database_manager.get_lists());
         delete test_buttons;
         test_buttons = new LanguageButtons(offline_tests, this);
-        connect(&(test_buttons->signal_mapper), SIGNAL(mapped(QObject*)), this, SLOT(start_test(QObject*)));
+        connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
         layout->addWidget(test_buttons);
 
         // info label
@@ -100,7 +100,7 @@ void HomeView::read_reply_lists(QNetworkReply *reply)
         // test buttons
         delete test_buttons;
         test_buttons = new LanguageButtons(online_tests, this);
-        connect(&(test_buttons->signal_mapper), SIGNAL(mapped(QObject*)), this, SLOT(start_test(QObject*)));
+        connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
         layout->addWidget(test_buttons);
 
         // info label
@@ -133,9 +133,7 @@ void HomeView::set_test_source(bool remote)
     init();
 }
 
-void HomeView::start_test(QObject *obj){
-    Test *test((Test *) obj);
-
+void HomeView::start_test(Test *test){
     title->hide();
 
     test_source_switcher.hide();

@@ -1,16 +1,16 @@
-#include <QLabel>
-#include <QDebug>
-#include <QtNetwork>
 #include <QBoxLayout>
+#include <QDebug>
+#include <QHeaderView>
+#include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QHeaderView>
+#include <QtNetwork>
 
 #include "EditView.h"
+#include "NetworkReplyReader.h"
 #include "QuestionView.h"
 #include "SearchView.h"
 #include "string_utils.h"
-#include "NetworkReplyReader.h"
 
 SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
     QWidget(parent),
@@ -48,20 +48,19 @@ SearchView::~SearchView() {
 }
 
 void SearchView::search() {
-    if (!test->is_remote_work()) {
-        // Offline
-		QString search_str = ampersand_unescape(search_bar->text());
-        database_manager->search(test->get_id(), search_str, reply_list);
-		read_reply();
-	} else {
+    if (test->is_remote_work()) {
+        // Standardization of search string
+        QString search_str = ampersand_escape(search_bar->text());
 
-		// Standardization of search string
-		QString search_str = ampersand_escape(search_bar->text());
-
-		// Request to PHP file
+        // Request to PHP file
         const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?test_id=%1&string=%2").arg(test->get_id()).arg(search_str));
         nam.get(QNetworkRequest(url));
-	}
+	} else {
+        // Offline
+        QString search_str = ampersand_unescape(search_bar->text());
+        database_manager->search(test->get_id(), search_str, reply_list);
+        read_reply();
+    }
 }
 
 void SearchView::read_reply(QNetworkReply* reply)

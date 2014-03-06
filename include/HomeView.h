@@ -39,7 +39,7 @@ signals:
 public slots:
     void add_list();
     void init();
-    void start_test(QObject *obj);
+    void start_test(Test *test);
     void read_reply_lists(QNetworkReply *reply);
     void remove_add_list_view();
     void set_test_source(bool remote);

@@ -27,6 +27,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     // Check answer
     QString message;
     bool correct;
+    // remove whitespaces at start and end
     QString standardized_answer = player_answer.trimmed();
     QString correct_answers; // can be the correct meaning or pronunciation according to the language
     if(test->get_dst()=="ja" || test->get_dst()=="zh"){
@@ -45,6 +46,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
         correct_answers = ampersand_unescape(meaning);
     }
     QStringList correct_answer_list = correct_answers.split(",");
+    // remove whitespaces at start and end of each element in the list
     for(int i = 0; i < correct_answer_list.size(); ++i)
         correct_answer_list.replace(i, correct_answer_list.at(i).trimmed());
     correct = correct_answer_list.contains(standardized_answer, Qt::CaseInsensitive);
