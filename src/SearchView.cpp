@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QRegExp>
 #include <QtNetwork>
 
 #include "EditView.h"
@@ -109,7 +110,7 @@ void SearchView::read_reply(QString reply_string) {
             col_ind = (col_ind+1)%result_nb_cols;
         }
         if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
-            item = new QLabel(ampersand_unescape(reply_list.at(i)).replace("\n", "<br />"), this); // TODO: what about \r?
+            item = new QLabel(ampersand_unescape(reply_list.at(i)).replace(QRegExp("[\r\n]+"), "<br />"), this); 
             result->setCellWidget(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
         }

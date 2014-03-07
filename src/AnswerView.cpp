@@ -1,5 +1,6 @@
 #include "AnswerView.h"
 
+#include <QRegExp>
 #include <QtNetwork>
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
@@ -113,10 +114,10 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
         QString answithpron = pronunciation.isEmpty()? answithoutpron: answithoutpron+"\n<b>["+ pronunciation +"]</b>";
         vertical_layout->addWidget(new QLabel(answithpron, this));
     }
-    vertical_layout->addWidget(new QLabel("<i>"+comment.replace("\n", "<br />")+"</i>", this)); // TODO: what about \r?
+    vertical_layout->addWidget(new QLabel("<i>"+comment.replace(QRegExp("[\r\n]+"), "<br />")+"</i>", this));
     if(example.compare("")){
         QTextBrowser * qtb = new QTextBrowser(this);
-        qtb->setHtml("<b>Example:</b> "+ example.replace("\n", "<br />")); // TODO: what about \r?
+        qtb->setHtml("<b>Example:</b> "+ example.replace(QRegExp("[\r\n]+"), "<br />"));
         vertical_layout->addWidget(qtb);
     }
 
