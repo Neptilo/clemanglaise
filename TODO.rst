@@ -10,7 +10,7 @@
 * Treat all cases when there is no Internet connection.
 * Change font sizes, especially the word being asked
 * Set a default window width (?)
-* Improve ergonomy: allow to do everything using the keyboard only.
+* Improve ergonomics: allow to do everything using the keyboard only.
 
   * An "OK" button should always be pressable with the Enter key or Ctrl+Enter if there is an ambiguity.
   * A "Cancel" or "Go back" button should always be pressable with the Esc key.

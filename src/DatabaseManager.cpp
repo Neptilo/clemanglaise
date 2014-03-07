@@ -198,7 +198,7 @@ bool DatabaseManager::find_lowest(int test_id, QStringList &reply_list, int id_t
 void DatabaseManager::find_themes(QStringList& reply_list) { 
     QSqlQuery query("SELECT * FROM themes ORDER BY name ASC");
     reply_list = QStringList();
-    int nb_fields = query.boundValues().size();
+    int nb_fields = query.record().count();
     while (query.next())
         for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
@@ -214,7 +214,7 @@ void DatabaseManager::find_used_themes(int test_id, QStringList& reply_list) {
                         "ORDER BY name ASC").arg(test_id)
                 );
     reply_list = QStringList();
-    int nb_fields = query.boundValues().size();
+    int nb_fields = query.record().count();
     while (query.next())
         for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
@@ -269,10 +269,12 @@ void DatabaseManager::search(int test_id, const QString& expr, QStringList& repl
                          "ON themes.id = words_%1.id_theme "
                          "WHERE word LIKE '%%2%' or "
                          "meaning LIKE '%%2%' or "
-                         "pronunciation LIKE '%%2%'").arg(test_id).arg(expr));
+                         "pronunciation LIKE '%%2%' or "
+                         "name LIKE '%%2%'").arg(test_id).arg(expr));
     reply_list = QStringList();
+    int nb_fields = query.record().count();
     while (query.next())
-        for(int i = 0; i < 10; ++i)
+        for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
 
 }
