@@ -31,9 +31,9 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
 
     QPushButton* back_button = new QPushButton(tr("Back"),this);
-	back_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
+    back_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
 
-   	layout->addWidget(search_bar);
+    layout->addWidget(search_bar);
     layout->addWidget(OK_button);
     layout->addWidget(back_button);
 
@@ -56,7 +56,7 @@ void SearchView::search() {
         // Request to PHP file
         const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?test_id=%1&string=%2").arg(test->get_id()).arg(search_str));
         nam.get(QNetworkRequest(url));
-	} else {
+    } else {
         // Offline
         QString search_str = ampersand_unescape(search_bar->text());
         database_manager->search(test->get_id(), search_str, reply_list);
@@ -75,21 +75,21 @@ void SearchView::read_reply(QNetworkReply* reply)
 void SearchView::read_reply(QString reply_string) {
     int nb_cols(10);
     if (test->is_remote_work())
-		reply_list = QStringList(reply_string.split('\n'));
-	if(result){
-		result->clear(); // Because this QTableWidget contains pointers to items with no parent.
-		delete result;
+        reply_list = QStringList(reply_string.split('\n'));
+    if(result){
+        result->clear(); // Because this QTableWidget contains pointers to items with no parent.
+        delete result;
         result = NULL;
-	}
+    }
     int result_nb_rows(reply_list.count()/nb_cols), result_nb_cols(modifiable?nb_cols:(nb_cols-2));
     result = new QTableWidget(result_nb_rows, result_nb_cols, this);
-	QStringList header_labels;
+    QStringList header_labels;
     if(modifiable)
         header_labels << "" << "";
     header_labels << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Pronunciation") << tr("Score") << tr("Theme");
-	result->setHorizontalHeaderLabels(header_labels);
-	result->verticalHeader()->hide();
-	layout()->addWidget(result);
+    result->setHorizontalHeaderLabels(header_labels);
+    result->verticalHeader()->hide();
+    layout()->addWidget(result);
     for(int i=0, col_ind=0; i<reply_list.count()-1; ++i){ // -1 because the last string is an empty string.
         QLabel* item;
         if(modifiable && (col_ind==0 || col_ind==1)){
@@ -110,72 +110,72 @@ void SearchView::read_reply(QString reply_string) {
             col_ind = (col_ind+1)%result_nb_cols;
         }
         if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
-            item = new QLabel(ampersand_unescape(reply_list.at(i)).replace(QRegExp("[\r\n]+"), "<br />"), this); 
+            item = new QLabel(ampersand_unescape(reply_list.at(i)).replace(QRegExp("[\r\n]+"), "<br />"), this);
             result->setCellWidget(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
         }
-	}
-	result->resizeColumnsToContents();
+    }
+    result->resizeColumnsToContents();
     result->resizeRowsToContents();
-	disconnect(result);
+    disconnect(result);
     connect(result, SIGNAL(cellClicked(int,int)), this, SLOT(action(int, int)));
 }
 
 
 void SearchView::back()
 {
-	delete this;
+    delete this;
 }
 
 void SearchView::action(int row, int col)
 {
     int nb_cols(10);
     if(col == 0){
-		// Remove everything
-		result->disconnect();
-		result->hide();
+        // Remove everything
+        result->disconnect();
+        result->hide();
 
         // Create a new add frame
         QStringList default_values;
         for(int i=row*nb_cols; i<(row+1)*nb_cols; ++i){
             default_values << reply_list.at(i);
-		}
+        }
         update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
-		layout()->addWidget(update_frame);
+        layout()->addWidget(update_frame);
         connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){
         QMessageBox::StandardButton ret = QMessageBox::question(
                     this,
                     tr("Confirm deletion"),
                     tr("Are you sure you want to delete the entry \"<b>%1</b>\"?").arg(reply_list.at(row*nb_cols+1))
-                #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
                     , QMessageBox::Yes | QMessageBox::No
-                #endif
+            #endif
                     );
         if(ret == QMessageBox::Yes){
             result->disconnect();
 
             if (test->is_remote_work()) {
 
-    #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-            QUrl post_data;
-    #else
-            QUrlQuery post_data;
-    #endif
-            post_data.addQueryItem("test_id", QString::number(test->get_id()));
-            post_data.addQueryItem("id", reply_list.at(row*nb_cols));
-            const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
-            QNetworkRequest request(url);
-            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-            nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-            nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+                QUrl post_data;
+#else
+                QUrlQuery post_data;
+#endif
+                post_data.addQueryItem("test_id", QString::number(test->get_id()));
+                post_data.addQueryItem("id", reply_list.at(row*nb_cols));
+                const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
+                QNetworkRequest request(url);
+                request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+                nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
+                nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
-            // Send the request
-    #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-            nam.post(request, post_data.encodedQuery());
-    #else
-            nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
-    #endif
+                // Send the request
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+                nam.post(request, post_data.encodedQuery());
+#else
+                nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+#endif
             } else {
                 int id = reply_list.at(row*nb_cols).toInt();
                 database_manager->delete_word(test->get_id(), id);
@@ -187,6 +187,6 @@ void SearchView::action(int row, int col)
 }
 
 void SearchView::refresh(){
-	result->show();
+    result->show();
     search();
 }

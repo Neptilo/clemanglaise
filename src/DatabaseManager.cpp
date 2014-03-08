@@ -261,7 +261,7 @@ QString DatabaseManager::pop_last_error()
     return err;
 }
 
-void DatabaseManager::search(int test_id, const QString& expr, QStringList& reply_list){
+void DatabaseManager::search(int test_id, const QString& expr, QStringList &reply_list){
     QSqlQuery query(
                 QString ("SELECT words_%1.id, word, meaning, nature, comment, example, id_theme, pronunciation, score, name "
                          "FROM words_%1 "
@@ -276,7 +276,8 @@ void DatabaseManager::search(int test_id, const QString& expr, QStringList& repl
     while (query.next())
         for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
-
+    // to be consistent with the online type of result which returns one empty line
+    reply_list << "";
 }
 
 bool DatabaseManager::set_score(int test_id, int id, const int &correct) {
