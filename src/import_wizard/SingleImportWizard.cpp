@@ -4,13 +4,13 @@
 #include "import_wizard/DuplicatePage.h"
 #include "import_wizard/SingleImportWizard.h"
 
-SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, QStringList &word_entry, QWidget *parent) :
+SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, QWidget *parent) :
     QWizard(parent),
     database_manager(database_manager),
-    word_entry(word_entry),
+    word_data(word_data),
     dst_test_id(0),
     dst_list_page(database_manager, this),
-    duplicate_page(this)
+    duplicate_page(word_data, this)
 {
     setWindowTitle(tr("Import a word"));
     QList<QWizard::WizardButton> button_layout;
@@ -28,7 +28,7 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, QStrin
 void SingleImportWizard::check_duplicates(Test *test)
 {
     dst_test_id = test->get_id();
-    if(database_manager->find_duplicates(test->get_id(), word_entry.at(1), duplicate_page.duplicate_keys, duplicate_page.duplicate_values)){ // word_entry.at(1) is the word.
+    if(database_manager->find_duplicates(test->get_id(), word_data["word"], duplicate_page.duplicate_keys, duplicate_page.duplicate_values)){ // word_entry.at(1) is the word.
         if(duplicate_page.duplicate_values.empty())
             import_word();
         else
@@ -44,15 +44,7 @@ void SingleImportWizard::import_word()
     }
 
     // Define data to send
-    QHash<QString, QString> word_data;
-    // reply_list.at(0) is the ID in the original list. It has no use here.
-    word_data["word"] = word_entry.at(1);
-    word_data["meaning"] = word_entry.at(2);
-    word_data["nature"] = word_entry.at(3);
-    word_data["comment"] = word_entry.at(4);
-    word_data["example"] = word_entry.at(5);
-    word_data["theme"] = word_entry.at(6);
-    word_data["pronunciation"] = word_entry.at(7);
+    // word_data["id"] is the ID in the original list. It has no use here.
     word_data["test_id"] = QString::number(dst_test_id);
 
     if(!database_manager->add_word(word_data)){ // TODO: show error message if it fails

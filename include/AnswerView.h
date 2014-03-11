@@ -14,7 +14,7 @@ class AnswerView: public WordView{
 
 public:
     AnswerView(Test *test, QWidget *parent);
-    AnswerView(const QStringList &reply_list, const QString &player_answer, Test *test, DatabaseManager * database_manager, QWidget *parent);
+    AnswerView(const QHash<QString, QString> &word_data, const QString &player_answer, Test *test, DatabaseManager * database_manager, QWidget *parent);
 
 private:
     DatabaseManager *database_manager;

@@ -41,7 +41,7 @@ private:
     QNetworkAccessManager* nam;
     QNetworkAccessManager nam_themes;
     QuestionView* question_view;
-    QStringList reply_list;
+    QHash<QString, QString> word_data;
 	QStringList reply_list_theme; 
     QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
     QPushButton* search_button;

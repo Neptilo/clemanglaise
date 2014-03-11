@@ -11,11 +11,11 @@ class SingleImportWizard : public QWizard
 {
     Q_OBJECT
 public:
-    explicit SingleImportWizard(DatabaseManager *database_manager, QStringList &word_entry, QWidget *parent = 0);
+    explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, QWidget *parent = 0);
 
 private:
     DatabaseManager *database_manager;
-    QStringList word_entry;
+    QHash<QString, QString> word_data;
     int dst_test_id;
     DstListPage dst_list_page;
     DuplicatePage duplicate_page;

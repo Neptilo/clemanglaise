@@ -20,7 +20,9 @@ public:
     bool create_theme_table();
     bool delete_list(int test_id);
     bool delete_word(int test_id, const int& id);
-    bool find_lowest(int test_id, QStringList &reply_list, int id_theme = -1);
+
+    // find word entry having the lowest score
+    bool find_lowest(int test_id, QHash<QString, QString> &word_data, int id_theme = -1);
     void find_themes(QStringList& reply_list); // should return a bool (false if failed)
     void find_used_themes(int test_id, QStringList& reply_list); // should return a bool (false if failed)
     QList<Test> get_lists();

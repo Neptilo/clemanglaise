@@ -129,17 +129,20 @@ void SearchView::back()
 
 void SearchView::action(int row, int col)
 {
-    int nb_cols(10);
+    QStringList word_keys;
+    // has to be consistent with the actual content of reply_list
+    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
+    int nb_cols = word_keys.size();
+
     if(col == 0){
         // Remove everything
         result->disconnect();
         result->hide();
 
         // Create a new add frame
-        QStringList default_values;
-        for(int i=row*nb_cols; i<(row+1)*nb_cols; ++i){
-            default_values << reply_list.at(i);
-        }
+        QHash<QString, QString> default_values;
+        for(int i = 0; i < nb_cols; ++i)
+            default_values[word_keys.at(i)] = reply_list.at(i+row*nb_cols);
         update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
         layout()->addWidget(update_frame);
         connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
@@ -147,7 +150,7 @@ void SearchView::action(int row, int col)
         QMessageBox::StandardButton ret = QMessageBox::question(
                     this,
                     tr("Confirm deletion"),
-                    tr("Are you sure you want to delete the entry \"<b>%1</b>\"?").arg(reply_list.at(row*nb_cols+1))
+                    tr("Are you sure you want to delete the entry \"<b>%1</b>\"?").arg(reply_list.at(row*nb_cols+word_keys.indexOf("word")))
             #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
                     , QMessageBox::Yes | QMessageBox::No
             #endif

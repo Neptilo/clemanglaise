@@ -10,7 +10,7 @@
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
 
-EditView::EditView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent) :
+EditView::EditView(Test *test, const QString &title, const QHash<QString, QString> &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent) :
     QWidget(parent),
     title(NULL),
     status(NULL),
@@ -40,13 +40,13 @@ EditView::EditView(Test *test, const QString &title, const QStringList &default_
     layout->addWidget(this->title);
 
     // Define explicit variables for the default values of the fields.
-    QString word = ampersand_unescape(default_values.at(1));
-    QString meaning = ampersand_unescape(default_values.at(2));
-    QString nature = default_values.at(3);
-    QString comment = default_values.at(4);
-    QString example = default_values.at(5);
-    QString pronunciation = ampersand_unescape(default_values.at(7));
-	int id_theme = default_values.at(6).toInt();
+    QString word = ampersand_unescape(default_values["word"]);
+    QString meaning = ampersand_unescape(default_values["meaning"]);
+    QString nature = default_values["nature"];
+    QString comment = default_values["comment"];
+    QString example = default_values["example"];
+    QString pronunciation = ampersand_unescape(default_values["pronunciation"]);
+    int id_theme = default_values["id_theme"].toInt();
 
     word_edit = new QLineEdit(word, this);
     layout->addRow(tr("&Word: "), word_edit);
@@ -125,7 +125,7 @@ void EditView::edit_word(){
 
     // Define data to send
     QHash<QString, QString> word_data;
-    word_data["id"] = this->default_values.at(0);
+    word_data["id"] = this->default_values["id"];
     word_data["word"] = ampersand_escape(word_edit->text());
     word_data["nature"] = nature_edit->itemData(nature_edit->currentIndex()).toString();
     word_data["meaning"] = ampersand_escape(meaning_edit->text());
@@ -217,15 +217,13 @@ void EditView::back(){
 
 void EditView::reset(){
 
-	// Very dirty and non-reusable coding, but it works
-	int i = 1;
-	word_edit->setText(default_values.at(i++));
-	meaning_edit->setText(default_values.at(i++));
-	nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values.at(i++))));
-	comment_edit->setText(default_values.at(i++));
-	example_edit->setText(default_values.at(i++));
-	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(i++))));
-	pronunciation_edit->setText(default_values.at(i++));
+    word_edit->setText(default_values["word"]);
+    meaning_edit->setText(default_values["meaning"]);
+    nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values["nature"])));
+    comment_edit->setText(default_values["comment"]);
+    example_edit->setText(default_values["example"]);
+    themes->setCurrentIndex(themes->findData(QVariant(default_values["id_theme"])));
+    pronunciation_edit->setText(default_values["pronunciation"]);
 
 	delete continue_button;
 
@@ -266,7 +264,7 @@ void EditView::read_reply(QString reply_string) {
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list.at(i+1).trimmed(), QVariant(reply_list.at(i).toInt()));
 	}
-	themes->setCurrentIndex(themes->findData(QVariant(default_values.at(6).toInt())));
+    themes->setCurrentIndex(themes->findData(QVariant(default_values["id_theme"].toInt())));
 }
 
 void EditView::disable_edition(bool ok) {

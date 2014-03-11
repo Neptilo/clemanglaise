@@ -328,3 +328,11 @@ QString getImgPath(const QString& img) {
 	path += img;
 	return path;
 }
+
+QStringList trimmed(const QStringList &list)
+{
+    QStringList ret;
+    for(int i = 0; i < list.size(); ++i)
+        ret << list.at(i).trimmed();
+    return ret;
+}

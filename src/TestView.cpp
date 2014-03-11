@@ -27,8 +27,6 @@ TestView::TestView(Test *test, DatabaseManager *database_manager, QString str_ti
     nam(NULL),
     nam_themes(),
     question_view(NULL),
-    reply_list(),
-    reply_list_theme(),
     request(NULL),
     search_button(NULL),
     search_view(NULL),
@@ -107,9 +105,9 @@ void TestView::init()
         nam->get(*request);
     }else{
         int index = themes->currentIndex();
-        if(database_manager->find_lowest(test->get_id(), reply_list, themes->itemData(index).toInt())){
-            QString word = reply_list.at(1);
-            QString theme = reply_list.at(9);
+        if(database_manager->find_lowest(test->get_id(), word_data, themes->itemData(index).toInt())){
+            QString word = word_data["word"];
+            QString theme = word_data["theme"];
             question_view = new QuestionView(test, this);
             layout->addWidget(question_view);
             question_view->ask_question(word, theme);
@@ -155,12 +153,15 @@ void TestView::read_reply(QNetworkReply* reply){
         if(reply_string.isEmpty())
             question_view->show_error(tr("The selected list is currently empty."));
         else{
-            reply_list = reply_string.split('\n');
+            QStringList word_keys;
+            // has to be consistent with the actual query in the PHP file
+            word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "name";
+            QStringList word_values = reply_string.split('\n');
+            for(int i = 0; i < word_keys.size(); ++i)
+                word_data[word_keys.at(i)] = word_values.at(i);
 
             // Everything is ready for the question view to ask the question.
-            QString word = reply_list.at(1);
-            QString theme = reply_list.at(9);
-            question_view->ask_question(word, theme);
+            question_view->ask_question(word_data["word"], word_data["theme"]);
         }
     }
 }
@@ -169,7 +170,7 @@ void TestView::validate_question(){
 
     // Create a new answer frame
     delete answer_view;
-    answer_view = new AnswerView(reply_list, question_view->get_answer(), test, database_manager, this);
+    answer_view = new AnswerView(word_data, question_view->get_answer(), test, database_manager, this);
     layout->addWidget(answer_view);
 }
 
@@ -188,9 +189,9 @@ void TestView::validate_answer() {
 
     // Request for a new question
     if (!test->is_remote_work()) {
-        if(database_manager->find_lowest(test->get_id(), reply_list, themes->itemData(index).toInt())){
-            QString word = reply_list.at(1);
-            QString theme = reply_list.at(9);
+        if(database_manager->find_lowest(test->get_id(), word_data, themes->itemData(index).toInt())){
+            QString word = word_data["word"];
+            QString theme = word_data["theme"];
             question_view->ask_question(word, theme);
         }else{
             QString error(database_manager->pop_last_error());
@@ -254,11 +255,13 @@ void TestView::add_word()
 	remove_widgets();
 
 	// Create a new add frame
-	QStringList default_values_list;
-	//word << meaning << nature << comment << exple << id_theme << pronunciation << score<< theme
-
-	default_values_list << "" << "" << "" << "" << "" << "" << "" << "" << "" << "";
-    add_view = new EditView(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), database_manager, this);
+    QStringList word_keys;
+    // has to be consistent with the actual content of reply_list
+    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
+    QHash<QString, QString> default_values;
+    for(int i = 0; i < word_keys.size(); ++i)
+        default_values[word_keys.at(i)] = "";
+    add_view = new EditView(test, tr("<b>Add a new word</b>"), default_values, tr("Add"), "add", tr("Word successfully added!"), database_manager, this);
     layout->addWidget(add_view);
     connect(add_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
@@ -268,7 +271,7 @@ void TestView::update_word()
 	remove_widgets();
 
 	// Create a new add frame
-    update_view = new EditView(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
+    update_view = new EditView(test, tr("<b>Edit a word entry</b>"), word_data, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
     layout->addWidget(update_view);
     connect(update_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
@@ -342,7 +345,7 @@ void TestView::remove_widgets()
 
 void TestView::import_word()
 {
-    SingleImportWizard import_wizard(database_manager, reply_list, this);
+    SingleImportWizard import_wizard(database_manager, word_data, this);
     if(import_wizard.exec()){
         // Show confirmation
         status.setText(tr("Import succeeded!"));

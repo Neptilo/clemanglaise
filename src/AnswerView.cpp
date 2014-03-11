@@ -13,17 +13,17 @@ AnswerView::AnswerView(Test *test, QWidget *parent):
     WordView(test, parent)
 {}
 
-AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answer, Test *test, DatabaseManager *database_manager, QWidget *parent):
+AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &player_answer, Test *test, DatabaseManager *database_manager, QWidget *parent):
     WordView(test, parent),
 	database_manager(database_manager)
 {
     // Define explicit variables for the content of the label
-    QString word = reply_list.at(1);
-    QString meaning = reply_list.at(2);
-    QString nature = reply_list.at(3);
-    QString comment = reply_list.at(4);
-    QString example = reply_list.at(5);
-    QString pronunciation = reply_list.at(7);
+    QString word = word_data["word"];
+    QString meaning = word_data["meaning"];
+    QString nature = word_data["nature"];
+    QString comment = word_data["comment"];
+    QString example = word_data["example"];
+    QString pronunciation = word_data["pronunciation"];
 
     // Check answer
     QString message;
@@ -57,7 +57,7 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
     // Update score
     if (!test->is_remote_work()) {
 		//Offline
-        database_manager->set_score(test->get_id(), reply_list.at(0).toInt(), correct);
+        database_manager->set_score(test->get_id(), word_data["id"].toInt(), correct);
 	} else {
 		const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
 		QNetworkRequest request(url);
@@ -66,13 +66,13 @@ AnswerView::AnswerView(const QStringList &reply_list, const QString &player_answ
 		
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;
-		post_data.addQueryItem("id", reply_list.at(0));
+        post_data.addQueryItem("id", reply_list["id"]);
         post_data.addQueryItem("test_id", QString::number(test->get_id()));
         post_data.addQueryItem("correct", QString::number(correct));
 		nam->post(request, post_data.encodedQuery());
 #else
 		QUrlQuery post_data;
-		post_data.addQueryItem("id", reply_list.at(0));
+        post_data.addQueryItem("id", word_data["id"]);
         post_data.addQueryItem("test_id", QString::number(test->get_id()));
 		post_data.addQueryItem("correct", QString::number(correct));
         nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());

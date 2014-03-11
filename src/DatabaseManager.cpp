@@ -86,6 +86,7 @@ bool DatabaseManager::add_theme(const QString &theme) {
 
 bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 {
+    qDebug() << word_data << " is the word data when adding the word";
     QSqlQuery query;
     QString test_id(word_data["test_id"]);
     bool success = query.prepare(QString("INSERT INTO words_%1(word, meaning, nature, pronunciation, comment, example, id_theme) "
@@ -170,24 +171,29 @@ bool DatabaseManager::delete_word(int test_id, const int& id) {
     return success;
 }
 
-bool DatabaseManager::find_lowest(int test_id, QStringList &reply_list, int id_theme)
+bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_data, int id_theme)
 {
     // id_theme = 0 if no theme was selected
     QString cond = (id_theme > 0)? QString("id_theme = %1").arg(id_theme): "1";
 
-    QSqlQuery query(QString("SELECT words_%1.ID, word, meaning, nature, comment, example, id_theme, pronunciation, score, name "
+    QStringList reply_keys;
+    reply_keys << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "name";
+
+    QSqlQuery query(QString("SELECT words_%1.ID, %3 "
                             "FROM words_%1 "
                             "LEFT OUTER JOIN themes "
                             "ON themes.ID = words_%1.id_theme "
                             "WHERE score=(SELECT MIN(score) FROM words_%1 WHERE %2) AND %2 "
-                            "ORDER BY RANDOM() LIMIT 1"
-                            ).arg(test_id).arg(cond));
+                            "ORDER BY RANDOM() LIMIT 1")
+                    .arg(test_id)
+                    .arg(cond)
+                    .arg(reply_keys.join(", ")));
+    reply_keys.prepend("id"); // to account for the ID added in the SELECT query
     if (query.next())
     {
-        reply_list = QStringList();
-        for(int i = 0; i < 10; ++i){
-            reply_list << query.value(i).toString();
-        }
+        word_data.clear();
+        for(int i = 0; i < reply_keys.size(); ++i)
+            word_data.insert(reply_keys.at(i), query.value(i).toString());
         return true;
     }else{
         last_error = query.lastError().text();
@@ -344,7 +350,7 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
     reply_values.clear();
     while (query.next()){
         QStringList entry;
-        for(int i = 0; i < 9; ++i)
+        for(int i = 0; i < reply_keys.size(); ++i)
             entry << query.value(i).toString();
 
         // get the word list in this entry
