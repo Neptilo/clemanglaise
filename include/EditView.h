@@ -41,7 +41,7 @@ private:
     QFormLayout* layout;
     int id_theme;
     QString php_filename;
-    const QHash<QString, QString> &default_values;
+    const QHash<QString, QString> default_values;
     QStringList reply_list;
     QString success_message;
     DatabaseManager *database_manager;

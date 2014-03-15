@@ -101,7 +101,7 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
 	cancel_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
 
 	connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
-	layout->addWidget(cancel_button);
+    layout->addWidget(cancel_button);
 }
 
 EditView::~EditView(){}
@@ -125,7 +125,7 @@ void EditView::edit_word(){
 
     // Define data to send
     QHash<QString, QString> word_data;
-    word_data["id"] = this->default_values["id"];
+    word_data["id"] = default_values["id"];
     word_data["word"] = ampersand_escape(word_edit->text());
     word_data["nature"] = nature_edit->itemData(nature_edit->currentIndex()).toString();
     word_data["meaning"] = ampersand_escape(meaning_edit->text());

@@ -166,6 +166,19 @@ void TestView::read_reply(QNetworkReply* reply){
     }
 }
 
+void TestView::read_delete_list_reply(QNetworkReply *reply)
+{
+    QString reply_string(reply->readAll());
+    reply->deleteLater();
+    if(reply_string.isEmpty())
+        delete this;
+    else{
+        status.setText(reply->readAll());
+        layout->addWidget(&status);
+        status.show();
+    }
+}
+
 void TestView::validate_question(){
 
     // Create a new answer frame
@@ -224,16 +237,41 @@ void TestView::delete_list()
             #endif
                 );
     if(ret == QMessageBox::Yes){
-        if (database_manager->delete_list(test->get_id()))
-            delete this;
-        else {
-            QString error(database_manager->pop_last_error());
-            if(error == "")
-                status.setText(tr("Deletion failed."));
-            else
-                status.setText(tr("<b>SQLite error: </b>")+error);
-            layout->addWidget(&status);
-            status.show();
+        if(test->is_remote_work()){
+            // request to PHP file
+            nam->disconnect();
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+            QUrl post_data;
+#else
+            QUrlQuery post_data;
+#endif
+            post_data.addQueryItem("test_id", QString::number(test->get_id()));
+            const QUrl url("http://neptilo.com/php/clemanglaise/delete_list.php");
+            QNetworkRequest request(url);
+            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+            nam->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
+            nam->cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+
+            // Send the request
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+            nam->post(request, post_data.encodedQuery());
+#else
+            connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_delete_list_reply(QNetworkReply*)));
+            nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+#endif
+        }else{
+            // offline
+            if (database_manager->delete_list(test->get_id()))
+                delete this;
+            else {
+                QString error(database_manager->pop_last_error());
+                if(error == "")
+                    status.setText(tr("Deletion failed."));
+                else
+                    status.setText(tr("<b>SQLite error: </b>")+error);
+                layout->addWidget(&status);
+                status.show();
+            }
         }
     }
 }
