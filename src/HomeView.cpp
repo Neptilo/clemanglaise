@@ -68,6 +68,9 @@ void HomeView::init()
         const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/get_lists.php");
         QNetworkRequest request(url);
         nam.get(request);
+
+        // add list buttons
+        add_list_button.hide(); // and maybe show it again when reading NAM's reply
     }else{
         // test buttons
         QList<Test> offline_tests(database_manager.get_lists());

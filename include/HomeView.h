@@ -19,7 +19,7 @@ class HomeView : public QWidget{
 
 private:
     AddListView *add_list_view;
-    QPushButton add_list_button;
+    QPushButton add_list_button; // not a pointer because it will always be here for local tests
     bool admin;
     DatabaseManager database_manager;
     QLayout *layout;
