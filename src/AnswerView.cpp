@@ -66,7 +66,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 		
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;
-        post_data.addQueryItem("id", reply_list["id"]);
+        post_data.addQueryItem("id", word_data["id"]);
         post_data.addQueryItem("test_id", QString::number(test->get_id()));
         post_data.addQueryItem("correct", QString::number(correct));
 		nam->post(request, post_data.encodedQuery());
