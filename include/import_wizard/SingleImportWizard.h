@@ -14,6 +14,11 @@ public:
     explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, QWidget *parent = 0);
 
 private:
+    QString merge_string(
+            const QString &left_string,
+            const QString &right_string,
+            const QRegExp &split_sep,
+            const QString &join_sep);
     DatabaseManager *database_manager;
     QHash<QString, QString> word_data;
     int dst_test_id;
@@ -24,6 +29,7 @@ signals:
 
 public slots:
     void import_word();
+    void merge_word(const QHash<QString, QString> &word_to_merge_data);
 
 private slots:
     void check_duplicates(Test *test);

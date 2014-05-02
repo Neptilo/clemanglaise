@@ -22,10 +22,14 @@ private:
     QLabel info;
     QTableWidget duplicate_table;
     QPushButton import_button;
+    QPushButton merge_button;
 
 signals:
+    void merge_word(const QHash<QString, QString> &);
 
 public slots:
+private slots:
+    void select_word_to_merge();
 };
 
 #endif // DUPLICATEPAGE_H

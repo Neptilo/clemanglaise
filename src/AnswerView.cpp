@@ -66,7 +66,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 		
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;
-        post_data.addQueryItem("id", reply_list["id"]);
+        post_data.addQueryItem("id", word_data["id"]);
         post_data.addQueryItem("test_id", QString::number(test->get_id()));
         post_data.addQueryItem("correct", QString::number(correct));
 		nam->post(request, post_data.encodedQuery());
@@ -91,8 +91,8 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     // Right part
 
     // Add labels 
-	QLabel*  display_icon_answer = new QLabel(this);
-	QLabel*  display_answer = new QLabel(this);
+    QLabel* display_icon_answer = new QLabel(this);
+    QLabel* display_answer = new QLabel(this);
 	if (!correct) {
 		display_icon_answer->setPixmap(QIcon::fromTheme("face-crying", QIcon(getImgPath("face-crying.png"))).pixmap(50));
 		display_answer->setText("<b>" + message + "</b>");

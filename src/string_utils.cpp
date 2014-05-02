@@ -222,6 +222,7 @@ QHash<QString, QString> mapping()
 	hash.insert("`", QString::fromUtf8("\u02BC"));
 	hash.insert("'", QString::fromUtf8("\u02C8"));
 	hash.insert(",", QString::fromUtf8("\u02CC"));
+    hash.insert("~", QString::fromUtf8("\u0303"));
 	hash.insert("b<trl>", QString::fromUtf8("\u0299"));
 	hash.insert("r<trl>", QString::fromUtf8("\u0280"));
 	hash.insert("<h>", QString::fromUtf8("\u02B0"));
@@ -290,7 +291,7 @@ QString X2IPA(const QString &string)
 QString kirshenbaum2IPA(const QString &string){
 
 	// Capture phonemes
-	QRegExp rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^]?))(:?)");
+    QRegExp rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^~]?))(:?)");
 	QString res="";
 	int pos = 0;
 	// Match rx in string from pos and return final position or -1 if match failed
@@ -312,7 +313,7 @@ QString kirshenbaum2IPA(const QString &string){
 }
 
 bool isKirshenbaum(const QString& string){
-	QRegExp rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^]?)+");
+    QRegExp rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^~]?)+");
 	return rx.exactMatch(string);
 }
 

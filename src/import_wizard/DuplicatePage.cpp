@@ -7,20 +7,29 @@
 
 #include "string_utils.h"
 
+#include <import_wizard/SingleImportWizard.h>
+
 DuplicatePage::DuplicatePage(const QHash<QString, QString> &word_data, QWidget *parent) :
     QWizardPage(parent),
     word_data(word_data),
     layout(this),
     info(this),
     duplicate_table(this),
-    import_button(tr("Import anyway"), this)
+    import_button(tr("Import anyway"), this),
+    merge_button(tr("Merge"), this)
 {
     layout.addWidget(&info);
 
     layout.addWidget(&duplicate_table);
 
+    QHBoxLayout *button_layout = new QHBoxLayout(this);
+    layout.addLayout(button_layout);
+
     connect(&import_button, SIGNAL(clicked()), this->parent(), SLOT(import_word()));
-    layout.addWidget(&import_button);
+    button_layout->addWidget(&import_button);
+
+    connect(&merge_button, SIGNAL(clicked()), this, SLOT(select_word_to_merge()));
+    button_layout->addWidget(&merge_button);
 }
 
 void DuplicatePage::initializePage()
@@ -82,4 +91,18 @@ void DuplicatePage::initializePage()
             radio->setChecked(true);
         }
     }
+}
+
+void DuplicatePage::select_word_to_merge(){
+    QHash<QString, QString> word_to_merge_data;
+    for(int i = 0; i < duplicate_values.size(); ++i){
+        QRadioButton *radio = (QRadioButton *) duplicate_table.cellWidget(i, 0);
+        if(radio->isChecked()){
+            for(int j = 0; j < duplicate_keys.size(); ++j){
+                word_to_merge_data[duplicate_keys.at(j)] = duplicate_values.at(i).at(j);
+            }
+            break; // We found the checked radio button.
+        }
+    }
+    emit merge_word(word_to_merge_data);
 }

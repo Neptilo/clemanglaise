@@ -308,26 +308,27 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
     QString test_id(word_data["test_id"]);
     QSqlQuery query;
 
-    bool success = query.prepare(QString("UPDATE words_%1 "
-                                         "SET word=:word, "
+    // TODO: Make it better with a QHash
+    bool success = query.prepare(QString("UPDATE words_%1 SET "
+                                         "word=:word, "
                                          "meaning=:meaning, "
                                          "nature=:nature, "
                                          "comment=:comment, "
                                          "example=:example, "
-                                         "id_theme=:theme, "
                                          "pronunciation=:pronunciation "
                                          "WHERE id=:id").arg(test_id));
-    for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
-        if(i.key() != "test_id") {
+    QHash<QString, QString>::const_iterator i;
+    for(i = word_data.begin(); i != word_data.end(); ++i) {
+        if(i.key() != "test_id" && i.key() != "name" && i.key() != "theme" && i.key() != "score" && i.key() != "id_theme") {
             query.bindValue(":"+i.key(), i.value());
         }
     }
+
     success &= query.exec();
     if(!success)
         last_error = query.lastError().text();
 
     return success;
-
 }
 
 // Two sets of words are considered as possible duplicates of one another if
