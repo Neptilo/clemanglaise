@@ -3,11 +3,11 @@
 
 #include <QWizard>
 
-#include "DatabaseManager.h"
 #include "import_wizard/DstListPage.h"
 #include "import_wizard/DuplicatePage.h"
+#include "import_wizard/Importer.h"
 
-class SingleImportWizard : public QWizard
+class SingleImportWizard : public QWizard, public Importer
 {
     Q_OBJECT
 public:
@@ -19,16 +19,13 @@ private:
             const QString &right_string,
             const QRegExp &split_sep,
             const QString &join_sep);
-    DatabaseManager *database_manager;
     QHash<QString, QString> word_data;
-    int dst_test_id;
     DstListPage dst_list_page;
     DuplicatePage duplicate_page;
 
 signals:
 
 public slots:
-    void import_word();
     void merge_word(const QHash<QString, QString> &word_to_merge_data);
 
 private slots:

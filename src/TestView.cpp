@@ -7,6 +7,7 @@
 
 #include "import_wizard/DstListPage.h"
 #include "import_wizard/DuplicatePage.h"
+#include "import_wizard/ListImportWizard.h"
 #include "import_wizard/SingleImportWizard.h"
 #include "NetworkReplyReader.h"
 #include "string_utils.h"
@@ -29,6 +30,7 @@ TestView::TestView(Test *test, DatabaseManager *database_manager, QString str_ti
     question_view(NULL),
     request(NULL),
     search_button(NULL),
+    import_button(NULL),
     search_view(NULL),
     status(this),
     test(test),
@@ -85,6 +87,13 @@ TestView::TestView(Test *test, DatabaseManager *database_manager, QString str_ti
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);
 
+    if(test->is_remote_work()){
+        import_button = new QPushButton(tr("&Import this vocabulary list"));
+        import_button->setIcon(QIcon::fromTheme("document-save", QIcon(getImgPath("document-save.png"))));
+        connect(import_button, SIGNAL(clicked()), this, SLOT(import_list()));
+        layout->addWidget(import_button);
+    }
+
     init();
     connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
@@ -134,6 +143,8 @@ void TestView::init()
     themes->show();
     back_button->show();
     search_button->show();
+    if(test->is_remote_work())
+        import_button->show();
 }
 
 void TestView::update_request() {
@@ -377,6 +388,8 @@ void TestView::remove_widgets()
 	themes->hide();
 	back_button->hide();
 	search_button->hide();
+    if(test->is_remote_work())
+        import_button->hide();
     status.hide();
 }
 
@@ -384,6 +397,17 @@ void TestView::remove_widgets()
 void TestView::import_word()
 {
     SingleImportWizard import_wizard(database_manager, word_data, this);
+    if(import_wizard.exec()){
+        // Show confirmation
+        status.setText(tr("Import succeeded!"));
+        layout->addWidget(&status);
+        status.show();
+    }
+}
+
+void TestView::import_list()
+{
+    ListImportWizard import_wizard(database_manager, test, this);
     if(import_wizard.exec()){
         // Show confirmation
         status.setText(tr("Import succeeded!"));

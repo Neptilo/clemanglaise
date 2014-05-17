@@ -133,14 +133,13 @@ void EditView::edit_word(){
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
-    word_data["test_id"] = QString::number(test->get_id());
 
     if (!test->is_remote_work()) {
 		bool success;
 
         // Offline
         if(word_data["id"].toInt() == 0) // Add word
-            success = database_manager->add_word(word_data);
+            success = database_manager->add_word(test->get_id(), word_data);
         else // Update word
             success = database_manager->update_word(word_data);
 

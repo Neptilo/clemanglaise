@@ -45,6 +45,7 @@ private:
 	QStringList reply_list_theme; 
     QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
     QPushButton* search_button;
+    QPushButton* import_button;
     SearchView* search_view;
     QLabel status;
     Test *test;
@@ -74,6 +75,7 @@ public slots:
     void update_question(int);
     void delete_list();
     void import_word();
+    void import_list();
 };
 
 #endif // TESTVIEW_H

@@ -14,7 +14,7 @@ class DatabaseManager : public QObject
 public:
     explicit DatabaseManager(QObject *parent = 0);
     bool add_list(const QString &name, const QString &src, const QString &dst);
-    bool add_word(const QHash<QString, QString> &word_data);
+    bool add_word(int test_id, const QHash<QString, QString> &word_data);
     bool add_theme(const QString &theme);
     bool create_list_table();
     bool create_theme_table();

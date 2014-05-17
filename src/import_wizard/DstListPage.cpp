@@ -16,9 +16,18 @@ DstListPage::DstListPage(DatabaseManager *database_manager, QWidget *parent) :
     // language buttons
     connect(&test_buttons, SIGNAL(clicked(Test*)), this, SLOT(forward_click(Test*)));
     layout.addWidget(&test_buttons);
+
+    // to make the QWizard call isComplete()
+    emit completeChanged();
 }
 
 void DstListPage::forward_click(Test *test)
 {
     emit clicked(test);
+}
+
+// to prevent QWizard from showing "Next" button
+bool DstListPage::isComplete()
+{
+    return false;
 }

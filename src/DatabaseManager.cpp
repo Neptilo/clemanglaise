@@ -84,10 +84,9 @@ bool DatabaseManager::add_theme(const QString &theme) {
     return success;
 }
 
-bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
+bool DatabaseManager::add_word(int test_id, const QHash<QString, QString> &word_data)
 {
     QSqlQuery query;
-    QString test_id(word_data["test_id"]);
     bool success = query.prepare(QString("INSERT INTO words_%1(word, meaning, nature, pronunciation, comment, example, id_theme) "
                                          "VALUES(:word, :meaning, :nature, :pronunciation, :comment, :example, :theme)").arg(test_id));
 

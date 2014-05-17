@@ -28,7 +28,11 @@ HEADERS += \
     include/ClickableLabel.h \
     include/import_wizard/DstListPage.h \
     include/import_wizard/DuplicatePage.h \
-    include/import_wizard/SingleImportWizard.h
+    include/import_wizard/SingleImportWizard.h \
+    include/import_wizard/ListImportWizard.h \
+    include/import_wizard/BehaviorPage.h \
+    include/import_wizard/ProgressPage.h \
+    include/import_wizard/Importer.h
 SOURCES += \
     src/AnswerView.cpp \
     src/EditView.cpp \
@@ -51,7 +55,11 @@ SOURCES += \
     src/ClickableLabel.cpp \
     src/import_wizard/DstListPage.cpp \
     src/import_wizard/DuplicatePage.cpp \
-    src/import_wizard/SingleImportWizard.cpp
+    src/import_wizard/SingleImportWizard.cpp \
+    src/import_wizard/ListImportWizard.cpp \
+    src/import_wizard/BehaviorPage.cpp \
+    src/import_wizard/ProgressPage.cpp \
+    src/import_wizard/Importer.cpp
 
 RESOURCES += clemanglaise.qrc
 

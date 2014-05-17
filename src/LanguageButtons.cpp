@@ -25,9 +25,9 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, QWidget *parent)
             button->setToolTip(tr("from ") + test->get_src() + tr(" to ") + test->get_dst());
             signal_mapper.setMapping(button, test);
             connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
-            connect(&signal_mapper, SIGNAL(mapped(QObject *)), this, SLOT(forward_click(QObject *)));
             layout->addWidget(button, i/w, i%w); // so height and width of layout are approximately the same
         }
+        connect(&signal_mapper, SIGNAL(mapped(QObject *)), this, SLOT(forward_click(QObject *)));
     }
 }
 
@@ -35,6 +35,7 @@ void LanguageButtons::disconnect_all(){
     signal_mapper.disconnect();
 }
 
+// necessary slot to cast object type to Test
 void LanguageButtons::forward_click(QObject *obj)
 {
     emit clicked((Test *) obj);
