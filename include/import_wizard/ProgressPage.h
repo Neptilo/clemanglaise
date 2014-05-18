@@ -13,6 +13,8 @@ public:
     explicit ProgressPage(QWidget *parent = 0);
     void set_status(QString text);
     void initializePage();
+    void set_max_progress(int maximum);
+    void increase_progress(int value = 1);
 private:
     QVBoxLayout layout;
     QLabel status;
@@ -21,8 +23,7 @@ private:
 signals:
     void import_list();
 
-public slots:
-
+public slots:    
 };
 
 #endif // PROGRESSPAGE_H

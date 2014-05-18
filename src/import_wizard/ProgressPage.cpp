@@ -9,8 +9,8 @@ ProgressPage::ProgressPage(QWidget *parent) :
     progress_bar(this)
 {
     layout.addWidget(&status);
+    progress_bar.setValue(0);
     layout.addWidget(&progress_bar);
-    progress_bar.hide(); // TODO: show it and update its content
 }
 
 void ProgressPage::set_status(QString text)
@@ -23,4 +23,14 @@ void ProgressPage::initializePage()
     // start import
     status.setText(tr("Sending request to server"));
     emit import_list();
+}
+
+void ProgressPage::set_max_progress(int maximum)
+{
+    progress_bar.setMaximum(maximum);
+}
+
+void ProgressPage::increase_progress(int value)
+{
+    progress_bar.setValue(progress_bar.value()+value);
 }

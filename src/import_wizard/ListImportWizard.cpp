@@ -69,17 +69,18 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
     word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
     QStringList reply_list = reply_string.split('\n');
     int nb_words = reply_list.size()/word_keys.size();
+    progress_page.set_max_progress(nb_words);
     for(int i = 0; i < nb_words; ++i){
         QHash<QString, QString> word_data;
         for(int j = 0; j < word_keys.size(); ++j){
             word_data[word_keys.at(j)] = reply_list.at(i*word_keys.size()+j);
         }
-        qDebug() << "should show status";
         progress_page.set_status(tr("Importing \"<b>%1</b>\"").arg(word_data["word"]));
         if(import_word(word_data))
             ++nb_inserted;
         else
             ++nb_failed;
+        progress_page.increase_progress();
     }
 
     // print recap of import
