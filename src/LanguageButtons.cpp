@@ -43,6 +43,5 @@ void LanguageButtons::disconnect_all(){
 // necessary slot to cast object type to Test
 void LanguageButtons::forward_click(QObject *obj)
 {
-    qDebug() << "forward clicked";
     emit clicked((Test *) obj);
 }

@@ -22,8 +22,8 @@ DuplicatePage::DuplicatePage(const QHash<QString, QString> &word_data, QWidget *
 
     layout.addWidget(&duplicate_table);
 
-    QHBoxLayout *button_layout = new QHBoxLayout(this);
-    layout.addLayout(button_layout);
+    QHBoxLayout *button_layout = new QHBoxLayout();
+    layout.addLayout(button_layout); // layout is now button_layout's parent.
 
     connect(&import_button, SIGNAL(clicked()), this, SIGNAL(import_word()));
     button_layout->addWidget(&import_button);

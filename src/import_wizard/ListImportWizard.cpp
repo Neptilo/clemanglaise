@@ -19,7 +19,6 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     nb_failed(0)
 {
     setWindowTitle(tr("Import a vocabulary list"));
-    button(QWizard::NextButton)->setEnabled(false);
 
     // page to choose destination list of the import
     connect(&dst_list_page, SIGNAL(chosen(Test *)), this, SLOT(save_and_next(Test *)));
@@ -36,7 +35,6 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 }
 
-//
 void ListImportWizard::showEvent(QShowEvent *)
 {
      button(QWizard::NextButton)->setEnabled(false);

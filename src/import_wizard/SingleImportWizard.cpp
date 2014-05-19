@@ -26,6 +26,11 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
     addPage(&duplicate_page);
 }
 
+void SingleImportWizard::showEvent(QShowEvent *)
+{
+     button(QWizard::NextButton)->setEnabled(false);
+}
+
 void SingleImportWizard::check_duplicates(Test *test)
 {
     qDebug() << "checking dups";

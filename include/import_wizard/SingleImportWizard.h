@@ -11,8 +11,8 @@ class SingleImportWizard : public QWizard, public Importer
 {
     Q_OBJECT
 public:
-    explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, QWidget *parent = 0);
-
+    explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, QWidget *parent = 0);    
+    void showEvent(QShowEvent *);
 private:
     QString merge_string(
             const QString &left_string,
