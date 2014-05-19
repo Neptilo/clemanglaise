@@ -8,6 +8,7 @@
 #include <QWidget>
 
 #include "DatabaseManager.h"
+#include "Test.h"
 
 class AddListView : public QWidget
 {
@@ -27,7 +28,9 @@ private:
     QLabel title;
 
 signals:
-    void add_list_success();
+    void success();
+    void created(Test *test);
+    void canceled();
 
 public slots:
     void add_offline_list();

@@ -1,5 +1,6 @@
 #include <QDebug>
 
+#include "AddListView.h"
 #include "import_wizard/DstListPage.h"
 #include "import_wizard/DuplicatePage.h"
 #include "import_wizard/Importer.h"
@@ -16,27 +17,40 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
     setWindowTitle(tr("Import a word"));
 
     // page to choose destination list of the import
-    connect(&dst_list_page, SIGNAL(clicked(Test *)), this, SLOT(check_duplicates(Test *)));
+    connect(&dst_list_page, SIGNAL(chosen(Test *)), this, SLOT(check_duplicates(Test *)));
     addPage(&dst_list_page);
 
     // page to show the possible duplicates
+    connect(&duplicate_page, SIGNAL(import_word()), this, SLOT(import_word()));
     connect(&duplicate_page, SIGNAL(merge_word(QHash<QString,QString>)), this, SLOT(merge_word(QHash<QString,QString>)));
     addPage(&duplicate_page);
 }
 
 void SingleImportWizard::check_duplicates(Test *test)
 {
-    dst_test_id = test->get_id();
-    if(database_manager->find_duplicates(test->get_id(), word_data["word"], duplicate_page.duplicate_keys, duplicate_page.duplicate_values)){ // word_entry.at(1) is the word.
-        if(duplicate_page.duplicate_values.empty())
-            if(import_word(word_data)){
-                accept();
-            }else{
-                reject();
-            }
-        else
-            next();
-    } // TODO: else show error
+    qDebug() << "checking dups";
+    if(test){
+        dst_test_id = test->get_id();
+        if(database_manager->find_duplicates(test->get_id(), word_data["word"], duplicate_page.duplicate_keys, duplicate_page.duplicate_values)){ // word_entry.at(1) is the word.
+            if(duplicate_page.duplicate_values.empty())
+                import_word();
+            else
+                next();
+        } // TODO: else show error
+    }else{
+        // create vocabulary list
+        qDebug() << "adding list view";
+        dst_list_page.create_add_list_view();
+    }
+}
+
+void SingleImportWizard::import_word()
+{
+    if(import(word_data)){
+        accept();
+    }else{
+        reject();
+    }
 }
 
 void SingleImportWizard::merge_word(const QHash<QString, QString> &word_to_merge_data)

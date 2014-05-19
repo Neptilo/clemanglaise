@@ -10,7 +10,7 @@ Importer::Importer(DatabaseManager *database_manager) :
 {
 }
 
-bool Importer::import_word(const QHash<QString, QString> &word_data)
+bool Importer::import(const QHash<QString, QString> &word_data)
 {
     if(!dst_test_id){ // TODO: show error message
         qDebug() << QObject::tr("Destination test ID has not been defined.");

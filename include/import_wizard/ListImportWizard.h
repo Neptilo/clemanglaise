@@ -4,6 +4,7 @@
 #include <QNetworkAccessManager>
 #include <QWizard>
 
+#include "AddListView.h"
 #include "DatabaseManager.h"
 #include "import_wizard/BehaviorPage.h"
 #include "import_wizard/Importer.h"

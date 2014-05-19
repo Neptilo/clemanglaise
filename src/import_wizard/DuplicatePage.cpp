@@ -25,7 +25,7 @@ DuplicatePage::DuplicatePage(const QHash<QString, QString> &word_data, QWidget *
     QHBoxLayout *button_layout = new QHBoxLayout(this);
     layout.addLayout(button_layout);
 
-    connect(&import_button, SIGNAL(clicked()), this->parent(), SLOT(import_word()));
+    connect(&import_button, SIGNAL(clicked()), this, SIGNAL(import_word()));
     button_layout->addWidget(&import_button);
 
     connect(&merge_button, SIGNAL(clicked()), this, SLOT(select_word_to_merge()));

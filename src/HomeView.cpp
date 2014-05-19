@@ -44,6 +44,8 @@ void HomeView::add_list()
     add_list_button.disconnect();
     add_list_button.hide();
     add_list_view = new AddListView(&database_manager, remote, this); // database_manager is useless for online tests
+    connect(add_list_view, SIGNAL(success()), this, SLOT(init()));
+    connect(add_list_view, SIGNAL(canceled()), this, SLOT(remove_add_list_view()));
     layout->addWidget(add_list_view);
 }
 
@@ -75,12 +77,15 @@ void HomeView::init()
         // test buttons
         QList<Test> offline_tests(database_manager.get_lists());
         delete test_buttons;
-        test_buttons = new LanguageButtons(offline_tests, this);
+        test_buttons = new LanguageButtons(offline_tests, false, this);
         connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
         layout->addWidget(test_buttons);
 
         // info label
-        info_label.setText(tr("<b>Offline tests:</b>"));
+        if(offline_tests.isEmpty())
+            info_label.setText(tr("You have not created any vocabulary list yet."));
+        else
+            info_label.setText(tr("<b>Offline tests:</b>"));
 
         // add list buttons
         add_list_button.setText(tr("Create a local vocabulary list"));
@@ -102,12 +107,15 @@ void HomeView::read_reply_lists(QNetworkReply *reply)
 
         // test buttons
         delete test_buttons;
-        test_buttons = new LanguageButtons(online_tests, this);
+        test_buttons = new LanguageButtons(online_tests, false, this);
         connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
         layout->addWidget(test_buttons);
 
         // info label
-        info_label.setText(tr("<b>Tests on remote server:</b>"));
+        if(online_tests.isEmpty())
+            info_label.setText(tr("There is no vocabulary list on the server at the moment."));
+        else
+            info_label.setText(tr("<b>Tests on remote server:</b>"));
 
         // add list button
         if(admin){

@@ -7,7 +7,7 @@ class Importer
 {
 public:
     explicit Importer(DatabaseManager *database_manager);
-    bool import_word(const QHash<QString, QString> &word_data);
+    bool import(const QHash<QString, QString> &word_data);
 
 protected:
     DatabaseManager *database_manager;

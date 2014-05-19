@@ -22,7 +22,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     button(QWizard::NextButton)->setEnabled(false);
 
     // page to choose destination list of the import
-    connect(&dst_list_page, SIGNAL(clicked(Test *)), this, SLOT(save_and_next(Test *)));
+    connect(&dst_list_page, SIGNAL(chosen(Test *)), this, SLOT(save_and_next(Test *)));
     addPage(&dst_list_page);
 
     // page to choose import behavior
@@ -44,8 +44,13 @@ void ListImportWizard::showEvent(QShowEvent *)
 
 void ListImportWizard::save_and_next(Test *test)
 {
-    dst_test_id = test->get_id();
-    next();
+    if(test){
+        dst_test_id = test->get_id();
+        next();
+    }else{
+        // create vocabulary list
+        dst_list_page.create_add_list_view();
+    }
 }
 
 void ListImportWizard::choose_behavior(int behavior)
@@ -76,7 +81,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
             word_data[word_keys.at(j)] = reply_list.at(i*word_keys.size()+j);
         }
         progress_page.set_status(tr("Importing \"<b>%1</b>\"").arg(word_data["word"]));
-        if(import_word(word_data))
+        if(import(word_data))
             ++nb_inserted;
         else
             ++nb_failed;

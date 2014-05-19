@@ -33,17 +33,18 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
         connect(&create_button, SIGNAL(clicked()), this, SLOT(add_online_list()));
     else
         connect(&create_button, SIGNAL(clicked()), this, SLOT(add_offline_list()));
-    connect(this, SIGNAL(add_list_success()), parent, SLOT(init()));
-    connect(&cancel_button, SIGNAL(clicked()), parent, SLOT(remove_add_list_view()));
+    connect(&cancel_button, SIGNAL(clicked()), this, SIGNAL(canceled()));
 }
 
 void AddListView::add_offline_list()
 {
-    database_manager->add_list(name_edit.text(), src_edit.text(), dst_edit.text());
+    int test_id = 0;
+    database_manager->add_list(name_edit.text(), src_edit.text(), dst_edit.text(), test_id);
     QString error(database_manager->pop_last_error());
-    if(error == "")
-        emit add_list_success();
-    else{
+    if(error == ""){
+        Test *test = new Test(test_id, name_edit.text(), src_edit.text(), dst_edit.text(), false, this);
+        emit created(test);
+    }else{
         status.setText(tr("<b>SQLite error: </b>") + error);
         status.show();
     }
@@ -77,7 +78,7 @@ void AddListView::show_confirmation(QNetworkReply *reply)
 {
     const QString error(reply->readAll());
     if(error == "")
-        emit add_list_success();
+        emit success();
     else{
         status.setText(error);
         status.show();

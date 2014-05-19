@@ -18,7 +18,8 @@ DatabaseManager::DatabaseManager(QObject *parent) :
     create_theme_table();
 }
 
-bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst) {
+// test_id is an output: the inserted ID.
+bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst, int &test_id) {
     QSqlQuery query;
     query.exec("BEGIN");
     bool success = query.prepare("INSERT INTO lists "
@@ -35,7 +36,6 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
     }
 
     // Get last inserted ID
-    int test_id;
     query.exec("SELECT LAST_INSERT_ROWID()");
     if (query.next())
         test_id = query.value(0).toInt();
@@ -68,6 +68,11 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
     }
     query.exec("COMMIT");
     return success;
+}
+
+bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst) {
+    int test_id;
+    return add_list(name, src, dst, test_id);
 }
 
 bool DatabaseManager::add_theme(const QString &theme) {

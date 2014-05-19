@@ -26,6 +26,7 @@ private:
 signals:
 
 public slots:
+    void import_word();
     void merge_word(const QHash<QString, QString> &word_to_merge_data);
 
 private slots:
