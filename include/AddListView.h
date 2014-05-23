@@ -15,6 +15,8 @@ class AddListView : public QWidget
     Q_OBJECT
 public:
     explicit AddListView(DatabaseManager *database_manager, bool remote, QWidget *parent = 0);
+    ~AddListView();
+    Test *get_test();
 
 private:
     QPushButton cancel_button;
@@ -26,9 +28,9 @@ private:
     QLineEdit src_edit;
     QLabel status;
     QLabel title;
+    Test *test;
 
 signals:
-    void success();
     void created(Test *test);
     void canceled();
 

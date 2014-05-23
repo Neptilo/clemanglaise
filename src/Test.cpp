@@ -14,8 +14,8 @@ Test::Test(int id, const QString &name, const QString &src, const QString &dst, 
 {
 }
 
-Test::Test(const Test& other) :
-    QObject(other.parent()),
+Test::Test(const Test& other, QObject *parent) :
+    QObject(parent),
     id(other.id),
     name(other.name),
     src(other.src),
@@ -41,11 +41,11 @@ QString Test::get_dst() const{
     return dst;
 }
 
-bool Test::is_remote_work() const {
+bool Test::is_remote() const {
 	return remote;
 }
 
-void Test::set_remote_work(bool remote) {
+void Test::set_remote(bool remote) {
     this->remote = remote;
 }
 

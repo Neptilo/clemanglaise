@@ -33,7 +33,6 @@ void SingleImportWizard::showEvent(QShowEvent *)
 
 void SingleImportWizard::check_duplicates(Test *test)
 {
-    qDebug() << "checking dups";
     if(test){
         dst_test_id = test->get_id();
         if(database_manager->find_duplicates(test->get_id(), word_data["word"], duplicate_page.duplicate_keys, duplicate_page.duplicate_values)){ // word_entry.at(1) is the word.
@@ -44,7 +43,6 @@ void SingleImportWizard::check_duplicates(Test *test)
         } // TODO: else show error
     }else{
         // create vocabulary list
-        qDebug() << "adding list view";
         dst_list_page.create_add_list_view();
     }
 }

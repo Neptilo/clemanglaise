@@ -49,7 +49,7 @@ SearchView::~SearchView() {
 }
 
 void SearchView::search() {
-    if (test->is_remote_work()) {
+    if (test->is_remote()) {
         // Standardization of search string
         QString search_str = ampersand_escape(search_bar->text());
 
@@ -74,7 +74,7 @@ void SearchView::read_reply(QNetworkReply* reply)
 
 void SearchView::read_reply(QString reply_string) {
     int nb_cols(10);
-    if (test->is_remote_work())
+    if (test->is_remote())
         reply_list = QStringList(reply_string.split('\n'));
     if(result){
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.
@@ -158,7 +158,7 @@ void SearchView::action(int row, int col)
         if(ret == QMessageBox::Yes){
             result->disconnect();
 
-            if (test->is_remote_work()) {
+            if (test->is_remote()) {
 
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
                 QUrl post_data;

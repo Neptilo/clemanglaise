@@ -18,7 +18,8 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
     name_edit(this),
     src_edit(this),
     status(this),
-    title(tr("<b>Create a vocabulary list</b>"))
+    title(tr("<b>Create a vocabulary list</b>")),
+    test(NULL)
 {
     QFormLayout* layout = new QFormLayout(this);
     layout->addWidget(&title);
@@ -36,13 +37,23 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
     connect(&cancel_button, SIGNAL(clicked()), this, SIGNAL(canceled()));
 }
 
+AddListView::~AddListView()
+{
+    delete test;
+}
+
+Test *AddListView::get_test()
+{
+    return test;
+}
+
 void AddListView::add_offline_list()
 {
     int test_id = 0;
     database_manager->add_list(name_edit.text(), src_edit.text(), dst_edit.text(), test_id);
     QString error(database_manager->pop_last_error());
     if(error == ""){
-        Test *test = new Test(test_id, name_edit.text(), src_edit.text(), dst_edit.text(), false, this);
+        test = new Test(test_id, name_edit.text(), src_edit.text(), dst_edit.text(), false);
         emit created(test);
     }else{
         status.setText(tr("<b>SQLite error: </b>") + error);
@@ -78,7 +89,7 @@ void AddListView::show_confirmation(QNetworkReply *reply)
 {
     const QString error(reply->readAll());
     if(error == "")
-        emit success();
+        emit created(NULL);
     else{
         status.setText(error);
         status.show();

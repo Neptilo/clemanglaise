@@ -22,7 +22,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
         QPushButton *button = new QPushButton(test->get_name(), this);
         button->setIcon(QIcon(":/" + test->get_dst() + "-img.png"));
         button->setToolTip(tr("from ") + test->get_src() + tr(" to ") + test->get_dst());
-        signal_mapper.setMapping(button, test);
+        signal_mapper.setMapping(button, (QObject *) test);
         connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout->addWidget(button, i/w, i%w); // so height and width of layout are approximately the same
     }

@@ -234,7 +234,7 @@ QList<Test> DatabaseManager::get_lists()
     QSqlQuery query("SELECT ID, name, src, dst FROM lists");
     QList<Test> test_list;
     while (query.next())
-        test_list << Test(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), false, this);
+        test_list << Test(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), false);
     return test_list;
 }
 

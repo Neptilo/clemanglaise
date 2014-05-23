@@ -56,7 +56,7 @@ void QuestionView::ask_question(const QString& word, const QString & theme) {
     }
 
     // Create import button
-    if(test->is_remote_work()){
+    if(test->is_remote()){
         import_button = new QPushButton(tr("Import this word"), this);
         vertical_layout->addWidget(import_button);
         connect(import_button, SIGNAL(clicked()), parent(), SLOT(import_word()));

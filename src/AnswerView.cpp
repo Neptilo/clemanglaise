@@ -55,7 +55,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     message = correct? tr("Right!"): tr("Wrong!");
 
     // Update score
-    if (!test->is_remote_work()) {
+    if (!test->is_remote()) {
 		//Offline
         database_manager->set_score(test->get_id(), word_data["id"].toInt(), correct);
 	} else {

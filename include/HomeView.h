@@ -19,7 +19,6 @@ class HomeView : public QWidget{
 
 private:
     AddListView *add_list_view;
-    QPushButton add_list_button; // not a pointer because it will always be here for local tests
     bool admin;
     DatabaseManager database_manager;
     QLayout *layout;
@@ -39,6 +38,7 @@ signals:
 public slots:
     void add_list();
     void init();
+    void list_created(Test *test);
     void start_test(Test *test);
     void read_reply_lists(QNetworkReply *reply);
     void remove_add_list_view();

@@ -134,10 +134,10 @@ void EditView::edit_word(){
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
 
-    if (!test->is_remote_work()) {
-        // Offline
+    if (!test->is_remote()) {
 		bool success;
 
+        // Offline
         if(word_data["id"].toInt() == 0) // Add word
             success = database_manager->add_word(test->get_id(), word_data);
         else // Update word
@@ -236,7 +236,7 @@ void EditView::reset(){
 }
 
 void EditView::find_themes() {
-    if (!test->is_remote_work()) {
+    if (!test->is_remote()) {
 		// Offline
 		database_manager->find_themes(reply_list);
 		read_reply();
@@ -257,7 +257,7 @@ void EditView::read_reply(QNetworkReply* reply)
 }
 
 void EditView::read_reply(QString reply_string) {
-    if(test->is_remote_work())
+    if(test->is_remote())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {

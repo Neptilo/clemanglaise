@@ -67,7 +67,7 @@ ThemeView::~ThemeView(){}
 
 void ThemeView::edit_theme(){
     status->setText(tr("Sending data..."));
-    if (!test->is_remote_work()) {
+    if (!test->is_remote()) {
         // Offline
 		// Will show confirmation when loading of reply is finished
 		database_manager->add_theme(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1));
@@ -142,7 +142,7 @@ void ThemeView::reset(){
 
 
 void ThemeView::find_themes() {
-    if (!test->is_remote_work()) {
+    if (!test->is_remote()) {
         // Offline
 		database_manager->find_themes(reply_list);
 		read_reply();
@@ -163,7 +163,7 @@ void ThemeView::read_reply(QNetworkReply* reply)
 }
 
 void ThemeView::read_reply(QString reply_string) {
-    if (test->is_remote_work())
+    if (test->is_remote())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2)
 		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
