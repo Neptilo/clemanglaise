@@ -31,7 +31,7 @@ public:
     QString pop_last_error();
     void search(int test_id, const QString& expr, QStringList& reply_list); // should return a bool (false if failed)
     bool set_score(int test_id, int id, const int& correct);
-    bool update_word(const QHash<QString, QString> &word_data);
+    bool update_word(int test_id, const QHash<QString, QString> &word_data);
     bool find_duplicates(int test_id, const QString &word, QStringList &reply_keys, QList<QStringList> &reply_values);
 
 private:

@@ -80,8 +80,7 @@ void SingleImportWizard::merge_word(const QHash<QString, QString> &word_to_merge
         }
     }
 
-    word_data["test_id"] = QString::number(dst_test_id);
-    if(!database_manager->update_word(word_data)){ // TODO: show error message if it fails
+    if(!database_manager->update_word(dst_test_id, word_data)){ // TODO: show error message if it fails
         qDebug() << tr("<b>SQLite error: </b>") << database_manager->pop_last_error();
         reject();
     }

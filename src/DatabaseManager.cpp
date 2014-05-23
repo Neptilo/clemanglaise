@@ -307,9 +307,8 @@ bool DatabaseManager::set_score(int test_id, int id, const int &correct) {
     return success;
 }
 
-bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
+bool DatabaseManager::update_word(int test_id, const QHash<QString, QString> &word_data)
 {
-    QString test_id(word_data["test_id"]);
     QSqlQuery query;
 
     // TODO: Make it better with a QHash
@@ -323,7 +322,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
                                          "WHERE id=:id").arg(test_id));
     QHash<QString, QString>::const_iterator i;
     for(i = word_data.begin(); i != word_data.end(); ++i) {
-        if(i.key() != "test_id" && i.key() != "name" && i.key() != "theme" && i.key() != "score" && i.key() != "id_theme") {
+        if(i.key() != "theme" && i.key() != "score" && i.key() != "id_theme") {
             query.bindValue(":"+i.key(), i.value());
         }
     }

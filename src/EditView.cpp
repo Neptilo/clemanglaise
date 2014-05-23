@@ -135,13 +135,13 @@ void EditView::edit_word(){
     word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
 
     if (!test->is_remote_work()) {
+        // Offline
 		bool success;
 
-        // Offline
         if(word_data["id"].toInt() == 0) // Add word
             success = database_manager->add_word(test->get_id(), word_data);
         else // Update word
-            success = database_manager->update_word(word_data);
+            success = database_manager->update_word(test->get_id(), word_data);
 
         // Show confirmation
         if(success)
