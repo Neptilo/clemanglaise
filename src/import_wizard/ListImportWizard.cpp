@@ -69,7 +69,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
     reply->deleteLater();
     QStringList word_keys;
     // has to be consistent with the actual query in the PHP file
-    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
+    word_keys << "id" << "word" << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "id_theme"  << "score" << "theme";
     QStringList reply_list = reply_string.split('\n');
     int nb_words = reply_list.size()/word_keys.size();
     progress_page.set_max_progress(nb_words);

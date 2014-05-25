@@ -272,7 +272,7 @@ QString DatabaseManager::pop_last_error()
 
 void DatabaseManager::search(int test_id, const QString& expr, QStringList &reply_list){
     QSqlQuery query(
-                QString ("SELECT words_%1.id, word, meaning, nature, comment, example, id_theme, pronunciation, score, name "
+                QString ("SELECT words_%1.id, word, meaning, pronunciation, nature, comment, example, id_theme, score, name "
                          "FROM words_%1 "
                          "LEFT OUTER JOIN themes "
                          "ON themes.id = words_%1.id_theme "
