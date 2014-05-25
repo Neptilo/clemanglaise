@@ -3,6 +3,7 @@
 
 #include <QLabel>
 #include <QPushButton>
+#include <QSignalMapper>
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QWizardPage>
@@ -21,16 +22,14 @@ private:
     QVBoxLayout layout;
     QLabel info;
     QTableWidget duplicate_table;
-    QPushButton import_button;
-    QPushButton merge_button;
+    QSignalMapper signal_mapper;
 
 signals:
-    void merge_word(const QHash<QString, QString> &);
-    void import_word();
+    void choose_behavior(int);
 
 public slots:
+    QHash<QString, QString> get_word_to_merge();
 private slots:
-    void select_word_to_merge();
 };
 
 #endif // DUPLICATEPAGE_H

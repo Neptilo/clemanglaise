@@ -22,15 +22,18 @@ private:
     QHash<QString, QString> word_data;
     DstListPage dst_list_page;
     DuplicatePage duplicate_page;
+    int chosen_behavior;
 
 signals:
 
 public slots:
-    void import_word();
-    void merge_word(const QHash<QString, QString> &word_to_merge_data);
+    bool import_word();
+    bool merge_word(const QHash<QString, QString> &word_to_merge_data);
+    void choose_behavior(int behavior);
 
 private slots:
     void check_duplicates(Test *test);
+    void accept();
 };
 
 #endif // SINGLEIMPORTWIZARD_H

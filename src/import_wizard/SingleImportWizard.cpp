@@ -21,8 +21,7 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
     addPage(&dst_list_page);
 
     // page to show the possible duplicates
-    connect(&duplicate_page, SIGNAL(import_word()), this, SLOT(import_word()));
-    connect(&duplicate_page, SIGNAL(merge_word(QHash<QString,QString>)), this, SLOT(merge_word(QHash<QString,QString>)));
+    connect(&duplicate_page, SIGNAL(choose_behavior(int)), this, SLOT(choose_behavior(int)));
     addPage(&duplicate_page);
 }
 
@@ -47,16 +46,12 @@ void SingleImportWizard::check_duplicates(Test *test)
     }
 }
 
-void SingleImportWizard::import_word()
+bool SingleImportWizard::import_word()
 {
-    if(import(word_data)){
-        accept();
-    }else{
-        reject();
-    }
+    return import(word_data);
 }
 
-void SingleImportWizard::merge_word(const QHash<QString, QString> &word_to_merge_data)
+bool SingleImportWizard::merge_word(const QHash<QString, QString> &word_to_merge_data)
 {
     if(!dst_test_id){ // TODO: show error message
         qDebug() << tr("Destination test ID has not been defined.");
@@ -80,10 +75,15 @@ void SingleImportWizard::merge_word(const QHash<QString, QString> &word_to_merge
 
     if(!database_manager->update_word(dst_test_id, word_data)){ // TODO: show error message if it fails
         qDebug() << tr("<b>SQLite error: </b>") << database_manager->pop_last_error();
-        reject();
+        return false;
+    }else{
+        return true;
     }
+}
 
-    accept();
+void SingleImportWizard::choose_behavior(int behavior)
+{
+    chosen_behavior = behavior;
 }
 
 QString SingleImportWizard::merge_string(
@@ -96,4 +96,24 @@ QString SingleImportWizard::merge_string(
     QSet<QString> right_set = trimmed(right_string.split(split_sep)).toSet();
     left_set.unite(right_set);
     return QStringList(left_set.toList()).join(join_sep);
+}
+
+void SingleImportWizard::accept()
+{
+    switch(chosen_behavior){
+    case 0:
+        // import anyway
+        import_word();
+        break;
+    case 1:
+    {
+        // merge
+        const QHash<QString, QString> word_to_merge_data = duplicate_page.get_word_to_merge();
+        merge_word(word_to_merge_data);
+        break;
+    }
+    default:
+        qDebug() << tr("Invalid import behavior code (%1). Maybe it has not been initialized.").arg(chosen_behavior);
+    }
+    QWizard::accept();
 }

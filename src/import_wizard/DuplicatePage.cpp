@@ -14,9 +14,7 @@ DuplicatePage::DuplicatePage(const QHash<QString, QString> &word_data, QWidget *
     word_data(word_data),
     layout(this),
     info(this),
-    duplicate_table(this),
-    import_button(tr("Import anyway"), this),
-    merge_button(tr("Merge"), this)
+    duplicate_table(this)
 {
     layout.addWidget(&info);
 
@@ -25,11 +23,27 @@ DuplicatePage::DuplicatePage(const QHash<QString, QString> &word_data, QWidget *
     QHBoxLayout *button_layout = new QHBoxLayout();
     layout.addLayout(button_layout); // layout is now button_layout's parent.
 
-    connect(&import_button, SIGNAL(clicked()), this, SIGNAL(import_word()));
-    button_layout->addWidget(&import_button);
+    // radio buttons
+    QList<QRadioButton *> radios;
 
-    connect(&merge_button, SIGNAL(clicked()), this, SLOT(select_word_to_merge()));
-    button_layout->addWidget(&merge_button);
+    QRadioButton *radio;
+    radio = new QRadioButton(tr("Import anyway"), this);
+    radio->setToolTip(tr("The word will be inserted as is."));
+    radios << radio;
+
+    radio = new QRadioButton(tr("Merge"), this);
+    radio->setToolTip(tr("Merge data from the original and the new version of the word."));
+    radios << radio;
+    // TODO: repeat previous block for each possible behavior
+
+    for(int i = 0; i < radios.length(); ++i)
+    {
+        QRadioButton *radio = radios.at(i);
+        signal_mapper.setMapping(radio, i);
+        connect(radio, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
+        layout.addWidget(radio);
+    }
+    connect(&signal_mapper, SIGNAL(mapped(int)), this, SIGNAL(choose_behavior(int)));
 }
 
 void DuplicatePage::initializePage()
@@ -93,7 +107,7 @@ void DuplicatePage::initializePage()
     }
 }
 
-void DuplicatePage::select_word_to_merge(){
+QHash<QString, QString> DuplicatePage::get_word_to_merge(){
     QHash<QString, QString> word_to_merge_data;
     for(int i = 0; i < duplicate_values.size(); ++i){
         QRadioButton *radio = (QRadioButton *) duplicate_table.cellWidget(i, 0);
@@ -104,5 +118,5 @@ void DuplicatePage::select_word_to_merge(){
             break; // We found the checked radio button.
         }
     }
-    emit merge_word(word_to_merge_data);
+    return word_to_merge_data;
 }
