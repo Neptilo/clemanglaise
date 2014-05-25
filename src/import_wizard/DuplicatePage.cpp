@@ -1,5 +1,6 @@
 #include "import_wizard/DuplicatePage.h"
 
+#include <QButtonGroup>
 #include <QDebug>
 #include <QHeaderView>
 #include <QLabel>
@@ -24,21 +25,23 @@ DuplicatePage::DuplicatePage(const QHash<QString, QString> &word_data, QWidget *
     layout.addLayout(button_layout); // layout is now button_layout's parent.
 
     // radio buttons
-    QList<QRadioButton *> radios;
+    QButtonGroup *button_group = new QButtonGroup(this);
 
     QRadioButton *radio;
     radio = new QRadioButton(tr("Import anyway"), this);
     radio->setToolTip(tr("The word will be inserted as is."));
-    radios << radio;
+    button_group->addButton(radio);
 
     radio = new QRadioButton(tr("Merge"), this);
     radio->setToolTip(tr("Merge data from the original and the new version of the word."));
-    radios << radio;
+    radio->setChecked(true);
+    button_group->addButton(radio);
     // TODO: repeat previous block for each possible behavior
 
+    QList<QAbstractButton *> radios = button_group->buttons();
     for(int i = 0; i < radios.length(); ++i)
     {
-        QRadioButton *radio = radios.at(i);
+        QAbstractButton *radio = radios.at(i);
         signal_mapper.setMapping(radio, i);
         connect(radio, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout.addWidget(radio);
