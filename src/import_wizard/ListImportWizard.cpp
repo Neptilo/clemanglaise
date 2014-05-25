@@ -31,6 +31,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     // page to show progress and status
     addPage(&progress_page);
     connect(&progress_page, SIGNAL(import_list()), this, SLOT(import_list()));
+    setOption(QWizard::NoBackButtonOnLastPage);
 
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 }
