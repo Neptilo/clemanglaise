@@ -86,7 +86,7 @@ void SearchView::read_reply(QString reply_string) {
     QStringList header_labels;
     if(modifiable)
         header_labels << "" << "";
-    header_labels << tr("Word") << tr("Meaning") << tr("Nature") << tr("Comment") << tr("Example") << tr("Pronunciation") << tr("Score") << tr("Theme");
+    header_labels << tr("Word") <<  tr("Meaning") << tr("Pronunciation") << tr("Nature") << tr("Comment") << tr("Example")  << tr("Score") << tr("Theme");
     result->setHorizontalHeaderLabels(header_labels);
     result->verticalHeader()->hide();
     layout()->addWidget(result);
@@ -131,7 +131,7 @@ void SearchView::action(int row, int col)
 {
     QStringList word_keys;
     // has to be consistent with the actual content of reply_list
-    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
+    word_keys << "id" << "word"  << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "id_theme" << "score" << "theme";
     int nb_cols = word_keys.size();
 
     if(col == 0){
