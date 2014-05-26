@@ -18,7 +18,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
     int l = tests.size();
     int w = (int) sqrt(l);
     for (int i = 0; i < l; ++i) {
-        Test *test = new Test(tests.at(i)); // pointer to non constant copy of test, having same parent as original
+        Test *test = new Test(tests.at(i), this); // pointer to non constant copy of test
         QPushButton *button = new QPushButton(test->get_name(), this);
         button->setIcon(QIcon(":/" + test->get_dst() + "-img.png"));
         button->setToolTip(tr("from ") + test->get_src() + tr(" to ") + test->get_dst());

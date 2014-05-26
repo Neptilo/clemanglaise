@@ -23,6 +23,7 @@ private:
     DstListPage dst_list_page;
     DuplicatePage duplicate_page;
     int chosen_behavior;
+    Test *dst_test;
 
 signals:
 

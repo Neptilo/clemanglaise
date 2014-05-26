@@ -7,7 +7,8 @@
 ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test, QWidget *parent) :
     QWizard(parent),
     Importer(database_manager),
-    test(test),
+    src_test(test),
+    dst_test(NULL),
     dst_list_page(database_manager, this),
     behavior_page(this),
     progress_page(this),
@@ -30,7 +31,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
 
     // page to show progress and status
     addPage(&progress_page);
-    connect(&progress_page, SIGNAL(import_list()), this, SLOT(import_list()));
+    connect(&progress_page, SIGNAL(import_list()), this, SLOT(import_list())); // emitted when page shows up
     setOption(QWizard::NoBackButtonOnLastPage);
 
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
@@ -44,10 +45,12 @@ void ListImportWizard::showEvent(QShowEvent *)
 void ListImportWizard::save_and_next(Test *test)
 {
     if(test){
-        dst_test_id = test->get_id();
+        dst_test = test;
+        behavior_page.setSubTitle(tr("The list <b>%1</b> will be imported in <b>%2</b>.").arg(src_test->get_name()).arg(dst_test->get_name()));
         next();
     }else{
         // create vocabulary list
+        // This will call save_and_next again with a non null argument.
         dst_list_page.create_add_list_view();
     }
 }
@@ -59,8 +62,20 @@ void ListImportWizard::choose_behavior(int behavior)
 
 void ListImportWizard::import_list()
 {
+    QString behavior_text;
+    switch (chosen_behavior) {
+    case 0:
+        behavior_text = tr("without checking for duplicates");
+        break;
+    case 1:
+        behavior_text = tr("and merging duplicates");
+        break;
+    default:
+        break;
+    }
+    progress_page.setSubTitle(tr("Importing list <b>%1</b> to <b>%2</b> %3.").arg(src_test->get_name()).arg(dst_test->get_name()).arg(behavior_text));
     // request to PHP file for the list of all words
-    const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?test_id=%1").arg(test->get_id()));
+    const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?test_id=%1").arg(src_test->get_id()));
     nam.get(QNetworkRequest(url));
 }
 
@@ -80,7 +95,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
             word_data[word_keys.at(j)] = reply_list.at(i*word_keys.size()+j);
         }
         progress_page.set_status(tr("Importing \"<b>%1</b>\"").arg(word_data["word"]));
-        if(import(word_data))
+        if(import(dst_test->get_id(), word_data))
             ++nb_inserted;
         else
             ++nb_failed;
@@ -92,13 +107,13 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
     if(nb_inserted)
         recap_list << tr("inserted <b>%1</b> word(s)").arg(nb_inserted);
     if(nb_replaced)
-        recap_list << tr("inserted <b>%1</b> word(s)").arg(nb_replaced);
+        recap_list << tr("replaced <b>%1</b> word(s)").arg(nb_replaced);
     if(nb_updated)
-        recap_list << tr("inserted <b>%1</b> word(s)").arg(nb_updated);
+        recap_list << tr("updated <b>%1</b> word(s)").arg(nb_updated);
     if(nb_discarded)
-        recap_list << tr("inserted <b>%1</b> word(s)").arg(nb_discarded);
+        recap_list << tr("discarded <b>%1</b> word(s)").arg(nb_discarded);
     if(nb_failed)
-        recap_list << tr("inserted <b>%1</b> word(s)").arg(nb_failed);
+        recap_list << tr("failed to import <b>%1</b> word(s)").arg(nb_failed);
     if(recap_list.isEmpty())
         recap_list << tr("There was nothing to do.");
     QString recap = tr("Import finished: ")+recap_list.join(tr(", "));

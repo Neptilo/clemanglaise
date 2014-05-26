@@ -5,12 +5,11 @@
 #include "include/import_wizard/Importer.h"
 
 Importer::Importer(DatabaseManager *database_manager) :
-    database_manager(database_manager),
-    dst_test_id(0)
+    database_manager(database_manager)
 {
 }
 
-bool Importer::import(const QHash<QString, QString> &word_data)
+bool Importer::import(int dst_test_id, const QHash<QString, QString> &word_data)
 {
     if(!dst_test_id){ // TODO: show error message
         qDebug() << QObject::tr("Destination test ID has not been defined.");

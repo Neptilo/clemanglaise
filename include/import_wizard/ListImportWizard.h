@@ -15,11 +15,12 @@ class ListImportWizard : public QWizard, public Importer
 {
     Q_OBJECT
 public:
-    explicit ListImportWizard(DatabaseManager *database_manager, Test *test, QWidget *parent = 0);
+    explicit ListImportWizard(DatabaseManager *database_manager, Test *src_test, QWidget *parent = 0);
     void showEvent(QShowEvent *);
 private:
     DatabaseManager *database_manager;
-    Test *test;
+    Test *src_test;
+    Test *dst_test;
     DstListPage dst_list_page;
     BehaviorPage behavior_page;
     ProgressPage progress_page;
