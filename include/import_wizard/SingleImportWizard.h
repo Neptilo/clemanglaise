@@ -14,11 +14,6 @@ public:
     explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, QWidget *parent = 0);    
     void showEvent(QShowEvent *);
 private:
-    QString merge_string(
-            const QString &left_string,
-            const QString &right_string,
-            const QRegExp &split_sep,
-            const QString &join_sep);
     QHash<QString, QString> word_data;
     DstListPage dst_list_page;
     DuplicatePage duplicate_page;
@@ -29,7 +24,8 @@ signals:
 
 public slots:
     bool import_word();
-    bool merge_word(const QHash<QString, QString> &word_to_merge_data);
+    // merge word_data with word_to_merge_data and update it in database
+    bool update_word(const QHash<QString, QString> &word_to_merge_data);
     void choose_behavior(int behavior);
 
 private slots:

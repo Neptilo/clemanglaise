@@ -11,12 +11,28 @@ BehaviorPage::BehaviorPage(QWidget *parent) :
     layout.addWidget(&question);
 
     QList<QRadioButton *> radios;
-
     QRadioButton *radio;
+
     radio = new QRadioButton(tr("Don't check for duplicates"), this);
     radio->setToolTip(tr("Every word will be inserted as is."));
     radios << radio;
-    // TODO: repeat previous block for each possible behavior
+
+    radio = new QRadioButton(tr("Don't import duplicates"), this);
+    radio->setToolTip(tr("If a duplicate is found, only the original version will be kept."));
+    radios << radio;
+
+    radio = new QRadioButton(tr("Replace duplicates"), this);
+    radio->setToolTip(tr("If a duplicate is found, the new version will replace the existing word."));
+    radios << radio;
+
+    radio = new QRadioButton(tr("Merge (recommended)"), this);
+    radio->setToolTip(tr("If a duplicate is found, merge data from the original and the new version."));
+    radio->setChecked(true);
+    radios << radio;
+
+    radio = new QRadioButton(tr("Always ask"), this);
+    radio->setToolTip(tr("If a duplicate is found, ask what to do."));
+    //radios << radio;
 
     for(int i = 0; i < radios.length(); ++i)
     {

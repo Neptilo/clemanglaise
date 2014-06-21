@@ -1,8 +1,10 @@
 #include "import_wizard/ListImportWizard.h"
-#include "import_wizard/Importer.h"
 
 #include <QComboBox>
 #include <QNetworkReply>
+
+#include "duplicate_utils.h"
+#include "import_wizard/Importer.h"
 
 ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test, QWidget *parent) :
     QWizard(parent),
@@ -68,10 +70,20 @@ void ListImportWizard::import_list()
         behavior_text = tr("without checking for duplicates");
         break;
     case 1:
+        behavior_text = tr("and discarding duplicates");
+        break;
+    case 2:
+        behavior_text = tr("and replacing duplicates");
+        break;
+    case 3:
         behavior_text = tr("and merging duplicates");
         break;
-    default:
+    case 4:
+        behavior_text = tr("and prompting for each duplicate");
         break;
+    default:
+        qDebug() << tr("Invalid behavior code (%1)").arg(chosen_behavior);
+        return;
     }
     progress_page.setSubTitle(tr("Importing list <b>%1</b> to <b>%2</b> %3.").arg(src_test->get_name()).arg(dst_test->get_name()).arg(behavior_text));
     // request to PHP file for the list of all words
@@ -90,15 +102,68 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
     int nb_words = reply_list.size()/word_keys.size();
     progress_page.set_max_progress(nb_words);
     for(int i = 0; i < nb_words; ++i){
+
         QHash<QString, QString> word_data;
         for(int j = 0; j < word_keys.size(); ++j){
             word_data[word_keys.at(j)] = reply_list.at(i*word_keys.size()+j);
         }
         progress_page.set_status(tr("Importing \"<b>%1</b>\"").arg(word_data["word"]));
-        if(import(dst_test->get_id(), word_data))
-            ++nb_inserted;
-        else
-            ++nb_failed;
+
+        // Do different things according to chosen behavior
+        if(chosen_behavior == 0){
+            if(import(dst_test->get_id(), word_data))
+                ++nb_inserted;
+            else
+                ++nb_failed;
+        }else{
+            // Check duplicates
+            QStringList duplicate_keys;
+            QList<QStringList> duplicate_values;
+            if(database_manager->find_duplicates(dst_test->get_id(), word_data["word"], duplicate_keys, duplicate_values)){
+                if(duplicate_values.empty()){
+                    // No duplicate found
+                    if(import(dst_test->get_id(), word_data))
+                        ++nb_inserted;
+                    else
+                        ++nb_failed;
+                }else{
+                    // Duplicate found
+                    switch (chosen_behavior) {
+                    case 2:
+                        // replace
+                        // guess most probable duplicate from duplicate_values, and update it.
+                    {
+                        int best_duplicate_ind = find_best_duplicate(word_data, duplicate_keys, duplicate_values);
+                        word_data["id"] = duplicate_values.at(best_duplicate_ind).at(duplicate_keys.indexOf("id"));
+                        if(database_manager->update_word(dst_test->get_id(), word_data))
+                            ++nb_replaced;
+                        else
+                            ++nb_failed;
+                    }
+                        break;
+                    case 3:
+                        // merge
+                        // same as before and merge like in merge_word from SingleImportWizard
+                    {
+                        int best_duplicate_ind = find_best_duplicate(word_data, duplicate_keys, duplicate_values);
+                        // rebuild data of the duplicate
+                        QHash<QString, QString> best_duplicate_data;
+                        for(int i = 0; i < duplicate_keys.size(); ++i)
+                            best_duplicate_data[duplicate_keys.at(i)] = duplicate_values.at(best_duplicate_ind).at(i);
+                        // *** TODO: merge word_data with best_duplicate_data before updating database
+                        if(database_manager->update_word(dst_test->get_id(), best_duplicate_data))
+                            ++nb_updated;
+                        else
+                            ++nb_failed;
+                    }
+                    default: // case 1: discard
+                        break;
+                    }
+                }
+            } // TODO: else show error
+        }
+
+
         progress_page.increase_progress();
     }
 

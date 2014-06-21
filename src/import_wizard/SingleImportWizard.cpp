@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "AddListView.h"
+#include "duplicate_utils.h"
 #include "import_wizard/DstListPage.h"
 #include "import_wizard/DuplicatePage.h"
 #include "import_wizard/Importer.h"
@@ -35,7 +36,7 @@ void SingleImportWizard::check_duplicates(Test *test)
 {
     if(test){
         dst_test = test;
-        if(database_manager->find_duplicates(test->get_id(), word_data["word"], duplicate_page.duplicate_keys, duplicate_page.duplicate_values)){ // word_entry.at(1) is the word.
+        if(database_manager->find_duplicates(test->get_id(), word_data["word"], duplicate_page.duplicate_keys, duplicate_page.duplicate_values)){
             if(duplicate_page.duplicate_values.empty()){
                 if(import_word())
                     QWizard::accept();
@@ -57,29 +58,14 @@ bool SingleImportWizard::import_word()
     return import(dst_test->get_id(), word_data);
 }
 
-bool SingleImportWizard::merge_word(const QHash<QString, QString> &word_to_merge_data)
+bool SingleImportWizard::update_word(const QHash<QString, QString> &word_to_merge_data)
 {
     if(!dst_test->get_id()){ // TODO: show error message
         qDebug() << tr("Destination test ID has not been defined.");
         reject();
     }
-    QHash<QString, QString>::iterator i;
-    for (i = word_data.begin(); i != word_data.end(); ++i){
-        if(i.key() != "id"){
-            QRegExp split_sep;
-            QString join_sep;
-            if(i.key() == "comment" || i.key() == "example"){
-                split_sep = QRegExp("<br ?/>", Qt::CaseInsensitive);
-                join_sep = "<br />";
-            }else{
-                split_sep = QRegExp(",");
-                join_sep = ", ";
-            }
-            i.value() = merge_string(i.value(), word_to_merge_data[i.key()], split_sep, join_sep);
-        }
-    }
 
-    if(!database_manager->update_word(dst_test->get_id(), word_data)){ // TODO: show error message if it fails
+    if(!database_manager->update_word(dst_test->get_id(), merge_word(word_data, word_to_merge_data))){ // TODO: show error message if it fails
         qDebug() << tr("<b>SQLite error: </b>") << database_manager->pop_last_error();
         return false;
     }else{
@@ -92,20 +78,9 @@ void SingleImportWizard::choose_behavior(int behavior)
     chosen_behavior = behavior;
 }
 
-QString SingleImportWizard::merge_string(
-        const QString &left_string,
-        const QString &right_string,
-        const QRegExp &split_sep,
-        const QString &join_sep)
-{
-    QSet<QString> left_set = trimmed(left_string.split(split_sep)).toSet();
-    QSet<QString> right_set = trimmed(right_string.split(split_sep)).toSet();
-    left_set.unite(right_set);
-    return QStringList(left_set.toList()).join(join_sep);
-}
-
 // function called when "Finish" button is clicked
 // If an error occurs, QWizard::reject() will be called instead of QWizard::accept().
+// TODO: replace by QWizardPage::validatePage()
 void SingleImportWizard::accept()
 {
     bool success;
@@ -118,7 +93,7 @@ void SingleImportWizard::accept()
     {
         // merge
         const QHash<QString, QString> word_to_merge_data = duplicate_page.get_word_to_merge();
-        success = merge_word(word_to_merge_data);
+        success = update_word(word_to_merge_data);
         break;
     }
     default:
