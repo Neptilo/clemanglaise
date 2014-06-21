@@ -30,6 +30,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     // page to choose import behavior
     addPage(&behavior_page);
     connect(&behavior_page, SIGNAL(choose_behavior(int)), this, SLOT(choose_behavior(int)));
+    choose_behavior(3); // merge
 
     // page to show progress and status
     addPage(&progress_page);
@@ -150,8 +151,9 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                         QHash<QString, QString> best_duplicate_data;
                         for(int i = 0; i < duplicate_keys.size(); ++i)
                             best_duplicate_data[duplicate_keys.at(i)] = duplicate_values.at(best_duplicate_ind).at(i);
-                        // *** TODO: merge word_data with best_duplicate_data before updating database
-                        if(database_manager->update_word(dst_test->get_id(), best_duplicate_data))
+                        word_data = merge_word(word_data, best_duplicate_data);
+                        word_data["id"] = duplicate_values.at(best_duplicate_ind).at(duplicate_keys.indexOf("id"));
+                        if(database_manager->update_word(dst_test->get_id(), word_data))
                             ++nb_updated;
                         else
                             ++nb_failed;

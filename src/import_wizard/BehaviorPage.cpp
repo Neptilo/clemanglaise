@@ -30,8 +30,8 @@ BehaviorPage::BehaviorPage(QWidget *parent) :
     radio->setChecked(true);
     radios << radio;
 
-    radio = new QRadioButton(tr("Always ask"), this);
-    radio->setToolTip(tr("If a duplicate is found, ask what to do."));
+    //radio = new QRadioButton(tr("Always ask"), this);
+    //radio->setToolTip(tr("If a duplicate is found, ask what to do."));
     //radios << radio;
 
     for(int i = 0; i < radios.length(); ++i)
