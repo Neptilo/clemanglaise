@@ -33,7 +33,8 @@ HEADERS += \
     include/import_wizard/BehaviorPage.h \
     include/import_wizard/ProgressPage.h \
     include/import_wizard/Importer.h \
-    include/duplicate_utils.h
+    include/duplicate_utils.h \
+    include/import_wizard/ImportBehavior.h
 SOURCES += \
     src/AnswerView.cpp \
     src/EditView.cpp \

@@ -1,4 +1,5 @@
 #include "import_wizard/ListImportWizard.h"
+#include "import_wizard/ImportBehavior.h"
 
 #include <QComboBox>
 #include <QNetworkReply>
@@ -67,19 +68,19 @@ void ListImportWizard::import_list()
 {
     QString behavior_text;
     switch (chosen_behavior) {
-    case 0:
+    case ImportBehavior::DontCheck:
         behavior_text = tr("without checking for duplicates");
         break;
-    case 1:
+    case ImportBehavior::Discard:
         behavior_text = tr("and discarding duplicates");
         break;
-    case 2:
+    case ImportBehavior::Replace:
         behavior_text = tr("and replacing duplicates");
         break;
-    case 3:
+    case ImportBehavior::Merge:
         behavior_text = tr("and merging duplicates");
         break;
-    case 4:
+    case ImportBehavior::Ask:
         behavior_text = tr("and prompting for each duplicate");
         break;
     default:
@@ -111,7 +112,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
         progress_page.set_status(tr("Importing \"<b>%1</b>\"").arg(word_data["word"]));
 
         // Do different things according to chosen behavior
-        if(chosen_behavior == 0){
+        if(chosen_behavior == ImportBehavior::DontCheck){
             if(import(dst_test->get_id(), word_data))
                 ++nb_inserted;
             else
@@ -130,7 +131,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                 }else{
                     // Duplicate found
                     switch (chosen_behavior) {
-                    case 2:
+                    case ImportBehavior::Replace:
                         // replace
                         // guess most probable duplicate from duplicate_values, and update it.
                     {
@@ -142,7 +143,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                             ++nb_failed;
                     }
                         break;
-                    case 3:
+                    case ImportBehavior::Merge:
                         // merge
                         // same as before and merge like in merge_word from SingleImportWizard
                     {

@@ -35,7 +35,6 @@ public:
     bool find_duplicates(int test_id, const QString &word, QStringList &reply_keys, QList<QStringList> &reply_values);
 
 private:
-    QSqlDatabase db;
     QString last_error;
 
 signals:

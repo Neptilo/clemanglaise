@@ -18,7 +18,6 @@ public:
     explicit ListImportWizard(DatabaseManager *database_manager, Test *src_test, QWidget *parent = 0);
     void showEvent(QShowEvent *);
 private:
-    DatabaseManager *database_manager;
     Test *src_test;
     Test *dst_test;
     DstListPage dst_list_page;

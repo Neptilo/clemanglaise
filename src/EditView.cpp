@@ -74,10 +74,12 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
 
 	this->id_theme = id_theme;
 
-    comment_edit = new QTextEdit(comment, this);
+    comment_edit = new QTextEdit(this);
+    comment_edit->setPlainText(comment); // so the text will be interpreted as plain text, not HTML
     layout->addRow(tr("&Comment: "), comment_edit);
 
-    example_edit = new QTextEdit(example, this);
+    example_edit = new QTextEdit(this);
+    example_edit->setPlainText(example);
     layout->addRow(tr("&Example: "), example_edit);
 
     status = new QLabel(this);
@@ -130,6 +132,7 @@ void EditView::edit_word(){
     word_data["nature"] = nature_edit->itemData(nature_edit->currentIndex()).toString();
     word_data["meaning"] = ampersand_escape(meaning_edit->text());
     word_data["pronunciation"] = standardized_pronunciation;
+    // toPlainText() because we don't want to save a too much unnecessary information like an HTML header.
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
@@ -219,8 +222,8 @@ void EditView::reset(){
     word_edit->setText(default_values["word"]);
     meaning_edit->setText(default_values["meaning"]);
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values["nature"])));
-    comment_edit->setText(default_values["comment"]);
-    example_edit->setText(default_values["example"]);
+    comment_edit->setPlainText(default_values["comment"]);
+    example_edit->setPlainText(default_values["example"]);
     themes->setCurrentIndex(themes->findData(QVariant(default_values["id_theme"])));
     pronunciation_edit->setText(default_values["pronunciation"]);
 

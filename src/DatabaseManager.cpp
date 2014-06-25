@@ -14,6 +14,8 @@ DatabaseManager::DatabaseManager(QObject *parent) :
         // "Error while opening the database";
         return;
     }
+    last_error = " ";
+    qDebug() << "last error on init: " << last_error;
     create_list_table();
     create_theme_table();
 }
@@ -241,7 +243,7 @@ QList<Test> DatabaseManager::get_lists()
 bool DatabaseManager::open_db()
 {
     // Find QSLite driver
-    db = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
 #ifdef Q_OS_LINUX
     // NOTE: We have to store database file into user home folder in Linux
