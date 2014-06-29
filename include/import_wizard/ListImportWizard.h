@@ -14,9 +14,11 @@
 class ListImportWizard : public QWizard, public Importer
 {
     Q_OBJECT
+    enum {Page_DstList, Page_Behavior, Page_Progress};
 public:
     explicit ListImportWizard(DatabaseManager *database_manager, Test *src_test, QWidget *parent = 0);
     void showEvent(QShowEvent *);
+    int nextId() const;
 private:
     Test *src_test;
     Test *dst_test;

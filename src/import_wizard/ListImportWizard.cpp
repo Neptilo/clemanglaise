@@ -25,15 +25,18 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     setWindowTitle(tr("Import a vocabulary list"));
 
     // page to choose destination list of the import
+    setPage(Page_DstList, &dst_list_page);
     connect(&dst_list_page, SIGNAL(chosen(Test *)), this, SLOT(save_and_next(Test *)));
     addPage(&dst_list_page);
 
     // page to choose import behavior
+    setPage(Page_Behavior, &behavior_page);
     addPage(&behavior_page);
     connect(&behavior_page, SIGNAL(choose_behavior(int)), this, SLOT(choose_behavior(int)));
-    choose_behavior(3); // merge
+    choose_behavior(0); // don't check for duplicates
 
     // page to show progress and status
+    setPage(Page_Progress, &progress_page);
     addPage(&progress_page);
     connect(&progress_page, SIGNAL(import_list()), this, SLOT(import_list())); // emitted when page shows up
     setOption(QWizard::NoBackButtonOnLastPage);
@@ -41,9 +44,33 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 }
 
+int ListImportWizard::nextId() const
+{
+    switch (currentId()) {
+    case Page_DstList:
+        int nb_rows;
+        if(database_manager->count(dst_test->get_id(), nb_rows)){
+            if(nb_rows){
+                return Page_Behavior;
+            }else{
+                // TODO: find way to pass enum values rather than ints
+                return Page_Progress;
+            }
+        }else{
+            qDebug() << database_manager->pop_last_error();
+            return -1;
+        }
+    case Page_Behavior:
+        return Page_Progress;
+    case Page_Progress:
+    default:
+        return -1;
+    }
+}
+
 void ListImportWizard::showEvent(QShowEvent *)
 {
-     button(QWizard::NextButton)->setEnabled(false);
+    button(QWizard::NextButton)->setEnabled(false);
 }
 
 void ListImportWizard::save_and_next(Test *test)
@@ -159,7 +186,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                         else
                             ++nb_failed;
                     }
-                    default: // case 1: discard
+                    default: // case ImportBehavior::Discard
                         break;
                     }
                 }

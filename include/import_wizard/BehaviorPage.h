@@ -12,7 +12,7 @@ class BehaviorPage : public QWizardPage
     Q_OBJECT
 public:
     explicit BehaviorPage(QWidget *parent = 0);
-
+    void initializePage();
 private:
     QVBoxLayout layout;
     QLabel question;
@@ -20,7 +20,7 @@ private:
 
 signals:
     void choose_behavior(int);
-
+    void next();
 public slots:
 
 private slots:

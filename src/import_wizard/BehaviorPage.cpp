@@ -49,3 +49,7 @@ BehaviorPage::BehaviorPage(QWidget *parent) :
     connect(&signal_mapper, SIGNAL(mapped(int)), this, SIGNAL(choose_behavior(int)));
 }
 
+void BehaviorPage::initializePage(){
+    // If we enter this page, the default behavior is Merge.
+    emit choose_behavior(3);
+}

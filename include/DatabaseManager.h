@@ -34,6 +34,9 @@ public:
     bool update_word(int test_id, const QHash<QString, QString> &word_data);
     bool find_duplicates(int test_id, const QString &word, QStringList &reply_keys, QList<QStringList> &reply_values);
 
+    // sets res to the number of rows in the word list identified by test_id
+    bool count(int test_id, int &res);
+
 private:
     QString last_error;
 

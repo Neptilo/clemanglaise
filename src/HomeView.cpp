@@ -33,9 +33,7 @@ HomeView::HomeView(bool admin, QWidget *parent):
 }
 
 HomeView::~HomeView()
-{
-    qDebug() << "destroy";
-}
+{}
 
 void HomeView::add_list()
 {

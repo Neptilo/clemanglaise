@@ -14,8 +14,6 @@ DatabaseManager::DatabaseManager(QObject *parent) :
         // "Error while opening the database";
         return;
     }
-    last_error = " ";
-    qDebug() << "last error on init: " << last_error;
     create_list_table();
     create_theme_table();
 }
@@ -373,4 +371,15 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
     }
 
     return true;
+}
+
+bool DatabaseManager::count(int test_id, int &res)
+{
+    bool success;
+    QSqlQuery query(QString("SELECT COUNT(*) FROM words_%1").arg(test_id));
+    if ((success = query.next()))
+        res = query.value(0).toInt();
+    else
+        last_error = query.lastError().text();
+    return success;
 }
