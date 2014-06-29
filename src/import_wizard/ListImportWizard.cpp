@@ -25,19 +25,16 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     setWindowTitle(tr("Import a vocabulary list"));
 
     // page to choose destination list of the import
-    setPage(Page_DstList, &dst_list_page);
     connect(&dst_list_page, SIGNAL(chosen(Test *)), this, SLOT(save_and_next(Test *)));
-    addPage(&dst_list_page);
+    setPage(Page_DstList, &dst_list_page);
 
     // page to choose import behavior
     setPage(Page_Behavior, &behavior_page);
-    addPage(&behavior_page);
     connect(&behavior_page, SIGNAL(choose_behavior(int)), this, SLOT(choose_behavior(int)));
     choose_behavior(0); // don't check for duplicates
 
     // page to show progress and status
     setPage(Page_Progress, &progress_page);
-    addPage(&progress_page);
     connect(&progress_page, SIGNAL(import_list()), this, SLOT(import_list())); // emitted when page shows up
     setOption(QWizard::NoBackButtonOnLastPage);
 
@@ -48,23 +45,26 @@ int ListImportWizard::nextId() const
 {
     switch (currentId()) {
     case Page_DstList:
-        int nb_rows;
-        if(database_manager->count(dst_test->get_id(), nb_rows)){
-            if(nb_rows){
-                return Page_Behavior;
+        if(dst_test){
+            int nb_rows;
+            if(database_manager->count(dst_test->get_id(), nb_rows)){
+                if(nb_rows){
+                    return Page_Behavior;
+                }else{
+                    // TODO: find way to pass enum values rather than ints
+                    return Page_Progress;
+                }
             }else{
-                // TODO: find way to pass enum values rather than ints
-                return Page_Progress;
+                qDebug() << database_manager->pop_last_error();
+                return -1;
             }
-        }else{
-            qDebug() << database_manager->pop_last_error();
-            return -1;
-        }
+        }else
+            return -2;
     case Page_Behavior:
         return Page_Progress;
     case Page_Progress:
     default:
-        return -1;
+        return -3;
     }
 }
 
