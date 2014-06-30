@@ -59,12 +59,12 @@ int ListImportWizard::nextId() const
                 return -1;
             }
         }else
-            return -2;
+            return -1;
     case Page_Behavior:
         return Page_Progress;
     case Page_Progress:
     default:
-        return -3;
+        return -1;
     }
 }
 
