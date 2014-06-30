@@ -20,7 +20,7 @@ This program creates vocabulary tests in different languages using words from an
 If you are an **administrator** after opening the project, you have to set a password argument
 to run the application.
 
-  * To do it follow this path : **Projets > Paramètres d'exécution**
+  * To do it, go to **Projects mode > Run Settings**
   * Then set Arguments to `-p PASSWORD` or `--password PASSWORD`
   * If you want to open help wizard set Arguments to `-h` or `-?` or `--help`	
 
