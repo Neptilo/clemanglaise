@@ -2,6 +2,7 @@
 #include "import_wizard/ImportBehavior.h"
 
 #include <QComboBox>
+#include <QDebug>
 #include <QNetworkReply>
 
 #include "duplicate_utils.h"
