@@ -6,6 +6,7 @@
         <file alias="zh-img.png">img/flags/china.png</file>
         <file alias="hr-img.png">img/flags/croatia.png</file>
         <file alias="de-img.png">img/flags/germany.png</file>
+        <file alias="es-img.png">img/flags/spanish.png</file>
         <file>img/go-home.png</file>
         <file>img/process-stop.png</file>
         <file>img/emblem-default.png</file>
