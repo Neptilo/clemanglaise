@@ -6,11 +6,14 @@ ProgressPage::ProgressPage(QWidget *parent) :
     QWizardPage(parent),
     layout(this),
     status(this),
-    progress_bar(this)
+    progress_bar(this),
+    log(this)
 {
     layout.addWidget(&status);
     progress_bar.setValue(0);
     layout.addWidget(&progress_bar);
+    layout.addWidget(&log);
+    log.setTextInteractionFlags(Qt::TextSelectableByMouse);
 }
 
 void ProgressPage::set_status(QString text)
@@ -33,4 +36,9 @@ void ProgressPage::set_max_progress(int maximum)
 void ProgressPage::increase_progress(int value)
 {
     progress_bar.setValue(progress_bar.value()+value);
+}
+
+void ProgressPage::append_log(const QString &message)
+{
+    log.setText(log.toHtml()+message+"<br/>");
 }

@@ -52,7 +52,6 @@ int ListImportWizard::nextId() const
                 if(nb_rows){
                     return Page_Behavior;
                 }else{
-                    // TODO: find way to pass enum values rather than ints
                     return Page_Progress;
                 }
             }else{
@@ -143,8 +142,10 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
         if(chosen_behavior == ImportBehavior::DontCheck){
             if(import(dst_test->get_id(), word_data))
                 ++nb_inserted;
-            else
+            else{
+                progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
                 ++nb_failed;
+            }
         }else{
             // Check duplicates
             QStringList duplicate_keys;
@@ -154,8 +155,10 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                     // No duplicate found
                     if(import(dst_test->get_id(), word_data))
                         ++nb_inserted;
-                    else
+                    else{
+                        progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
                         ++nb_failed;
+                    }
                 }else{
                     // Duplicate found
                     switch (chosen_behavior) {
@@ -167,8 +170,10 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                         word_data["id"] = duplicate_values.at(best_duplicate_ind).at(duplicate_keys.indexOf("id"));
                         if(database_manager->update_word(dst_test->get_id(), word_data))
                             ++nb_replaced;
-                        else
+                        else{
+                            progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
                             ++nb_failed;
+                        }
                     }
                         break;
                     case ImportBehavior::Merge:
@@ -184,8 +189,10 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                         word_data["id"] = duplicate_values.at(best_duplicate_ind).at(duplicate_keys.indexOf("id"));
                         if(database_manager->update_word(dst_test->get_id(), word_data))
                             ++nb_updated;
-                        else
+                        else{
+                            progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
                             ++nb_failed;
+                        }
                     }
                     default: // case ImportBehavior::Discard
                         break;
@@ -193,7 +200,6 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                 }
             } // TODO: else show error
         }
-
 
         progress_page.increase_progress();
     }

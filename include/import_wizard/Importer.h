@@ -11,6 +11,8 @@ public:
 
 protected:
     DatabaseManager *database_manager;
+
+private:
 };
 
 #endif // IMPORTER_H
