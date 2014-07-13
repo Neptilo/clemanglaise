@@ -396,7 +396,7 @@ void TestView::remove_widgets()
 
 void TestView::import_word()
 {
-    SingleImportWizard import_wizard(database_manager, word_data, this);
+    SingleImportWizard import_wizard(database_manager, word_data, NULL, this);
     if(import_wizard.exec()){
         // Show confirmation
         status.setText(tr("Import succeeded!"));

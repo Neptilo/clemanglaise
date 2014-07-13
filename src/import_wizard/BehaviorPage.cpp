@@ -35,10 +35,10 @@ BehaviorPage::BehaviorPage(QWidget *parent) :
     signal_mapper.setMapping(radio, ImportBehavior::Merge);
     radios << radio;
 
-//    radio = new QRadioButton(tr("Always ask"), this);
-//    radio->setToolTip(tr("If a duplicate is found, ask what to do."));
-//    signal_mapper.setMapping(radio, ImportBehavior::Ask);
-//    radios << radio;
+    radio = new QRadioButton(tr("Always ask"), this);
+    radio->setToolTip(tr("If a duplicate is found, ask what to do."));
+    signal_mapper.setMapping(radio, ImportBehavior::Ask);
+    radios << radio;
 
     for(int i = 0; i < radios.length(); ++i)
     {

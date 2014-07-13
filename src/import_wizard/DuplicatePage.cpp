@@ -11,12 +11,13 @@
 
 #include <import_wizard/SingleImportWizard.h>
 
-DuplicatePage::DuplicatePage(const QHash<QString, QString> &word_data, QWidget *parent) :
+DuplicatePage::DuplicatePage(QWidget *parent) :
     QWizardPage(parent),
-    word_data(word_data),
+    word_data(NULL),
     layout(this),
     info(this),
-    duplicate_table(this)
+    duplicate_table(this),
+    button_group(this)
 {
     layout.addWidget(&info);
 
@@ -25,29 +26,27 @@ DuplicatePage::DuplicatePage(const QHash<QString, QString> &word_data, QWidget *
     QHBoxLayout *button_layout = new QHBoxLayout();
     layout.addLayout(button_layout); // layout is now button_layout's parent.
 
-    // radio buttons
-    QButtonGroup *button_group = new QButtonGroup(this);
-
     QRadioButton *radio;
     radio = new QRadioButton(tr("Import anyway"), this);
     radio->setToolTip(tr("The word will be inserted as is."));
-    button_group->addButton(radio);
+    signal_mapper.setMapping(radio, ImportBehavior::DontCheck);
+    button_group.addButton(radio);
 
     radio = new QRadioButton(tr("Merge"), this);
     radio->setToolTip(tr("Merge data from the original and the new version of the word."));
-    radio->setChecked(true);
-    button_group->addButton(radio);
-    // TODO: repeat previous block for each possible behavior
+    signal_mapper.setMapping(radio, ImportBehavior::Merge);
+    button_group.addButton(radio);
+    // TODO: repeat previous block for each possible behavior (example: Replace)
 
-    QList<QAbstractButton *> radios = button_group->buttons();
+    QList<QAbstractButton *> radios = button_group.buttons();
     for(int i = 0; i < radios.length(); ++i)
     {
         QAbstractButton *radio = radios.at(i);
-        signal_mapper.setMapping(radio, i);
         connect(radio, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
+        connect(radio, SIGNAL(clicked()), this, SIGNAL(completeChanged()));
         layout.addWidget(radio);
     }
-    connect(&signal_mapper, SIGNAL(mapped(int)), this, SIGNAL(choose_behavior(int)));
+    connect(&signal_mapper, SIGNAL(mapped(int)), this, SLOT(choose_behavior_int(int)));
 }
 
 void DuplicatePage::initializePage()
@@ -87,10 +86,15 @@ void DuplicatePage::initializePage()
     duplicate_table.resizeRowsToContents();
 
     // guess the most probable duplicate and check its radio button by default
-    int best_match_ind = find_best_duplicate(word_data, duplicate_keys, duplicate_values);
+    int best_match_ind = find_best_duplicate(*word_data, duplicate_keys, duplicate_values);
 
     QRadioButton *radio = (QRadioButton *) duplicate_table.cellWidget(best_match_ind, 0);
     radio->setChecked(true);
+}
+
+bool DuplicatePage::isComplete() const
+{
+    return button_group.checkedButton();
 }
 
 QHash<QString, QString> DuplicatePage::get_word_to_merge(){
@@ -105,4 +109,9 @@ QHash<QString, QString> DuplicatePage::get_word_to_merge(){
         }
     }
     return word_to_merge_data;
+}
+
+void DuplicatePage::choose_behavior_int(int behavior)
+{
+    emit choose_behavior((ImportBehavior::Behavior) behavior);
 }

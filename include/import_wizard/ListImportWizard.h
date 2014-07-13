@@ -6,6 +6,7 @@
 
 #include "AddListView.h"
 #include "DatabaseManager.h"
+#include "DuplicatePage.h"
 #include "import_wizard/BehaviorPage.h"
 #include "import_wizard/Importer.h"
 #include "import_wizard/DstListPage.h"
@@ -14,7 +15,7 @@
 class ListImportWizard : public QWizard, public Importer
 {
     Q_OBJECT
-    enum {Page_DstList, Page_Behavior, Page_Progress};
+    enum {Page_DstList, Page_Behavior, Page_Progress, Page_Duplicates};
 public:
     explicit ListImportWizard(DatabaseManager *database_manager, Test *src_test, QWidget *parent = 0);
     void showEvent(QShowEvent *);
@@ -25,6 +26,7 @@ private:
     DstListPage dst_list_page;
     BehaviorPage behavior_page;
     ProgressPage progress_page;
+//    DuplicatePage duplicate_page;
     int chosen_behavior;
     QNetworkAccessManager nam;
     int nb_inserted;

@@ -7,6 +7,9 @@
 
 #include "duplicate_utils.h"
 #include "import_wizard/Importer.h"
+#include "import_wizard/SingleImportWizard.h"
+
+#include <import_wizard/DuplicatePage.h>
 
 ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test, QWidget *parent) :
     QWizard(parent),
@@ -16,6 +19,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     dst_list_page(database_manager, this),
     behavior_page(this),
     progress_page(this),
+    //duplicate_page(this),
     nam(this),
     nb_inserted(0),
     nb_replaced(0),
@@ -38,6 +42,9 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     setPage(Page_Progress, &progress_page);
     connect(&progress_page, SIGNAL(import_list()), this, SLOT(import_list())); // emitted when page shows up
     setOption(QWizard::NoBackButtonOnLastPage);
+
+    // page to show possible duplicates for specific duplicates if user has chosen to be prompted for every detected duplicate
+//    setPage(Page_Duplicates, &duplicate_page);
 
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 }
@@ -62,7 +69,14 @@ int ListImportWizard::nextId() const
             return -1;
     case Page_Behavior:
         return Page_Progress;
+    case Page_Duplicates:
+        return Page_Progress;
     case Page_Progress:
+        // If the user chose to be asked for each duplicate, the next page is the one that shows the list of duplicates for the word being imported.
+        if(chosen_behavior != ImportBehavior::Ask || progress_page.isComplete())
+            return -1;
+        else
+            return -1;
     default:
         return -1;
     }
@@ -147,10 +161,12 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                 ++nb_failed;
             }
         }else{
+            qDebug() << "checkin";
             // Check duplicates
             QStringList duplicate_keys;
             QList<QStringList> duplicate_values;
             if(database_manager->find_duplicates(dst_test->get_id(), word_data["word"], duplicate_keys, duplicate_values)){
+                qDebug() << "found one";
                 if(duplicate_values.empty()){
                     // No duplicate found
                     if(import(dst_test->get_id(), word_data))
@@ -163,7 +179,6 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                     // Duplicate found
                     switch (chosen_behavior) {
                     case ImportBehavior::Replace:
-                        // replace
                         // guess most probable duplicate from duplicate_values, and update it.
                     {
                         int best_duplicate_ind = find_best_duplicate(word_data, duplicate_keys, duplicate_values);
@@ -177,7 +192,6 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                     }
                         break;
                     case ImportBehavior::Merge:
-                        // merge
                         // same as before and merge like in merge_word from SingleImportWizard
                     {
                         int best_duplicate_ind = find_best_duplicate(word_data, duplicate_keys, duplicate_values);
@@ -194,6 +208,28 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                             ++nb_failed;
                         }
                     }
+                        break;
+                    case ImportBehavior::Ask:
+                    {
+                        SingleImportWizard single_import_wizard(database_manager, word_data, dst_test, this);
+                        if(single_import_wizard.exec()){
+                            // Show confirmation
+                            qDebug() << tr("Import succeeded!");
+                            switch (single_import_wizard.chosen_behavior) {
+                            case ImportBehavior::DontCheck:
+                                ++nb_inserted;
+                                break;
+                            case ImportBehavior::Merge:
+                                ++nb_updated;
+                                break;
+                            default:
+                                qDebug() << tr("This should not happen. The single import wizard succeeded but the behavior is unknown (%1).").arg(single_import_wizard.chosen_behavior);
+                                break;
+                            }
+                        }else
+                            ++nb_failed;
+                    }
+                        break;
                     default: // case ImportBehavior::Discard
                         break;
                     }

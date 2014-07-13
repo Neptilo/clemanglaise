@@ -28,6 +28,11 @@ void ProgressPage::initializePage()
     emit import_list();
 }
 
+bool ProgressPage::isComplete() const
+{
+    return progress_bar.value() == progress_bar.maximum();
+}
+
 void ProgressPage::set_max_progress(int maximum)
 {
     progress_bar.setMaximum(maximum);
