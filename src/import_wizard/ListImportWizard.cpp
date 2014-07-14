@@ -161,12 +161,10 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                 ++nb_failed;
             }
         }else{
-            qDebug() << "checkin";
             // Check duplicates
             QStringList duplicate_keys;
             QList<QStringList> duplicate_values;
             if(database_manager->find_duplicates(dst_test->get_id(), word_data["word"], duplicate_keys, duplicate_values)){
-                qDebug() << "found one";
                 if(duplicate_values.empty()){
                     // No duplicate found
                     if(import(dst_test->get_id(), word_data))
@@ -214,7 +212,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                         SingleImportWizard single_import_wizard(database_manager, word_data, dst_test, this);
                         if(single_import_wizard.exec()){
                             // Show confirmation
-                            qDebug() << tr("Import succeeded!");
+                            // TODO: show tr("Import succeeded!");
                             switch (single_import_wizard.chosen_behavior) {
                             case ImportBehavior::DontCheck:
                                 ++nb_inserted;

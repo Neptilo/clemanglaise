@@ -12,6 +12,7 @@ class SingleImportWizard : public QWizard, public Importer
 {
     Q_OBJECT
 public:
+    // dst_test: pointer to a predefined vocab test, NULL otherwise
     explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, Test *dst_test, QWidget *parent = 0);
     ImportBehavior::Behavior chosen_behavior;
     void showEvent(QShowEvent *);

@@ -26,7 +26,6 @@ private:
     DstListPage dst_list_page;
     BehaviorPage behavior_page;
     ProgressPage progress_page;
-//    DuplicatePage duplicate_page;
     int chosen_behavior;
     QNetworkAccessManager nam;
     int nb_inserted;
