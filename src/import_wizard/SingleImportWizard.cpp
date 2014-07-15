@@ -65,14 +65,14 @@ bool SingleImportWizard::import_word()
     return import(dst_test->get_id(), word_data);
 }
 
-bool SingleImportWizard::update_word(const QHash<QString, QString> &word_to_merge_data)
+bool SingleImportWizard::update_word(const QHash<QString, QString> &word_data)
 {
     if(!dst_test->get_id()){ // TODO: show error message
         qDebug() << tr("Destination test ID has not been defined.");
         reject();
     }
 
-    if(!database_manager->update_word(dst_test->get_id(), merge_word(word_data, word_to_merge_data))){ // TODO: show error message if it fails
+    if(!database_manager->update_word(dst_test->get_id(), word_data)){ // TODO: show error message if it fails
         qDebug() << tr("<b>SQLite error: </b>") << database_manager->pop_last_error();
         return false;
     }else{
@@ -99,7 +99,14 @@ void SingleImportWizard::accept()
     case ImportBehavior::Merge:
     {
         const QHash<QString, QString> word_to_merge_data = duplicate_page.get_word_to_merge();
-        success = update_word(word_to_merge_data);
+        QHash<QString, QString> merged_word_data = merge_word(word_data, word_to_merge_data);
+        merged_word_data["id"] = word_to_merge_data["id"];
+        success = update_word(merged_word_data);
+        break;
+    }
+    case ImportBehavior::Replace:
+    {
+        success = update_word(word_data);
         break;
     }
     default:

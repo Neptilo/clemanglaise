@@ -36,7 +36,11 @@ DuplicatePage::DuplicatePage(QWidget *parent) :
     radio->setToolTip(tr("Merge data from the original and the new version of the word."));
     signal_mapper.setMapping(radio, ImportBehavior::Merge);
     button_group.addButton(radio);
-    // TODO: repeat previous block for each possible behavior (example: Replace)
+
+    radio = new QRadioButton(tr("Replace"), this);
+    radio->setToolTip(tr("The new version will replace the existing word."));
+    signal_mapper.setMapping(radio, ImportBehavior::Replace);
+    button_group.addButton(radio);
 
     QList<QAbstractButton *> radios = button_group.buttons();
     for(int i = 0; i < radios.length(); ++i)

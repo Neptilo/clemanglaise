@@ -27,8 +27,8 @@ signals:
 
 public slots:
     bool import_word();
-    // merge word_data with word_to_merge_data and update it in database
-    bool update_word(const QHash<QString, QString> &word_to_merge_data);
+    // update word_data in database
+    bool update_word(const QHash<QString, QString> &word_data);
     void choose_behavior(ImportBehavior::Behavior behavior);
 
 private slots:

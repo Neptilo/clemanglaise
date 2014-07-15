@@ -12,7 +12,7 @@ int find_best_duplicate(
         const QList<QStringList> &duplicate_values
         );
 
-// returns a QHash with all the fiels of left_word_data merges with the corresponding values in right_word_data
+// returns a QHash with all the fiels of left_word_data merged with the corresponding values in right_word_data
 // except the "id" field, which is dascarded
 QHash<QString, QString> merge_word(
         const QHash<QString, QString> &left_word_data,
@@ -23,6 +23,7 @@ QString merge_string(
         const QString &left_string,
         const QString &right_string,
         const QRegExp &split_sep,
-        const QString &join_sep);
+        const QString &join_sep
+        );
 
 #endif // DUPLICATE_UTILS_H
