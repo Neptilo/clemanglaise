@@ -165,6 +165,7 @@ void EditView::edit_word(){
 #else
 		QUrlQuery post_data;
 #endif
+        post_data.addQueryItem("test_id", QString::number(test->get_id()));
         for (QHash<QString, QString>::iterator i = word_data.begin(); i != word_data.end(); ++i)
             post_data.addQueryItem(i.key(), i.value());
 
