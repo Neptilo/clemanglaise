@@ -41,17 +41,20 @@ private:
     QFormLayout* layout;
     int id_theme;
     QString php_filename;
-    const QHash<QString, QString> default_values;
+    QHash<QString, QString> default_values;
     QStringList reply_list;
     QString success_message;
     DatabaseManager *database_manager;
     Test *test;
+    // This method is called after a word has been successfully added or edited.
+    // It updates attributes and the UI to allow the user to add another word. In particular it prepares for an "add" behavior instead of "update".
+    void prepare_to_continue();
 
 public slots:
     void edit_word();
 	void read_reply(QNetworkReply * reply); 
     void show_confirmation(QNetworkReply* reply);
-    void show_confirmation();
+    void show_confirmation(bool success);
     void back();
     void reset();
 	void find_themes();

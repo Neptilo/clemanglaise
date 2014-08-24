@@ -147,18 +147,7 @@ void EditView::edit_word(){
             success = database_manager->update_word(test->get_id(), word_data);
 
         // Show confirmation
-        if(success)
-            status->setText(success_message);
-        else
-            status->setText(tr("<b>SQLite error: </b>")+database_manager->pop_last_error());
-
-        delete OK_button;
-        continue_button = new QPushButton(tr("Add another word"), this);
-        continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
-
-        layout->addWidget(continue_button);
-        connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-        cancel_button->setText(tr("Back"));
+        show_confirmation(success);
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		QUrl post_data;
@@ -187,31 +176,22 @@ void EditView::edit_word(){
 }
 
 void EditView::show_confirmation(QNetworkReply* reply){
-	const QString reply_string(reply->readAll());
-	reply->deleteLater();
-	if(reply_string.compare("")){
-		status->setText(reply_string);
-	}else{
+    const QString reply_string(reply->readAll());
+    reply->deleteLater();
+    if(reply_string.compare(""))
+        status->setText(reply_string);
+    else{
         status->setText(success_message);
-	}
-	delete OK_button;
-	continue_button = new QPushButton(tr("Add another word"), this);
-	continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
-
-	layout->addWidget(continue_button);
-	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-	cancel_button->setText(tr("Back"));
+        prepare_to_continue();
+    }
 }
 
-void EditView::show_confirmation(){
-    status->setText(success_message);
-	delete OK_button;
-	continue_button = new QPushButton(tr("Add another word"), this);
-	continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
-
-	layout->addWidget(continue_button);
-	connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-	cancel_button->setText(tr("Back"));
+void EditView::show_confirmation(bool success){
+    if(success){
+        status->setText(success_message);
+        prepare_to_continue();
+    }else
+        status->setText(tr("<b>SQLite error: </b>")+database_manager->pop_last_error());
 }
 
 void EditView::back(){
@@ -219,7 +199,6 @@ void EditView::back(){
 }
 
 void EditView::reset(){
-
     word_edit->setText(default_values["word"]);
     meaning_edit->setText(default_values["meaning"]);
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values["nature"])));
@@ -230,6 +209,7 @@ void EditView::reset(){
 
 	delete continue_button;
 
+    title->setText(tr("<b>Add a new word</b>"));
 	OK_button = new QPushButton(tr("Add word"), this);
 	OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
@@ -277,5 +257,23 @@ void EditView::disable_edition(bool ok) {
 	pronunciation_edit->setEnabled(!ok);
 	comment_edit->setEnabled(!ok);
 	example_edit->setEnabled(!ok);
-	themes->setEnabled(!ok); 
+    themes->setEnabled(!ok);
+}
+
+void EditView::prepare_to_continue()
+{
+    // Once a word has been updated, the default values are those of the next word we might add, ie, empty values.
+    QStringList word_keys;
+    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
+    for(int i = 0; i < word_keys.size(); ++i)
+        default_values[word_keys.at(i)] = "";
+    php_filename = "add";
+    success_message = tr("Word successfully added!");
+    delete OK_button;
+    continue_button = new QPushButton(tr("Add another word"), this);
+    continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
+
+    layout->addWidget(continue_button);
+    connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
+    cancel_button->setText(tr("Back"));
 }
