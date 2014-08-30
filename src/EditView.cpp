@@ -64,7 +64,7 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     nature_edit->addItem(tr("Pronoun"), QVariant("pron"));
     nature_edit->addItem(tr("Verb"), QVariant("v"));
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(nature)));
-    layout->addRow(tr("&Nature: "), nature_edit);
+    layout->addRow(tr("Part of &speech: "), nature_edit);
 
     meaning_edit = new QLineEdit(meaning, this);
     layout->addRow(tr("&Translation: "), meaning_edit);
@@ -99,7 +99,7 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
 
-	cancel_button = new QPushButton(tr("Cancel"), this);
+    cancel_button = new QPushButton(tr("Back"), this);
 	cancel_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
 
 	connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
@@ -215,7 +215,7 @@ void EditView::reset(){
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
 
-	cancel_button->setText(tr("Cancel"));
+    cancel_button->setText(tr("Back"));
 	disable_edition(false);
 }
 

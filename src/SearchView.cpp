@@ -49,6 +49,7 @@ SearchView::~SearchView() {
 }
 
 void SearchView::search() {
+    layout()->removeWidget(update_frame);
     if (test->is_remote()) {
         // Standardization of search string
         QString search_str = ampersand_escape(search_bar->text());
