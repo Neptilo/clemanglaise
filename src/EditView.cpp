@@ -135,7 +135,7 @@ void EditView::edit_word(){
     // toPlainText() because we don't want to save a too much unnecessary information like an HTML header.
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
-    word_data["theme"] = themes->itemData(themes->currentIndex()).toString();
+    word_data["theme_id"] = themes->itemData(themes->currentIndex()).toString();
 
     if (!test->is_remote()) {
 		bool success;

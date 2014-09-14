@@ -92,12 +92,12 @@ bool DatabaseManager::add_theme(const QString &theme) {
 bool DatabaseManager::add_word(int test_id, const QHash<QString, QString> &word_data)
 {
     QSqlQuery query;
-    bool success = query.prepare(QString("INSERT INTO words_%1(word, meaning, nature, pronunciation, comment, example) "
-                                         "VALUES(:word, :meaning, :nature, :pronunciation, :comment, :example)").arg(test_id));
+    bool success = query.prepare(QString("INSERT INTO words_%1(word, meaning, nature, pronunciation, comment, example, theme_id) "
+                                         "VALUES(:word, :meaning, :nature, :pronunciation, :comment, :example, :theme_id)").arg(test_id));
 
     for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
         // For now we discard theme information because it is awaiting a big change in the database schema.
-        if(i.key() != "test_id" && i.key() != "id" && i.key() != "score" && i.key() != "id_theme" && i.key() != "theme" && i.key() != "name") {
+        if(i.key() != "test_id" && i.key() != "id" && i.key() != "score" && i.key() != "theme" && i.key() != "name") {
             query.bindValue(":"+i.key(), i.value());
         }
     }
@@ -319,11 +319,12 @@ bool DatabaseManager::update_word(int test_id, const QHash<QString, QString> &wo
                                          "nature=:nature, "
                                          "comment=:comment, "
                                          "example=:example, "
-                                         "pronunciation=:pronunciation "
+                                         "pronunciation=:pronunciation, "
+                                         "id_theme=:theme_id "
                                          "WHERE id=:id").arg(test_id));
     QHash<QString, QString>::const_iterator i;
     for(i = word_data.begin(); i != word_data.end(); ++i) {
-        if(i.key() != "theme" && i.key() != "score" && i.key() != "id_theme") {
+        if(i.key() != "theme" && i.key() != "score") {
             query.bindValue(":"+i.key(), i.value());
         }
     }

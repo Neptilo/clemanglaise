@@ -42,6 +42,8 @@ private:
     int id_theme;
     QString php_filename;
     QHash<QString, QString> default_values;
+    // list of themes
+    // Elements at even indices are the theme IDs and elements at odd indices are their corresponding names.
     QStringList reply_list;
     QString success_message;
     DatabaseManager *database_manager;
