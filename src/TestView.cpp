@@ -397,21 +397,23 @@ void TestView::remove_widgets()
 void TestView::import_word()
 {
     SingleImportWizard import_wizard(database_manager, word_data, NULL, this);
-    if(import_wizard.exec()){
+    if(import_wizard.exec())
         // Show confirmation
         status.setText(tr("Import succeeded!"));
-        layout->addWidget(&status);
-        status.show();
-    }
+    else
+        status.setText(import_wizard.get_error());
+    layout->addWidget(&status);
+    status.show();
 }
 
 void TestView::import_list()
 {
     ListImportWizard import_wizard(database_manager, &test, this);
-    if(import_wizard.exec()){
+    if(import_wizard.exec())
         // Show confirmation
         status.setText(tr("Import succeeded!"));
-        layout->addWidget(&status);
-        status.show();
-    }
+    else
+        status.setText(import_wizard.get_error());
+    layout->addWidget(&status);
+    status.show();
 }
