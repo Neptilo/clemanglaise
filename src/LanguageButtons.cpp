@@ -16,7 +16,11 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
     QGridLayout *layout = new QGridLayout(this);
 
     int l = tests.size();
-    int w = (int) sqrt(l);
+    int w; // number of rows of the button grid
+    if(new_button)
+        w = (int) sqrt(l+1);
+    else
+        w = (int) sqrt(l);
     for (int i = 0; i < l; ++i) {
         Test *test = new Test(tests.at(i), this); // pointer to non constant copy of test
         QPushButton *button = new QPushButton(test->get_name(), this);
