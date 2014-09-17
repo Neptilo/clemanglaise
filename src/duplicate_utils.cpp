@@ -12,7 +12,7 @@ int find_best_duplicate(
     QStringList relevant_keys; // keys of relevant fields to compute similarity between imported entry and possible duplicate
     relevant_keys << "word" << "meaning";
     int best_similarity = 0; // Similarity is defined as the number of words and meanings in common between two entries.
-    int best_match_ind;
+    int best_match_ind(0);
     for(int i = 0; i < duplicate_values.size(); ++i){
         int similarity = 0;
         for(int j = 0; j < relevant_keys.size(); ++j){
