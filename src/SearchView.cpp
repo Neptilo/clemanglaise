@@ -68,7 +68,7 @@ void SearchView::search() {
 void SearchView::read_reply(QNetworkReply* reply)
 {
     // Store the lines of the reply in the "reply_list" attribute
-    QString reply_string = reply->readAll();
+    QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
     read_reply(reply_string); // FIXME: Memory leak
 }
