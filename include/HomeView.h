@@ -38,6 +38,7 @@ signals:
 public slots:
     void add_list();
     void init();
+    void shrink();
     void list_created(Test *test);
     void start_test(Test *test);
     void read_reply_lists(QNetworkReply *reply);
