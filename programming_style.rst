@@ -13,5 +13,5 @@ Programming style to use when editing this project
 
 * Sort each include list by name
 * Initialize pointer attributes to NULL in initialization lists. Set them to NULL after a delete (except if it is redefined right after). We should always be able to know if a pointer `p` points to an actual object with the test `if(p)`.
-* Do not keep console prints (such as `qDebug()`) in a commited file set.
-* Do not keep code blocks commented out in a commited file set.
+* Do not keep console prints (such as `qDebug()`) in a committed file set.
+* Do not keep code blocks commented out in a committed file set.
