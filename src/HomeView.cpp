@@ -1,6 +1,9 @@
 #include "HomeView.h"
 
+#include <QTimer>
+
 #include "string_utils.h"
+
 
 HomeView::HomeView(bool admin, QWidget *parent):
     QWidget(parent),
@@ -48,8 +51,7 @@ void HomeView::init()
     delete test_buttons;
     test_buttons = NULL;
 
-    delete add_list_view;
-    add_list_view = NULL;
+    remove_add_list_view();
 
     title->show();
 
@@ -80,6 +82,11 @@ void HomeView::init()
     }
 }
 
+void HomeView::shrink()
+{
+    resize(minimumSizeHint());
+}
+
 void HomeView::list_created(Test *test)
 {
     // If the pointer test is not defined, it means that the database that created it didn't return its inserted ID.
@@ -103,6 +110,7 @@ void HomeView::read_reply_lists(QNetworkReply *reply)
 
         // test buttons
         delete test_buttons;
+
         test_buttons = new LanguageButtons(online_tests, admin, this);
         connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
         layout->addWidget(test_buttons);
@@ -119,6 +127,8 @@ void HomeView::remove_add_list_view()
 {
     delete add_list_view;
     add_list_view = NULL;
+    // resize window to fit content
+    QTimer::singleShot(0, this, SLOT(shrink()));
 }
 
 void HomeView::set_test_source(bool remote)
@@ -147,8 +157,7 @@ void HomeView::start_test(Test *test){
         TestView* test_view = new TestView(*test, &database_manager, str_title, admin, this);
 
         // remove add_list_view only after creating test_view, because the Test, needed by test_view, will be deleted as child of add_list_view.
-        delete add_list_view;
-        add_list_view = NULL;
+        remove_add_list_view();
 
         connect(test_view, SIGNAL(destroyed()), SLOT(init()));
         layout->addWidget(test_view);
