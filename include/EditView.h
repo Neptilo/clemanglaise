@@ -53,6 +53,7 @@ private:
     void prepare_to_continue();
 
 public slots:
+    void shrink();
     void edit_word();
 	void read_reply(QNetworkReply * reply); 
     void show_confirmation(QNetworkReply* reply);
