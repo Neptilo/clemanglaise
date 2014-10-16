@@ -16,7 +16,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     Importer(database_manager),
     src_test(test),
     dst_test(NULL),
-    dst_list_page(database_manager, this),
+    dst_list_page(database_manager, true, this),
     behavior_page(this),
     progress_page(this),
     //duplicate_page(this),

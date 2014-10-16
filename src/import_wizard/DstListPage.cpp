@@ -4,15 +4,19 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-DstListPage::DstListPage(DatabaseManager *database_manager, QWidget *parent) :
+DstListPage::DstListPage(DatabaseManager *database_manager, bool multiple, QWidget *parent) :
     QWizardPage(parent),
     database_manager(database_manager),
     layout(this),
-    question(tr("To what list do you want to import this word?"), this),
+    question(this),
     test_buttons(database_manager->get_lists(), true, this),
     add_list_view(NULL)
 {
     // question
+    if(multiple)
+        question.setText(tr("To what list do you want to import this vocabulary list?"));
+    else
+        question.setText(tr("To what list do you want to import this word?"));
     layout.addWidget(&question);
 
     // language buttons

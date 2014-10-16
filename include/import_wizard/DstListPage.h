@@ -14,7 +14,7 @@ class DstListPage : public QWizardPage
 {
     Q_OBJECT
 public:
-    explicit DstListPage(DatabaseManager *database_manager, QWidget *parent = 0);    
+    explicit DstListPage(DatabaseManager *database_manager, bool multiple, QWidget *parent = 0);
     bool isComplete();
 private:
     DatabaseManager *database_manager;

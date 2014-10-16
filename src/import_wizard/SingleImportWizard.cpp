@@ -22,7 +22,7 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
         check_duplicates(dst_test);
     else{
         // page to choose destination list of the import
-        dst_list_page = new DstListPage(database_manager, this);
+        dst_list_page = new DstListPage(database_manager, false, this);
         connect(dst_list_page, SIGNAL(chosen(Test *)), this, SLOT(check_duplicates(Test *)));
         addPage(dst_list_page);
     }
