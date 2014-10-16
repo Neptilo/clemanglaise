@@ -43,6 +43,7 @@ private slots:
     void save_and_next(Test *test);
     void choose_behavior(int behavior);
     void read_reply(QNetworkReply *reply);
+    void update_on_complete();
 };
 
 #endif // LISTIMPORTWIZARD_H

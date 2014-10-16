@@ -41,6 +41,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     // page to show progress and status
     setPage(Page_Progress, &progress_page);
     connect(&progress_page, SIGNAL(import_list()), this, SLOT(import_list())); // emitted when page shows up
+    connect(&progress_page, SIGNAL(completeChanged()), this, SLOT(update_on_complete()));
     setOption(QWizard::NoBackButtonOnLastPage);
 
     // page to show possible duplicates for specific duplicates if user has chosen to be prompted for every detected duplicate
@@ -254,4 +255,12 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
         recap_list << tr("There was nothing to do.");
     QString recap = tr("Import finished: ")+recap_list.join(tr(", "));
     progress_page.set_status(recap);
+}
+
+void ListImportWizard::update_on_complete()
+{
+    if(progress_page.isComplete()){
+        // disable cancel button
+        button(QWizard::CancelButton)->setEnabled(false);
+    }
 }

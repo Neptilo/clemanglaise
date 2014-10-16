@@ -41,6 +41,7 @@ void ProgressPage::set_max_progress(int maximum)
 void ProgressPage::increase_progress(int value)
 {
     progress_bar.setValue(progress_bar.value()+value);
+    emit completeChanged();
 }
 
 void ProgressPage::append_log(const QString &message)
