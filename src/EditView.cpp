@@ -138,13 +138,19 @@ void EditView::edit_word(){
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     //word_data["theme_id"] = themes->itemData(themes->currentIndex()).toString();
+    QList<QListWidgetItem *> selected_items  = tags->selectedItems();
+    QList<int> selected_items_variant;
+    for (int i = 0, l = selected_items.size(); i<l; ++i)
+    {
+       selected_items_variant << selected_items.at(i)->data(Qt::UserRole).toInt();
+    }
 
     if (!test->is_remote()) {
 		bool success;
 
         // Offline
         if(word_data["id"].toInt() == 0) // Add word
-            success = database_manager->add_word(word_data);
+            success = database_manager->add_word(word_data, selected_items_variant);
         else // Update word
             success = database_manager->update_word(word_data);
 

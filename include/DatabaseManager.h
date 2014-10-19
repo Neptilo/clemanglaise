@@ -16,6 +16,7 @@ public:
     bool add_list(const QString &name, const QString &src, const QString &dst, int &test_id);
     bool add_list(const QString &name, const QString &src, const QString &dst);
     bool add_word(const QHash<QString, QString> &word_data);
+    bool add_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags);
     bool add_tag(const QString &tag);
     bool create_list_table();
     bool create_word_table();

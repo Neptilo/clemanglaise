@@ -70,6 +70,56 @@ bool DatabaseManager::add_tag(const QString &tag) {
     return success;
 }
 
+
+
+bool DatabaseManager::add_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags)
+{
+    QSqlQuery query;
+    query.exec("BEGIN");
+    bool success = query.prepare(QString("INSERT INTO words(list_id, word, meaning, nature, pronunciation, comment, example) "
+                                         "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example)"));
+    for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
+        if(i.key() != "id") {
+            query.bindValue(":"+i.key(), i.value());
+        }
+    }
+    success &= query.exec();
+    if (!success){
+        last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
+    }
+    // Get last inserted ID
+    int word_id = 0;
+    query.exec("SELECT LAST_INSERT_ROWID()");
+    if (query.next())
+        word_id = query.value(0).toInt();
+    else{
+        last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
+    }
+
+    // Add themes to many-to-many tabe
+    for (int i =0,l= selected_tags.size(); i<l; ++i)
+    {
+        success &= query.prepare(QString("INSERT INTO words_tags(word_id, tag_id) "
+                                         "VALUES (:word_id, :tag_id)"
+                                         ));
+        query.bindValue(":word_id", word_id);
+        query.bindValue(":tag_id", selected_tags.at(i));
+        success &= query.exec();
+    }
+
+    if(!success) {
+        last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
+    }
+    query.exec("COMMIT");
+    return success;
+}
+
 bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 {
     QSqlQuery query;
@@ -85,8 +135,6 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
     if(!success)
         last_error = query.lastError().text();
     
-    // TODO Add themes to many-to-many table
-
     return success;
 }
 
