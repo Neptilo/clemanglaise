@@ -60,6 +60,7 @@ private:
 
 public slots:
     void init();
+    void shrink();
     void update_request();
     void read_reply(QNetworkReply* reply);
     void read_delete_list_reply(QNetworkReply* reply);

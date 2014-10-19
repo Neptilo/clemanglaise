@@ -183,7 +183,7 @@ void SearchView::action(int row, int col)
 #endif
             } else {
                 int id = reply_list.at(row*nb_cols).toInt();
-                database_manager->delete_word(test->get_id(), id);
+                database_manager->delete_word(id);
             }
 
             refresh();

@@ -70,7 +70,7 @@ void ThemeView::edit_theme(){
     if (!test->is_remote()) {
         // Offline
 		// Will show confirmation when loading of reply is finished
-		database_manager->add_theme(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1));
+		database_manager->add_tag(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1));
         show_confirmation();
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
@@ -144,7 +144,7 @@ void ThemeView::reset(){
 void ThemeView::find_themes() {
     if (!test->is_remote()) {
         // Offline
-		database_manager->find_themes(reply_list);
+		database_manager->find_tags(reply_list);
 		read_reply();
 	} else { 
 		// Request to PHP file

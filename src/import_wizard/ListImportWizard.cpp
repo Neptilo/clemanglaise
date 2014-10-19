@@ -45,7 +45,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     setOption(QWizard::NoBackButtonOnLastPage);
 
     // page to show possible duplicates for specific duplicates if user has chosen to be prompted for every detected duplicate
-//    setPage(Page_Duplicates, &duplicate_page);
+    //    setPage(Page_Duplicates, &duplicate_page);
 
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 }
@@ -151,11 +151,13 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
         for(int j = 0; j < word_keys.size(); ++j){
             word_data[word_keys.at(j)] = reply_list.at(i*word_keys.size()+j);
         }
+        // TODO add list_id in reply_string ?
+        word_data["list_id"] = dst_test->get_id();
         progress_page.set_status(tr("Importing \"<b>%1</b>\"").arg(word_data["word"]));
 
         // Do different things according to chosen behavior
         if(chosen_behavior == ImportBehavior::DontCheck){
-            if(import(dst_test->get_id(), word_data))
+            if(import(word_data))
                 ++nb_inserted;
             else{
                 progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
@@ -168,7 +170,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
             if(database_manager->find_duplicates(dst_test->get_id(), word_data["word"], duplicate_keys, duplicate_values)){
                 if(duplicate_values.empty()){
                     // No duplicate found
-                    if(import(dst_test->get_id(), word_data))
+                    if(import(word_data))
                         ++nb_inserted;
                     else{
                         progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
@@ -182,7 +184,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                     {
                         int best_duplicate_ind = find_best_duplicate(word_data, duplicate_keys, duplicate_values);
                         word_data["id"] = duplicate_values.at(best_duplicate_ind).at(duplicate_keys.indexOf("id"));
-                        if(database_manager->update_word(dst_test->get_id(), word_data))
+                        if(database_manager->update_word(word_data))
                             ++nb_replaced;
                         else{
                             progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
@@ -200,7 +202,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                             best_duplicate_data[duplicate_keys.at(i)] = duplicate_values.at(best_duplicate_ind).at(i);
                         word_data = merge_word(word_data, best_duplicate_data);
                         word_data["id"] = duplicate_values.at(best_duplicate_ind).at(duplicate_keys.indexOf("id"));
-                        if(database_manager->update_word(dst_test->get_id(), word_data))
+                        if(database_manager->update_word(word_data))
                             ++nb_updated;
                         else{
                             progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));

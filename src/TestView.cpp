@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QTimer>
 #include <QWizard>
 
 #include "import_wizard/DstListPage.h"
@@ -105,6 +106,9 @@ TestView::~TestView(){
 // This function is called every time the user comes back from another view.
 void TestView::init()
 {
+    //layout->setSizeConstraint(QLayout::SetFixedSize);
+    //adjustSize();
+    //QTimer::singleShot(0,this, SLOT(shrink()));
     if (test.is_remote()) {
         question_view = new QuestionView(&test, this);
         layout->addWidget(question_view);
@@ -145,6 +149,10 @@ void TestView::init()
     search_button->show();
     if(test.is_remote())
         import_button->show();
+}
+
+void TestView::shrink(){
+    resize(0,0); //minimumSizeHint());
 }
 
 void TestView::update_request() {
@@ -342,7 +350,7 @@ void TestView::go_back() {
 void TestView::find_themes() {
     if (!test.is_remote()) {
 		// Offline
-        database_manager->find_used_themes(test.get_id(), reply_list_theme);
+        database_manager->find_used_tags(test.get_id(), reply_list_theme);
 		read_reply();
 	} else { 
 		// Request to PHP file

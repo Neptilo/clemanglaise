@@ -62,7 +62,7 @@ void SingleImportWizard::check_duplicates(Test *test)
 
 bool SingleImportWizard::import_word()
 {
-    return import(dst_test->get_id(), word_data);
+    return import(word_data);
 }
 
 bool SingleImportWizard::update_word(const QHash<QString, QString> &word_data)
@@ -72,7 +72,7 @@ bool SingleImportWizard::update_word(const QHash<QString, QString> &word_data)
         reject();
     }
 
-    if(!database_manager->update_word(dst_test->get_id(), word_data)){ // TODO: show error message if it fails
+    if(!database_manager->update_word(word_data)){ // TODO: show error message if it fails
         qDebug() << tr("<b>SQLite error: </b>") << database_manager->pop_last_error();
         return false;
     }else{

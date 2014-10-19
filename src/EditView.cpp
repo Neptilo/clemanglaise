@@ -128,6 +128,7 @@ void EditView::edit_word(){
     // Define data to send
     QHash<QString, QString> word_data;
     word_data["id"] = default_values["id"];
+    word_data["list_id"] = QString::number(test->get_id());
     word_data["word"] = ampersand_escape(word_edit->text());
     word_data["nature"] = nature_edit->itemData(nature_edit->currentIndex()).toString();
     word_data["meaning"] = ampersand_escape(meaning_edit->text());
@@ -142,9 +143,9 @@ void EditView::edit_word(){
 
         // Offline
         if(word_data["id"].toInt() == 0) // Add word
-            success = database_manager->add_word(test->get_id(), word_data);
+            success = database_manager->add_word(word_data);
         else // Update word
-            success = database_manager->update_word(test->get_id(), word_data);
+            success = database_manager->update_word(word_data);
 
         // Show confirmation
         show_confirmation(success);
@@ -222,7 +223,7 @@ void EditView::reset(){
 void EditView::find_themes() {
     if (!test->is_remote()) {
 		// Offline
-		database_manager->find_themes(reply_list);
+		database_manager->find_tags(reply_list);
 		read_reply();
     } else {
 		// Request to PHP file

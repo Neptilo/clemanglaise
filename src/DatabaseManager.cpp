@@ -15,7 +15,9 @@ DatabaseManager::DatabaseManager(QObject *parent) :
         return;
     }
     create_list_table();
-    create_theme_table();
+    create_word_table();
+    create_tag_table();
+    create_word_tag_table();
 }
 
 // test_id is an output: the inserted ID.
@@ -45,27 +47,6 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
         return false;
     }
 
-    /* We call the list table "words_<id>" with <id> its ID in the list table,
-     * instead of calling it the name given by the user. */
-    success = query.exec(QString("CREATE TABLE IF NOT EXISTS words_%1("
-                                 "id INTEGER PRIMARY KEY, "
-                                 "word TEXT NOT NULL DEFAULT '', "
-                                 "meaning TEXT NOT NULL DEFAULT '', "
-                                 "pronunciation TEXT DEFAULT '', "
-                                 "nature VARCHAR(5) DEFAULT '', "
-                                 "comment TEXT DEFAULT '', "
-                                 "example TEXT DEFAULT '', "
-                                 "correctly_answered INTEGER NOT NULL DEFAULT 0, "
-                                 "asked INTEGER NOT NULL DEFAULT 0, "
-                                 "score DECIMAL(2,2) DEFAULT 0, "
-                                 "id_theme INTEGER NULL, "
-                                 "FOREIGN KEY(id_theme) REFERENCES themes(id) ON DELETE SET NULL)"
-                                 ).arg(test_id));
-    if (!success){
-        last_error = query.lastError().text();
-        query.exec("ROLLBACK");
-        return false;
-    }
     query.exec("COMMIT");
     return success;
 }
@@ -75,13 +56,13 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
     return add_list(name, src, dst, test_id);
 }
 
-bool DatabaseManager::add_theme(const QString &theme) {
-    QString str = "INSERT INTO themes "
+bool DatabaseManager::add_tag(const QString &tag) {
+    QString str = "INSERT INTO tags "
             "(name) "
             "VALUES(:name)";
     QSqlQuery query;
     bool success = query.prepare(str);
-    query.bindValue(":name", theme);
+    query.bindValue(":name", tag);
 
     success &= query.exec();
     if (!success)
@@ -89,22 +70,22 @@ bool DatabaseManager::add_theme(const QString &theme) {
     return success;
 }
 
-bool DatabaseManager::add_word(int test_id, const QHash<QString, QString> &word_data)
+bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 {
     QSqlQuery query;
-    bool success = query.prepare(QString("INSERT INTO words_%1(word, meaning, nature, pronunciation, comment, example, id_theme) "
-                                         "VALUES(:word, :meaning, :nature, :pronunciation, :comment, :example, :id_theme)").arg(test_id));
+    bool success = query.prepare(QString("INSERT INTO words(list_id, word, meaning, nature, pronunciation, comment, example) "
+                                         "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example)"));
     for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
-        // For now we discard theme information because it is awaiting a big change in the database schema.
-        if(i.key() != "test_id" && i.key() != "id" && i.key() != "score" && i.key() != "theme" && i.key() != "name") {
+        if(i.key() != "id") {
             query.bindValue(":"+i.key(), i.value());
         }
     }
-
     success &= query.exec();
 
     if(!success)
         last_error = query.lastError().text();
+    
+    // TODO Add themes to many-to-many table
 
     return success;
 }
@@ -123,12 +104,56 @@ bool DatabaseManager::create_list_table()
     return success;
 }
 
-bool DatabaseManager::create_theme_table()
+bool DatabaseManager::create_word_table()
 {
     QSqlQuery query;
-    bool success = query.exec("CREATE TABLE IF NOT EXISTS themes("
+    bool success = query.exec("CREATE TABLE IF NOT EXISTS words("
+                              "id INTEGER PRIMARY KEY, " 
+                              "list_id INTEGER NOT NULL, "
+                              "word TEXT NOT NULL DEFAULT '', " 
+                              "meaning TEXT NOT NULL DEFAULT '', " 
+                              "pronunciation TEXT DEFAULT '', "
+                              "nature VARCHAR(5) DEFAULT '', "
+                              "comment TEXT DEFAULT '', "
+                              "example TEXT DEFAULT '', "
+                              "correctly_answered INTEGER NOT NULL DEFAULT 0, "
+                              "asked INTEGER NOT NULL DEFAULT 0, "
+                              "score DECIMAL(2,2) DEFAULT 0, "
+                              "FOREIGN KEY(list_id) REFERENCES lists(ID) "
+                              "ON UPDATE CASCADE "
+                              "ON DELETE CASCADE"
+                              ")");
+    if(!success)
+        last_error = query.lastError().text();
+    return success;
+}
+
+
+bool DatabaseManager::create_tag_table()
+{
+    QSqlQuery query;
+    bool success = query.exec("CREATE TABLE IF NOT EXISTS tags("
                               "ID INTEGER PRIMARY KEY, "
                               "name VARCHAR(32) UNIQUE NOT NULL"
+                              ")");
+    if(!success)
+        last_error = query.lastError().text();
+    return success;
+}
+
+
+bool DatabaseManager::create_word_tag_table()
+{
+    QSqlQuery query;
+    bool success = query.exec("CREATE TABLE IF NOT EXISTS words_tags("
+                              "word_id INTEGER NOT NULL, "
+                              "tag_id INTEGER NOT NULL, "
+                              "FOREIGN KEY (word_id) REFERENCES words(id) "
+                              "ON UPDATE CASCADE "
+                              "ON DELETE CASCADE, "
+                              "FOREIGN KEY (tag_id) REFERENCES tags(id) "
+                              "ON UPDATE CASCADE "
+                              "ON DELETE CASCADE"
                               ")");
     if(!success)
         last_error = query.lastError().text();
@@ -151,21 +176,13 @@ bool DatabaseManager::delete_list(int test_id)
         query.exec("ROLLBACK");
         return false;
     }
-
-    success = query.exec(QString("DROP TABLE words_%1").arg(test_id));
-    if (!success){
-        last_error = query.lastError().text();
-        query.exec("ROLLBACK");
-        return false;
-    }
-
     query.exec("COMMIT");
     return success;
 }
 
-bool DatabaseManager::delete_word(int test_id, const int& id) {
+bool DatabaseManager::delete_word(const int& id) {
     QSqlQuery query;
-    bool success = query.prepare(QString("DELETE FROM words_%1 WHERE id = :id").arg(test_id));
+    bool success = query.prepare(QString("DELETE FROM words WHERE id = :id"));
     query.bindValue(":id", id);
 
     success &= query.exec();
@@ -204,8 +221,8 @@ bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_dat
     }
 }
 
-void DatabaseManager::find_themes(QStringList& reply_list) { 
-    QSqlQuery query("SELECT * FROM themes ORDER BY name ASC");
+void DatabaseManager::find_tags(QStringList& reply_list) { 
+    QSqlQuery query("SELECT * FROM tags ORDER BY name ASC");
     reply_list = QStringList();
     int nb_fields = query.record().count();
     while (query.next())
@@ -214,14 +231,22 @@ void DatabaseManager::find_themes(QStringList& reply_list) {
 
 }
 
-void DatabaseManager::find_used_themes(int test_id, QStringList& reply_list) {
-    QSqlQuery query(
-                QString("SELECT DISTINCT (themes.id), name "
-                        "FROM words_%1 "
-                        "INNER JOIN themes "
-                        "ON themes.id = words_%1.id_theme "
-                        "ORDER BY name ASC").arg(test_id)
-                );
+void DatabaseManager::find_used_tags(int test_id, QStringList& reply_list) {
+    QSqlQuery query;
+    bool success = query.prepare(QString("SELECT DISTINCT (tags.id), name "
+                                        "FROM words_tags "
+                                        "INNER JOIN tags "
+                                        "ON tags.id = words_tags.tag_id "
+                                        "INNER JOIN words "
+                                        "ON words.id  = words_tags.word_id "
+                                        "WHERE list_id = :list_id "
+                                        "ORDER BY name ASC"));
+    query.bindValue(":list_id", test_id);
+    success &= query.exec(); 
+    if (!success) {
+        last_error = query.lastError().text();
+        return;
+    }
     reply_list = QStringList();
     int nb_fields = query.record().count();
     while (query.next())
@@ -307,23 +332,22 @@ bool DatabaseManager::set_score(int test_id, int id, const int &correct) {
     return success;
 }
 
-bool DatabaseManager::update_word(int test_id, const QHash<QString, QString> &word_data)
+bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
 {
     QSqlQuery query;
 
-    // TODO: Make it better with a QHash
-    bool success = query.prepare(QString("UPDATE words_%1 SET "
+    bool success = query.prepare(QString("UPDATE words SET "
                                          "word=:word, "
                                          "meaning=:meaning, "
                                          "nature=:nature, "
                                          "comment=:comment, "
                                          "example=:example, "
                                          "pronunciation=:pronunciation, "
-                                         "id_theme=:id_theme "
-                                         "WHERE id=:id").arg(test_id));
+                                         "WHERE id=:id "
+                                         "AND list_id=:list_id"));
     QHash<QString, QString>::const_iterator i;
     for(i = word_data.begin(); i != word_data.end(); ++i) {
-        if(i.key() != "theme" && i.key() != "score") {
+        if(i.key() != "score") {
             query.bindValue(":"+i.key(), i.value());
         }
     }
@@ -376,9 +400,12 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
 
 bool DatabaseManager::count(int test_id, int &res)
 {
-    bool success;
-    QSqlQuery query(QString("SELECT COUNT(*) FROM words_%1").arg(test_id));
-    if ((success = query.next()))
+    QSqlQuery query;
+    bool success = query.prepare(QString("SELECT COUNT(*) FROM words "
+                            "WHERE list_id=:list_id"));
+    query.bindValue(":list_id", test_id);
+    
+    if ((success &= query.next()))
         res = query.value(0).toInt();
     else
         last_error = query.lastError().text();
