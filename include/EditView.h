@@ -9,6 +9,7 @@
 #include <QtNetwork>
 #include <QFormLayout>
 #include <QComboBox>
+#include <QListWidget>
 #include <QTextEdit>
 
 #include "Test.h"
@@ -27,7 +28,7 @@ private:
     QLabel* title;
     QLabel* status;
     QComboBox* nature_edit;
-    QComboBox* themes;
+    QListWidget* tags;
     QNetworkAccessManager nam;
     QNetworkAccessManager theme_nam;
     QLineEdit* word_edit;
@@ -59,7 +60,7 @@ public slots:
     void show_confirmation(bool success);
     void back();
     void reset();
-	void find_themes();
+	void find_tags();
 };
 
 #endif // EDITVIEW_H

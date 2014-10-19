@@ -15,7 +15,7 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     title(NULL),
     status(NULL),
     nature_edit(NULL),
-    themes(NULL),
+    tags(NULL),
     nam(),
     theme_nam(),
     word_edit(NULL),
@@ -85,9 +85,10 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     status = new QLabel(this);
     layout->addWidget(status);
 
-    themes = new QComboBox(this);
-    layout->addRow(tr("T&heme: "),themes);
-    find_themes();
+    tags = new QListWidget(this);
+    tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    layout->addRow(tr("T&heme: "),tags);
+    find_tags();
     connect(&theme_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
     nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
@@ -136,7 +137,7 @@ void EditView::edit_word(){
     // toPlainText() because we don't want to save a too much unnecessary information like an HTML header.
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
-    word_data["theme_id"] = themes->itemData(themes->currentIndex()).toString();
+    //word_data["theme_id"] = themes->itemData(themes->currentIndex()).toString();
 
     if (!test->is_remote()) {
 		bool success;
@@ -205,7 +206,7 @@ void EditView::reset(){
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values["nature"])));
     comment_edit->setPlainText(default_values["comment"]);
     example_edit->setPlainText(default_values["example"]);
-    themes->setCurrentIndex(themes->findData(QVariant(default_values["id_theme"])));
+    //themes->setCurrentIndex(themes->findData(QVariant(default_values["id_theme"])));
     pronunciation_edit->setText(default_values["pronunciation"]);
 
 	delete continue_button;
@@ -220,7 +221,7 @@ void EditView::reset(){
 	disable_edition(false);
 }
 
-void EditView::find_themes() {
+void EditView::find_tags() {
     if (!test->is_remote()) {
 		// Offline
 		database_manager->find_tags(reply_list);
@@ -244,11 +245,11 @@ void EditView::read_reply(QNetworkReply* reply)
 void EditView::read_reply(QString reply_string) {
     if(test->is_remote())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
-	themes->addItem("");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
-		themes->addItem(reply_list.at(i+1).trimmed(), QVariant(reply_list.at(i).toInt()));
+        QListWidgetItem* item = new QListWidgetItem(reply_list.at(i+1).trimmed());
+        item->setData(Qt::UserRole, QVariant(reply_list.at(i).toInt()));
+        tags->addItem(item);
 	}
-    themes->setCurrentIndex(themes->findData(QVariant(default_values["id_theme"].toInt())));
 }
 
 void EditView::disable_edition(bool ok) {
@@ -258,7 +259,7 @@ void EditView::disable_edition(bool ok) {
 	pronunciation_edit->setEnabled(!ok);
 	comment_edit->setEnabled(!ok);
 	example_edit->setEnabled(!ok);
-    themes->setEnabled(!ok);
+    tags->setEnabled(!ok);
 }
 
 void EditView::prepare_to_continue()
