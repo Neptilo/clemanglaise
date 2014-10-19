@@ -152,7 +152,7 @@ void EditView::edit_word(){
         if(word_data["id"].toInt() == 0) // Add word
             success = database_manager->add_word(word_data, selected_items_variant);
         else // Update word
-            success = database_manager->update_word(word_data);
+            success = database_manager->update_word(word_data, selected_items_variant);
 
         // Show confirmation
         show_confirmation(success);

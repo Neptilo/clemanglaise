@@ -201,8 +201,8 @@ bool DatabaseManager::create_word_tag_table()
                               "ON DELETE CASCADE, "
                               "FOREIGN KEY (tag_id) REFERENCES tags(id) "
                               "ON UPDATE CASCADE "
-                              "ON DELETE CASCADE"
-                              ")");
+                              "ON DELETE CASCADE "
+                              "UNIQUE (word_id, tag_id))");
     if(!success)
         last_error = query.lastError().text();
     return success;
@@ -362,14 +362,14 @@ void DatabaseManager::search(int test_id, const QString& expr, QStringList &repl
     reply_list << "";
 }
 
-bool DatabaseManager::set_score(int test_id, int id, const int &correct) {
+bool DatabaseManager::set_score(int id, const int &correct) {
     QSqlQuery query;
     bool success = query.prepare(
-                QString("UPDATE words_%1 "
+                QString("UPDATE words "
                         "SET correctly_answered = correctly_answered + :correct, "
                         "asked = asked + 1, "
                         "score = ROUND((correctly_answered + :cor) * 1.0 /(asked+2), 2) "
-                        "WHERE id = :id").arg(test_id));
+                        "WHERE id = :id"));
     query.bindValue(":id", id);
     query.bindValue(":correct", correct);
     query.bindValue(":cor", correct);
@@ -402,6 +402,84 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
 
     success &= query.exec();
     if(!success)
+        last_error = query.lastError().text();
+
+    return success;
+}
+
+bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags)
+{
+    QSqlQuery query;
+
+    bool success = query.prepare(QString("UPDATE words SET "
+                                         "word=:word, "
+                                         "meaning=:meaning, "
+                                         "nature=:nature, "
+                                         "comment=:comment, "
+                                         "example=:example, "
+                                         "pronunciation=:pronunciation, "
+                                         "WHERE id=:id "
+                                         "AND list_id=:list_id"));
+    QHash<QString, QString>::const_iterator i;
+    for(i = word_data.begin(); i != word_data.end(); ++i) {
+        if(i.key() != "score") {
+            query.bindValue(":"+i.key(), i.value());
+        }
+    }
+
+    success &= query.exec();
+    if(!success)
+        last_error = query.lastError().text();
+
+    // Handle tags
+    success = query.prepare(QString("SELECT tag_id FROM words_tags "
+    "WHERE word_id =  :id"));
+    query.bindValue(":id", word_data["id"]);
+    success &= query.exec();
+    if(!success)
+        last_error = query.lastError().text();
+
+    QList<int> existing_tags;
+    while(query.next())
+    {
+       existing_tags << query.value(0).toInt();
+    }
+
+    QStringList tags_to_delete, tags_to_add;
+
+    for (int i = 0, l = existing_tags.size(); i < l; ++ i)
+    {
+        int item = existing_tags[i];
+        if(!selected_tags.contains(item))
+            tags_to_delete << QString::number(item);
+    }
+
+    for (int i = 0, l = selected_tags.size(); i < l; ++ i)
+    {
+        int item = selected_tags[i];
+        if(!existing_tags.contains(item))
+            tags_to_add << QString::number(item);
+    }
+
+    for (int i = 0, l = tags_to_add.size(); i < l; ++i)
+    {
+        success &= query.prepare(QString("INSERT INTO words_tags(word_id, tag_id) "
+                                         "VALUES (:word_id, :tag_id)"
+                                         ));
+        query.bindValue(":word_id", word_data["id"]);
+        query.bindValue(":tag_id", tags_to_add.at(i));
+        success &= query.exec();
+    }
+
+    //for (int i = 0, l = tags_to_delete.size(); i < l; ++i)
+    success &= query.prepare(QString("DELETE FROM words_tags "
+                                     "WHERE word_id = :word_id "
+                                     "AND tag_id IN (%1)"
+                                     ).arg(tags_to_delete.join(", ")));
+    query.bindValue(":word_id", word_data["id"]);
+    success &= query.exec();
+
+    if (!success)
         last_error = query.lastError().text();
 
     return success;

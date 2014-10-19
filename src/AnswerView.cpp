@@ -57,7 +57,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     // Update score
     if (!test->is_remote()) {
 		//Offline
-        database_manager->set_score(test->get_id(), word_data["id"].toInt(), correct);
+        database_manager->set_score(word_data["id"].toInt(), correct);
 	} else {
 		const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
 		QNetworkRequest request(url);

@@ -33,8 +33,9 @@ public:
     bool open_db();
     QString pop_last_error();
     void search(int test_id, const QString& expr, QStringList& reply_list); // should return a bool (false if failed)
-    bool set_score(int test_id, int id, const int& correct);
+    bool set_score(int id, const int& correct);
     bool update_word(const QHash<QString, QString> &word_data);
+    bool update_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags);
     bool find_duplicates(int test_id, const QString &word, QStringList &reply_keys, QList<QStringList> &reply_values);
 
     // sets res to the number of rows in the word list identified by test_id
