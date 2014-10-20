@@ -362,6 +362,79 @@ void DatabaseManager::search(int test_id, const QString& expr, QStringList &repl
     reply_list << "";
 }
 
+/*
+void DatabaseManager::search(int test_id, const QString& expr, QStringList &reply_list){
+    QSqlQuery query(
+                QString ("SELECT id, word, meaning, pronunciation, nature, comment, example, score "
+                         "FROM words "
+                         "WHERE list_id = %1 "
+                         "AND word LIKE '%%2%' OR "
+                         "meaning LIKE '%%2%' OR "
+                         "pronunciation LIKE '%%2%'").arg(test_id).arg(expr));
+    reply_list = QStringList();
+    int nb_fields = query.record().count();
+    while (query.next())
+        for(int i = 0; i < nb_fields; ++i)
+            reply_list << query.value(i).toString();
+    // to be consistent with the online type of result which returns one empty line
+    reply_list << "" << "" << "";
+}
+*/
+
+void DatabaseManager::search_by_tags(int test_id, const QString& expr, const QList<int> selected_tags, QStringList &reply_list){
+    if (selected_tags.size()==0) {
+        search(test_id, expr, reply_list);
+        return;
+    }
+
+    // selected_tags contains at list one item
+
+    QStringList selected_tags_str;
+    for (int i = 0, l=selected_tags.size(); i < l; ++i)
+        if (selected_tags.at(i) != 0)
+            selected_tags_str << QString::number(selected_tags.at(i));
+
+    QString tags_selected = selected_tags_str.join(", ");
+
+    QString tags_cond;
+    if (selected_tags.contains(0))
+        tags_cond = QString("tag_id IN (%1) OR tag_id is NULL").arg(tags_selected);
+    else
+        tags_cond = QString("tag_id IN (%1)").arg(tags_selected);
+
+    QSqlQuery query(
+                QString ("SELECT DISTINCT (words.id), word, meaning, pronunciation, nature, comment, example, score "
+                         "FROM words "
+                         "LEFT OUTER JOIN words_tags "
+                         "ON words_tags.word_id = words.id "
+                         "WHERE list_id = %1 "
+                         "AND %2 "
+                         "AND  word LIKE '%%3%' OR "
+                         "meaning LIKE '%%3%' OR "
+                         "pronunciation LIKE '%%3%'"
+                         ).arg(test_id).arg(tags_cond).arg(expr));
+    reply_list = QStringList();
+    int nb_fields = query.record().count();
+    while (query.next())
+        for(int i = 0; i < nb_fields; ++i)
+            reply_list << query.value(i).toString();
+    // to be consistent with the online type of result which returns one empty line
+    reply_list << "" << "" << "";
+}
+
+void DatabaseManager::get_tags(int word_id, QStringList &word_tags) {
+    QSqlQuery query;
+    query.prepare(QString("SELECT name from tags "
+                          "INNER JOIN words_tags "
+                          "ON tags.id = words_tags.tag_id "
+                          "WHERE word_id = :id "
+                          "ORDER BY name ASC"));
+    query.bindValue(":id", word_id);
+    query.exec();
+    while(query.next())
+        word_tags << query.value(0).toString();
+}
+
 bool DatabaseManager::set_score(int id, const int &correct) {
     QSqlQuery query;
     bool success = query.prepare(
@@ -440,15 +513,13 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
         last_error = query.lastError().text();
 
     QList<int> existing_tags;
-    while(query.next())
-    {
+    while(query.next()) {
        existing_tags << query.value(0).toInt();
     }
 
     QStringList tags_to_delete, tags_to_add;
 
-    for (int i = 0, l = existing_tags.size(); i < l; ++ i)
-    {
+    for (int i = 0, l = existing_tags.size(); i < l; ++ i) {
         int item = existing_tags[i];
         if(!selected_tags.contains(item))
             tags_to_delete << QString::number(item);
@@ -487,7 +558,8 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
 
 // Two sets of words are considered as possible duplicates of one another if
 // more than half the words of the smaller set are in common with the larger set.
-bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringList &reply_keys, QList<QStringList> &reply_values){
+bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringList &reply_keys, QList<QStringList> &reply_values)
+{
     QStringList word_list = word.split(",");
     for (int i = 0; i < word_list.size(); ++i)
         word_list.replace(i, word_list.at(i).trimmed());

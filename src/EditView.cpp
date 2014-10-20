@@ -137,13 +137,11 @@ void EditView::edit_word(){
     // toPlainText() because we don't want to save a too much unnecessary information like an HTML header.
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
-    //word_data["theme_id"] = themes->itemData(themes->currentIndex()).toString();
     QList<QListWidgetItem *> selected_items  = tags->selectedItems();
     QList<int> selected_items_variant;
+
     for (int i = 0, l = selected_items.size(); i<l; ++i)
-    {
        selected_items_variant << selected_items.at(i)->data(Qt::UserRole).toInt();
-    }
 
     if (!test->is_remote()) {
 		bool success;

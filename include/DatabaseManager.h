@@ -33,6 +33,8 @@ public:
     bool open_db();
     QString pop_last_error();
     void search(int test_id, const QString& expr, QStringList& reply_list); // should return a bool (false if failed)
+    void search_by_tags(int test_id, const QString& expr, const QList<int> selected_tags, QStringList& reply_list); // should return a bool (false if failed)
+    void get_tags(int word_id, QStringList &word_tags);
     bool set_score(int id, const int& correct);
     bool update_word(const QHash<QString, QString> &word_data);
     bool update_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags);
