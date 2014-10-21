@@ -210,7 +210,7 @@ void EditView::reset(){
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values["nature"])));
     comment_edit->setPlainText(default_values["comment"]);
     example_edit->setPlainText(default_values["example"]);
-    //themes->setCurrentIndex(themes->findData(QVariant(default_values["id_theme"])));
+
     pronunciation_edit->setText(default_values["pronunciation"]);
 
 	delete continue_button;
@@ -246,13 +246,18 @@ void EditView::read_reply(QNetworkReply* reply)
 	read_reply(reply_string);
 }
 
+
 void EditView::read_reply(QString reply_string) {
     if(test->is_remote())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+
+    QStringList themes_id = default_values["id_theme"].split(", ");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
         QListWidgetItem* item = new QListWidgetItem(reply_list.at(i+1).trimmed());
         item->setData(Qt::UserRole, QVariant(reply_list.at(i).toInt()));
         tags->addItem(item);
+        if(themes_id.contains(reply_list.at(i))) // select tags that belong to the word
+            item->setSelected(true);
 	}
 }
 

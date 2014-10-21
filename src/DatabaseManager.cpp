@@ -239,31 +239,43 @@ bool DatabaseManager::delete_word(const int& id) {
     return success;
 }
 
-bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_data, int id_theme)
+bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_data, QList<int> themes_id)
 {
-    // id_theme = 0 if no theme was selected
-    QString cond = (id_theme > 0)? QString("id_theme = %1").arg(id_theme): "1";
+    QString tags_cond;
+    QStringList selected_tags_str;
+    for (int i = 0, l=themes_id.size(); i < l; ++i)
+        if (themes_id.at(i) != 0)
+            selected_tags_str << QString::number(themes_id.at(i));
+
+    QString tags_selected = selected_tags_str.join(", ");
+    if (themes_id.size()==0) // No tags filter set
+        tags_cond = "1";
+    else if (themes_id.contains(0)) // account words with no tags
+        tags_cond = QString("tag_id IN (%1) OR tag_id is NULL").arg(tags_selected);
+    else
+        tags_cond = QString("tag_id IN (%1)").arg(tags_selected);
 
     QStringList reply_keys;
-    reply_keys << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "name";
+    reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example"  << "pronunciation" << "score" << "name" << "id_theme";
 
-    QSqlQuery query(QString("SELECT words_%1.ID, %3 "
-                            "FROM words_%1 "
-                            "LEFT OUTER JOIN themes "
-                            "ON themes.ID = words_%1.id_theme "
-                            "WHERE score=(SELECT MIN(score) FROM words_%1 WHERE %2) AND %2 "
-                            "ORDER BY RANDOM() LIMIT 1")
-                    .arg(test_id)
-                    .arg(cond)
-                    .arg(reply_keys.join(", ")));
-    reply_keys.prepend("id"); // to account for the ID added in the SELECT query
-    if (query.next())
-    {
+    QSqlQuery query(QString("SELECT words.id, word, meaning, nature, comment, example, pronunciation, MIN(score) "
+                            "FROM words "
+                            "LEFT OUTER JOIN words_tags "
+                            "ON words.id = words_tags.word_id "
+                            "WHERE list_id = %1 AND %2 "
+                            "GROUP BY words.id "
+                            "ORDER BY RANDOM() LIMIT 1"
+                            ).arg(test_id).arg(tags_cond));
+    if (query.next()) {
         word_data.clear();
         for(int i = 0; i < reply_keys.size(); ++i)
             word_data.insert(reply_keys.at(i), query.value(i).toString());
+        word_data.insert("name","to remove");
+        QStringList tag_id_list;
+        get_tags_id(query.value(0).toInt(), tag_id_list);
+        word_data.insert("id_theme", tag_id_list.join(", ")); 
         return true;
-    }else{
+    } else {
         last_error = query.lastError().text();
         return false;
     }
@@ -435,6 +447,19 @@ void DatabaseManager::get_tags(int word_id, QStringList &word_tags) {
         word_tags << query.value(0).toString();
 }
 
+void DatabaseManager::get_tags_id(int word_id, QStringList &word_tags_id) {
+    QSqlQuery query;
+    query.prepare(QString("SELECT tags.id from tags "
+                          "INNER JOIN words_tags "
+                          "ON tags.id = words_tags.tag_id "
+                          "WHERE word_id = :id "
+                          "ORDER BY name ASC"));
+    query.bindValue(":id", word_id);
+    query.exec();
+    while(query.next())
+        word_tags_id << query.value(0).toString();
+}
+
 bool DatabaseManager::set_score(int id, const int &correct) {
     QSqlQuery query;
     bool success = query.prepare(
@@ -525,15 +550,13 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
             tags_to_delete << QString::number(item);
     }
 
-    for (int i = 0, l = selected_tags.size(); i < l; ++ i)
-    {
+    for (int i = 0, l = selected_tags.size(); i < l; ++ i) {
         int item = selected_tags[i];
         if(!existing_tags.contains(item))
             tags_to_add << QString::number(item);
     }
 
-    for (int i = 0, l = tags_to_add.size(); i < l; ++i)
-    {
+    for (int i = 0, l = tags_to_add.size(); i < l; ++i) {
         success &= query.prepare(QString("INSERT INTO words_tags(word_id, tag_id) "
                                          "VALUES (:word_id, :tag_id)"
                                          ));
@@ -542,7 +565,6 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
         success &= query.exec();
     }
 
-    //for (int i = 0, l = tags_to_delete.size(); i < l; ++i)
     success &= query.prepare(QString("DELETE FROM words_tags "
                                      "WHERE word_id = :word_id "
                                      "AND tag_id IN (%1)"

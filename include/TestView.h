@@ -51,6 +51,7 @@ private:
     Test test;
     QLabel* theme;
     QComboBox *themes;
+    QListWidget *tags;
     QLabel* title;
     QPushButton* update_button;
     EditView* update_view;
@@ -67,12 +68,13 @@ public slots:
     void read_reply_themes(QNetworkReply* reply);
     void validate_question();
     void validate_answer();
-	void find_themes(); 
+	void find_tags(); 
     void add_theme();
     void add_word();
     void update_word();
     void search();
 	void go_back();
+    void update_question();
     void update_question(int);
     void delete_list();
     void import_word();

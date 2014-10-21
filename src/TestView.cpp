@@ -49,10 +49,13 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
 
     layout->addWidget(title);
 
-    theme = new QLabel(tr("<i>Choose a theme</i>"), this);
+    theme = new QLabel(tr("<i>Filter by tags</i>"), this);
     layout->addWidget(theme);
     themes = new QComboBox(this);
     // set the ComboBox to that width.
+    tags = new QListWidget(this);
+    tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    layout->addWidget(tags);
     themes->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
     layout->addWidget(themes);
 
@@ -117,8 +120,12 @@ void TestView::init()
         connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
         nam->get(*request);
     }else{
-        int index = themes->currentIndex();
-        if(database_manager->find_lowest(test.get_id(), word_data, themes->itemData(index).toInt())){
+        QList<QListWidgetItem *> selected_items  = tags->selectedItems();
+        QList<int> selected_tags;
+        for (int i = 0, l = selected_items.size(); i<l; ++i)
+            selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
+
+        if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
             QString word = word_data["word"];
             QString theme = word_data["theme"];
             question_view = new QuestionView(&test, this);
@@ -134,7 +141,7 @@ void TestView::init()
             status.show();
         }
     }
-    find_themes();
+    find_tags();
 
     // Show everything
     if(!test.is_remote() || admin){
@@ -145,6 +152,7 @@ void TestView::init()
     }
     theme->show();
     themes->show();
+    tags->show();
     back_button->show();
     search_button->show();
     if(test.is_remote())
@@ -207,7 +215,10 @@ void TestView::validate_question(){
 }
 
 void TestView::validate_answer() {
-	int index = themes->currentIndex();
+    QList<QListWidgetItem *> selected_items  = tags->selectedItems();
+    QList<int> selected_tags;
+    for (int i = 0, l = selected_items.size(); i<l; ++i)
+       selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
 
     // Remove everything
     delete question_view;
@@ -221,7 +232,7 @@ void TestView::validate_answer() {
 
     // Request for a new question
     if (!test.is_remote()) {
-        if(database_manager->find_lowest(test.get_id(), word_data, themes->itemData(index).toInt())){
+        if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
             QString word = word_data["word"];
             QString theme = word_data["theme"];
             question_view->ask_question(word, theme);
@@ -239,10 +250,14 @@ void TestView::validate_answer() {
 		nam->get(*request);
 }
 
-void TestView::update_question(int){
+void TestView::update_question(){
     if (test.is_remote())
 		update_request();
     validate_answer();
+}
+
+void TestView::update_question(int){
+    update_question();
 }
 
 void TestView::delete_list()
@@ -347,7 +362,7 @@ void TestView::go_back() {
 	delete this;
 }
 
-void TestView::find_themes() {
+void TestView::find_tags() {
     if (!test.is_remote()) {
 		// Offline
         database_manager->find_used_tags(test.get_id(), reply_list_theme);
@@ -374,6 +389,16 @@ void TestView::read_reply(QString reply_string) {
 	themes->disconnect();
 	themes->clear();
 	themes->addItem("---");
+    //tags
+	tags->disconnect();
+    tags->clear();
+	tags->addItem(tr("Without any tags"));
+	for(int i=0, l = reply_list_theme.count(); i<l-1; i+=2) {
+        QListWidgetItem* item = new QListWidgetItem(reply_list_theme.at(i+1).trimmed());
+        item->setData(Qt::UserRole, QVariant(reply_list_theme.at(i).toInt()));
+        tags->addItem(item);
+	}
+    connect(tags, SIGNAL(itemSelectionChanged()), this, SLOT(update_question()));
 	for(int i=0, l = reply_list_theme.count(); i<l-1; i+=2) {
 		themes->addItem(reply_list_theme.at(i+1), QVariant(reply_list_theme.at(i).toInt()));
 	}    
@@ -394,6 +419,7 @@ void TestView::remove_widgets()
 	}
 	theme->hide();
 	themes->hide();
+	tags->hide();
 	back_button->hide();
 	search_button->hide();
     if(test.is_remote())
