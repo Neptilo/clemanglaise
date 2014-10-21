@@ -145,10 +145,19 @@ void SearchView::read_reply(QString reply_string) {
             result->setCellWidget(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
         }
-        if (i%nb_cols != 0 && i%nb_cols != 9){ // We don't want to show the id or the theme id.
+        if (i%nb_cols != 0 && i%nb_cols != 9){ // We don't want to show the id nor tags' id.
+            if (i%nb_cols != 8) {
             item = new QLabel(ampersand_unescape(reply_list.at(i)), this);
             item->setTextFormat(Qt::RichText);
             result->setCellWidget(i/nb_cols, col_ind, item);
+            } else {
+                QComboBox* tags_box = new QComboBox();
+                QStringList tags_items = reply_list.at(i).split(", ");
+                for (int j = 0, count = tags_items.size(); j < count; ++j) {
+                    tags_box->addItem(tags_items.at(j)); 
+                }
+                result->setCellWidget(i/nb_cols, col_ind, tags_box);
+            }
             col_ind = (col_ind+1)%result_nb_cols;
         }
     }

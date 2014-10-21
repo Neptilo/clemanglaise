@@ -489,7 +489,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
     QHash<QString, QString>::const_iterator i;
     for(i = word_data.begin(); i != word_data.end(); ++i) {
         if(i.key() != "score") {
-            query.bindValue(":"+i.key(), i.value());
+            query.bindValue(":"+i.key(), i.value().trimmed());
         }
     }
 
