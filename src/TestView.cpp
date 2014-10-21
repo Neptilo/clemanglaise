@@ -37,6 +37,7 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     test(test, this),
     theme(NULL),
     themes(NULL),
+    tags(NULL),
     title(NULL),
     update_button(NULL),
     update_view(NULL),

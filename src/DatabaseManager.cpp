@@ -251,7 +251,7 @@ bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_dat
     if (themes_id.size()==0) // No tags filter set
         tags_cond = "1";
     else if (themes_id.contains(0)) // account words with no tags
-        tags_cond = QString("tag_id IN (%1) OR tag_id is NULL").arg(tags_selected);
+        tags_cond = QString("(tag_id IN (%1) OR tag_id is NULL)").arg(tags_selected);
     else
         tags_cond = QString("tag_id IN (%1)").arg(tags_selected);
 
@@ -266,13 +266,14 @@ bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_dat
                             "GROUP BY words.id "
                             "ORDER BY RANDOM() LIMIT 1"
                             ).arg(test_id).arg(tags_cond));
+    int id_index = query.record().indexOf("id");
     if (query.next()) {
         word_data.clear();
         for(int i = 0; i < reply_keys.size(); ++i)
             word_data.insert(reply_keys.at(i), query.value(i).toString());
         word_data.insert("name","to remove");
         QStringList tag_id_list;
-        get_tags_id(query.value(0).toInt(), tag_id_list);
+        get_tags_id(query.value(id_index).toInt(), tag_id_list);
         word_data.insert("id_theme", tag_id_list.join(", ")); 
         return true;
     } else {
@@ -355,51 +356,7 @@ QString DatabaseManager::pop_last_error()
     return err;
 }
 
-void DatabaseManager::search(int test_id, const QString& expr, QStringList &reply_list){
-    QSqlQuery query(
-                QString ("SELECT words_%1.id, word, meaning, pronunciation, nature, comment, example, id_theme, score, name "
-                         "FROM words_%1 "
-                         "LEFT OUTER JOIN themes "
-                         "ON themes.id = words_%1.id_theme "
-                         "WHERE word LIKE '%%2%' or "
-                         "meaning LIKE '%%2%' or "
-                         "pronunciation LIKE '%%2%' or "
-                         "name LIKE '%%2%'").arg(test_id).arg(expr));
-    reply_list = QStringList();
-    int nb_fields = query.record().count();
-    while (query.next())
-        for(int i = 0; i < nb_fields; ++i)
-            reply_list << query.value(i).toString();
-    // to be consistent with the online type of result which returns one empty line
-    reply_list << "";
-}
-
-/*
-void DatabaseManager::search(int test_id, const QString& expr, QStringList &reply_list){
-    QSqlQuery query(
-                QString ("SELECT id, word, meaning, pronunciation, nature, comment, example, score "
-                         "FROM words "
-                         "WHERE list_id = %1 "
-                         "AND word LIKE '%%2%' OR "
-                         "meaning LIKE '%%2%' OR "
-                         "pronunciation LIKE '%%2%'").arg(test_id).arg(expr));
-    reply_list = QStringList();
-    int nb_fields = query.record().count();
-    while (query.next())
-        for(int i = 0; i < nb_fields; ++i)
-            reply_list << query.value(i).toString();
-    // to be consistent with the online type of result which returns one empty line
-    reply_list << "" << "" << "";
-}
-*/
-
-void DatabaseManager::search_by_tags(int test_id, const QString& expr, const QList<int> selected_tags, QStringList &reply_list){
-    if (selected_tags.size()==0) {
-        search(test_id, expr, reply_list);
-        return;
-    }
-
-    // selected_tags contains at list one item
+void DatabaseManager::search(int test_id, const QString& expr, const QList<int> selected_tags, QStringList &reply_list){
 
     QStringList selected_tags_str;
     for (int i = 0, l=selected_tags.size(); i < l; ++i)
@@ -409,8 +366,10 @@ void DatabaseManager::search_by_tags(int test_id, const QString& expr, const QLi
     QString tags_selected = selected_tags_str.join(", ");
 
     QString tags_cond;
-    if (selected_tags.contains(0))
-        tags_cond = QString("tag_id IN (%1) OR tag_id is NULL").arg(tags_selected);
+    if (selected_tags.size()==0)
+        tags_cond = QString("1");
+    else if (selected_tags.contains(0))
+        tags_cond = QString("(tag_id IN (%1) OR tag_id is NULL)").arg(tags_selected);
     else
         tags_cond = QString("tag_id IN (%1)").arg(tags_selected);
 
@@ -421,17 +380,25 @@ void DatabaseManager::search_by_tags(int test_id, const QString& expr, const QLi
                          "ON words_tags.word_id = words.id "
                          "WHERE list_id = %1 "
                          "AND %2 "
-                         "AND  word LIKE '%%3%' OR "
+                         "AND (word LIKE '%%3%' OR "
                          "meaning LIKE '%%3%' OR "
-                         "pronunciation LIKE '%%3%'"
+                         "pronunciation LIKE '%%3%')"
                          ).arg(test_id).arg(tags_cond).arg(expr));
     reply_list = QStringList();
     int nb_fields = query.record().count();
-    while (query.next())
+    QStringList tag_list, tag_list_id;
+    while (query.next()){
         for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
+        tag_list.clear();
+        tag_list_id.clear();
+        get_tags(query.value(0).toInt(), tag_list);
+        reply_list << tag_list.join(", ");
+        get_tags_id(query.value(0).toInt(), tag_list_id);
+        reply_list << tag_list_id.join(", ");
+    }
     // to be consistent with the online type of result which returns one empty line
-    reply_list << "" << "" << "";
+    reply_list << "";
 }
 
 void DatabaseManager::get_tags(int word_id, QStringList &word_tags) {
@@ -518,6 +485,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
                                          "pronunciation=:pronunciation, "
                                          "WHERE id=:id "
                                          "AND list_id=:list_id"));
+
     QHash<QString, QString>::const_iterator i;
     for(i = word_data.begin(); i != word_data.end(); ++i) {
         if(i.key() != "score") {
@@ -526,8 +494,10 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
     }
 
     success &= query.exec();
-    if(!success)
+    if(!success){
         last_error = query.lastError().text();
+        qDebug() << last_error; //TODO handle parameter count mismatch error
+    }
 
     // Handle tags
     success = query.prepare(QString("SELECT tag_id FROM words_tags "

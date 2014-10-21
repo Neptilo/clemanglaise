@@ -32,8 +32,7 @@ public:
     QList<Test> get_lists();
     bool open_db();
     QString pop_last_error();
-    void search(int test_id, const QString& expr, QStringList& reply_list); // should return a bool (false if failed)
-    void search_by_tags(int test_id, const QString& expr, const QList<int> selected_tags, QStringList& reply_list); // should return a bool (false if failed)
+    void search(int test_id, const QString& expr, const QList<int> selected_tags, QStringList& reply_list); // should return a bool (false if failed)
     void get_tags(int word_id, QStringList &word_tags);
     void get_tags_id(int word_id, QStringList &word_tags_id);
     bool set_score(int id, const int& correct);

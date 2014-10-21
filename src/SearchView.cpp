@@ -16,6 +16,7 @@
 SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
     QWidget(parent),
     search_bar(NULL),
+    tags(NULL),
     nam(),
     result(NULL),
     test(test),
@@ -26,6 +27,9 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
 {
     QLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
+    tags = new QListWidget(this);
+    tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    find_tags();
 
     QPushButton* OK_button = new QPushButton(tr("OK"),this);
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
@@ -34,6 +38,7 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     back_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
 
     layout->addWidget(search_bar);
+    layout->addWidget(tags);
     layout->addWidget(OK_button);
     layout->addWidget(back_button);
 
@@ -48,6 +53,20 @@ SearchView::~SearchView() {
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.
 }
 
+void SearchView::find_tags() {
+    if (!test->is_remote()) {
+		// Offline
+        database_manager->find_used_tags(test->get_id(), reply_list_tag);
+		read_reply_tags();
+	} else { 
+        //TODO
+		// Request to PHP file
+        //const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_themes.php?test_id=%1").arg(test->get_id()));
+		//QNetworkRequest request(url);
+		//nam_themes.get(request);
+	}
+}
+
 void SearchView::search() {
     layout()->removeWidget(update_frame);
     if (test->is_remote()) {
@@ -59,10 +78,26 @@ void SearchView::search() {
         nam.get(QNetworkRequest(url));
     } else {
         // Offline
+        QList<QListWidgetItem *> selected_items  = tags->selectedItems();
+        QList<int> selected_tags;
+
+        for (int i = 0, l = selected_items.size(); i<l; ++i)
+           selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
+
         QString search_str = ampersand_unescape(search_bar->text());
-        database_manager->search(test->get_id(), search_str, reply_list);
+        database_manager->search(test->get_id(), search_str, selected_tags, reply_list);
         read_reply();
     }
+}
+
+void SearchView::read_reply_tags() {
+
+	tags->addItem(tr("Without any tags"));
+	for(int i=0, l = reply_list_tag.count(); i<l-1; i+=2) {
+        QListWidgetItem* item = new QListWidgetItem(reply_list_tag.at(i+1).trimmed());
+        item->setData(Qt::UserRole, QVariant(reply_list_tag.at(i).toInt()));
+        tags->addItem(item);
+	}
 }
 
 void SearchView::read_reply(QNetworkReply* reply)
@@ -110,7 +145,7 @@ void SearchView::read_reply(QString reply_string) {
             result->setCellWidget(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
         }
-        if (i%nb_cols != 0 && i%nb_cols != 6){ // We don't want to show the id or the theme id.
+        if (i%nb_cols != 0 && i%nb_cols != 9){ // We don't want to show the id or the theme id.
             item = new QLabel(ampersand_unescape(reply_list.at(i)), this);
             item->setTextFormat(Qt::RichText);
             result->setCellWidget(i/nb_cols, col_ind, item);
@@ -145,6 +180,8 @@ void SearchView::action(int row, int col)
         QHash<QString, QString> default_values;
         for(int i = 0; i < nb_cols; ++i)
             default_values[word_keys.at(i)] = reply_list.at(i+row*nb_cols);
+        default_values["id_theme"] = reply_list.at(9);
+        default_values["score"] = reply_list.at(7);
         update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
         layout()->addWidget(update_frame);
         connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
