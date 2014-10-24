@@ -9,7 +9,7 @@
 #include "QuestionView.h"
 #include "SearchView.h"
 #include "Test.h"
-#include "ThemeView.h"
+#include "AddTagView.h"
 
 #if defined(Q_OS_WIN)
 const QString ENDL="\\r\\n";
@@ -31,7 +31,7 @@ private:
     QPushButton* add_button;
     EditView* add_view;
     QPushButton* add_theme_button;
-    ThemeView* add_theme_frame;
+    AddTagView* add_tag_frame;
     bool admin;
     AnswerView* answer_view;
     QPushButton* back_button;
@@ -39,7 +39,7 @@ private:
     QPushButton * delete_list_button;
     QLayout* layout;
     QNetworkAccessManager* nam;
-    QNetworkAccessManager nam_themes;
+    QNetworkAccessManager nam_tags;
     QuestionView* question_view;
     QHash<QString, QString> word_data;
 	QStringList reply_list_theme; 
@@ -55,7 +55,7 @@ private:
     QLabel* title;
     QPushButton* update_button;
     EditView* update_view;
-    ThemeView* update_theme_view;
+    AddTagView* update_theme_view;
 
     void remove_widgets();
 
@@ -69,7 +69,7 @@ public slots:
     void validate_question();
     void validate_answer();
 	void find_tags(); 
-    void add_theme();
+    void add_tag();
     void add_word();
     void update_word();
     void search();

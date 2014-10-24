@@ -278,7 +278,7 @@ void EditView::prepare_to_continue()
     word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
     for(int i = 0; i < word_keys.size(); ++i)
         default_values[word_keys.at(i)] = "";
-    php_filename = "add";
+    php_filename = "add_word";
     success_message = tr("Word successfully added!");
     delete OK_button;
     continue_button = new QPushButton(tr("Add another word"), this);

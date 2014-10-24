@@ -13,19 +13,19 @@
 #include "Test.h"
 #include "DatabaseManager.h"
 
-class ThemeView : public QWidget{
+class AddTagView : public QWidget{
     Q_OBJECT
 
 public:
-    ThemeView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager * database_manager, QWidget *parent);
-    ~ThemeView();
+    AddTagView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager * database_manager, QWidget *parent);
+    ~AddTagView();
 
     void read_reply(QString reply_string="");
 
 private:
     QLabel* title;
     QLabel* status;
-    QLineEdit* theme_edit;
+    QLineEdit* tag_edit;
     QPushButton* OK_button;
 	QNetworkAccessManager nam; 
     QPushButton* cancel_button;
@@ -36,16 +36,16 @@ private:
     QStringList default_values;
 	QStringList reply_list; 
     QString success_message;
-	QLabel* theme;
-	QComboBox* themes;
+	QLabel* tag;
+	QComboBox* tags;
 	DatabaseManager* database_manager;
 
 public slots:
-    void edit_theme();
+    void edit_tag();
     void show_confirmation(QNetworkReply* reply);
     void show_confirmation();
 	void read_reply(QNetworkReply * reply); 
-	void find_themes(); 
+	void find_tags(); 
     void back();
     void reset();
 };

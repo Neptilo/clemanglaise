@@ -12,14 +12,14 @@
 #include "import_wizard/SingleImportWizard.h"
 #include "NetworkReplyReader.h"
 #include "string_utils.h"
-#include "ThemeView.h"
+#include "AddTagView.h"
 
 TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_title, bool admin, QWidget *parent):
     QWidget(parent),
     add_button(NULL),
     add_view(NULL),
     add_theme_button(NULL),
-    add_theme_frame(NULL),
+    add_tag_frame(NULL),
     admin(admin),
     answer_view(NULL),
     back_button(NULL),
@@ -27,7 +27,7 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     delete_list_button(NULL),
     layout(NULL),
     nam(NULL),
-    nam_themes(),
+    nam_tags(),
     question_view(NULL),
     request(NULL),
     search_button(NULL),
@@ -68,7 +68,7 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     if(!test.is_remote() || admin){
         add_theme_button = new QPushButton(tr("Add a &theme"), this);
         add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
-        connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
+        connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_tag()));
         layout->addWidget(add_theme_button);
 
         add_button = new QPushButton(tr("Add a &word"), this);
@@ -100,7 +100,7 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     }
 
     init();
-    connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
+    connect(&nam_tags, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
 
 TestView::~TestView(){
@@ -318,16 +318,16 @@ void TestView::delete_list()
     }
 }
 
-void TestView::add_theme()
+void TestView::add_tag()
 {
 	remove_widgets();
 
 	// Create a new add frame
 	QStringList default_values_list;
 	default_values_list << "" << "";
-    add_theme_frame = new ThemeView(&test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), database_manager, this);
-	layout->addWidget(add_theme_frame);
-	connect(add_theme_frame, SIGNAL(destroyed()), this, SLOT(init()));
+    add_tag_frame = new AddTagView(&test, tr("<b>Add a new tag</b>"), default_values_list, tr("Add"), "add_tag", tr("Tag successfully added!"), database_manager, this);
+    layout->addWidget(add_tag_frame);
+    connect(add_tag_frame, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::add_word()
@@ -337,11 +337,11 @@ void TestView::add_word()
 	// Create a new add frame
     QStringList word_keys;
     // has to be consistent with the actual content of reply_list
-    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
+    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme" << "hint";
     QHash<QString, QString> default_values;
     for(int i = 0; i < word_keys.size(); ++i)
         default_values[word_keys.at(i)] = "";
-    add_view = new EditView(&test, tr("<b>Add a new word</b>"), default_values, tr("Add"), "add", tr("Word successfully added!"), database_manager, this);
+    add_view = new EditView(&test, tr("<b>Add a new word</b>"), default_values, tr("Add"), "add_word", tr("Word successfully added!"), database_manager, this);
     layout->addWidget(add_view);
     connect(add_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
@@ -351,7 +351,7 @@ void TestView::update_word()
 	remove_widgets();
 
 	// Create a new add frame
-    update_view = new EditView(&test, tr("<b>Edit a word entry</b>"), word_data, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
+    update_view = new EditView(&test, tr("<b>Edit a word entry</b>"), word_data, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
     layout->addWidget(update_view);
     connect(update_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
@@ -379,7 +379,7 @@ void TestView::find_tags() {
 		// Request to PHP file
         const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_themes.php?test_id=%1").arg(test.get_id()));
 		QNetworkRequest request(url);
-		nam_themes.get(request);
+        nam_tags.get(request);
 	}
 }
 

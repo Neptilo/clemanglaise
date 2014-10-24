@@ -20,7 +20,6 @@ HEADERS += \
     include/string_utils.h \
     include/Test.h \
     include/TestView.h \
-    include/ThemeView.h \
     include/WordView.h \
     include/DatabaseManager.h \
     include/AddListView.h \
@@ -34,7 +33,8 @@ HEADERS += \
     include/import_wizard/ProgressPage.h \
     include/import_wizard/Importer.h \
     include/duplicate_utils.h \
-    include/import_wizard/ImportBehavior.h
+    include/import_wizard/ImportBehavior.h \
+    include/AddTagView.h
 SOURCES += \
     src/AnswerView.cpp \
     src/EditView.cpp \
@@ -49,7 +49,6 @@ SOURCES += \
     src/string_utils.cpp \
     src/Test.cpp \
     src/TestView.cpp \
-    src/ThemeView.cpp \
     src/WordView.cpp \
     src/DatabaseManager.cpp \
     src/AddListView.cpp \
@@ -62,7 +61,8 @@ SOURCES += \
     src/import_wizard/BehaviorPage.cpp \
     src/import_wizard/ProgressPage.cpp \
     src/import_wizard/Importer.cpp \
-    src/duplicate_utils.cpp
+    src/duplicate_utils.cpp \
+    src/AddTagView.cpp
 
 RESOURCES += clemanglaise.qrc
 

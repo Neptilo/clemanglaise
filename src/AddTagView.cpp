@@ -4,16 +4,16 @@
 #   include <QUrlQuery>
 #endif
 
-#include "ThemeView.h"
+#include "AddTagView.h"
 #include "QuestionView.h"
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
 
-ThemeView::ThemeView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager* database_manager, QWidget *parent) :
+AddTagView::AddTagView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager* database_manager, QWidget *parent) :
     QWidget(parent),
     title(NULL),
     status(NULL),
-    theme_edit(NULL),
+    tag_edit(NULL),
     OK_button(NULL),
     nam(),
     cancel_button(NULL),
@@ -21,8 +21,8 @@ ThemeView::ThemeView(Test *test, const QString &title, const QStringList &defaul
     layout(NULL),
     test(test),
 	reply_list(),
-    theme(NULL),
-    themes(NULL),
+    tag(NULL),
+    tags(NULL),
 	database_manager(database_manager)
 {
     this->php_filename = php_filename;
@@ -31,11 +31,11 @@ ThemeView::ThemeView(Test *test, const QString &title, const QStringList &defaul
 
     layout = new QFormLayout(this);
 
-	theme = new QLabel(tr("Available themes"), this);
-	layout->addWidget(theme);
-	themes = new QComboBox(this);
-	layout->addWidget(themes);
-	find_themes();
+    tag = new QLabel(tr("Available tags"), this);
+    layout->addWidget(tag);
+    tags = new QComboBox(this);
+    layout->addWidget(tags);
+    find_tags();
 
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
@@ -43,10 +43,10 @@ ThemeView::ThemeView(Test *test, const QString &title, const QStringList &defaul
     layout->addWidget(this->title);
 
     // Define explicit variables for the default values of the fields.
-    QString theme = ampersand_unescape(default_values.at(1));
+    QString tag = ampersand_unescape(default_values.at(1));
 
-    theme_edit = new QLineEdit(theme, this);
-    layout->addRow(tr("&Theme:"), theme_edit);
+    tag_edit = new QLineEdit(tag, this);
+    layout->addRow(tr("&Tag:"), tag_edit);
 
 
     status = new QLabel(this);
@@ -54,7 +54,7 @@ ThemeView::ThemeView(Test *test, const QString &title, const QStringList &defaul
 
     OK_button = new QPushButton(OK_button_value, this);
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
-    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_theme()));
+    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_tag()));
     layout->addWidget(OK_button);
 
     cancel_button = new QPushButton(tr("Cancel"), this);
@@ -63,14 +63,14 @@ ThemeView::ThemeView(Test *test, const QString &title, const QStringList &defaul
     layout->addWidget(cancel_button);
 }
 
-ThemeView::~ThemeView(){}
+AddTagView::~AddTagView(){}
 
-void ThemeView::edit_theme(){
+void AddTagView::edit_tag(){
     status->setText(tr("Sending data..."));
     if (!test->is_remote()) {
         // Offline
 		// Will show confirmation when loading of reply is finished
-		database_manager->add_tag(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1));
+        database_manager->add_tag(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
         show_confirmation();
 	} else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
@@ -79,8 +79,8 @@ void ThemeView::edit_theme(){
         QUrlQuery post_data;
 #endif
 		post_data.addQueryItem("id", this->default_values.at(0));
-		QString line = ampersand_escape(theme_edit->text().left(1).toUpper() + theme_edit->text().mid(1));
-		post_data.addQueryItem("theme", line);
+        QString line = ampersand_escape(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
+        post_data.addQueryItem("tag", line);
 		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -102,7 +102,7 @@ void ThemeView::edit_theme(){
 	
 }
 
-void ThemeView::show_confirmation(QNetworkReply* reply){
+void AddTagView::show_confirmation(QNetworkReply* reply){
     const QString reply_string(reply->readAll());
     reply->deleteLater();
     if(reply_string.compare("")){
@@ -113,48 +113,48 @@ void ThemeView::show_confirmation(QNetworkReply* reply){
 	show_confirmation();
 }
 
-void ThemeView::show_confirmation(){
+void AddTagView::show_confirmation(){
 	status->setText(this->success_message);
     delete OK_button;
-    continue_button = new QPushButton(tr("Add another theme"), this);
+    continue_button = new QPushButton(tr("Add another tag"), this);
 	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
     cancel_button->setText(tr("Back to test"));
 }
 
-void ThemeView::back(){
+void AddTagView::back(){
     delete this;
 }
 
-void ThemeView::reset(){
+void AddTagView::reset(){
 
-	theme_edit->setText(default_values.at(1));
+    tag_edit->setText(default_values.at(1));
     delete continue_button;
 
-    OK_button = new QPushButton(tr("Add Theme"), this);
+    OK_button = new QPushButton(tr("Add Tag"), this);
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
-    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_theme()));
+    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_tag()));
     layout->addWidget(OK_button);
 
     cancel_button->setText(tr("Cancel"));
 }
 
 
-void ThemeView::find_themes() {
+void AddTagView::find_tags() {
     if (!test->is_remote()) {
         // Offline
 		database_manager->find_tags(reply_list);
 		read_reply();
 	} else { 
 		// Request to PHP file
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_tags.php");
 		QNetworkRequest request(url);
 		nam.get(request);
 	}
 }
 
-void ThemeView::read_reply(QNetworkReply* reply)
+void AddTagView::read_reply(QNetworkReply* reply)
 {
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll();
@@ -162,9 +162,9 @@ void ThemeView::read_reply(QNetworkReply* reply)
 	read_reply(reply_string);
 }
 
-void ThemeView::read_reply(QString reply_string) {
+void AddTagView::read_reply(QString reply_string) {
     if (test->is_remote())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2)
-		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
+        tags->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
 }
