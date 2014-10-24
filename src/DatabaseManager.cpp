@@ -80,7 +80,7 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data, const Q
                                          "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example)"));
     for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
         if(i.key() != "id") {
-            query.bindValue(":"+i.key(), i.value());
+            query.bindValue(":"+i.key(), i.value().trimmed());
         }
     }
     success &= query.exec();
@@ -127,7 +127,7 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
                                          "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example)"));
     for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
         if(i.key() != "id") {
-            query.bindValue(":"+i.key(), i.value());
+            query.bindValue(":"+i.key(), i.value().trimmed());
         }
     }
     success &= query.exec();
@@ -455,7 +455,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
                                          "nature=:nature, "
                                          "comment=:comment, "
                                          "example=:example, "
-                                         "pronunciation=:pronunciation, "
+                                         "pronunciation=:pronunciation "
                                          "WHERE id=:id "
                                          "AND list_id=:list_id"));
     QHash<QString, QString>::const_iterator i;
@@ -482,7 +482,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
                                          "nature=:nature, "
                                          "comment=:comment, "
                                          "example=:example, "
-                                         "pronunciation=:pronunciation, "
+                                         "pronunciation=:pronunciation "
                                          "WHERE id=:id "
                                          "AND list_id=:list_id"));
 
@@ -496,7 +496,6 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
     success &= query.exec();
     if(!success){
         last_error = query.lastError().text();
-        qDebug() << last_error; //TODO handle parameter count mismatch error
     }
 
     // Handle tags
