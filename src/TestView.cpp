@@ -174,6 +174,13 @@ void TestView::update_request() {
 }
 
 void TestView::read_reply(QNetworkReply* reply){
+    QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if(status_code.toInt() != 200){
+        status.setText(reply->readAll());
+        layout->addWidget(&status);
+        status.show();
+        return;
+    }
     if(question_view){ // If question_frame is deleted, that means the user has changed the view to another one before the NAM request was finished, so we want to ignore the NAM's reply.
         // Store the lines of the reply in the "reply_list" attribute
         QString reply_string(reply->readAll());
