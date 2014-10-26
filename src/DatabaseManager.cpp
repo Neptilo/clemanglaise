@@ -250,7 +250,7 @@ bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_dat
     QString tags_selected = selected_tags_str.join(", ");
     if (themes_id.size()==0) // No tags filter set
         tags_cond = "1";
-    else if (themes_id.contains(0)) // account words with no tags
+    else if (themes_id.contains(0)) // account for words with no tags
         tags_cond = QString("(tag_id IN (%1) OR tag_id is NULL)").arg(tags_selected);
     else
         tags_cond = QString("tag_id IN (%1)").arg(tags_selected);

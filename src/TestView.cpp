@@ -165,11 +165,19 @@ void TestView::shrink(){
 }
 
 void TestView::update_request() {
-	int index = themes->currentIndex();
+    QList<QListWidgetItem *> selected_items  = tags->selectedItems();
+    QList<int> selected_tags;
+    for (int i = 0, l = selected_items.size(); i<l; ++i)
+        selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
+    // If 0 is in the list, remove it and set untagged to true to say we also want to look for untagged words, else set it to false.
+    bool untagged = selected_tags.removeOne(0);
+    QStringList selected_tags_str;
+    for(int i = 0; i < selected_tags.length(); ++i)
+        selected_tags_str << QString::number(selected_tags.at(i));
 	// Request to PHP or local file
 	QUrl url;
-    url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_lowest.php?test_id=%1&id_theme=%2").arg(test.get_id()).arg(themes->itemData(index).toString()));
-	delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request stays the same.)
+    url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3").arg(test.get_id()).arg(selected_tags_str.join(',')).arg(untagged));
+    delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request remains the same.)
 	request = new QNetworkRequest(url);
 }
 
@@ -181,6 +189,7 @@ void TestView::read_reply(QNetworkReply* reply){
         status.show();
         return;
     }
+    status.hide();
     if(question_view){ // If question_frame is deleted, that means the user has changed the view to another one before the NAM request was finished, so we want to ignore the NAM's reply.
         // Store the lines of the reply in the "reply_list" attribute
         QString reply_string(reply->readAll());
