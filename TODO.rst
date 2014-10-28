@@ -1,13 +1,18 @@
-1. Do some bug tracking (fix the one already reported and search for some others)
-
+Priority 1
+----------
 * When you delete a word sometimes app crashes or the refresh function doesn't work
   correctly. Fix it 
 * Fix this bug: on online tests (I don't know about offline), when you add a theme which the database assigns an ID that is not equal to (the last ID+1), and you go back to the test to select the new theme, it crashes.
+* Implement tag imports during list imports:
+  Before importing words, make a list of the tags used in the list to import, find which are the new ones (according to their names), add them to the local tags, and then import the words and insert the word-tag relations *according to the local tag ids*.
+  The tag name comparisions should normalize them: trim spaces, ignore case, maybe ignore some other things too.
 
-2. Try to adapt the app for a mobile version
-3. Implement a Many to Many relationship between words and themes
-4. Implement hints for each word entry. The former idea of "themes" will then be divided into "tags", to organize and search for words, and "hints": information that is visible to the user when he is asked to translate a word.
+Priority 2
+----------
+* Try to adapt the app for a mobile version
 
+Priority 3
+----------
 * Don't care for spaces in correct pronunciation of an asked word (standardize it in a form that doesn't contain spaces)
 * Button to delete a word
 * Move word-specific buttons inside question/answer views
