@@ -26,7 +26,7 @@ QString QuestionView::get_answer(){
     return ampersand_escape(edit->text());
 }
 
-void QuestionView::ask_question(const QString& word, const QString & theme) {
+void QuestionView::ask_question(const QString& word, const QString &hint) {
 
     // Left part
     if(handwriting){
@@ -41,18 +41,17 @@ void QuestionView::ask_question(const QString& word, const QString & theme) {
     // Right part
 
     // Display question
-	QString context("");
-    context = (theme.isEmpty())? "" : "<i>context: " + theme+"</i><br />";
+    QString hint_text = (hint.isEmpty())? "" : "<i>Hint: " + hint+"</i><br />";
     if(test->get_dst() == "fr") {
-        label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + context);
+        label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + hint_text);
     }else if(test->get_dst() == "ja"){
-        label->setText("<b>"+word + "</b><br />" + context + tr("<br/>Write the pronunciation of this word in r&#333;maji."));
+        label->setText("<b>"+word + "</b><br />" + hint_text + tr("<br/>Write the pronunciation of this word in r&#333;maji."));
     }else if(test->get_dst() == "zh"){
-        label->setText("<b>"+word + "</b><br />" + context + tr("<br/>Write the pronunciation of this word in pinyin."));
+        label->setText("<b>"+word + "</b><br />" + hint_text + tr("<br/>Write the pronunciation of this word in pinyin."));
     }else if(test->get_dst() == "hr"){
-        label->setText(tr("Translate <b>") + word + tr("</b> into Croatian.<br />") + context);
+        label->setText(tr("Translate <b>") + word + tr("</b> into Croatian.<br />") + hint_text);
     }else{
-        label->setText(tr("Translate <b>") + word + tr("</b>.<br />")+ context);
+        label->setText(tr("Translate <b>") + word + tr("</b>.<br />")+ hint_text);
     }
 
     // Create import button

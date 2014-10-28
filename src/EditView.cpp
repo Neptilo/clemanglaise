@@ -17,12 +17,13 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     nature_edit(NULL),
     tags(NULL),
     nam(),
-    theme_nam(),
+    tag_nam(),
     word_edit(NULL),
     meaning_edit(NULL),
     pronunciation_edit(NULL),
     comment_edit(NULL),
     example_edit(NULL),
+    hint_edit(NULL),
     OK_button(NULL),
     cancel_button(NULL),
     continue_button(NULL),
@@ -45,6 +46,7 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     QString nature = default_values["nature"];
     QString comment = default_values["comment"];
     QString example = default_values["example"];
+    QString hint = default_values["hint"];
     QString pronunciation = ampersand_unescape(default_values["pronunciation"]);
     int id_theme = default_values["id_theme"].toInt();
 
@@ -60,6 +62,8 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     nature_edit->addItem(tr("Conjunction"), QVariant("conj"));
     nature_edit->addItem(tr("Interjection"), QVariant("inter"));
     nature_edit->addItem(tr("Noun"), QVariant("n"));
+    nature_edit->addItem(tr("Particle"), QVariant("part"));
+    nature_edit->addItem(tr("Phrase"), QVariant("phras"));
     nature_edit->addItem(tr("Preposition"), QVariant("prep"));
     nature_edit->addItem(tr("Pronoun"), QVariant("pron"));
     nature_edit->addItem(tr("Verb"), QVariant("v"));
@@ -82,14 +86,18 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     example_edit->setPlainText(example);
     layout->addRow(tr("&Example: "), example_edit);
 
+    hint_edit = new QTextEdit(this);
+    hint_edit->setPlainText(hint);
+    layout->addRow(tr("&Hint: "), hint_edit);
+
     status = new QLabel(this);
     layout->addWidget(status);
 
     tags = new QListWidget(this);
     tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    layout->addRow(tr("T&heme: "),tags);
+    layout->addRow(tr("T&ags: "), tags);
     find_tags();
-    connect(&theme_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+    connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
     nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
     nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
@@ -137,6 +145,7 @@ void EditView::edit_word(){
     // toPlainText() because we don't want to save a too much unnecessary information like an HTML header.
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
+    word_data["hint"] = ampersand_escape(hint_edit->toPlainText());
     QList<QListWidgetItem *> selected_items  = tags->selectedItems();
     QList<int> selected_items_variant;
 
@@ -160,10 +169,11 @@ void EditView::edit_word(){
 #else
 		QUrlQuery post_data;
 #endif
-        post_data.addQueryItem("test_id", QString::number(test->get_id()));
+        post_data.addQueryItem("list_id", QString::number(test->get_id()));
         for (QHash<QString, QString>::iterator i = word_data.begin(); i != word_data.end(); ++i)
             post_data.addQueryItem(i.key(), i.value());
-
+        for (int i = 0; i < selected_items_variant.size(); ++i)
+            post_data.addQueryItem("tag_ids[]", QString::number(selected_items_variant.at(i)));
 		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -210,6 +220,7 @@ void EditView::reset(){
     nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values["nature"])));
     comment_edit->setPlainText(default_values["comment"]);
     example_edit->setPlainText(default_values["example"]);
+    hint_edit->setPlainText(default_values["hint"]);
 
     pronunciation_edit->setText(default_values["pronunciation"]);
 
@@ -232,9 +243,9 @@ void EditView::find_tags() {
 		read_reply();
     } else {
 		// Request to PHP file
-		const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_themes.php");
+        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_tags.php");
 		QNetworkRequest request(url);
-		theme_nam.get(request);
+        tag_nam.get(request);
 	}
 }
 
@@ -251,12 +262,12 @@ void EditView::read_reply(QString reply_string) {
     if(test->is_remote())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 
-    QStringList themes_id = default_values["id_theme"].split(", ");
+    QStringList tag_ids = default_values["tag_ids"].split(", ");
 	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
         QListWidgetItem* item = new QListWidgetItem(reply_list.at(i+1).trimmed());
         item->setData(Qt::UserRole, QVariant(reply_list.at(i).toInt()));
         tags->addItem(item);
-        if(themes_id.contains(reply_list.at(i))) // select tags that belong to the word
+        if(tag_ids.contains(reply_list.at(i))) // select tags that belong to the word
             item->setSelected(true);
 	}
 }
@@ -268,6 +279,7 @@ void EditView::disable_edition(bool ok) {
 	pronunciation_edit->setEnabled(!ok);
 	comment_edit->setEnabled(!ok);
 	example_edit->setEnabled(!ok);
+    hint_edit->setEnabled(!ok);
     tags->setEnabled(!ok);
 }
 
@@ -275,7 +287,7 @@ void EditView::prepare_to_continue()
 {
     // Once a word has been updated, the default values are those of the next word we might add, ie, empty values.
     QStringList word_keys;
-    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme";
+    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "pronunciation" << "score" << "hint" << "tag_ids";
     for(int i = 0; i < word_keys.size(); ++i)
         default_values[word_keys.at(i)] = "";
     php_filename = "add_word";

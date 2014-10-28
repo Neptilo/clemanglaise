@@ -30,12 +30,13 @@ private:
     QComboBox* nature_edit;
     QListWidget* tags;
     QNetworkAccessManager nam;
-    QNetworkAccessManager theme_nam;
+    QNetworkAccessManager tag_nam;
     QLineEdit* word_edit;
     QLineEdit* meaning_edit;
     QLineEdit* pronunciation_edit;
     QTextEdit* comment_edit;
     QTextEdit* example_edit;
+    QTextEdit* hint_edit;
     QPushButton* OK_button;
     QPushButton* cancel_button;
     QPushButton* continue_button;

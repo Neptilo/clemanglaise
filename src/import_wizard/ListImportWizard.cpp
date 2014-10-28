@@ -131,7 +131,7 @@ void ListImportWizard::import_list()
     }
     progress_page.setSubTitle(tr("Importing list <b>%1</b> to <b>%2</b> %3.").arg(src_test->get_name()).arg(dst_test->get_name()).arg(behavior_text));
     // request to PHP file for the list of all words
-    const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?test_id=%1").arg(src_test->get_id()));
+    const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?list_id=%1").arg(src_test->get_id()));
     nam.get(QNetworkRequest(url));
 }
 
@@ -141,7 +141,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
     reply->deleteLater();
     QStringList word_keys;
     // has to be consistent with the actual query in the PHP file
-    word_keys << "id" << "word" << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "id_theme"  << "score" << "theme";
+    word_keys << "id" << "word" << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "hint"  << "score" << "tag_ids";
     QStringList reply_list = reply_string.split('\n');
     int nb_words = reply_list.size()/word_keys.size();
     progress_page.set_max_progress(nb_words);

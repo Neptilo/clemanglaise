@@ -31,7 +31,7 @@ private:
     QPushButton* add_button;
     EditView* add_view;
     QPushButton* add_theme_button;
-    AddTagView* add_tag_frame;
+    AddTagView* add_tag_view;
     bool admin;
     AnswerView* answer_view;
     QPushButton* back_button;
@@ -49,13 +49,13 @@ private:
     SearchView* search_view;
     QLabel status;
     Test test;
-    QLabel* theme;
-    QComboBox *themes;
+    QLabel* tags_label;
     QListWidget *tags;
     QLabel* title;
     QPushButton* update_button;
     EditView* update_view;
     AddTagView* update_theme_view;
+    QStringList word_keys;
 
     void remove_widgets();
 

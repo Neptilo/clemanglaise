@@ -18,13 +18,18 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     search_bar(NULL),
     tags(NULL),
     nam(),
+    tag_nam(),
     result(NULL),
     test(test),
     reply_list(),
     update_frame(NULL),
     modifiable(modifiable),
-    database_manager(database_manager)
+    database_manager(database_manager),
+    status(NULL)
 {
+    // has to be consistent with the actual content of reply_list
+    word_keys << "id" << "word"  << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "hint" << "score" << "tag_ids";
+
     QLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
     tags = new QListWidget(this);
@@ -37,14 +42,19 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     QPushButton* back_button = new QPushButton(tr("Back"),this);
     back_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
 
+    status = new QLabel(this);
+
     layout->addWidget(search_bar);
     layout->addWidget(tags);
     layout->addWidget(OK_button);
     layout->addWidget(back_button);
+    layout->addWidget(status);
+    status->hide();
 
     connect(search_bar, SIGNAL(returnPressed()), this, SLOT(search()));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(search()));
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+    connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_tags(QNetworkReply*)));
     connect(back_button, SIGNAL(clicked()), this, SLOT(back()));
 }
 
@@ -59,39 +69,53 @@ void SearchView::find_tags() {
         database_manager->find_used_tags(test->get_id(), reply_list_tag);
 		read_reply_tags();
 	} else { 
-        //TODO
-		// Request to PHP file
-        //const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_themes.php?test_id=%1").arg(test->get_id()));
-		//QNetworkRequest request(url);
-		//nam_themes.get(request);
+        // Request to PHP file
+        const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test->get_id()));
+        QNetworkRequest request(url);
+        tag_nam.get(request);
 	}
 }
 
 void SearchView::search() {
     layout()->removeWidget(update_frame);
-    if (test->is_remote()) {
-        // Standardization of search string
-        QString search_str = ampersand_escape(search_bar->text());
+    status->hide();
+    QList<QListWidgetItem *> selected_items  = tags->selectedItems();
+    QList<int> selected_tags;
 
+    for (int i = 0, l = selected_items.size(); i<l; ++i)
+       selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
+    // Standardization of search string
+    QString search_str = ampersand_unescape(search_bar->text());
+    if (test->is_remote()) {
+        // If 0 is in the list, remove it and set untagged to true to say we also want to look for untagged words, else set it to false.
+        bool untagged = selected_tags.removeOne(0);
+        QStringList selected_tags_str;
+        for(int i = 0; i < selected_tags.length(); ++i)
+            selected_tags_str << QString::number(selected_tags.at(i));
         // Request to PHP file
-        const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?test_id=%1&string=%2").arg(test->get_id()).arg(search_str));
+        const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?list_id=%1&string=%2&tag_ids=%3&untagged=%4")
+                              .arg(test->get_id())
+                              .arg(search_str)
+                              .arg(selected_tags_str.join(','))
+                              .arg(untagged));
         nam.get(QNetworkRequest(url));
     } else {
         // Offline
-        QList<QListWidgetItem *> selected_items  = tags->selectedItems();
-        QList<int> selected_tags;
-
-        for (int i = 0, l = selected_items.size(); i<l; ++i)
-           selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
-
-        QString search_str = ampersand_unescape(search_bar->text());
         database_manager->search(test->get_id(), search_str, selected_tags, reply_list);
         read_reply();
     }
 }
 
-void SearchView::read_reply_tags() {
+void SearchView::read_reply_tags(QNetworkReply* reply)
+{
+    // store the lines of the reply in the "reply_list_tag" attribute
+    reply_list_tag = QString(reply->readAll()).split('\n');
+    reply->deleteLater();
+    read_reply_tags();
+}
 
+void SearchView::read_reply_tags() {
+    tags->clear();
 	tags->addItem(tr("Without any tags"));
 	for(int i=0, l = reply_list_tag.count(); i<l-1; i+=2) {
         QListWidgetItem* item = new QListWidgetItem(reply_list_tag.at(i+1).trimmed());
@@ -102,6 +126,13 @@ void SearchView::read_reply_tags() {
 
 void SearchView::read_reply(QNetworkReply* reply)
 {
+    QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if(status_code.toInt() != 200){
+        status->setText(reply->readAll());
+        status->show();
+        return;
+    }
+    status->hide();
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
@@ -109,20 +140,20 @@ void SearchView::read_reply(QNetworkReply* reply)
 }
 
 void SearchView::read_reply(QString reply_string) {
-    int nb_cols(10);
+    int nb_cols = word_keys.size(); // the number of columns in the SQL query
     if (test->is_remote())
-        reply_list = QStringList(reply_string.split('\n'));
+        reply_list = reply_string.split('\n');
     if(result){
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.
         delete result;
         result = NULL;
     }
-    int result_nb_rows(reply_list.count()/nb_cols), result_nb_cols(modifiable?nb_cols:(nb_cols-2));
-    result = new QTableWidget(result_nb_rows, result_nb_cols, this);
     QStringList header_labels;
     if(modifiable)
         header_labels << "" << "";
-    header_labels << tr("Word") <<  tr("Meaning") << tr("Pronunciation") << tr("Nature") << tr("Comment") << tr("Example")  << tr("Score") << tr("Theme");
+    header_labels << tr("Word") <<  tr("Meaning") << tr("Pronunciation") << tr("Nature") << tr("Comment") << tr("Example")  << tr("Hint") << tr("Score") << tr("Tags");
+    int result_nb_rows(reply_list.count()/nb_cols), result_nb_cols(header_labels.size()); // the number of rows and columns in the displayed table
+    result = new QTableWidget(result_nb_rows, result_nb_cols, this);
     result->setHorizontalHeaderLabels(header_labels);
     result->verticalHeader()->hide();
     layout()->addWidget(result);
@@ -145,18 +176,24 @@ void SearchView::read_reply(QString reply_string) {
             result->setCellWidget(i/nb_cols, col_ind, item);
             col_ind = (col_ind+1)%result_nb_cols;
         }
-        if (i%nb_cols != 0 && i%nb_cols != 9){ // We don't want to show the id nor tags' id.
-            if (i%nb_cols != 8) {
-            item = new QLabel(ampersand_unescape(reply_list.at(i)), this);
-            item->setTextFormat(Qt::RichText);
-            result->setCellWidget(i/nb_cols, col_ind, item);
-            } else {
+        if (i%nb_cols != word_keys.indexOf("id")){ // We don't want to show the id.
+            if (i%nb_cols == word_keys.indexOf("tag_ids")) {
                 QComboBox* tags_box = new QComboBox();
-                QStringList tags_items = reply_list.at(i).split(", ");
-                for (int j = 0, count = tags_items.size(); j < count; ++j) {
-                    tags_box->addItem(tags_items.at(j)); 
+                QStringList tag_ids_str = reply_list.at(i).split(", ", QString::SkipEmptyParts);
+                for (int j = 0, count = tag_ids_str.size(); j < count; ++j) {
+                    int tag_id_ind = reply_list_tag.indexOf(tag_ids_str.at(j));
+                    if (tag_id_ind >= 0) {
+                        QString tag_name = reply_list_tag.at(tag_id_ind+1);
+                        tags_box->addItem(tag_name);
+                    } else {
+                        tags_box->addItem("?"); // should not happen
+                    }
                 }
                 result->setCellWidget(i/nb_cols, col_ind, tags_box);
+            } else {
+                item = new QLabel(ampersand_unescape(reply_list.at(i)), this);
+                item->setTextFormat(Qt::RichText);
+                result->setCellWidget(i/nb_cols, col_ind, item);
             }
             col_ind = (col_ind+1)%result_nb_cols;
         }
@@ -175,23 +212,19 @@ void SearchView::back()
 
 void SearchView::action(int row, int col)
 {
-    QStringList word_keys;
-    // has to be consistent with the actual content of reply_list
-    word_keys << "id" << "word"  << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "id_theme" << "score" << "theme";
     int nb_cols = word_keys.size();
 
     if(col == 0){
         // Remove everything
         result->disconnect();
         result->hide();
+        status->hide();
 
         // Create a new add frame
         QHash<QString, QString> default_values;
         for(int i = 0; i < nb_cols; ++i)
             default_values[word_keys.at(i)] = reply_list.at(i+row*nb_cols);
-        default_values["id_theme"] = reply_list.at(9);
-        default_values["score"] = reply_list.at(7);
-        update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update", tr("Word successfully edited!"), database_manager, this);
+        update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
         layout()->addWidget(update_frame);
         connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){
@@ -213,9 +246,8 @@ void SearchView::action(int row, int col)
 #else
                 QUrlQuery post_data;
 #endif
-                post_data.addQueryItem("test_id", QString::number(test->get_id()));
                 post_data.addQueryItem("id", reply_list.at(row*nb_cols));
-                const QUrl url("http://neptilo.com/php/clemanglaise/delete.php");
+                const QUrl url("http://neptilo.com/php/clemanglaise/delete_word.php");
                 QNetworkRequest request(url);
                 request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
                 nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
@@ -229,7 +261,10 @@ void SearchView::action(int row, int col)
 #endif
             } else {
                 int id = reply_list.at(row*nb_cols).toInt();
-                database_manager->delete_word(id);
+                if (!database_manager->delete_word(id)) {
+                    status->setText(database_manager->pop_last_error());
+                    status->show();
+                }
             }
 
             refresh();
@@ -238,6 +273,7 @@ void SearchView::action(int row, int col)
 }
 
 void SearchView::refresh(){
+    find_tags();
     result->show();
     search();
 }

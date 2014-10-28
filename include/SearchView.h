@@ -23,6 +23,7 @@ private:
     QLineEdit *search_bar;
     QListWidget *tags; 
     QNetworkAccessManager nam;
+    QNetworkAccessManager tag_nam;
     QTableWidget *result;
     Test *test;
     QStringList reply_list;
@@ -30,6 +31,8 @@ private:
     EditView *update_frame;
     bool modifiable;
     DatabaseManager *database_manager;
+    QStringList word_keys;
+    QLabel *status;
 
 public slots:
     void find_tags();
@@ -38,6 +41,8 @@ public slots:
     void back();
     void action(int row, int col);
     void refresh();
+private slots:
+    void read_reply_tags(QNetworkReply *reply);
 };
 
 #endif // SEARCHVIEW_H

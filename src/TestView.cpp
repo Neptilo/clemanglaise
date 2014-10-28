@@ -19,7 +19,7 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     add_button(NULL),
     add_view(NULL),
     add_theme_button(NULL),
-    add_tag_frame(NULL),
+    add_tag_view(NULL),
     admin(admin),
     answer_view(NULL),
     back_button(NULL),
@@ -35,14 +35,16 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
     search_view(NULL),
     status(this),
     test(test, this),
-    theme(NULL),
-    themes(NULL),
+    tags_label(NULL),
     tags(NULL),
     title(NULL),
     update_button(NULL),
     update_view(NULL),
     update_theme_view(NULL)
 {
+    // has to be consistent with the actual query in the PHP file
+    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "pronunciation" << "hint" << "tag_ids";
+
     title = new QLabel(str_title, this);
     title->setAlignment(Qt::AlignHCenter);
     layout = new QVBoxLayout(this);
@@ -50,15 +52,11 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
 
     layout->addWidget(title);
 
-    theme = new QLabel(tr("<i>Filter by tags</i>"), this);
-    layout->addWidget(theme);
-    themes = new QComboBox(this);
-    // set the ComboBox to that width.
+    tags_label = new QLabel(tr("<i>Filter by tags</i>"), this);
+    layout->addWidget(tags_label);
     tags = new QListWidget(this);
     tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
     layout->addWidget(tags);
-    themes->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-    layout->addWidget(themes);
 
     back_button = new QPushButton(tr("Go &back to tests list"), this);
     back_button->setIcon(QIcon::fromTheme("go-home", QIcon(getImgPath("go-home.png"))));
@@ -128,10 +126,10 @@ void TestView::init()
 
         if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
             QString word = word_data["word"];
-            QString theme = word_data["theme"];
+            QString hint = word_data["hint"];
             question_view = new QuestionView(&test, this);
             layout->addWidget(question_view);
-            question_view->ask_question(word, theme);
+            question_view->ask_question(word, hint);
         }else{
             QString error(database_manager->pop_last_error());
             if(error == "")
@@ -151,8 +149,7 @@ void TestView::init()
         add_button->show();
         delete_list_button->show();
     }
-    theme->show();
-    themes->show();
+    tags_label->show();
     tags->show();
     back_button->show();
     search_button->show();
@@ -176,7 +173,10 @@ void TestView::update_request() {
         selected_tags_str << QString::number(selected_tags.at(i));
 	// Request to PHP or local file
 	QUrl url;
-    url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3").arg(test.get_id()).arg(selected_tags_str.join(',')).arg(untagged));
+    url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3")
+               .arg(test.get_id())
+               .arg(selected_tags_str.join(','))
+               .arg(untagged));
     delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request remains the same.)
 	request = new QNetworkRequest(url);
 }
@@ -197,15 +197,12 @@ void TestView::read_reply(QNetworkReply* reply){
         if(reply_string.isEmpty())
             question_view->show_error(tr("The selected list is currently empty."));
         else{
-            QStringList word_keys;
-            // has to be consistent with the actual query in the PHP file
-            word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "name";
             QStringList word_values = reply_string.split('\n');
             for(int i = 0; i < word_keys.size(); ++i)
                 word_data[word_keys.at(i)] = word_values.at(i);
 
             // Everything is ready for the question view to ask the question.
-            question_view->ask_question(word_data["word"], word_data["theme"]);
+            question_view->ask_question(word_data["word"], word_data["hint"]);
         }
     }
 }
@@ -251,8 +248,8 @@ void TestView::validate_answer() {
     if (!test.is_remote()) {
         if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
             QString word = word_data["word"];
-            QString theme = word_data["theme"];
-            question_view->ask_question(word, theme);
+            QString hint = word_data["hint"];
+            question_view->ask_question(word, hint);
         }else{
             QString error(database_manager->pop_last_error());
             if(error == "")
@@ -296,7 +293,7 @@ void TestView::delete_list()
 #else
             QUrlQuery post_data;
 #endif
-            post_data.addQueryItem("test_id", QString::number(test.get_id()));
+            post_data.addQueryItem("list_id", QString::number(test.get_id()));
             const QUrl url("http://neptilo.com/php/clemanglaise/delete_list.php");
             QNetworkRequest request(url);
             request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -334,9 +331,9 @@ void TestView::add_tag()
 	// Create a new add frame
 	QStringList default_values_list;
 	default_values_list << "" << "";
-    add_tag_frame = new AddTagView(&test, tr("<b>Add a new tag</b>"), default_values_list, tr("Add"), "add_tag", tr("Tag successfully added!"), database_manager, this);
-    layout->addWidget(add_tag_frame);
-    connect(add_tag_frame, SIGNAL(destroyed()), this, SLOT(init()));
+    add_tag_view = new AddTagView(&test, tr("<b>Add a new tag</b>"), default_values_list, tr("Add"), "add_tag", tr("Tag successfully added!"), database_manager, this);
+    layout->addWidget(add_tag_view);
+    connect(add_tag_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::add_word()
@@ -344,9 +341,6 @@ void TestView::add_word()
 	remove_widgets();
 
 	// Create a new add frame
-    QStringList word_keys;
-    // has to be consistent with the actual content of reply_list
-    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score" << "theme" << "hint";
     QHash<QString, QString> default_values;
     for(int i = 0; i < word_keys.size(); ++i)
         default_values[word_keys.at(i)] = "";
@@ -386,7 +380,7 @@ void TestView::find_tags() {
 		read_reply();
 	} else { 
 		// Request to PHP file
-        const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_themes.php?test_id=%1").arg(test.get_id()));
+        const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test.get_id()));
 		QNetworkRequest request(url);
         nam_tags.get(request);
 	}
@@ -403,9 +397,6 @@ void TestView::read_reply_themes(QNetworkReply* reply)
 void TestView::read_reply(QString reply_string) {
     if (test.is_remote())
 		reply_list_theme = reply_string.split('\n', QString::SkipEmptyParts);
-	themes->disconnect();
-	themes->clear();
-	themes->addItem("---");
     //tags
 	tags->disconnect();
     tags->clear();
@@ -416,10 +407,6 @@ void TestView::read_reply(QString reply_string) {
         tags->addItem(item);
 	}
     connect(tags, SIGNAL(itemSelectionChanged()), this, SLOT(update_question()));
-	for(int i=0, l = reply_list_theme.count(); i<l-1; i+=2) {
-		themes->addItem(reply_list_theme.at(i+1), QVariant(reply_list_theme.at(i).toInt()));
-	}    
-	connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
 }
 
 void TestView::remove_widgets()
@@ -434,8 +421,7 @@ void TestView::remove_widgets()
 		add_button->hide();
         delete_list_button->hide();
 	}
-	theme->hide();
-	themes->hide();
+    tags_label->hide();
 	tags->hide();
 	back_button->hide();
 	search_button->hide();

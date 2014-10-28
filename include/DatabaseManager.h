@@ -27,14 +27,14 @@ public:
 
     // find word entry having the lowest score
     bool find_lowest(int test_id, QHash<QString, QString> &word_data, QList<int> themes_id);
-    void find_tags(QStringList& reply_list); // should return a bool (false if failed)
-    void find_used_tags(int test_id, QStringList& reply_list); // should return a bool (false if failed)
+    bool find_tags(QStringList& reply_list);
+    bool find_used_tags(int test_id, QStringList& reply_list);
     QList<Test> get_lists();
     bool open_db();
     QString pop_last_error();
-    void search(int test_id, const QString& expr, const QList<int> selected_tags, QStringList& reply_list); // should return a bool (false if failed)
-    void get_tags(int word_id, QStringList &word_tags);
-    void get_tags_id(int word_id, QStringList &word_tags_id);
+    bool search(int test_id, const QString& expr, const QList<int> selected_tags, QStringList& reply_list);
+    bool get_tags(int word_id, QStringList &word_tags);
+    bool get_tags_id(int word_id, QStringList &word_tags_id);
     bool set_score(int id, const int& correct);
     bool update_word(const QHash<QString, QString> &word_data);
     bool update_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags);

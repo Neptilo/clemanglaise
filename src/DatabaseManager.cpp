@@ -20,6 +20,101 @@ DatabaseManager::DatabaseManager(QObject *parent) :
     create_word_tag_table();
 }
 
+bool DatabaseManager::open_db()
+{
+    // Find QSLite driver
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+
+#ifdef Q_OS_LINUX
+    // NOTE: We have to store database file into user home folder in Linux
+    QString path(QDir::home().path());
+    path.append(QDir::separator()).append(".clemanglaise");
+    // Create Clemanglaise folder if it doesn't exist
+    if(!QDir(path).exists())
+        QDir(path).mkpath(".");
+    path.append(QDir::separator()).append("clemanglaise.sqlite");
+    path = QDir::toNativeSeparators(path);
+    db.setDatabaseName(path);
+#else
+    // NOTE: File exists in the application private folder, in Symbian Qt implementation
+    db.setDatabaseName("clemanglaise.sqlite");
+#endif
+    db.setConnectOptions("foreign_keys = ON");
+
+    // Open databasee
+    return db.open();
+}
+
+bool DatabaseManager::create_list_table()
+{
+    QSqlQuery query;
+    bool success = query.exec("CREATE TABLE IF NOT EXISTS lists("
+                              "ID INTEGER PRIMARY KEY, "
+                              "name VARCHAR(32) UNIQUE NOT NULL, "
+                              "src VARCHAR(3) NOT NULL, "
+                              "dst VARCHAR(3) NOT NULL"
+                              ")");
+    if(!success)
+        last_error = query.lastError().text();
+    return success;
+}
+
+bool DatabaseManager::create_word_table()
+{
+    QSqlQuery query;
+    bool success = query.exec("CREATE TABLE IF NOT EXISTS words("
+                              "id INTEGER PRIMARY KEY, "
+                              "list_id INTEGER NOT NULL, "
+                              "word TEXT NOT NULL DEFAULT '', "
+                              "meaning TEXT NOT NULL DEFAULT '', "
+                              "pronunciation TEXT DEFAULT '', "
+                              "nature VARCHAR(5) DEFAULT '', "
+                              "comment TEXT DEFAULT '', "
+                              "example TEXT DEFAULT '', "
+                              "correctly_answered INTEGER NOT NULL DEFAULT 0, "
+                              "asked INTEGER NOT NULL DEFAULT 0, "
+                              "score DECIMAL(2,2) DEFAULT 0, "
+                              "FOREIGN KEY(list_id) REFERENCES lists(ID) "
+                              "ON UPDATE CASCADE "
+                              "ON DELETE CASCADE"
+                              ")");
+    if(!success)
+        last_error = query.lastError().text();
+    return success;
+}
+
+
+bool DatabaseManager::create_tag_table()
+{
+    QSqlQuery query;
+    bool success = query.exec("CREATE TABLE IF NOT EXISTS tags("
+                              "ID INTEGER PRIMARY KEY, "
+                              "name VARCHAR(32) UNIQUE NOT NULL"
+                              ")");
+    if(!success)
+        last_error = query.lastError().text();
+    return success;
+}
+
+
+bool DatabaseManager::create_word_tag_table()
+{
+    QSqlQuery query;
+    bool success = query.exec("CREATE TABLE IF NOT EXISTS words_tags("
+                              "word_id INTEGER NOT NULL, "
+                              "tag_id INTEGER NOT NULL, "
+                              "FOREIGN KEY (word_id) REFERENCES words(id) "
+                              "ON UPDATE CASCADE "
+                              "ON DELETE CASCADE, "
+                              "FOREIGN KEY (tag_id) REFERENCES tags(id) "
+                              "ON UPDATE CASCADE "
+                              "ON DELETE CASCADE "
+                              "UNIQUE (word_id, tag_id))");
+    if(!success)
+        last_error = query.lastError().text();
+    return success;
+}
+
 // test_id is an output: the inserted ID.
 bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst, int &test_id) {
     QSqlQuery query;
@@ -70,14 +165,12 @@ bool DatabaseManager::add_tag(const QString &tag) {
     return success;
 }
 
-
-
 bool DatabaseManager::add_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags)
 {
     QSqlQuery query;
     query.exec("BEGIN");
-    bool success = query.prepare(QString("INSERT INTO words(list_id, word, meaning, nature, pronunciation, comment, example) "
-                                         "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example)"));
+    bool success = query.prepare(QString("INSERT INTO words(list_id, word, meaning, nature, pronunciation, comment, example, hint) "
+                                         "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example, :hint)"));
     for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
         if(i.key() != "id") {
             query.bindValue(":"+i.key(), i.value().trimmed());
@@ -123,8 +216,8 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data, const Q
 bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 {
     QSqlQuery query;
-    bool success = query.prepare(QString("INSERT INTO words(list_id, word, meaning, nature, pronunciation, comment, example) "
-                                         "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example)"));
+    bool success = query.prepare(QString("INSERT INTO words(list_id, word, meaning, nature, pronunciation, comment, example, hint) "
+                                         "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example, :hint)"));
     for(QHash<QString, QString>::const_iterator i = word_data.begin(); i != word_data.end(); ++i) {
         if(i.key() != "id") {
             query.bindValue(":"+i.key(), i.value().trimmed());
@@ -135,76 +228,6 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
     if(!success)
         last_error = query.lastError().text();
     
-    return success;
-}
-
-bool DatabaseManager::create_list_table()
-{
-    QSqlQuery query;
-    bool success = query.exec("CREATE TABLE IF NOT EXISTS lists("
-                              "ID INTEGER PRIMARY KEY, "
-                              "name VARCHAR(32) UNIQUE NOT NULL, "
-                              "src VARCHAR(3) NOT NULL, "
-                              "dst VARCHAR(3) NOT NULL"
-                              ")");
-    if(!success)
-        last_error = query.lastError().text();
-    return success;
-}
-
-bool DatabaseManager::create_word_table()
-{
-    QSqlQuery query;
-    bool success = query.exec("CREATE TABLE IF NOT EXISTS words("
-                              "id INTEGER PRIMARY KEY, " 
-                              "list_id INTEGER NOT NULL, "
-                              "word TEXT NOT NULL DEFAULT '', " 
-                              "meaning TEXT NOT NULL DEFAULT '', " 
-                              "pronunciation TEXT DEFAULT '', "
-                              "nature VARCHAR(5) DEFAULT '', "
-                              "comment TEXT DEFAULT '', "
-                              "example TEXT DEFAULT '', "
-                              "correctly_answered INTEGER NOT NULL DEFAULT 0, "
-                              "asked INTEGER NOT NULL DEFAULT 0, "
-                              "score DECIMAL(2,2) DEFAULT 0, "
-                              "FOREIGN KEY(list_id) REFERENCES lists(ID) "
-                              "ON UPDATE CASCADE "
-                              "ON DELETE CASCADE"
-                              ")");
-    if(!success)
-        last_error = query.lastError().text();
-    return success;
-}
-
-
-bool DatabaseManager::create_tag_table()
-{
-    QSqlQuery query;
-    bool success = query.exec("CREATE TABLE IF NOT EXISTS tags("
-                              "ID INTEGER PRIMARY KEY, "
-                              "name VARCHAR(32) UNIQUE NOT NULL"
-                              ")");
-    if(!success)
-        last_error = query.lastError().text();
-    return success;
-}
-
-
-bool DatabaseManager::create_word_tag_table()
-{
-    QSqlQuery query;
-    bool success = query.exec("CREATE TABLE IF NOT EXISTS words_tags("
-                              "word_id INTEGER NOT NULL, "
-                              "tag_id INTEGER NOT NULL, "
-                              "FOREIGN KEY (word_id) REFERENCES words(id) "
-                              "ON UPDATE CASCADE "
-                              "ON DELETE CASCADE, "
-                              "FOREIGN KEY (tag_id) REFERENCES tags(id) "
-                              "ON UPDATE CASCADE "
-                              "ON DELETE CASCADE "
-                              "UNIQUE (word_id, tag_id))");
-    if(!success)
-        last_error = query.lastError().text();
     return success;
 }
 
@@ -256,25 +279,25 @@ bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_dat
         tags_cond = QString("tag_id IN (%1)").arg(tags_selected);
 
     QStringList reply_keys;
-    reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example"  << "pronunciation" << "score" << "name" << "id_theme";
+    reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example"  << "pronunciation" << "hint" << "tag_ids";
 
-    QSqlQuery query(QString("SELECT words.id, word, meaning, nature, comment, example, pronunciation, MIN(score) "
+    QSqlQuery query(QString("SELECT words.id, word, meaning, nature, comment, example, pronunciation, hint "
                             "FROM words "
                             "LEFT OUTER JOIN words_tags "
                             "ON words.id = words_tags.word_id "
                             "WHERE list_id = %1 AND %2 "
                             "GROUP BY words.id "
-                            "ORDER BY RANDOM() LIMIT 1"
+                            "ORDER BY score, RANDOM() "
+                            "LIMIT 1"
                             ).arg(test_id).arg(tags_cond));
     int id_index = query.record().indexOf("id");
     if (query.next()) {
         word_data.clear();
         for(int i = 0; i < reply_keys.size(); ++i)
             word_data.insert(reply_keys.at(i), query.value(i).toString());
-        word_data.insert("name","to remove");
         QStringList tag_id_list;
         get_tags_id(query.value(id_index).toInt(), tag_id_list);
-        word_data.insert("id_theme", tag_id_list.join(", ")); 
+        word_data.insert("tag_ids", tag_id_list.join(", "));
         return true;
     } else {
         last_error = query.lastError().text();
@@ -282,17 +305,17 @@ bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_dat
     }
 }
 
-void DatabaseManager::find_tags(QStringList& reply_list) { 
+bool DatabaseManager::find_tags(QStringList& reply_list) {
     QSqlQuery query("SELECT * FROM tags ORDER BY name ASC");
     reply_list = QStringList();
     int nb_fields = query.record().count();
     while (query.next())
         for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
-
+    return true;
 }
 
-void DatabaseManager::find_used_tags(int test_id, QStringList& reply_list) {
+bool DatabaseManager::find_used_tags(int test_id, QStringList& reply_list) {
     QSqlQuery query;
     bool success = query.prepare(QString("SELECT DISTINCT (tags.id), name "
                                         "FROM words_tags "
@@ -306,13 +329,14 @@ void DatabaseManager::find_used_tags(int test_id, QStringList& reply_list) {
     success &= query.exec(); 
     if (!success) {
         last_error = query.lastError().text();
-        return;
+        return false;
     }
     reply_list = QStringList();
     int nb_fields = query.record().count();
     while (query.next())
         for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
+    return true;
 }
 
 QList<Test> DatabaseManager::get_lists()
@@ -324,31 +348,6 @@ QList<Test> DatabaseManager::get_lists()
     return test_list;
 }
 
-bool DatabaseManager::open_db()
-{
-    // Find QSLite driver
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-
-#ifdef Q_OS_LINUX
-    // NOTE: We have to store database file into user home folder in Linux
-    QString path(QDir::home().path());
-    path.append(QDir::separator()).append(".clemanglaise");
-    // Create Clemanglaise folder if it doesn't exist
-    if(!QDir(path).exists())
-        QDir(path).mkpath(".");
-    path.append(QDir::separator()).append("clemanglaise.sqlite");
-    path = QDir::toNativeSeparators(path);
-    db.setDatabaseName(path);
-#else
-    // NOTE: File exists in the application private folder, in Symbian Qt implementation
-    db.setDatabaseName("clemanglaise.sqlite");
-#endif
-    db.setConnectOptions("foreign_keys = ON");
-
-    // Open databasee
-    return db.open();
-}
-
 QString DatabaseManager::pop_last_error()
 {
     QString err = last_error.trimmed(); // "Because it can sometimes be "" or " ".
@@ -356,7 +355,7 @@ QString DatabaseManager::pop_last_error()
     return err;
 }
 
-void DatabaseManager::search(int test_id, const QString& expr, const QList<int> selected_tags, QStringList &reply_list){
+bool DatabaseManager::search(int test_id, const QString& expr, const QList<int> selected_tags, QStringList &reply_list){
 
     QStringList selected_tags_str;
     for (int i = 0, l=selected_tags.size(); i < l; ++i)
@@ -374,7 +373,7 @@ void DatabaseManager::search(int test_id, const QString& expr, const QList<int> 
         tags_cond = QString("tag_id IN (%1)").arg(tags_selected);
 
     QSqlQuery query(
-                QString ("SELECT DISTINCT (words.id), word, meaning, pronunciation, nature, comment, example, score "
+                QString ("SELECT DISTINCT (words.id), word, meaning, pronunciation, nature, comment, example, hint, score "
                          "FROM words "
                          "LEFT OUTER JOIN words_tags "
                          "ON words_tags.word_id = words.id "
@@ -386,22 +385,20 @@ void DatabaseManager::search(int test_id, const QString& expr, const QList<int> 
                          ).arg(test_id).arg(tags_cond).arg(expr));
     reply_list = QStringList();
     int nb_fields = query.record().count();
-    QStringList tag_list, tag_list_id;
+    QStringList tag_list_id;
     while (query.next()){
         for(int i = 0; i < nb_fields; ++i)
             reply_list << query.value(i).toString();
-        tag_list.clear();
         tag_list_id.clear();
-        get_tags(query.value(0).toInt(), tag_list);
-        reply_list << tag_list.join(", ");
         get_tags_id(query.value(0).toInt(), tag_list_id);
         reply_list << tag_list_id.join(", ");
     }
     // to be consistent with the online type of result which returns one empty line
     reply_list << "";
+    return true;
 }
 
-void DatabaseManager::get_tags(int word_id, QStringList &word_tags) {
+bool DatabaseManager::get_tags(int word_id, QStringList &word_tags) {
     QSqlQuery query;
     query.prepare(QString("SELECT name from tags "
                           "INNER JOIN words_tags "
@@ -409,12 +406,16 @@ void DatabaseManager::get_tags(int word_id, QStringList &word_tags) {
                           "WHERE word_id = :id "
                           "ORDER BY name ASC"));
     query.bindValue(":id", word_id);
-    query.exec();
+    if (!query.exec()) {
+        last_error = query.lastError().text();
+        return false;
+    }
     while(query.next())
         word_tags << query.value(0).toString();
+    return true;
 }
 
-void DatabaseManager::get_tags_id(int word_id, QStringList &word_tags_id) {
+bool DatabaseManager::get_tags_id(int word_id, QStringList &word_tags_id) {
     QSqlQuery query;
     query.prepare(QString("SELECT tags.id from tags "
                           "INNER JOIN words_tags "
@@ -422,9 +423,13 @@ void DatabaseManager::get_tags_id(int word_id, QStringList &word_tags_id) {
                           "WHERE word_id = :id "
                           "ORDER BY name ASC"));
     query.bindValue(":id", word_id);
-    query.exec();
+    if (!query.exec()) {
+        last_error = query.lastError().text();
+        return false;
+    }
     while(query.next())
         word_tags_id << query.value(0).toString();
+    return true;
 }
 
 bool DatabaseManager::set_score(int id, const int &correct) {
@@ -455,7 +460,8 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
                                          "nature=:nature, "
                                          "comment=:comment, "
                                          "example=:example, "
-                                         "pronunciation=:pronunciation "
+                                         "pronunciation=:pronunciation, "
+                                         "hint=:hint "
                                          "WHERE id=:id "
                                          "AND list_id=:list_id"));
     QHash<QString, QString>::const_iterator i;
@@ -482,7 +488,8 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
                                          "nature=:nature, "
                                          "comment=:comment, "
                                          "example=:example, "
-                                         "pronunciation=:pronunciation "
+                                         "pronunciation=:pronunciation, "
+                                         "hint=:hint "
                                          "WHERE id=:id "
                                          "AND list_id=:list_id"));
 
@@ -492,9 +499,9 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
             query.bindValue(":"+i.key(), i.value().trimmed());
         }
     }
-
     success &= query.exec();
     if(!success){
+        // TODO: should rollback and return false if there's an error, instead of continuing with the tags.
         last_error = query.lastError().text();
     }
 
@@ -555,7 +562,7 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
     for (int i = 0; i < word_list.size(); ++i)
         word_list.replace(i, word_list.at(i).trimmed());
     reply_keys.clear();
-    reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "id_theme" << "pronunciation" << "score";
+    reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "pronunciation" << "hint" << "score";
     QStringList cond;
     for (int i = 0; i < word_list.size(); ++i)
         cond << QString("word LIKE '%%1%'").arg(word_list[i]);

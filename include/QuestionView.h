@@ -17,7 +17,7 @@ public:
     ~QuestionView();
 
     QString get_answer();
-    void ask_question(const QString &word, const QString &theme);
+    void ask_question(const QString &word, const QString &hint);
     void show_error(const QString &error);
 
 private:
