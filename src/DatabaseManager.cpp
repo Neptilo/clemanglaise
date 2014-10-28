@@ -71,6 +71,7 @@ bool DatabaseManager::create_word_table()
                               "nature VARCHAR(5) DEFAULT '', "
                               "comment TEXT DEFAULT '', "
                               "example TEXT DEFAULT '', "
+                              "hint TEXT DEFAULT '', "
                               "correctly_answered INTEGER NOT NULL DEFAULT 0, "
                               "asked INTEGER NOT NULL DEFAULT 0, "
                               "score DECIMAL(2,2) DEFAULT 0, "
