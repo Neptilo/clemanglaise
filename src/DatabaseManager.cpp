@@ -482,6 +482,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
 bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags)
 {
     QSqlQuery query;
+    query.exec("BEGIN");
 
     bool success = query.prepare(QString("UPDATE words SET "
                                          "word=:word, "
@@ -502,8 +503,9 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
     }
     success &= query.exec();
     if(!success){
-        // TODO: should rollback and return false if there's an error, instead of continuing with the tags.
         last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
     }
 
     // Handle tags
@@ -511,8 +513,11 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
     "WHERE word_id =  :id"));
     query.bindValue(":id", word_data["id"]);
     success &= query.exec();
-    if(!success)
+    if(!success){
         last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
+    }
 
     QList<int> existing_tags;
     while(query.next()) {
@@ -542,6 +547,12 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
         success &= query.exec();
     }
 
+    if (!success){
+        last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
+    }
+
     success &= query.prepare(QString("DELETE FROM words_tags "
                                      "WHERE word_id = :word_id "
                                      "AND tag_id IN (%1)"
@@ -549,10 +560,14 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
     query.bindValue(":word_id", word_data["id"]);
     success &= query.exec();
 
-    if (!success)
+    if (!success){
         last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
+    }
+    query.exec("COMMIT");
 
-    return success;
+    return true;
 }
 
 // Two sets of words are considered as possible duplicates of one another if
