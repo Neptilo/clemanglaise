@@ -1,5 +1,6 @@
 #include "DatabaseManager.h"
 
+#include <QAndroidJniObject>
 #include <QDebug>
 #include <QDir>
 #include <QSqlError>
@@ -25,7 +26,22 @@ bool DatabaseManager::open_db()
     // Find QSLite driver
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_ANDROID)
+    // in Android, store database file in external storage
+    QAndroidJniObject media_dir = QAndroidJniObject::callStaticObjectMethod(
+                "android/os/Environment",
+                "getExternalStorageDirectory",
+                "()Ljava/io/File;");
+    QAndroidJniObject media_path = media_dir.callObjectMethod("getAbsolutePath", "()Ljava/lang/String;");
+    QString path(media_path.toString());
+    path.append(QDir::separator()).append("Clemanglaise");
+    // Create Clemanglaise folder if it doesn't exist
+    if(!QDir(path).exists())
+        QDir(path).mkpath(".");
+    path.append(QDir::separator()).append("clemanglaise.sqlite");
+    path = QDir::toNativeSeparators(path);
+    db.setDatabaseName(path);
+#elif defined(Q_OS_LINUX)
     // NOTE: We have to store database file into user home folder in Linux
     QString path(QDir::home().path());
     path.append(QDir::separator()).append(".clemanglaise");
@@ -41,7 +57,7 @@ bool DatabaseManager::open_db()
 #endif
     db.setConnectOptions("foreign_keys = ON");
 
-    // Open databasee
+    // Open database
     return db.open();
 }
 
