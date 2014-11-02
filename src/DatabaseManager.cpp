@@ -1,6 +1,8 @@
 #include "DatabaseManager.h"
 
+#if defined(Q_OS_ANDROID)
 #include <QAndroidJniObject>
+#endif
 #include <QDebug>
 #include <QDir>
 #include <QSqlError>
