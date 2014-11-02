@@ -66,7 +66,10 @@ SOURCES += \
 
 RESOURCES += clemanglaise.qrc
 
-QT += network sql androidextras
+QT += network sql
+android {
+     QT += androidextras
+}
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): cache()
 
