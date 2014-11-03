@@ -1,6 +1,5 @@
 Priority 1
 ----------
-* Fix this bug: on online tests (I don't know about offline), when you add a theme which the database assigns an ID that is not equal to (the last ID+1), and you go back to the test to select the new theme, it crashes.
 * Implement tag imports during list imports:
   Before importing words, make a list of the tags used in the list to import, find which are the new ones (according to their names), add them to the local tags, and then import the words and insert the word-tag relations *according to the local tag ids*.
   The tag name comparisions should normalize them: trim spaces, ignore case, maybe ignore some other things too.
