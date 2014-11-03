@@ -43,6 +43,7 @@ public slots:
     void refresh();
 private slots:
     void read_reply_tags(QNetworkReply *reply);
+    void read_delete_reply(QNetworkReply *reply);
 };
 
 #endif // SEARCHVIEW_H

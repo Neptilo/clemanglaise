@@ -139,6 +139,20 @@ void SearchView::read_reply(QNetworkReply* reply)
     read_reply(reply_string); // FIXME: Memory leak
 }
 
+void SearchView::read_delete_reply(QNetworkReply* reply)
+{
+    QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if(status_code.toInt() != 200){
+        status->setText(reply->readAll());
+        status->show();
+        return;
+    }
+    status->hide();
+    nam.disconnect();
+    connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+    refresh();
+}
+
 void SearchView::read_reply(QString reply_string) {
     int nb_cols = word_keys.size(); // the number of columns in the SQL query
     if (test->is_remote())
@@ -252,6 +266,8 @@ void SearchView::action(int row, int col)
                 request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
                 nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
                 nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+                nam.disconnect();
+                connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_delete_reply(QNetworkReply*)));
 
                 // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
@@ -265,9 +281,8 @@ void SearchView::action(int row, int col)
                     status->setText(database_manager->pop_last_error());
                     status->show();
                 }
+                refresh();
             }
-
-            refresh();
         }
     }
 }
