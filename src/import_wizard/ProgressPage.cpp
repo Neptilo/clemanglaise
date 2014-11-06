@@ -25,7 +25,7 @@ void ProgressPage::initializePage()
 {
     // start import
     status.setText(tr("Sending request to server"));
-    emit import_list();
+    emit ready();
 }
 
 bool ProgressPage::isComplete() const

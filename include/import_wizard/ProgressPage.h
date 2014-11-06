@@ -25,7 +25,7 @@ private:
     QTextEdit log;
 
 signals:
-    void import_list();
+    void ready();
 
 public slots:    
 };

@@ -159,7 +159,7 @@ void SearchView::read_reply(QString reply_string) {
         reply_list = reply_string.split('\n');
     if(result){
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.
-        delete result;
+        result->deleteLater();
         result = NULL;
     }
     QStringList header_labels;

@@ -40,7 +40,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
 
     // page to show progress and status
     setPage(Page_Progress, &progress_page);
-    connect(&progress_page, SIGNAL(import_list()), this, SLOT(import_list())); // emitted when page shows up
+    connect(&progress_page, SIGNAL(ready()), this, SLOT(import_list())); // emitted when page shows up
     connect(&progress_page, SIGNAL(completeChanged()), this, SLOT(update_on_complete()));
     setOption(QWizard::NoBackButtonOnLastPage);
 

@@ -8,6 +8,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QStringList>
 #include <QMapIterator>
 
 DatabaseManager::DatabaseManager(QObject *parent) :
@@ -171,16 +172,29 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
 }
 
 bool DatabaseManager::add_tag(const QString &tag) {
+    int tag_id;
+    return add_tag(tag, tag_id);
+}
+
+bool DatabaseManager::add_tag(const QString &tag, int &tag_id) {
     QString str = "INSERT INTO tags "
             "(name) "
             "VALUES(:name)";
     QSqlQuery query;
     bool success = query.prepare(str);
     query.bindValue(":name", tag);
-
     success &= query.exec();
-    if (!success)
+    if (!success) {
         last_error = query.lastError().text();
+        return false;
+    }
+    success &= query.exec("SELECT LAST_INSERT_ROWID()");
+    if (query.next())
+        tag_id = query.value(0).toInt();
+    else{
+        last_error = query.lastError().text();
+        return false;
+    }
     return success;
 }
 
@@ -234,6 +248,17 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data, const Q
 
 bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 {
+    QString tag_ids_str = word_data["tag_ids"];
+    if (!tag_ids_str.isEmpty()) {
+        QHash<QString, QString> new_word_data(word_data);
+        new_word_data.remove("tag_ids");
+        QStringList tag_id_list = tag_ids_str.split(", ");
+        QList<int> tag_ids;
+        for (int i = 0; i < tag_id_list.size(); ++i)
+            tag_ids << tag_id_list.at(i).toInt();
+        return add_word(new_word_data, tag_ids);
+    }
+
     QSqlQuery query;
     bool success = query.prepare(QString("INSERT INTO words(list_id, word, meaning, nature, pronunciation, comment, example, hint) "
                                          "VALUES(:list_id, :word, :meaning, :nature, :pronunciation, :comment, :example, :hint)"));
@@ -471,6 +496,17 @@ bool DatabaseManager::set_score(int id, const int &correct) {
 
 bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
 {
+    QString tag_ids_str = word_data["tag_ids"];
+    if (!tag_ids_str.isEmpty()) {
+        QHash<QString, QString> new_word_data(word_data);
+        new_word_data.remove("tag_ids");
+        QStringList tag_id_list = tag_ids_str.split(", ");
+        QList<int> tag_ids;
+        for (int i = 0; i < tag_id_list.size(); ++i)
+            tag_ids << tag_id_list.at(i).toInt();
+        return update_word(new_word_data, tag_ids);
+    }
+
     QSqlQuery query;
 
     bool success = query.prepare(QString("UPDATE words SET "
@@ -600,8 +636,7 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
     QStringList cond;
     for (int i = 0; i < word_list.size(); ++i)
         cond << QString("word LIKE '%%1%'").arg(word_list[i]);
-    cond.join(" OR ");
-    QSqlQuery query(QString("SELECT %3 FROM words_%1 WHERE %2")
+    QSqlQuery query(QString("SELECT %3 FROM words WHERE list_id = %1 AND (%2)")
                     .arg(test_id)
                     .arg(cond.join(" OR "))
                     .arg(reply_keys.join(", ")));
@@ -621,10 +656,16 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
         }
 
         // insert entry as possible duplicate only if duplicate condition is respected
-        if(2*nb_words_in_common > qMin(word_list.size(), reply_word_entry.size()))
-            reply_values << entry;
-    }
+        if(2*nb_words_in_common > qMin(word_list.size(), reply_word_entry.size())){
+            // get this entry's tags
+            QStringList tag_list_id;
+            get_tags_id(query.value(0).toInt(), tag_list_id);
+            entry << tag_list_id.join(", ");
 
+            reply_values << entry;
+        }
+    }
+    reply_keys << "tag_ids";
     return true;
 }
 
