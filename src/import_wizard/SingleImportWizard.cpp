@@ -125,7 +125,7 @@ void SingleImportWizard::find_tags() {
 }
 
 void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
-    bool success;
+    bool success = true;
 
     // find names of tags
     QString reply_string = reply->readAll();
@@ -144,9 +144,15 @@ void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
     // search for tag names in local database and create missing ones
     offline_tag_ids = QList<int>();
     for (int i = 0; i < tag_names.size(); ++i) {
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+        QRegExp re(
+                    "\\s*" + QRegExp::escape(tag_names.at(i).trimmed()) + "\\s*",
+                    Qt::CaseInsensitive);
+#else
         QRegularExpression re(
                     "\\s*" + QRegularExpression::escape(tag_names.at(i).trimmed()) + "\\s*",
                     QRegularExpression::CaseInsensitiveOption);
+#endif
         database_manager->find_tags(reply_list); // reply_list's contents are replaced
         int tag_name_ind = reply_list.indexOf(re);
         if (tag_name_ind >= 0) {
@@ -192,6 +198,7 @@ void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
     }
     case ImportBehavior::Replace:
     {
+        word_data["id"] = duplicate_page.get_word_to_merge()["id"];
         success &= update_word(word_data);
         break;
     }

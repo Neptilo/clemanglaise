@@ -175,7 +175,7 @@ void TestView::update_request() {
 	QUrl url;
     url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3")
                .arg(test.get_id())
-               .arg(selected_tags_str.join(','))
+               .arg(selected_tags_str.join(","))
                .arg(untagged));
     delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request remains the same.)
 	request = new QNetworkRequest(url);

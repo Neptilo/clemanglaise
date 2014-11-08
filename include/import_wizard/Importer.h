@@ -1,6 +1,8 @@
 #ifndef IMPORTER_H
 #define IMPORTER_H
 
+#include <QStringList>
+
 #include "DatabaseManager.h"
 
 class Importer

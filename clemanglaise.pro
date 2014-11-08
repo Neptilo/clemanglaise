@@ -14,7 +14,6 @@ HEADERS += \
     include/HomeView.h \
     include/LanguageButtons.h \
     include/NetworkReplyReader.h \
-    include/Parser.h \
     include/QuestionView.h \
     include/SearchView.h \
     include/string_utils.h \
@@ -43,7 +42,6 @@ SOURCES += \
     src/LanguageButtons.cpp \
     src/main.cpp \
     src/NetworkReplyReader.cpp \
-    src/Parser.cpp \
     src/QuestionView.cpp \
     src/SearchView.cpp \
     src/string_utils.cpp \

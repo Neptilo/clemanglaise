@@ -58,10 +58,18 @@ bool DatabaseManager::open_db()
     // NOTE: File exists in the application private folder, in Symbian Qt implementation
     db.setDatabaseName("clemanglaise.sqlite");
 #endif
-    db.setConnectOptions("foreign_keys = ON");
 
     // Open database
-    return db.open();
+    bool success = db.open();
+    if(!success) {
+        last_error = db.lastError().text();
+        return false;
+    }
+    QSqlQuery query;
+    success &= query.exec("PRAGMA foreign_keys = ON");
+    if(!success)
+        last_error = query.lastError().text();
+    return success;
 }
 
 bool DatabaseManager::create_list_table()
@@ -226,8 +234,8 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data, const Q
         return false;
     }
 
-    // Add themes to many-to-many tabe
-    for (int i =0,l= selected_tags.size(); i<l; ++i)
+    // Add themes to many-to-many table
+    for (int i =0,l= selected_tags.size(); i<l && success; ++i)
     {
         success &= query.prepare(QString("INSERT INTO words_tags(word_id, tag_id) "
                                          "VALUES (:word_id, :tag_id)"
@@ -271,7 +279,6 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
 
     if(!success)
         last_error = query.lastError().text();
-    
     return success;
 }
 
@@ -490,6 +497,10 @@ bool DatabaseManager::set_score(int id, const int &correct) {
     success &= query.exec();
     if(!success)
         last_error = query.lastError().text();
+    if(query.numRowsAffected() != 1){
+        last_error = QString("%1 rows were affected by the update query.").arg(query.numRowsAffected());
+        return false;
+    }
 
     return success;
 }
@@ -529,7 +540,10 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
     success &= query.exec();
     if(!success)
         last_error = query.lastError().text();
-
+    if(query.numRowsAffected() != 1){
+        last_error = QString("%1 rows were affected by the update query.").arg(query.numRowsAffected());
+        return false;
+    }
     return success;
 }
 
@@ -558,6 +572,11 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
     success &= query.exec();
     if(!success){
         last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
+    }
+    if(query.numRowsAffected() != 1){
+        last_error = QString("%1 rows were affected by the update query.").arg(query.numRowsAffected());
         query.exec("ROLLBACK");
         return false;
     }
@@ -591,8 +610,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
         if(!existing_tags.contains(item))
             tags_to_add << QString::number(item);
     }
-
-    for (int i = 0, l = tags_to_add.size(); i < l; ++i) {
+    for (int i = 0, l = tags_to_add.size(); i < l && success; ++i) {
         success &= query.prepare(QString("INSERT INTO words_tags(word_id, tag_id) "
                                          "VALUES (:word_id, :tag_id)"
                                          ));
@@ -600,7 +618,6 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
         query.bindValue(":tag_id", tags_to_add.at(i));
         success &= query.exec();
     }
-
     if (!success){
         last_error = query.lastError().text();
         query.exec("ROLLBACK");

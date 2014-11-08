@@ -96,7 +96,7 @@ void SearchView::search() {
         const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?list_id=%1&string=%2&tag_ids=%3&untagged=%4")
                               .arg(test->get_id())
                               .arg(search_str)
-                              .arg(selected_tags_str.join(','))
+                              .arg(selected_tags_str.join(","))
                               .arg(untagged));
         nam.get(QNetworkRequest(url));
     } else {
