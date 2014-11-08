@@ -40,6 +40,8 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
     // page to show progress and status
     setPage(Page_Progress, &progress_page);
     connect(&progress_page, SIGNAL(ready()), this, SLOT(import_tags_and_word())); // emitted when page shows up
+    connect(&progress_page, SIGNAL(completeChanged()), this, SLOT(update_on_complete()));
+    setOption(QWizard::NoBackButtonOnLastPage);
 
     connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_tag_reply(QNetworkReply*)));
 }
@@ -78,7 +80,10 @@ void SingleImportWizard::check_duplicates(Test *test)
                 next();
             } else
                 next();
-        } // TODO: else show error
+        } else
+            progress_page.append_log(
+                        tr("<b>SQLite error: </b>%1")
+                        .arg(database_manager->pop_last_error()));
     }else{
         // create vocabulary list
         dst_list_page->create_add_list_view();
@@ -87,13 +92,14 @@ void SingleImportWizard::check_duplicates(Test *test)
 
 bool SingleImportWizard::update_word(const QHash<QString, QString> &word_data)
 {
-    if(!dst_test->get_id()){ // TODO: show error message
-        qDebug() << tr("Destination test id has not been defined.");
-        reject();
+    if(!dst_test->get_id()){
+        progress_page.append_log(tr("Destination test id has not been defined."));
     }
 
-    if(!database_manager->update_word(word_data)){ // TODO: show error message if it fails
-        qDebug() << tr("<b>SQLite error: </b>") << database_manager->pop_last_error();
+    if(!database_manager->update_word(word_data)){
+        progress_page.append_log(
+                    tr("<b>SQLite error: </b>%1")
+                    .arg(database_manager->pop_last_error()));
         return false;
     }else{
         return true;
@@ -109,6 +115,7 @@ void SingleImportWizard::import_tags_and_word()
 {
     // retrieve word's tag ids
     QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", QString::SkipEmptyParts);
+    progress_page.set_max_progress(online_tag_ids_str.size()+2);
     online_tag_ids = QList<int>();
     for (int i = 0; i < online_tag_ids_str.size(); ++i)
         online_tag_ids << online_tag_ids_str.at(i).toInt();
@@ -121,10 +128,12 @@ void SingleImportWizard::find_tags() {
     // Request to PHP file
     const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_tags.php");
     QNetworkRequest request(url);
+    progress_page.set_status(tr("Retrieving tag names from server"));
     tag_nam.get(request);
 }
 
 void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
+    progress_page.increase_progress();
     bool success = true;
 
     // find names of tags
@@ -144,6 +153,9 @@ void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
     // search for tag names in local database and create missing ones
     offline_tag_ids = QList<int>();
     for (int i = 0; i < tag_names.size(); ++i) {
+        progress_page.set_status(
+                    tr("Looking for tag <b>%1</b> in local database")
+                    .arg(tag_names.at(i).trimmed()));
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QRegExp re(
                     "\\s*" + QRegExp::escape(tag_names.at(i).trimmed()) + "\\s*",
@@ -163,14 +175,20 @@ void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
             // The tag name was not found
             // create this tag in the local database
             int tag_id;
+            progress_page.set_status(
+                        tr("Adding tag <b>%1</b> to local database")
+                        .arg(tag_names.at(i).trimmed()));
             if (database_manager->add_tag(tag_names.at(i), tag_id))
                 offline_tag_ids << tag_id;
             else {
                 offline_tag_ids << -1;
-                qDebug() << database_manager->pop_last_error();
+                progress_page.append_log(
+                            tr("<b>SQLite error: </b>%1")
+                            .arg(database_manager->pop_last_error()));
                 success = false;
             }
         }
+        progress_page.increase_progress();
     }
 
     // update word_data's tag ids with new local ids
@@ -183,6 +201,7 @@ void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
     word_data["tag_ids"] = word_tag_ids_str.join(", ");
 
     // import word
+    progress_page.set_status(tr("Importing word"));
     switch(chosen_behavior){
     case ImportBehavior::DontCheck:
         // import anyway
@@ -203,11 +222,22 @@ void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
         break;
     }
     default:
-        qDebug() << tr("Invalid import behavior code (%1). Maybe it has not been initialized.").arg(chosen_behavior);
+        progress_page.append_log(
+                    tr("Invalid import behavior code (%1). Maybe it has not been initialized.")
+                    .arg(chosen_behavior));
         success = false;
     }
+    progress_page.increase_progress();
     if(success)
-        accept();
+        progress_page.set_status(tr("Import succeeded."));
     else
-        reject();
+        progress_page.set_status(tr("Import failed."));
+}
+
+void SingleImportWizard::update_on_complete()
+{
+    if(progress_page.isComplete()){
+        // disable cancel button
+        button(QWizard::CancelButton)->setEnabled(false);
+    }
 }

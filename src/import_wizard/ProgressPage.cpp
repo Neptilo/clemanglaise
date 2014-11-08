@@ -24,7 +24,7 @@ void ProgressPage::set_status(QString text)
 void ProgressPage::initializePage()
 {
     // start import
-    status.setText(tr("Sending request to server"));
+    status.setText(tr("Starting up"));
     emit ready();
 }
 

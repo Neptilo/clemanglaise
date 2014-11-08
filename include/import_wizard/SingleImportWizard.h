@@ -39,6 +39,7 @@ private slots:
     void check_duplicates(Test *test);
     void read_tag_reply(QNetworkReply *reply);
     void import_tags_and_word();
+    void update_on_complete();
 };
 
 #endif // SINGLEIMPORTWIZARD_H
