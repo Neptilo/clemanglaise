@@ -528,8 +528,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data)
                                          "example=:example, "
                                          "pronunciation=:pronunciation, "
                                          "hint=:hint "
-                                         "WHERE id=:id "
-                                         "AND list_id=:list_id"));
+                                         "WHERE id=:id"));
     QHash<QString, QString>::const_iterator i;
     for(i = word_data.begin(); i != word_data.end(); ++i) {
         if(i.key() != "score") {
@@ -560,8 +559,7 @@ bool DatabaseManager::update_word(const QHash<QString, QString> &word_data, cons
                                          "example=:example, "
                                          "pronunciation=:pronunciation, "
                                          "hint=:hint "
-                                         "WHERE id=:id "
-                                         "AND list_id=:list_id"));
+                                         "WHERE id=:id"));
 
     QHash<QString, QString>::const_iterator i;
     for(i = word_data.begin(); i != word_data.end(); ++i) {
@@ -692,8 +690,17 @@ bool DatabaseManager::count(int test_id, int &res)
     bool success = query.prepare(QString("SELECT COUNT(*) FROM words "
                             "WHERE list_id=:list_id"));
     query.bindValue(":list_id", test_id);
-    
-    if ((success &= query.next()))
+    if (!success) {
+        last_error = query.lastError().text();
+        return success;
+    }
+    success &= query.exec();
+    if (!success) {
+        last_error = query.lastError().text();
+        return success;
+    }
+    success &= query.next();
+    if (success)
         res = query.value(0).toInt();
     else
         last_error = query.lastError().text();

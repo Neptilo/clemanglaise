@@ -21,11 +21,13 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     progress_page(this),
     //duplicate_page(this),
     nam(this),
+    tag_nam(this),
     nb_inserted(0),
     nb_replaced(0),
     nb_updated(0),
     nb_discarded(0),
-    nb_failed(0)
+    nb_failed(0),
+    reply_list(NULL)
 {
     setWindowTitle(tr("Import a vocabulary list"));
 
@@ -40,7 +42,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
 
     // page to show progress and status
     setPage(Page_Progress, &progress_page);
-    connect(&progress_page, SIGNAL(ready()), this, SLOT(import_list())); // emitted when page shows up
+    connect(&progress_page, SIGNAL(ready()), this, SLOT(import_tags_and_list())); // emitted when page shows up
     connect(&progress_page, SIGNAL(completeChanged()), this, SLOT(update_on_complete()));
     setOption(QWizard::NoBackButtonOnLastPage);
 
@@ -48,6 +50,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     //    setPage(Page_Duplicates, &duplicate_page);
 
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+    connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_tag_reply(QNetworkReply*)));
 }
 
 int ListImportWizard::nextId() const
@@ -106,7 +109,7 @@ void ListImportWizard::choose_behavior(int behavior)
     chosen_behavior = behavior;
 }
 
-void ListImportWizard::import_list()
+void ListImportWizard::import_tags_and_list()
 {
     QString behavior_text;
     switch (chosen_behavior) {
@@ -130,8 +133,10 @@ void ListImportWizard::import_list()
         return;
     }
     progress_page.setSubTitle(tr("Importing list <b>%1</b> to <b>%2</b> %3.").arg(src_test->get_name()).arg(dst_test->get_name()).arg(behavior_text));
+
     // request to PHP file for the list of all words
     const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?list_id=%1").arg(src_test->get_id()));
+    progress_page.set_status(tr("Retrieving vocabulary list from server"));
     nam.get(QNetworkRequest(url));
 }
 
@@ -139,20 +144,98 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
 {
     QString reply_string = reply->readAll();
     reply->deleteLater();
+    reply_list = new QStringList(reply_string.split('\n'));
+
+    // find used tag names in list
+    const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(src_test->get_id()));
+    progress_page.set_status(tr("Retrieving tag names from server"));
+    tag_nam.get(QNetworkRequest(url));
+}
+
+void ListImportWizard::read_tag_reply(QNetworkReply* reply)
+{
+    QString reply_string = reply->readAll();
+    reply->deleteLater();
+    QStringList tag_reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+    online_tag_ids.clear();
+    tag_names.clear();
+    for(int i = 0, l = tag_reply_list.size(); i < l-1; i += 2) {
+        online_tag_ids << tag_reply_list.at(i).toInt();
+        tag_names << tag_reply_list.at(i+1);
+    }
+
     QStringList word_keys;
     // has to be consistent with the actual query in the PHP file
     word_keys << "id" << "word" << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "hint"  << "score" << "tag_ids";
-    QStringList reply_list = reply_string.split('\n');
-    int nb_words = reply_list.size()/word_keys.size();
-    progress_page.set_max_progress(nb_words);
-    for(int i = 0; i < nb_words; ++i){
+    if (!reply_list) {
+        progress_page.append_log(tr("<b>Error:</b> reply_list is NULL."));
+        return;
+    }
+    int nb_words = reply_list->size()/word_keys.size();
 
-        QHash<QString, QString> word_data;
-        for(int j = 0; j < word_keys.size(); ++j){
-            word_data[word_keys.at(j)] = reply_list.at(i*word_keys.size()+j);
+    // Progress steps: one for each local tag search and one for each word import
+    progress_page.set_max_progress(tag_names.size()+nb_words);
+
+    // search for tag names in local database and create missing ones
+    // TODO: factor this in Importer.cpp
+    offline_tag_ids = QList<int>();
+    for (int i = 0; i < tag_names.size(); ++i) {
+        progress_page.set_status(
+                    tr("Looking for tag <b>%1</b> in local database")
+                    .arg(tag_names.at(i).trimmed()));
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+        QRegExp re(
+                    "\\s*" + QRegExp::escape(tag_names.at(i).trimmed()) + "\\s*",
+                    Qt::CaseInsensitive);
+#else
+        QRegularExpression re(
+                    "\\s*" + QRegularExpression::escape(tag_names.at(i).trimmed()) + "\\s*",
+                    QRegularExpression::CaseInsensitiveOption);
+#endif
+        database_manager->find_tags(tag_reply_list); // reply_list's contents are replaced
+        int tag_name_ind = tag_reply_list.indexOf(re);
+        if (tag_name_ind >= 0) {
+            // The tag name was found
+            // add the corresponding id to the offline id list
+            offline_tag_ids << tag_reply_list.at(tag_name_ind-1).toInt();
+        } else {
+            // The tag name was not found
+            // create this tag in the local database
+            int tag_id;
+            progress_page.set_status(
+                        tr("Adding tag <b>%1</b> to local database")
+                        .arg(tag_names.at(i).trimmed()));
+            if (database_manager->add_tag(tag_names.at(i), tag_id))
+                offline_tag_ids << tag_id;
+            else {
+                offline_tag_ids << -1;
+                progress_page.append_log(
+                            tr("<b>SQLite error: </b>%1")
+                            .arg(database_manager->pop_last_error()));
+                progress_page.set_status(tr("Import failed."));
+                return;
+            }
         }
+        progress_page.increase_progress();
+    }
+
+    // import words
+    for(int i = 0; i < nb_words; ++i){
+        QHash<QString, QString> word_data;
+        for(int j = 0; j < word_keys.size(); ++j)
+            word_data[word_keys.at(j)] = reply_list->at(i*word_keys.size()+j);
         // TODO add list_id in reply_string ?
-        word_data["list_id"] = dst_test->get_id();
+        word_data["list_id"] = QString::number(dst_test->get_id());
+
+        // update word_data's tag ids with new local ids
+        QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", QString::SkipEmptyParts);
+        QStringList word_tag_ids_str;
+        for (int i = 0; i < online_tag_ids_str.size(); ++i) {
+            int tag_id = offline_tag_ids.at(online_tag_ids.indexOf(online_tag_ids_str.at(i).toInt()));
+            word_tag_ids_str << QString::number(tag_id);
+        }
+        word_data["tag_ids"] = word_tag_ids_str.join(", ");
+
         progress_page.set_status(tr("Importing \"<b>%1</b>\"").arg(word_data["word"]));
 
         // Do different things according to chosen behavior
@@ -160,7 +243,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
             if(import(word_data))
                 ++nb_inserted;
             else{
-                progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
+                progress_page.append_log(tr("<b>Error: </b>%1").arg(get_error()));
                 ++nb_failed;
             }
         }else{
@@ -173,7 +256,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                     if(import(word_data))
                         ++nb_inserted;
                     else{
-                        progress_page.append_log(tr("<b>SQLite error: </b>%1").arg(database_manager->pop_last_error()));
+                        progress_page.append_log(tr("<b>Error: </b>%1").arg(get_error()));
                         ++nb_failed;
                     }
                 }else{
@@ -215,7 +298,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
                         SingleImportWizard single_import_wizard(database_manager, word_data, dst_test, this);
                         if(single_import_wizard.exec()){
                             // Show confirmation
-                            // TODO: show tr("Import succeeded!");
+                            progress_page.set_status(tr("Import succeeded!"));
                             switch (single_import_wizard.chosen_behavior) {
                             case ImportBehavior::DontCheck:
                                 ++nb_inserted;
@@ -240,6 +323,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
 
         progress_page.increase_progress();
     }
+    reply_list = NULL;
 
     // print recap of import
     QStringList recap_list;

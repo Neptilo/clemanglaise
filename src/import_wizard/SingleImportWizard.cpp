@@ -115,6 +115,7 @@ void SingleImportWizard::import_tags_and_word()
 {
     // retrieve word's tag ids
     QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", QString::SkipEmptyParts);
+    // Progress steps: one for PHP request to find tags, one for each local tag search and one for the word import
     progress_page.set_max_progress(online_tag_ids_str.size()+2);
     online_tag_ids = QList<int>();
     for (int i = 0; i < online_tag_ids_str.size(); ++i)
