@@ -13,7 +13,6 @@ class Switcher : public QWidget
 public:
     explicit Switcher(Qt::Orientation orientation, const QString &first_str = "", const QString &last_str = "", QWidget *parent = 0);
     bool value() const;
-
 private:
     ClickableLabel *first_label;
     ClickableLabel *last_label;

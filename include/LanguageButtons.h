@@ -11,7 +11,6 @@ class LanguageButtons : public QWidget{
 public:
     LanguageButtons(const QList<Test>& tests, bool new_button, QWidget *parent = 0);
     void disconnect_all();
-
 private:
     QSignalMapper signal_mapper;
 

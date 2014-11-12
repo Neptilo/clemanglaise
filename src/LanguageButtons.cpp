@@ -13,6 +13,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
     QWidget(parent),
     signal_mapper(this)
 {
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QGridLayout *layout = new QGridLayout(this);
 
     int l = tests.size();
@@ -26,6 +27,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
         QPushButton *button = new QPushButton(test->get_name(), this);
         button->setIcon(QIcon(":/" + test->get_dst() + "-img.png"));
         button->setToolTip(tr("from ") + test->get_src() + tr(" to ") + test->get_dst());
+        button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         signal_mapper.setMapping(button, (QObject *) test);
         connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout->addWidget(button, i/w, i%w); // so height and width of layout are approximately the same
@@ -33,6 +35,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
     if(new_button){
         QPushButton *button = new QPushButton(tr("New list"), this);
         button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
+        button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         signal_mapper.setMapping(button, (QObject *) NULL);
         connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout->addWidget(button, l/w, l%w);

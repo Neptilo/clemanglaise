@@ -60,39 +60,46 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_ti
 
     back_button = new QPushButton(tr("Go &back to tests list"), this);
     back_button->setIcon(QIcon::fromTheme("go-home", QIcon(getImgPath("go-home.png"))));
+    back_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
     layout->addWidget(back_button);
 
     if(!test.is_remote() || admin){
         add_theme_button = new QPushButton(tr("Add a &theme"), this);
         add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
+        add_theme_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_tag()));
         layout->addWidget(add_theme_button);
 
         add_button = new QPushButton(tr("Add a &word"), this);
         add_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
+        add_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
         layout->addWidget(add_button);
 
         update_button = new QPushButton(tr("&Edit this word entry"), this);
         update_button->setIcon(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))));
+        update_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
         layout->addWidget(update_button);
 
         delete_list_button = new QPushButton(tr("&Delete this vocabulary list"), this);
         delete_list_button->setIcon(QIcon::fromTheme("process-stop", QIcon(getImgPath("process-stop.png"))));
+        delete_list_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         connect(delete_list_button, SIGNAL(clicked()), this, SLOT(delete_list()));
         layout->addWidget(delete_list_button);
     }
 
     search_button = new QPushButton(tr("&Search for words"), this);
     search_button->setIcon(QIcon::fromTheme("edit-find", QIcon(getImgPath("edit-find.png"))));
+    search_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
     layout->addWidget(search_button);
 
     if(test.is_remote()){
         import_button = new QPushButton(tr("&Import this vocabulary list"));
         import_button->setIcon(QIcon::fromTheme("document-save", QIcon(getImgPath("document-save.png"))));
+        import_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         connect(import_button, SIGNAL(clicked()), this, SLOT(import_list()));
         layout->addWidget(import_button);
     }

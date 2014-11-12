@@ -1,5 +1,6 @@
 #include "Switcher.h"
 
+#include <QDebug>
 #include <QLayout>
 
 Switcher::Switcher(Qt::Orientation orientation, const QString &first_str, const QString &last_str, QWidget *parent):
