@@ -323,6 +323,7 @@ void ListImportWizard::read_tag_reply(QNetworkReply* reply)
 
         progress_page.increase_progress();
     }
+    delete reply_list;
     reply_list = NULL;
 
     // print recap of import

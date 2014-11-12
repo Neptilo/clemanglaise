@@ -1,14 +1,8 @@
 Priority 1
 ----------
-* Implement tag imports during list imports:
-  Before importing words, make a list of the tags used in the list to import, find which are the new ones (according to their names), add them to the local tags, and then import the words and insert the word-tag relations *according to the local tag ids*.
-  The tag name comparisions should normalize them: trim spaces, ignore case, maybe ignore some other things too.
-
-Priority 2
-----------
 * Try to adapt the app for a mobile version
 
-Priority 3
+Priority 2
 ----------
 * Don't care for spaces in correct pronunciation of an asked word (standardize it in a form that doesn't contain spaces)
 * Button to delete a word
