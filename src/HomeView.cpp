@@ -128,7 +128,7 @@ void HomeView::remove_add_list_view()
     delete add_list_view;
     add_list_view = NULL;
     // resize window to fit content
-    QTimer::singleShot(0, this, SLOT(shrink()));
+    // QTimer::singleShot(0, this, SLOT(shrink()));
 }
 
 void HomeView::set_test_source(bool remote)

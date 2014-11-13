@@ -143,7 +143,7 @@ QString number_to_accent(const QString letter, int accent_number){
 QString numbers_to_accents(const QString &string){
 
 	// Capture syllables
-	QRegExp syllable_rx("([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCv])([iounr]?g?)(\\d?)(\\W*)");
+    QRegExp syllable_rx("([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCv])([iounr]?g?)(\\d?)(\\W*)", Qt::CaseInsensitive);
 	QString res;
 	int pos = 0;
 	while ((pos = syllable_rx.indexIn(string, pos)) != -1) {
