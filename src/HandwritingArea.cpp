@@ -22,18 +22,18 @@ void HandwritingArea::mousePressEvent(QMouseEvent *event)
 void HandwritingArea::mouseMoveEvent(QMouseEvent *event)
 {
     if ((event->buttons() & Qt::LeftButton) && scribbling)
-        drawLineTo(event->pos());
+        draw_line_to(event->pos());
 }
 
 void HandwritingArea::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton && scribbling) {
-        drawLineTo(event->pos());
+        draw_line_to(event->pos());
         scribbling = false;
     }
 }
 
-void HandwritingArea::drawLineTo(const QPoint &endPoint)
+void HandwritingArea::draw_line_to(const QPoint &endPoint)
 {
     QPainter painter(&image);
     int width = 8;

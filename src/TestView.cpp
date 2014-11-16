@@ -1,109 +1,55 @@
 #include "TestView.h"
 
+#include <QAction>
 #include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QStandardItem>
+#include <QStandardItemModel>
 #include <QTimer>
+#include <QToolButton>
 #include <QWizard>
 
+#include "CheckableItemDelegate.h"
 #include "import_wizard/DstListPage.h"
 #include "import_wizard/DuplicatePage.h"
 #include "import_wizard/ListImportWizard.h"
 #include "import_wizard/SingleImportWizard.h"
+#include "InterfaceParameters.h"
 #include "NetworkReplyReader.h"
 #include "string_utils.h"
 #include "AddTagView.h"
 
-TestView::TestView(Test &test, DatabaseManager *database_manager, QString str_title, bool admin, QWidget *parent):
+TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QWidget *parent):
     QWidget(parent),
-    add_button(NULL),
     add_view(NULL),
-    add_theme_button(NULL),
     add_tag_view(NULL),
     admin(admin),
     answer_view(NULL),
-    back_button(NULL),
     database_manager(database_manager),
-    delete_list_button(NULL),
     layout(NULL),
     nam(NULL),
     nam_tags(),
     question_view(NULL),
     request(NULL),
-    search_button(NULL),
-    import_button(NULL),
     search_view(NULL),
     status(this),
     test(test, this),
-    tags_label(NULL),
-    tags(NULL),
     title(NULL),
-    update_button(NULL),
     update_view(NULL),
-    update_theme_view(NULL)
+    update_theme_view(NULL),
+    add_button(NULL),
+    add_tag_button(NULL),
+    search_button(NULL),
+    import_button(NULL),
+    delete_button(NULL),
+    tags_box(NULL)
 {
     // has to be consistent with the actual query in the PHP file
     word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "pronunciation" << "hint" << "tag_ids";
 
-    title = new QLabel(str_title, this);
-    title->setAlignment(Qt::AlignHCenter);
-    layout = new QVBoxLayout(this);
-    answer_view = new AnswerView(&test, this);
-
-    layout->addWidget(title);
-
-    tags_label = new QLabel(tr("<i>Filter by tags</i>"), this);
-    layout->addWidget(tags_label);
-    tags = new QListWidget(this);
-    tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    layout->addWidget(tags);
-
-    back_button = new QPushButton(tr("Go &back to tests list"), this);
-    back_button->setIcon(QIcon::fromTheme("go-home", QIcon(getImgPath("go-home.png"))));
-    back_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
-    layout->addWidget(back_button);
-
-    if(!test.is_remote() || admin){
-        add_theme_button = new QPushButton(tr("Add a &theme"), this);
-        add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
-        add_theme_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_tag()));
-        layout->addWidget(add_theme_button);
-
-        add_button = new QPushButton(tr("Add a &word"), this);
-        add_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
-        add_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
-        layout->addWidget(add_button);
-
-        update_button = new QPushButton(tr("&Edit this word entry"), this);
-        update_button->setIcon(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))));
-        update_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
-        layout->addWidget(update_button);
-
-        delete_list_button = new QPushButton(tr("&Delete this vocabulary list"), this);
-        delete_list_button->setIcon(QIcon::fromTheme("process-stop", QIcon(getImgPath("process-stop.png"))));
-        delete_list_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        connect(delete_list_button, SIGNAL(clicked()), this, SLOT(delete_list()));
-        layout->addWidget(delete_list_button);
-    }
-
-    search_button = new QPushButton(tr("&Search for words"), this);
-    search_button->setIcon(QIcon::fromTheme("edit-find", QIcon(getImgPath("edit-find.png"))));
-    search_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
-    layout->addWidget(search_button);
-
-    if(test.is_remote()){
-        import_button = new QPushButton(tr("&Import this vocabulary list"));
-        import_button->setIcon(QIcon::fromTheme("document-save", QIcon(getImgPath("document-save.png"))));
-        import_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        connect(import_button, SIGNAL(clicked()), this, SLOT(import_list()));
-        layout->addWidget(import_button);
-    }
-
+    create_actions();
+    create_interface();
     init();
     connect(&nam_tags, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
@@ -112,29 +58,102 @@ TestView::~TestView(){
     delete request;
 }
 
+void TestView::create_actions()
+{
+    back_action = new QAction(QIcon::fromTheme("go-previous", QIcon(getImgPath("go-previous.png"))), tr("Go &back to test list"), this);
+    back_action->setShortcut(QKeySequence::Back);
+    connect(back_action, SIGNAL(triggered()), this, SLOT(go_back()));
+
+    if (!test.is_remote() || admin) {
+        add_action = new QAction(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))), tr("Add a &word"), this);
+        add_action->setShortcut(QKeySequence::New);
+        connect(add_action, SIGNAL(triggered()), this, SLOT(add_word()));
+
+        add_tag_action = new QAction(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))), tr("Add a &theme"), this);
+        connect(add_tag_action, SIGNAL(triggered()), this, SLOT(add_tag()));
+    }
+
+    search_action = new QAction(QIcon::fromTheme("edit-find", QIcon(getImgPath("edit-find.png"))), tr("&Search for words"), this);
+    search_action->setShortcut(QKeySequence::Find);
+    connect(search_action, SIGNAL(triggered()), this, SLOT(search()));
+
+    if (test.is_remote()) {
+        import_action = new QAction(QIcon::fromTheme("document-save", QIcon(getImgPath("document-save.png"))), tr("&Import this vocabulary list"), this);
+        import_action->setShortcut(QKeySequence::Save);
+        connect(import_action, SIGNAL(triggered()), this, SLOT(import_list()));
+    }
+
+    delete_action = new QAction(QIcon::fromTheme("process-stop", QIcon(getImgPath("process-stop.png"))), tr("&Delete this vocabulary list"), this);
+    connect(delete_action, SIGNAL(triggered()), this, SLOT(delete_list()));
+}
+
+void TestView::create_interface()
+{
+    layout = new QVBoxLayout(this);
+
+    // header
+    header_layout = new QHBoxLayout;
+    back_button = new QToolButton;
+    back_button->setDefaultAction(back_action);
+    back_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    QString title_str = QString("<b>%1</b> (%2)")
+            .arg(test.get_name())
+            .arg(test.is_remote()?tr("online"):tr("offline"));
+    title = new QLabel(title_str, this);
+    title->setAlignment(Qt::AlignCenter);
+    title->setFixedHeight(InterfaceParameters::widget_unit);
+    layout->addLayout(header_layout);
+    header_layout->addWidget(back_button);
+    header_layout->addWidget(title, Qt::AlignCenter);
+
+    answer_view = new AnswerView(&test, this);
+
+    tool_bar = new QToolBar(this);
+    if (!test.is_remote() || admin) {
+        add_button = new QToolButton;
+        add_button->setDefaultAction(add_action);
+        add_button->addAction(add_tag_action);
+        add_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        tool_bar->addWidget(add_button);
+    }
+    search_button = new QToolButton;
+    search_button->setDefaultAction(search_action);
+    search_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    tool_bar->addWidget(search_button);
+    if (test.is_remote()) {
+        import_button = new QToolButton;
+        import_button->setDefaultAction(import_action);
+        import_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        tool_bar->addWidget(import_button);
+    }
+    delete_button = new QToolButton;
+    delete_button->setDefaultAction(delete_action);
+    delete_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    tool_bar->addWidget(delete_button);
+    tags_box = new QComboBox();
+    tags_box->setFixedHeight(InterfaceParameters::widget_unit);
+    CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
+    tags_box->setItemDelegate(delegate); // to display the checkboxes
+    tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    tool_bar->addWidget(tags_box);
+    layout->addWidget(tool_bar);
+}
+
 // This function is called every time the user comes back from another view.
 void TestView::init()
 {
-    //layout->setSizeConstraint(QLayout::SetFixedSize);
-    //adjustSize();
-    //QTimer::singleShot(0,this, SLOT(shrink()));
     if (test.is_remote()) {
-        question_view = new QuestionView(&test, this);
+        question_view = new QuestionView(&test, admin, this);
         layout->addWidget(question_view);
         update_request();
         nam = new QNetworkAccessManager(this);
         connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
         nam->get(*request);
     }else{
-        QList<QListWidgetItem *> selected_items  = tags->selectedItems();
-        QList<int> selected_tags;
-        for (int i = 0, l = selected_items.size(); i<l; ++i)
-            selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
-
         if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
             QString word = word_data["word"];
             QString hint = word_data["hint"];
-            question_view = new QuestionView(&test, this);
+            question_view = new QuestionView(&test, admin, this);
             layout->addWidget(question_view);
             question_view->ask_question(word, hint);
         }else{
@@ -149,19 +168,9 @@ void TestView::init()
     }
     find_tags();
 
-    // Show everything
-    if(!test.is_remote() || admin){
-        update_button->show();
-        add_theme_button->show();
-        add_button->show();
-        delete_list_button->show();
-    }
-    tags_label->show();
-    tags->show();
+    tags_box->show();
     back_button->show();
-    search_button->show();
-    if(test.is_remote())
-        import_button->show();
+    tool_bar->show();
 }
 
 void TestView::shrink(){
@@ -169,15 +178,12 @@ void TestView::shrink(){
 }
 
 void TestView::update_request() {
-    QList<QListWidgetItem *> selected_items  = tags->selectedItems();
-    QList<int> selected_tags;
-    for (int i = 0, l = selected_items.size(); i<l; ++i)
-        selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
     // If 0 is in the list, remove it and set untagged to true to say we also want to look for untagged words, else set it to false.
-    bool untagged = selected_tags.removeOne(0);
+    QList<int> selected_tags_copy(selected_tags);
+    bool untagged = selected_tags_copy.removeOne(0);
     QStringList selected_tags_str;
-    for(int i = 0; i < selected_tags.length(); ++i)
-        selected_tags_str << QString::number(selected_tags.at(i));
+    for(int i = 0; i < selected_tags_copy.length(); ++i)
+        selected_tags_str << QString::number(selected_tags_copy.at(i));
 	// Request to PHP or local file
 	QUrl url;
     url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3")
@@ -236,11 +242,6 @@ void TestView::validate_question(){
 }
 
 void TestView::validate_answer() {
-    QList<QListWidgetItem *> selected_items  = tags->selectedItems();
-    QList<int> selected_tags;
-    for (int i = 0, l = selected_items.size(); i<l; ++i)
-       selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
-
     // Remove everything
     delete question_view;
     question_view = NULL;
@@ -248,7 +249,7 @@ void TestView::validate_answer() {
         answer_view->hide();
 
     // Create a new question frame
-    question_view = new QuestionView(&test, this); // Is it deleted somewhere? It should because of "new".
+    question_view = new QuestionView(&test, admin, this); // Is it deleted somewhere? It should because of "new".
     layout->addWidget(question_view);
 
     // Request for a new question
@@ -331,6 +332,28 @@ void TestView::delete_list()
     }
 }
 
+void TestView::delete_word()
+{
+    qDebug() << tr("Not implemented yet"); // TODO
+}
+
+void TestView::update_selected_tags(QModelIndex top_left, QModelIndex)
+{
+    QMap<int, QVariant> item_data = tags_box->model()->itemData(top_left);
+    switch (item_data[Qt::CheckStateRole].toInt()) {
+    case Qt::Checked:
+        selected_tags << item_data[Qt::UserRole].toInt();
+        break;
+    case Qt::Unchecked:
+        selected_tags.removeOne(item_data[Qt::UserRole].toInt());
+        break;
+    default:
+        qDebug() << tr("Wrong check state value");
+        break;
+    }
+    update_question();
+}
+
 void TestView::add_tag()
 {
 	remove_widgets();
@@ -383,7 +406,7 @@ void TestView::go_back() {
 void TestView::find_tags() {
     if (!test.is_remote()) {
 		// Offline
-        database_manager->find_used_tags(test.get_id(), reply_list_theme);
+        database_manager->find_used_tags(test.get_id(), tag_reply_list);
 		read_reply();
 	} else { 
 		// Request to PHP file
@@ -403,17 +426,28 @@ void TestView::read_reply_themes(QNetworkReply* reply)
 
 void TestView::read_reply(QString reply_string) {
     if (test.is_remote())
-		reply_list_theme = reply_string.split('\n', QString::SkipEmptyParts);
-    //tags
-	tags->disconnect();
-    tags->clear();
-	tags->addItem(tr("Without any tags"));
-	for(int i=0, l = reply_list_theme.count(); i<l-1; i+=2) {
-        QListWidgetItem* item = new QListWidgetItem(reply_list_theme.at(i+1).trimmed());
-        item->setData(Qt::UserRole, QVariant(reply_list_theme.at(i).toInt()));
-        tags->addItem(item);
-	}
-    connect(tags, SIGNAL(itemSelectionChanged()), this, SLOT(update_question()));
+        tag_reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+
+    // fill the tag combo box
+    tags_box->disconnect();
+    tags_box->clear();
+    int l = tag_reply_list.size()/2;
+    QStandardItemModel *model = new QStandardItemModel(l+2, 1);
+    QStandardItem* item = new QStandardItem(tr("Filter by tags"));
+    model->setItem(0, 0, item);
+    item = new QStandardItem(tr("Without any tags"));
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setData(Qt::Unchecked, Qt::CheckStateRole);
+    model->setItem(1, 0, item);
+    for (int i = 0; i < l; ++i) {
+        item = new QStandardItem(tag_reply_list.at(2*i+1).trimmed());
+        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+        item->setData(Qt::Unchecked, Qt::CheckStateRole);
+        item->setData(QVariant(tag_reply_list.at(2*i).toInt()), Qt::UserRole);
+        model->setItem(i+2, 0, item);
+    }
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(update_selected_tags(QModelIndex,QModelIndex)));
+    tags_box->setModel(model);
 }
 
 void TestView::remove_widgets()
@@ -422,18 +456,8 @@ void TestView::remove_widgets()
     question_view = NULL;
     delete answer_view;
     answer_view = NULL;
-    if(!test.is_remote() || admin){
-		update_button->hide();
-		add_theme_button->hide();
-		add_button->hide();
-        delete_list_button->hide();
-	}
-    tags_label->hide();
-	tags->hide();
 	back_button->hide();
-	search_button->hide();
-    if(test.is_remote())
-        import_button->hide();
+    tool_bar->hide();
     status.hide();
 }
 
@@ -460,4 +484,24 @@ void TestView::import_list()
         status.setText(import_wizard.get_error());
     layout->addWidget(&status);
     status.show();
+}
+
+void TestView::resizeEvent(QResizeEvent *)
+{
+    if (back_button)
+        back_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    if (title)
+        title->setFixedHeight(InterfaceParameters::widget_unit);
+    if (add_button)
+        add_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    if (add_tag_button)
+        add_tag_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    if (search_button)
+        search_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    if (import_button)
+        import_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    if (delete_button)
+        delete_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    if (tags_box)
+        tags_box->setFixedHeight(InterfaceParameters::widget_unit);
 }

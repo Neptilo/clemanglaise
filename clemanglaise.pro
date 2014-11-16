@@ -33,7 +33,9 @@ HEADERS += \
     include/import_wizard/Importer.h \
     include/duplicate_utils.h \
     include/import_wizard/ImportBehavior.h \
-    include/AddTagView.h
+    include/AddTagView.h \
+    include/InterfaceParameters.h \
+    include/CheckableItemDelegate.h
 SOURCES += \
     src/AnswerView.cpp \
     src/EditView.cpp \
@@ -60,7 +62,9 @@ SOURCES += \
     src/import_wizard/ProgressPage.cpp \
     src/import_wizard/Importer.cpp \
     src/duplicate_utils.cpp \
-    src/AddTagView.cpp
+    src/AddTagView.cpp \
+    src/InterfaceParameters.cpp \
+    src/CheckableItemDelegate.cpp
 
 RESOURCES += clemanglaise.qrc
 

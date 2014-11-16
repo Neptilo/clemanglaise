@@ -44,6 +44,9 @@ public slots:
     void read_reply_lists(QNetworkReply *reply);
     void remove_add_list_view();
     void set_test_source(bool remote);
+
+protected:
+    void resizeEvent(QResizeEvent *event);
 };
 
 #endif // HOMEWINDOW_H

@@ -1,10 +1,14 @@
 #include <QtNetwork>
 #include <QTextDocument>
+#include <QStandardItemModel>
+#include <QListView>
+#include <QTableView>
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
 #endif
 
 #include "AddTagView.h"
+#include "CheckableItemDelegate.h"
 #include "QuestionView.h"
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
@@ -35,6 +39,7 @@ AddTagView::AddTagView(Test *test, const QString &title, const QStringList &defa
     layout->addWidget(tag);
     tags = new QComboBox(this);
     layout->addWidget(tags);
+
     find_tags();
 
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
@@ -165,6 +170,6 @@ void AddTagView::read_reply(QNetworkReply* reply)
 void AddTagView::read_reply(QString reply_string) {
     if (test->is_remote())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
-	for(int i=0, l = reply_list.count(); i<l-1; i+=2)
+    for(int i=0, l = reply_list.count(); i<l-1; i+=2)///
         tags->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
 }

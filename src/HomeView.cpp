@@ -1,9 +1,11 @@
 #include "HomeView.h"
 
+#include <QApplication>
 #include <QTimer>
+#include <QWidget>
 
+#include "InterfaceParameters.h"
 #include "string_utils.h"
-
 
 HomeView::HomeView(bool admin, QWidget *parent):
     QWidget(parent),
@@ -18,6 +20,7 @@ HomeView::HomeView(bool admin, QWidget *parent):
     setWindowTitle("Clemanglaise");
     setWindowIcon(QIcon(":/clemanglaise-img.png"));
     layout = new QVBoxLayout(this);
+    layout->setSizeConstraint(QLayout::SetMinimumSize);
 
     // title
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);
@@ -149,12 +152,7 @@ void HomeView::start_test(Test *test){
         test_buttons->disconnect_all();
         test_buttons->hide();
 
-        /* No possible decomposition of the sentence, because of translations in
-     * foreign languages that put words in a different order. */
-        QString str_title(test->is_remote()?
-                              tr("<b>You are now working on <br />tests from the remote server.</b>"):
-                              tr("<b>You are now working on <br /> offline tests.</b>"));
-        TestView* test_view = new TestView(*test, &database_manager, str_title, admin, this);
+        TestView* test_view = new TestView(*test, &database_manager, admin, this);
 
         // remove add_list_view only after creating test_view, because the Test, needed by test_view, will be deleted as child of add_list_view.
         remove_add_list_view();
@@ -164,4 +162,9 @@ void HomeView::start_test(Test *test){
     }else{
         add_list();
     }
+}
+
+void HomeView::resizeEvent(QResizeEvent *)
+{
+    InterfaceParameters::update_widget_unit(window());
 }

@@ -76,17 +76,17 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 	}
-    // Left part
+    // Left/upper part
     if(handwriting){
         QLabel* handwriting_label = new QLabel("<b>"+meaning+"</b>", this);
         QFont font;
         font.setPixelSize(100);
         handwriting_label->setFont(font);
         handwriting_label->setAlignment(Qt::AlignRight);
-        right_vertical_layout->addWidget(handwriting_label);
+        handwriting_layout->addWidget(handwriting_label);
     }
 
-    // Right part
+    // Right/lower part
 
     // Add labels 
     QLabel* display_icon_answer = new QLabel(this);
