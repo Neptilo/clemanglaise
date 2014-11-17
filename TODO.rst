@@ -1,18 +1,30 @@
 Priority 1
 ----------
-* Try to adapt the app for a mobile version
+* Adapt the app for a mobile version
+
+  * Handwriting area size: make it fill all available space
+  * Make import wizard visible
+  * Update handwriting_layout and vertical_layout on device orientation change
+  * Increase icon sizes
+
+* Improve graphical interface
+
+  * Prevent the tag list from hiding: a possible solution is to use a QHBoxLayout instead of a QToolBox
+  * Increase font size of user text input
+  * Increase font size of the word being asked
+  * Apply the same style to other views
+  * For consistency, define all widget attributes as pointers
+  * Reorganize attributes: first data attributes, second GUI attributes, third action attributes
+  * Add a combo box to filter by theme in the search view
 
 Priority 2
 ----------
 * Don't care for spaces in correct pronunciation of an asked word (standardize it in a form that doesn't contain spaces)
-* Button to delete a word
-* Move word-specific buttons inside question/answer views
+* Implement the button to delete a word
 * Find a way to map language ISO codes to their names
 * Create app icon: My idea is to represent a nice chocolate cake with crème anglaise spilling on it, like this: 
   http://www.howdoyousaythatword.com/wp-content/uploads/2012/01/creme-anglaise.jpg, use a vector graphics editor.
 * Treat all cases when there is no Internet connection.
-* Change font sizes, especially the word being asked
-* Set a default window width (?)
 * Improve ergonomics: allow to do everything using the keyboard only.
 
   * An "OK" button should always be pressable with the Enter key or Ctrl+Enter if there is an ambiguity.
@@ -27,12 +39,4 @@ Priority 2
   
 * Publicly release the app with an installer
 * Include a field for the gender in German
-* Being able to import an online vocabulary list, or a sublist, or a single word. In each case, a new view will appear asking the user if they want to make it a new list, or import it into an existing list. In the latter case, check if the `word` field of the inserted items don't already exist in the existing list. Let the user choose to:
-
-  * only keep the already existing item if there is a conflict
-  * write over existing items
-  * merge them, that is, for a ``meaning`` field "x" offline, and "y" online, set it to "x, y"
-  * ask for every item where there is a conflict
-  * (edit manually?)
-  
-* Add a combo box to filter by theme in the search view
+* In multiple import, implement behavior to ask for every item where there is a conflict. In this case the user should be prompted for the behavior for every detected duplicate grouped at the end of the import process.
