@@ -17,7 +17,7 @@ public:
 
 private:
     // ratio between the height of the window and the size of a reference widget
-    static const int window_widget_ratio = 8;
+    static const int window_widget_ratio = 10;
 };
 
 #endif // INTERFACEPARAMETERS_H

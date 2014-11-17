@@ -108,35 +108,35 @@ void TestView::create_interface()
 
     answer_view = new AnswerView(&test, this);
 
-    tool_bar = new QToolBar(this);
+    tool_bar_layout = new QHBoxLayout;
     if (!test.is_remote() || admin) {
         add_button = new QToolButton;
         add_button->setDefaultAction(add_action);
         add_button->addAction(add_tag_action);
         add_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-        tool_bar->addWidget(add_button);
+        tool_bar_layout->addWidget(add_button);
     }
     search_button = new QToolButton;
     search_button->setDefaultAction(search_action);
     search_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    tool_bar->addWidget(search_button);
+    tool_bar_layout->addWidget(search_button);
     if (test.is_remote()) {
         import_button = new QToolButton;
         import_button->setDefaultAction(import_action);
         import_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-        tool_bar->addWidget(import_button);
+        tool_bar_layout->addWidget(import_button);
     }
     delete_button = new QToolButton;
     delete_button->setDefaultAction(delete_action);
     delete_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    tool_bar->addWidget(delete_button);
+    tool_bar_layout->addWidget(delete_button);
     tags_box = new QComboBox();
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
     CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
     tags_box->setItemDelegate(delegate); // to display the checkboxes
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    tool_bar->addWidget(tags_box);
-    layout->addWidget(tool_bar);
+    tool_bar_layout->addWidget(tags_box);
+    layout->addLayout(tool_bar_layout);
 }
 
 // This function is called every time the user comes back from another view.
@@ -168,9 +168,18 @@ void TestView::init()
     }
     find_tags();
 
-    tags_box->show();
-    back_button->show();
-    tool_bar->show();
+    if (back_button)
+        back_button->show();
+    if (add_tag_button)
+        add_tag_button->show();
+    if (search_button)
+        search_button->show();
+    if (import_button)
+        import_button->show();
+    if (delete_button)
+        delete_button->show();
+    if (tags_box)
+        tags_box->show();
 }
 
 void TestView::shrink(){
@@ -456,8 +465,18 @@ void TestView::remove_widgets()
     question_view = NULL;
     delete answer_view;
     answer_view = NULL;
-	back_button->hide();
-    tool_bar->hide();
+    if (back_button)
+        back_button->hide();
+    if (add_tag_button)
+        add_tag_button->hide();
+    if (search_button)
+        search_button->hide();
+    if (import_button)
+        import_button->hide();
+    if (delete_button)
+        delete_button->hide();
+    if (tags_box)
+        tags_box->hide();
     status.hide();
 }
 

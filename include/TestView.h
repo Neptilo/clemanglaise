@@ -52,9 +52,9 @@ private:
     QList<int> selected_tags;
 
     // GUI
-    QHBoxLayout *header_layout;
+    QBoxLayout *header_layout;
     QToolButton *back_button;
-    QToolBar *tool_bar;
+    QBoxLayout *tool_bar_layout;
     QToolButton *add_button;
     QToolButton *add_tag_button;
     QToolButton *search_button;

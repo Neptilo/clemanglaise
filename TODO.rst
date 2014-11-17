@@ -6,10 +6,10 @@ Priority 1
   * Make import wizard visible
   * Update handwriting_layout and vertical_layout on device orientation change
   * Increase icon sizes
+  * Change the QPushButtons in the language buttons into QToolButtons to be able to enable word wrapping so the buttons don't appear wider than the screen width
 
 * Improve graphical interface
 
-  * Prevent the tag list from hiding: a possible solution is to use a QHBoxLayout instead of a QToolBox
   * Increase font size of user text input
   * Increase font size of the word being asked
   * Apply the same style to other views
