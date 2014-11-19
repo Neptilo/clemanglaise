@@ -35,7 +35,8 @@ HEADERS += \
     include/import_wizard/ImportBehavior.h \
     include/AddTagView.h \
     include/InterfaceParameters.h \
-    include/CheckableItemDelegate.h
+    include/CheckableItemDelegate.h \
+    include/MultilinePushButton.h
 SOURCES += \
     src/AnswerView.cpp \
     src/EditView.cpp \
@@ -64,7 +65,8 @@ SOURCES += \
     src/duplicate_utils.cpp \
     src/AddTagView.cpp \
     src/InterfaceParameters.cpp \
-    src/CheckableItemDelegate.cpp
+    src/CheckableItemDelegate.cpp \
+    src/MultilinePushButton.cpp
 
 RESOURCES += clemanglaise.qrc
 
