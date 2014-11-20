@@ -56,7 +56,6 @@ private:
     QToolButton *back_button;
     QBoxLayout *tool_bar_layout;
     QToolButton *add_button;
-    QToolButton *add_tag_button;
     QToolButton *search_button;
     QToolButton *import_button;
     QToolButton *delete_button;
@@ -73,6 +72,7 @@ private:
     void remove_widgets();
     void create_actions();
     void create_interface();
+    void init_button(QToolButton *button);
 
 public slots:
     void init();

@@ -8,6 +8,7 @@
 MultilinePushButton::MultilinePushButton(QWidget *parent) :
     QPushButton(parent),
     tool_button_style(Qt::ToolButtonIconOnly), // default in QToolButton
+    icon(NULL),
     layout(NULL),
     icon_label(NULL),
     text_label(NULL)
@@ -18,6 +19,7 @@ MultilinePushButton::MultilinePushButton(QWidget *parent) :
 MultilinePushButton::MultilinePushButton(const QString &text, QWidget *parent) :
     QPushButton(parent),
     tool_button_style(Qt::ToolButtonTextOnly),
+    icon(NULL),
     layout(NULL),
     icon_label(NULL)
 {
@@ -33,6 +35,7 @@ MultilinePushButton::MultilinePushButton(const QIcon &icon, const QString &text,
     tool_button_style(Qt::ToolButtonTextBesideIcon),
     layout(NULL)
 {
+    this->icon = new QIcon(icon);
     icon_label = new QLabel(this);
     icon_label->setPixmap(icon.pixmap(fontMetrics().height()));
     icon_label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -45,6 +48,8 @@ MultilinePushButton::MultilinePushButton(const QIcon &icon, const QString &text,
 
 void MultilinePushButton::set_icon(const QIcon &icon)
 {
+    delete this->icon;
+    this->icon = new QIcon(icon);
     delete icon_label;
     icon_label = new QLabel(this);
     icon_label->setPixmap(icon.pixmap(fontMetrics().height()));
@@ -94,4 +99,9 @@ void MultilinePushButton::setToolButtonStyle(Qt::ToolButtonStyle style)
 {
     tool_button_style = style;
     refresh();
+}
+
+void MultilinePushButton::set_icon_size(const QSize &size)
+{
+    icon_label->setPixmap(icon->pixmap(size));
 }

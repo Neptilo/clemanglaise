@@ -26,6 +26,7 @@ private:
     QNetworkAccessManager *nam;
     QLineEdit name_edit;
     QLineEdit src_edit;
+    QLineEdit flag_edit;
     QLabel status;
     QLabel title;
     Test *test;

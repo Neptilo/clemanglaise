@@ -39,7 +39,6 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QW
     update_view(NULL),
     update_theme_view(NULL),
     add_button(NULL),
-    add_tag_button(NULL),
     search_button(NULL),
     import_button(NULL),
     delete_button(NULL),
@@ -83,7 +82,7 @@ void TestView::create_actions()
         connect(import_action, SIGNAL(triggered()), this, SLOT(import_list()));
     }
 
-    delete_action = new QAction(QIcon::fromTheme("process-stop", QIcon(getImgPath("process-stop.png"))), tr("&Delete this vocabulary list"), this);
+    delete_action = new QAction(QIcon::fromTheme("edit-delete", QIcon(getImgPath("edit-delete.png"))), tr("&Delete this vocabulary list"), this);
     connect(delete_action, SIGNAL(triggered()), this, SLOT(delete_list()));
 }
 
@@ -93,9 +92,9 @@ void TestView::create_interface()
 
     // header
     header_layout = new QHBoxLayout;
-    back_button = new QToolButton;
+    back_button = new QToolButton(this);
+    init_button(back_button);
     back_button->setDefaultAction(back_action);
-    back_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
     QString title_str = QString("<b>%1</b> (%2)")
             .arg(test.get_name())
             .arg(test.is_remote()?tr("online"):tr("offline"));
@@ -110,25 +109,25 @@ void TestView::create_interface()
 
     tool_bar_layout = new QHBoxLayout;
     if (!test.is_remote() || admin) {
-        add_button = new QToolButton;
+        add_button = new QToolButton(this);
+        init_button(add_button);
         add_button->setDefaultAction(add_action);
         add_button->addAction(add_tag_action);
-        add_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
         tool_bar_layout->addWidget(add_button);
     }
-    search_button = new QToolButton;
+    search_button = new QToolButton(this);
+    init_button(search_button);
     search_button->setDefaultAction(search_action);
-    search_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
     tool_bar_layout->addWidget(search_button);
     if (test.is_remote()) {
-        import_button = new QToolButton;
+        import_button = new QToolButton(this);
+        init_button(import_button);
         import_button->setDefaultAction(import_action);
-        import_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
         tool_bar_layout->addWidget(import_button);
     }
-    delete_button = new QToolButton;
+    delete_button = new QToolButton(this);
+    init_button(delete_button);
     delete_button->setDefaultAction(delete_action);
-    delete_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
     tool_bar_layout->addWidget(delete_button);
     tags_box = new QComboBox();
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
@@ -137,6 +136,14 @@ void TestView::create_interface()
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     tool_bar_layout->addWidget(tags_box);
     layout->addLayout(tool_bar_layout);
+}
+
+void TestView::init_button(QToolButton *button)
+{
+    if (button) {
+        button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
+    }
 }
 
 // This function is called every time the user comes back from another view.
@@ -170,8 +177,8 @@ void TestView::init()
 
     if (back_button)
         back_button->show();
-    if (add_tag_button)
-        add_tag_button->show();
+    if (add_button)
+        add_button->show();
     if (search_button)
         search_button->show();
     if (import_button)
@@ -467,8 +474,8 @@ void TestView::remove_widgets()
     answer_view = NULL;
     if (back_button)
         back_button->hide();
-    if (add_tag_button)
-        add_tag_button->hide();
+    if (add_button)
+        add_button->hide();
     if (search_button)
         search_button->hide();
     if (import_button)
@@ -507,20 +514,13 @@ void TestView::import_list()
 
 void TestView::resizeEvent(QResizeEvent *)
 {
-    if (back_button)
-        back_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    init_button(back_button);
+    init_button(add_button);
+    init_button(search_button);
+    init_button(import_button);
+    init_button(delete_button);
     if (title)
         title->setFixedHeight(InterfaceParameters::widget_unit);
-    if (add_button)
-        add_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    if (add_tag_button)
-        add_tag_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    if (search_button)
-        search_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    if (import_button)
-        import_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    if (delete_button)
-        delete_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
     if (tags_box)
         tags_box->setFixedHeight(InterfaceParameters::widget_unit);
 }

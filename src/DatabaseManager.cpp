@@ -79,7 +79,8 @@ bool DatabaseManager::create_list_table()
                               "ID INTEGER PRIMARY KEY, "
                               "name VARCHAR(32) UNIQUE NOT NULL, "
                               "src VARCHAR(3) NOT NULL, "
-                              "dst VARCHAR(3) NOT NULL"
+                              "dst VARCHAR(3) NOT NULL, "
+                              "flag VARCHAR(2) NOT NULL"
                               ")");
     if(!success)
         last_error = query.lastError().text();
@@ -144,15 +145,16 @@ bool DatabaseManager::create_word_tag_table()
 }
 
 // test_id is an output: the inserted ID.
-bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst, int &test_id) {
+bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst, const QString &flag, int &test_id) {
     QSqlQuery query;
     query.exec("BEGIN");
     bool success = query.prepare("INSERT INTO lists "
-                                 "(name, src, dst) "
-                                 "VALUES(:name, :src, :dst)");
+                                 "(name, src, dst, flag) "
+                                 "VALUES(:name, :src, :dst, :flag)");
     query.bindValue(":name", name);
     query.bindValue(":src", src);
     query.bindValue(":dst", dst);
+    query.bindValue(":flag", flag);
     success &= query.exec();
     if (!success){
         last_error = query.lastError().text();
@@ -174,9 +176,9 @@ bool DatabaseManager::add_list(const QString &name, const QString &src, const QS
     return success;
 }
 
-bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst) {
+bool DatabaseManager::add_list(const QString &name, const QString &src, const QString &dst, const QString &flag) {
     int test_id;
-    return add_list(name, src, dst, test_id);
+    return add_list(name, src, dst, flag, test_id);
 }
 
 bool DatabaseManager::add_tag(const QString &tag) {
@@ -392,10 +394,10 @@ bool DatabaseManager::find_used_tags(int test_id, QStringList& reply_list) {
 
 QList<Test> DatabaseManager::get_lists()
 {
-    QSqlQuery query("SELECT ID, name, src, dst FROM lists");
+    QSqlQuery query("SELECT ID, name, src, dst, flag FROM lists");
     QList<Test> test_list;
     while (query.next())
-        test_list << Test(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), false);
+        test_list << Test(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), false);
     return test_list;
 }
 

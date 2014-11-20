@@ -26,6 +26,7 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
     layout->addRow(tr("&Name: "), &name_edit);
     layout->addRow(tr("&Source language: "), &src_edit);
     layout->addRow(tr("&Destination language: "), &dst_edit);
+    layout->addRow(tr("Illustration &flag country: "), &flag_edit);
     layout->addWidget(&status);
     status.hide();
     layout->addWidget(&create_button);
@@ -50,10 +51,10 @@ Test *AddListView::get_test()
 void AddListView::add_offline_list()
 {
     int test_id = 0;
-    database_manager->add_list(name_edit.text(), src_edit.text(), dst_edit.text(), test_id);
+    database_manager->add_list(name_edit.text(), src_edit.text(), dst_edit.text(), flag_edit.text(), test_id);
     QString error(database_manager->pop_last_error());
     if(error == ""){
-        test = new Test(test_id, name_edit.text(), src_edit.text(), dst_edit.text(), false);
+        test = new Test(test_id, name_edit.text(), src_edit.text(), dst_edit.text(), flag_edit.text(), false);
         emit created(test);
     }else{
         status.setText(tr("<b>SQLite error: </b>") + error);
@@ -71,6 +72,7 @@ void AddListView::add_online_list()
     post_data.addQueryItem("name", name_edit.text());
     post_data.addQueryItem("src", src_edit.text());
     post_data.addQueryItem("dst", dst_edit.text());
+    post_data.addQueryItem("flag", flag_edit.text());
     const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/add_list");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");

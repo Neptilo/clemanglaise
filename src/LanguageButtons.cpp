@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QToolButton>
 
+#include "InterfaceParameters.h"
 #include "MultilinePushButton.h"
 #include "string_utils.h"
 
@@ -27,11 +28,13 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
     for (int i = 0; i < l; ++i) {
         Test *test = new Test(tests.at(i), this); // pointer to non constant copy of test
         MultilinePushButton *button = new MultilinePushButton(
-                    QIcon(":/" + test->get_dst() + "-img.png"),
+                    QIcon(getImgPath("flags/"+test->get_flag()+".png")),
                     test->get_name(),
                     this);
         button->setToolTip(tr("from ") + test->get_src() + tr(" to ") + test->get_dst());
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        button->set_icon_size(QSize(2*fontMetrics().height(),
+                                    2*fontMetrics().height()));
         signal_mapper.setMapping(button, (QObject *) test);
         connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout->addWidget(button, i/w, i%w); // so height and width of layout are approximately the same
@@ -42,6 +45,8 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
                     tr("New list"),
                     this);
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        button->set_icon_size(QSize(2*fontMetrics().height(),
+                                    2*fontMetrics().height()));
         signal_mapper.setMapping(button, (QObject *) NULL);
         connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout->addWidget(button, l/w, l%w);

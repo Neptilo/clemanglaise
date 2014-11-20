@@ -17,11 +17,13 @@ public:
     void set_text(const QString &text);
     void setToolButtonStyle(Qt::ToolButtonStyle style);
     QSize sizeHint();
+    void set_icon_size(const QSize &size);
 
 private:
    void refresh();
 
    Qt::ToolButtonStyle tool_button_style;
+   QIcon *icon;
 
    QBoxLayout *layout;
    QLabel *icon_label;

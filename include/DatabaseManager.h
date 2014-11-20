@@ -13,8 +13,8 @@ class DatabaseManager : public QObject
     Q_OBJECT
 public:
     explicit DatabaseManager(QObject *parent = 0);
-    bool add_list(const QString &name, const QString &src, const QString &dst, int &test_id);
-    bool add_list(const QString &name, const QString &src, const QString &dst);
+    bool add_list(const QString &name, const QString &src, const QString &dst, const QString &flag, int &test_id);
+    bool add_list(const QString &name, const QString &src, const QString &dst, const QString &flag);
     bool add_word(const QHash<QString, QString> &word_data);
     bool add_word(const QHash<QString, QString> &word_data, const QList<int> selected_tags);
     bool add_tag(const QString &tag);

@@ -92,7 +92,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     QLabel* display_icon_answer = new QLabel(this);
     QLabel* display_answer = new QLabel(this);
 	if (!correct) {
-		display_icon_answer->setPixmap(QIcon::fromTheme("face-crying", QIcon(getImgPath("face-crying.png"))).pixmap(50));
+        display_icon_answer->setPixmap(QIcon::fromTheme("face-sad", QIcon(getImgPath("face-sad.png"))).pixmap(50));
 		display_answer->setText("<b>" + message + "</b>");
 		display_answer->setStyleSheet("QLabel {color : red; }");
 	} else {

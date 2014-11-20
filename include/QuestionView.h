@@ -41,6 +41,7 @@ private:
     QAction *delete_action;
 
     void create_actions();
+    void init_button(QToolButton *button);
 
 public slots:
     void disable_validation();

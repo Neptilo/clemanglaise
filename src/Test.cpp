@@ -4,12 +4,13 @@
 #include <QObject>
 #include <QStringList>
 
-Test::Test(int id, const QString &name, const QString &src, const QString &dst, const bool remote, QObject *parent) :
+Test::Test(int id, const QString &name, const QString &src, const QString &dst, const QString &flag, const bool remote, QObject *parent) :
     QObject(parent),
     id(id),
     name(name),
     src(src),
     dst(dst),
+    flag(flag),
     remote(remote)
 {
 }
@@ -20,6 +21,7 @@ Test::Test(const Test& other, QObject *parent) :
     name(other.name),
     src(other.src),
     dst(other.dst),
+    flag(other.flag),
     remote(other.remote)
 {
 }
@@ -41,6 +43,11 @@ QString Test::get_dst() const{
     return dst;
 }
 
+QString Test::get_flag() const
+{
+    return flag;
+}
+
 bool Test::is_remote() const {
 	return remote;
 }
@@ -49,21 +56,14 @@ void Test::set_remote(bool remote) {
     this->remote = remote;
 }
 
-void Test::add_theme(const QString& theme) {
-    this->themes.insert(theme);
-}
-
 Test &Test::operator=(const Test &other)
 {
     id = other.id;
     name = other.name;
     src = other.src;
     dst = other.dst;
+    flag = other.flag;
     remote = other.remote;
     setParent(other.parent());
     return *this;
-}
-
-QSet<QString> Test::get_themes() const{
-	return this->themes;
 }

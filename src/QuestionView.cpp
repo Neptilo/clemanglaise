@@ -1,3 +1,5 @@
+#include "QuestionView.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QDesktopWidget>
@@ -7,7 +9,6 @@
 #include <QToolButton>
 
 #include "InterfaceParameters.h"
-#include "QuestionView.h"
 #include "string_utils.h"
 
 QuestionView::QuestionView(Test *test, bool admin, QWidget *parent):
@@ -41,7 +42,7 @@ void QuestionView::create_actions()
     if (!test->is_remote() || admin) {
         edit_action = new QAction(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))), tr("&Edit this word entry"), this);
         connect(edit_action, SIGNAL(triggered()), parent(), SLOT(update_word()));
-        delete_action = new QAction(QIcon::fromTheme("process-stop", QIcon(getImgPath("process-stop.png"))), tr("&Delete this word"), this);
+        delete_action = new QAction(QIcon::fromTheme("edit-delete", QIcon(getImgPath("edit-delete.png"))), tr("&Delete this word"), this);
         delete_action->setShortcut(QKeySequence::Delete);
         connect(delete_action, SIGNAL(triggered()), parent(), SLOT(delete_word()));
     }
@@ -90,17 +91,17 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
     if (!test->is_remote() || admin) {
         edit_button = new QToolButton;
         edit_button->setDefaultAction(edit_action);
-        edit_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        init_button(edit_button);
         delete_button = new QToolButton;
         delete_button->setDefaultAction(delete_action);
-        delete_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        init_button(delete_button);
         top_layout->addWidget(edit_button);
         top_layout->addWidget(delete_button);
     }
     if (test->is_remote()) {
         import_button = new QToolButton;
         import_button->setDefaultAction(import_action);
-        import_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        init_button(import_button);
         top_layout->addWidget(import_button);
     }
 
@@ -113,6 +114,7 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
                 tr("OK"),
                 this);
     OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
     vertical_layout->addLayout(input_layout);
     input_layout->addWidget(edit);
     input_layout->addWidget(OK_button);
@@ -125,6 +127,14 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
 	OK_button->setDefault(true);
 	edit->setFocus();
     OK_button->setEnabled(true);
+}
+
+void QuestionView::init_button(QToolButton *button)
+{
+    if (button) {
+        button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
+    }
 }
 
 void QuestionView::show_error(const QString &error)
@@ -144,12 +154,13 @@ void QuestionView::disable_validation(){
 void QuestionView::resizeEvent(QResizeEvent *event)
 {
     WordView::resizeEvent(event);
-    if (edit_button)
-        edit_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    if (delete_button)
-        delete_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    if (import_button)
-        import_button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    init_button(edit_button);
+    init_button(delete_button);
+    init_button(import_button);
     if (edit)
         edit->setFixedHeight(InterfaceParameters::widget_unit);
+    if (OK_button) {
+        OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
+    }
 }

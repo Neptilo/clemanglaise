@@ -6,7 +6,6 @@
 
 InterfaceParameters::InterfaceParameters()
 {
-    //update_widget_unit();
 }
 
 void InterfaceParameters::update_widget_unit(QWidget *window)
