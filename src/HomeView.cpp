@@ -105,24 +105,26 @@ void HomeView::read_reply_lists(QNetworkReply *reply)
     if(remote){ // verification in case user clicked switch button before NAM's reply
         QString reply_string = reply->readAll();
         reply->deleteLater();
-        QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
-        QList<Test> online_tests;
-        for(int i = 0; i < reply_list.count(); i+=5) {
-            online_tests << Test(reply_list.at(i).toInt(), reply_list.at(i+1), reply_list.at(i+2), reply_list.at(i+3), reply_list.at(i+4), this);
-        }
-
-        // test buttons
-        delete test_buttons;
-
-        test_buttons = new LanguageButtons(online_tests, admin, this);
-        connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
-        layout->addWidget(test_buttons);
-
-        // info label
-        if(online_tests.isEmpty())
+        if (reply_string.isEmpty())
             info_label.setText(tr("There is no vocabulary list on the server at the moment."));
-        else
+        else {
+            QStringList reply_list(reply_string.split('\n'));
+            reply_list.removeLast();
+            QList<Test> online_tests;
+            for(int i = 0; i < reply_list.count(); i+=5) {
+                online_tests << Test(reply_list.at(i).toInt(), reply_list.at(i+1), reply_list.at(i+2), reply_list.at(i+3), reply_list.at(i+4), this);
+            }
+
+            // test buttons
+            delete test_buttons;
+
+            test_buttons = new LanguageButtons(online_tests, admin, this);
+            connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
+            layout->addWidget(test_buttons);
+
+            // info label
             info_label.setText(tr("<b>Tests on remote server:</b>"));
+        }
     }
 }
 
