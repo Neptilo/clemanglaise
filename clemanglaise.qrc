@@ -37,5 +37,6 @@
         <file>img/flags/JP.png</file>
         <file>img/flags/RU.png</file>
         <file>img/flags/US.png</file>
+        <file>img/document-save.png</file>
     </qresource>
 </RCC>
