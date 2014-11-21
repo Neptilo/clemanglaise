@@ -16,6 +16,14 @@ QString ampersand_escape(const QString &string) {
 	return encoded;
 }
 
+QStringList ampersand_escape(const QStringList &list)
+{
+    QStringList ret;
+    for(int i = 0; i < list.size(); ++i)
+        ret << ampersand_escape(list.at(i));
+    return ret;
+}
+
 /**
  * replace all: by : in IPA, because colon is a reserved caracter while
  * parsing a file
@@ -55,6 +63,14 @@ QString ampersand_unescape(const QString &string){
 		}
 	}
 	return res;
+}
+
+QStringList ampersand_unescape(const QStringList &list)
+{
+    QStringList ret;
+    for(int i = 0; i < list.size(); ++i)
+        ret << ampersand_unescape(list.at(i));
+    return ret;
 }
 
 // Don't use with ampersand_escape. It would be redundant and generate bugs.

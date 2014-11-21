@@ -67,8 +67,8 @@ QString merge_string(
         const QString &join_sep
         )
 {
-    QSet<QString> left_set = trimmed(left_string.split(split_sep, QString::SkipEmptyParts)).toSet();
-    QSet<QString> right_set = trimmed(right_string.split(split_sep, QString::SkipEmptyParts)).toSet();
+    QSet<QString> left_set = ampersand_escape(trimmed(left_string.split(split_sep, QString::SkipEmptyParts))).toSet();
+    QSet<QString> right_set = ampersand_escape(trimmed(right_string.split(split_sep, QString::SkipEmptyParts))).toSet();
     left_set.unite(right_set);
     return QStringList(left_set.toList()).join(join_sep);
 }

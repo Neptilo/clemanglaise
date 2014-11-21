@@ -7,8 +7,10 @@
 
 extern const QHash<QString, QString> maphash;
 QString ampersand_escape(const QString &string);
+QStringList ampersand_escape(const QStringList &list);
 QString colon_unescape(const QString &string);
 QString ampersand_unescape(const QString &string);
+QStringList ampersand_unescape(const QStringList &list);
 QString number_to_accent(const QString letter, int accent_number);
 QString numbers_to_accents(const QString &string);
 QString getImgPath(const QString & img);
