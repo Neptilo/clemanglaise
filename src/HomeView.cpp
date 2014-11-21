@@ -20,7 +20,9 @@ HomeView::HomeView(bool admin, QWidget *parent):
     setWindowTitle("Clemanglaise");
     setWindowIcon(QIcon(":/clemanglaise-img.png"));
     layout = new QVBoxLayout(this);
+#ifndef Q_OS_ANDROID
     layout->setSizeConstraint(QLayout::SetMinimumSize);
+#endif
 
     // title
     title = new QLabel(tr("<b>Choose your vocab test:</b>"), this);

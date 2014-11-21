@@ -22,6 +22,9 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
     tag_nam(this)
 {
     setWindowTitle(tr("Import a word"));
+#ifdef Q_OS_ANDROID
+    setWindowState(Qt::WindowMaximized);
+#endif
 
     if(dst_test)
         check_duplicates(dst_test);

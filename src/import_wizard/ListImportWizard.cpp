@@ -30,6 +30,9 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     reply_list(NULL)
 {
     setWindowTitle(tr("Import a vocabulary list"));
+#ifdef Q_OS_ANDROID
+    setWindowState(Qt::WindowMaximized);
+#endif
 
     // page to choose destination list of the import
     connect(&dst_list_page, SIGNAL(chosen(Test *)), this, SLOT(save_and_next(Test *)));
