@@ -19,6 +19,7 @@ DuplicatePage::DuplicatePage(QWidget *parent) :
     duplicate_table(this),
     button_group(this)
 {
+    info.setWordWrap(true);
     layout.addWidget(&info);
 
     layout.addWidget(&duplicate_table);

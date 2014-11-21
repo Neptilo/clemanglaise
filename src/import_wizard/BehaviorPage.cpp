@@ -9,6 +9,7 @@ BehaviorPage::BehaviorPage(QWidget *parent) :
     layout(this),
     question(tr("During the import, duplicates of existing words can be detected. What do you want to do?"), this)
 {
+    question.setWordWrap(true);
     layout.addWidget(&question);
 
     QList<QRadioButton *> radios;

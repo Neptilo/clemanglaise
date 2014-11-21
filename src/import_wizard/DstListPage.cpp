@@ -17,6 +17,7 @@ DstListPage::DstListPage(DatabaseManager *database_manager, bool multiple, QWidg
         question.setText(tr("To what list do you want to import this vocabulary list?"));
     else
         question.setText(tr("To what list do you want to import this word?"));
+    question.setWordWrap(true);
     layout.addWidget(&question);
 
     // language buttons

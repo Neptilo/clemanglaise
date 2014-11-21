@@ -9,6 +9,7 @@ ProgressPage::ProgressPage(QWidget *parent) :
     progress_bar(this),
     log(this)
 {
+    status.setWordWrap(true);
     layout.addWidget(&status);
     progress_bar.setValue(0);
     layout.addWidget(&progress_bar);
