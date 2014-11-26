@@ -15,7 +15,7 @@ public:
 
     void set_icon(const QIcon &icon);
     void set_text(const QString &text);
-    void setToolButtonStyle(Qt::ToolButtonStyle style);
+    void set_tool_button_style(Qt::ToolButtonStyle style);
     QSize sizeHint();
     void set_icon_size(const QSize &size);
 

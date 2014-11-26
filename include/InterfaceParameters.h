@@ -12,6 +12,7 @@ public:
     // reference width or height for widgets
     // proportional to window height
     static int widget_unit;
+    static Qt::ScreenOrientation orientation;
 
     static void update_widget_unit(QWidget *window);
 

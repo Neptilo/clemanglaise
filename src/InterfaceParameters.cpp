@@ -14,3 +14,5 @@ void InterfaceParameters::update_widget_unit(QWidget *window)
 }
 
 int InterfaceParameters::widget_unit;
+
+Qt::ScreenOrientation InterfaceParameters::orientation = Qt::PortraitOrientation;

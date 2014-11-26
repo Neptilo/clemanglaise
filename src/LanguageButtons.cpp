@@ -31,6 +31,8 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
                     QIcon(getImgPath("flags/"+test->get_flag()+".png")),
                     test->get_name(),
                     this);
+        if (InterfaceParameters::orientation == Qt::PortraitOrientation)
+            button->set_tool_button_style(Qt::ToolButtonTextUnderIcon);
         button->setToolTip(tr("from ") + test->get_src() + tr(" to ") + test->get_dst());
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         button->set_icon_size(QSize(2*fontMetrics().height(),
@@ -44,6 +46,8 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
                     QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))),
                     tr("New list"),
                     this);
+        if (InterfaceParameters::orientation == Qt::PortraitOrientation)
+            button->set_tool_button_style(Qt::ToolButtonTextUnderIcon);
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         button->set_icon_size(QSize(2*fontMetrics().height(),
                                     2*fontMetrics().height()));

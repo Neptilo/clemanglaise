@@ -3,9 +3,10 @@ Priority 1
 * Adapt the app for a mobile version
 
   * Handwriting area size: make it fill all available space
-  * Make import wizard visible
   * Update handwriting_layout and vertical_layout on device orientation change
   * Increase icon sizes
+  * Solve bug that makes some Chinese characters not show correctly since Android L
+  * Make example label, comment label and hint label multiline
 
 * Improve graphical interface
 
@@ -37,5 +38,5 @@ Priority 2
   * Highlight matched strings
   
 * Publicly release the app with an installer
-* Include a field for the gender in German
+* Include a field for the gender when adding a new word in certain languages such as German, French, Spanish, Italian, Portuguese... Implement this in the database as the letter "m", "f" or "n" appended to the "n" for "noun".
 * In multiple import, implement behavior to ask for every item where there is a conflict. In this case the user should be prompted for the behavior for every detected duplicate grouped at the end of the import process.

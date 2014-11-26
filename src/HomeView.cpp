@@ -171,4 +171,15 @@ void HomeView::start_test(Test *test){
 void HomeView::resizeEvent(QResizeEvent *)
 {
     InterfaceParameters::update_widget_unit(window());
+    if (window()->width() < window()->height()) {
+        if (InterfaceParameters::orientation == Qt::LandscapeOrientation) {
+            InterfaceParameters::orientation = Qt::PortraitOrientation;
+            init();
+        }
+    } else {
+        if (InterfaceParameters::orientation == Qt::PortraitOrientation) {
+            InterfaceParameters::orientation = Qt::LandscapeOrientation;
+            init();
+        }
+    }
 }

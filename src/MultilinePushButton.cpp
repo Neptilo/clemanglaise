@@ -39,6 +39,7 @@ MultilinePushButton::MultilinePushButton(const QIcon &icon, const QString &text,
     icon_label = new QLabel(this);
     icon_label->setPixmap(icon.pixmap(fontMetrics().height()));
     icon_label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    icon_label->setAlignment(Qt::AlignCenter);
     text_label = new QLabel(text, this);
     text_label->setWordWrap(true);
     text_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -54,6 +55,7 @@ void MultilinePushButton::set_icon(const QIcon &icon)
     icon_label = new QLabel(this);
     icon_label->setPixmap(icon.pixmap(fontMetrics().height()));
     icon_label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    icon_label->setAlignment(Qt::AlignCenter);
     refresh();
 }
 
@@ -95,7 +97,7 @@ void MultilinePushButton::refresh()
     layout->setSizeConstraint(QLayout::SetMinimumSize);
 }
 
-void MultilinePushButton::setToolButtonStyle(Qt::ToolButtonStyle style)
+void MultilinePushButton::set_tool_button_style(Qt::ToolButtonStyle style)
 {
     tool_button_style = style;
     refresh();
