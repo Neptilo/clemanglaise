@@ -6,6 +6,7 @@
 #   include <QUrlQuery>
 #endif
 
+#include "InterfaceParameters.h"
 #include "QuestionView.h"
 #include "string_utils.h"
 
@@ -91,40 +92,54 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     // Add labels 
     QLabel* display_icon_answer = new QLabel(this);
     QLabel* display_answer = new QLabel(this);
-	if (!correct) {
-        display_icon_answer->setPixmap(QIcon::fromTheme("face-sad", QIcon(getImgPath("face-sad.png"))).pixmap(50));
-		display_answer->setText("<b>" + message + "</b>");
-		display_answer->setStyleSheet("QLabel {color : red; }");
+    if (correct) {
+        display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon(getImgPath("face-smile.png")))
+                                       .pixmap(2*fontMetrics().height()));
+        display_answer->setStyleSheet("QLabel {color : green; }");
 	} else {
-		display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon(getImgPath("face-smile.png"))).pixmap(50));
-		display_answer->setText("<b>" + message + "</b>");
-		display_answer->setStyleSheet("QLabel {color : green; }");
-
-	}
-
-    vertical_layout->addWidget(display_icon_answer);
-    vertical_layout->addWidget(display_answer);
-
-    if(test->get_dst()=="ja" || test->get_dst()=="zh"){
-        vertical_layout->addWidget(new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this));
-    }else{
-		QString answithoutpron = "<b>"+word+"</b> <i>"+nature+"</i>: "+meaning;
-        QString answithpron = pronunciation.isEmpty()? answithoutpron: answithoutpron+"\n<b>["+ pronunciation +"]</b>";
-        vertical_layout->addWidget(new QLabel(answithpron, this));
+        display_icon_answer->setPixmap(QIcon::fromTheme("face-sad", QIcon(getImgPath("face-sad.png")))
+                                       .pixmap(2*fontMetrics().height()));
+        display_answer->setStyleSheet("QLabel {color : red; }");
     }
-    vertical_layout->addWidget(new QLabel("<i>"+comment.replace(QRegExp("[\r\n]+"), "<br />")+"</i>", this));
+    display_answer->setText("<b>" + message + "</b>");
+    display_answer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    QLayout *answer_message_layout = new QHBoxLayout;
+    vertical_layout->addLayout(answer_message_layout);
+    answer_message_layout->addWidget(display_icon_answer);
+    answer_message_layout->addWidget(display_answer);
+
+    QLayout *answer_headline_layout = new QHBoxLayout;
+    vertical_layout->addLayout(answer_headline_layout);
+    QLabel *answer_headline_label;
+    if (test->get_dst()=="ja" || test->get_dst()=="zh")
+        answer_headline_label = new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this);
+    else{
+        QString answer = "<b>"+word+"</b> <i>"+nature+"</i>: "+meaning;
+        if (!pronunciation.isEmpty())
+            answer += "\n<b>["+ pronunciation +"]</b>";
+        answer_headline_label = new QLabel(answer, this);
+    }
+    answer_headline_label->setWordWrap(true);
+    answer_headline_layout->addWidget(answer_headline_label);
+
+    // Create the OK button
+    OK_button = new QPushButton(
+                QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))),
+                tr("OK"),
+                this);
+    OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
+    connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
+    OK_button->setDefault(true);
+    OK_button->setFocus(); // Because the focus is still on the edit line.
+    answer_headline_layout->addWidget(OK_button);
+
+    QLabel *comment_label = new QLabel("<i>"+comment.replace(QRegExp("[\r\n]+"), "<br />")+"</i>", this);
+    vertical_layout->addWidget(comment_label);
     if(example.compare("")){
-        QTextBrowser * qtb = new QTextBrowser(this);
-        qtb->setHtml("<b>Example:</b> "+ example.replace(QRegExp("[\r\n]+"), "<br />"));
-        vertical_layout->addWidget(qtb);
+        QTextBrowser *example_label = new QTextBrowser(this);
+        example_label->setHtml("<b>Example:</b> "+ example.replace(QRegExp("[\r\n]+"), "<br />"));
+        //example_label->setWordWrapMode(QTextOption::w);
+        vertical_layout->addWidget(example_label);
     }
-
-	// Create the OK button
-	OK_button = new QPushButton(tr("OK"),this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
-
-	connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
-	OK_button->setDefault(true);
-	OK_button->setFocus(); // Because the focus is still on the edit line.
-    vertical_layout->addWidget(OK_button);
 }

@@ -4,18 +4,17 @@ Priority 1
 
   * Handwriting area size: make it fill all available space
   * Update handwriting_layout and vertical_layout on device orientation change
-  * Increase icon sizes
   * Solve bug that makes some Chinese characters not show correctly since Android L
-  * Make example label, comment label and hint label multiline
 
 * Improve graphical interface
 
   * Increase font size of user text input
   * Increase font size of the word being asked
-  * Apply the same style to other views
+  * Apply the same style to other views (including increasing icon sizes)
   * For consistency, define all widget attributes as pointers
   * Reorganize attributes: first data attributes, second GUI attributes, third action attributes
   * Add a combo box to filter by theme in the search view
+  * Add scrollbars where widgets are bigger than window
 
 Priority 2
 ----------
