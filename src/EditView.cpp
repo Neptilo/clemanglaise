@@ -15,6 +15,7 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     title(NULL),
     status(NULL),
     nature_edit(NULL),
+    gender_edit(NULL),
     tags(NULL),
     nam(),
     tag_nam(),
@@ -67,8 +68,48 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     nature_edit->addItem(tr("Preposition"), QVariant("prep"));
     nature_edit->addItem(tr("Pronoun"), QVariant("pron"));
     nature_edit->addItem(tr("Verb"), QVariant("v"));
-    nature_edit->setCurrentIndex(nature_edit->findData(QVariant(nature)));
+    QChar gender;
+    QString part_of_speech;
+    if (nature.size() > 1 && nature.at(0) == QChar('n')) {
+        part_of_speech = nature.at(0);
+        gender = nature.at(1);
+    } else
+        part_of_speech = nature;
+    nature_edit->setCurrentIndex(nature_edit->findData(QVariant(part_of_speech)));
+
     layout->addRow(tr("Part of &speech: "), nature_edit);
+    connect(nature_edit, SIGNAL(currentIndexChanged(int)), this, SLOT(update_gender(int)));
+
+    QList<QChar> genders;
+    if (
+            test->get_dst() == "de" ||
+            test->get_dst() == "hr" ||
+            test->get_dst() == "ru")
+        genders << QChar('m') << QChar('f') << QChar('n');
+    else if (
+             test->get_dst() == "es" ||
+             test->get_dst() == "fr")
+        genders << QChar('m') << QChar('f');
+    if (!genders.isEmpty()) {
+        gender_edit = new QComboBox(this);
+        gender_edit->addItem("---");
+        for (QList<QChar>::iterator i = genders.begin(); i != genders.end(); ++i) {
+            switch ((*i).cell()) {
+            case 'm':
+                gender_edit->addItem(tr("Masculine"), QVariant(*i));
+                break;
+            case 'f':
+                gender_edit->addItem(tr("Feminine"), QVariant(*i));
+                break;
+            case 'n':
+                gender_edit->addItem(tr("Neuter"), QVariant(*i));
+                break;
+            }
+        }
+        if (!gender.isNull())
+            gender_edit->setCurrentIndex(gender_edit->findData(QVariant(gender)));
+        update_gender(nature_edit->currentIndex());
+    }
 
     meaning_edit = new QLineEdit(meaning, this);
     layout->addRow(tr("&Translation: "), meaning_edit);
@@ -139,7 +180,13 @@ void EditView::edit_word(){
     word_data["id"] = default_values["id"];
     word_data["list_id"] = QString::number(test->get_id());
     word_data["word"] = ampersand_escape(word_edit->text());
-    word_data["nature"] = nature_edit->itemData(nature_edit->currentIndex()).toString();
+    QString nature(nature_edit->itemData(nature_edit->currentIndex()).toString());
+    if (nature == "n" && gender_edit) {
+        QVariant gender = gender_edit->itemData(gender_edit->currentIndex());
+        if (gender.isValid())
+            nature += gender.toChar();
+    }
+    word_data["nature"] = nature;
     word_data["meaning"] = ampersand_escape(meaning_edit->text());
     word_data["pronunciation"] = standardized_pronunciation;
     // toPlainText() because we don't want to save a too much unnecessary information like an HTML header.
@@ -217,7 +264,17 @@ void EditView::back(){
 void EditView::reset(){
     word_edit->setText(default_values["word"]);
     meaning_edit->setText(default_values["meaning"]);
-    nature_edit->setCurrentIndex(nature_edit->findData(QVariant(default_values["nature"])));
+    QString nature = default_values["nature"];
+    QChar gender;
+    QString part_of_speech;
+    if (nature.size() > 1 && nature.at(0) == QChar('n')) {
+        part_of_speech = nature.at(0);
+        gender = nature.at(1);
+    } else
+        part_of_speech = nature;
+    nature_edit->setCurrentIndex(nature_edit->findData(QVariant(part_of_speech)));
+    if (gender_edit && !gender.isNull())
+        gender_edit->setCurrentIndex(gender_edit->findData(QVariant(gender)));
     comment_edit->setPlainText(default_values["comment"]);
     example_edit->setPlainText(default_values["example"]);
     hint_edit->setPlainText(default_values["hint"]);
@@ -246,7 +303,23 @@ void EditView::find_tags() {
         const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_tags.php");
 		QNetworkRequest request(url);
         tag_nam.get(request);
-	}
+    }
+}
+
+void EditView::update_gender(int index)
+{
+    if (gender_edit) {
+        if (nature_edit->itemData(index) == QVariant("n")) {
+            int index;
+            layout->getWidgetPosition(nature_edit, &index, NULL);
+            layout->insertRow(index+1, tr("&Gender: "), gender_edit);
+            gender_edit->show();
+        } else {
+            gender_edit->hide();
+            if (QWidget *w = layout->labelForField(gender_edit))
+                w->deleteLater();
+        }
+    }
 }
 
 void EditView::read_reply(QNetworkReply* reply)
@@ -275,6 +348,8 @@ void EditView::read_reply(QString reply_string) {
 void EditView::disable_edition(bool ok) {
 	word_edit->setEnabled(!ok);
 	nature_edit->setEnabled(!ok);
+    if (gender_edit)
+        gender_edit->setEnabled(!ok);
 	meaning_edit->setEnabled(!ok);
 	pronunciation_edit->setEnabled(!ok);
 	comment_edit->setEnabled(!ok);

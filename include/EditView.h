@@ -28,6 +28,7 @@ private:
     QLabel* title;
     QLabel* status;
     QComboBox* nature_edit;
+    QComboBox *gender_edit;
     QListWidget* tags;
     QNetworkAccessManager nam;
     QNetworkAccessManager tag_nam;
@@ -62,6 +63,9 @@ public slots:
     void back();
     void reset();
 	void find_tags();
+
+private slots:
+    void update_gender(int index);
 };
 
 #endif // EDITVIEW_H
