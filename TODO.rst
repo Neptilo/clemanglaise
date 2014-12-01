@@ -36,5 +36,4 @@ Priority 2
   * Highlight matched strings
   
 * Publicly release the app with an installer
-* Include a field for the gender when adding a new word in certain languages such as German, French, Spanish, Italian, Portuguese... Implement this in the database as the letter "m", "f" or "n" appended to the "n" for "noun".
 * In multiple import, implement behavior to ask for every item where there is a conflict. In this case the user should be prompted for the behavior for every detected duplicate grouped at the end of the import process.
