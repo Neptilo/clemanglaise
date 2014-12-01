@@ -11,7 +11,6 @@ Priority 1
   * Increase font size of user text input
   * Increase font size of the word being asked
   * Apply the same style to other views (including increasing icon sizes)
-  * For consistency, define all widget attributes as pointers
   * Reorganize attributes: first data attributes, second GUI attributes, third action attributes
   * Add a combo box to filter by theme in the search view
   * Add scrollbars where widgets are bigger than window
