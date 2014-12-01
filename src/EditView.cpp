@@ -49,7 +49,6 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     QString example = default_values["example"];
     QString hint = default_values["hint"];
     QString pronunciation = ampersand_unescape(default_values["pronunciation"]);
-    int id_theme = default_values["id_theme"].toInt();
 
     word_edit = new QLineEdit(word, this);
     layout->addRow(tr("&Word: "), word_edit);
@@ -87,6 +86,8 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
             test->get_dst() == "ru")
         genders << QChar('m') << QChar('f') << QChar('n');
     else if (
+             test->get_dst() == "ar" ||
+             test->get_dst() == "ca" ||
              test->get_dst() == "es" ||
              test->get_dst() == "fr")
         genders << QChar('m') << QChar('f');
@@ -114,10 +115,15 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     meaning_edit = new QLineEdit(meaning, this);
     layout->addRow(tr("&Translation: "), meaning_edit);
 
-	pronunciation_edit = new QLineEdit(pronunciation, this);
-	layout->addRow(tr("&Pronunciation: "), pronunciation_edit);
-
-	this->id_theme = id_theme;
+    if (
+            test->get_dst() != "de" &&
+            test->get_dst() != "ca" &&
+            test->get_dst() != "es" &&
+            test->get_dst() != "hr" &&
+            test->get_dst() != "ru") {
+        pronunciation_edit = new QLineEdit(pronunciation, this);
+        layout->addRow(tr("&Pronunciation: "), pronunciation_edit);
+    }
 
     comment_edit = new QTextEdit(this);
     comment_edit->setPlainText(comment); // so the text will be interpreted as plain text, not HTML
@@ -278,8 +284,8 @@ void EditView::reset(){
     comment_edit->setPlainText(default_values["comment"]);
     example_edit->setPlainText(default_values["example"]);
     hint_edit->setPlainText(default_values["hint"]);
-
-    pronunciation_edit->setText(default_values["pronunciation"]);
+    if (pronunciation_edit)
+        pronunciation_edit->setText(default_values["pronunciation"]);
 
 	delete continue_button;
 
@@ -351,7 +357,8 @@ void EditView::disable_edition(bool ok) {
     if (gender_edit)
         gender_edit->setEnabled(!ok);
 	meaning_edit->setEnabled(!ok);
-	pronunciation_edit->setEnabled(!ok);
+    if (pronunciation_edit)
+        pronunciation_edit->setEnabled(!ok);
 	comment_edit->setEnabled(!ok);
 	example_edit->setEnabled(!ok);
     hint_edit->setEnabled(!ok);

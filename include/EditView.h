@@ -42,7 +42,6 @@ private:
     QPushButton* cancel_button;
     QPushButton* continue_button;
     QFormLayout* layout;
-    int id_theme;
     QString php_filename;
     QHash<QString, QString> default_values;
     // list of themes
