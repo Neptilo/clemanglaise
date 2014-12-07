@@ -1,11 +1,16 @@
+#include <algorithm>
 #include <QtNetwork>
 #include <QDebug>
 #include <QTextDocument>
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #   include <QUrlQuery>
 #endif
+#include <QStandardItem>
+#include <QStandardItemModel>
 
+#include "CheckableItemDelegate.h"
 #include "EditView.h"
+#include "InterfaceParameters.h"
 #include "QuestionView.h"
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
@@ -16,7 +21,6 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     status(NULL),
     nature_edit(NULL),
     gender_edit(NULL),
-    tags(NULL),
     nam(),
     tag_nam(),
     word_edit(NULL),
@@ -26,7 +30,6 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     example_edit(NULL),
     hint_edit(NULL),
     OK_button(NULL),
-    cancel_button(NULL),
     continue_button(NULL),
     layout(NULL),
     php_filename(php_filename),
@@ -140,9 +143,13 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     status = new QLabel(this);
     layout->addWidget(status);
 
-    tags = new QListWidget(this);
-    tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    layout->addRow(tr("T&ags: "), tags);
+
+    tags_box = new QComboBox(this);
+    tags_box->setFixedHeight(InterfaceParameters::widget_unit);
+    CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
+    tags_box->setItemDelegate(delegate);
+    tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    layout->addRow(tr("T&ags: "), tags_box);
     find_tags();
     connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
@@ -154,12 +161,6 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
 
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
-
-    cancel_button = new QPushButton(tr("Back"), this);
-	cancel_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
-
-	connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
-    layout->addWidget(cancel_button);
 }
 
 EditView::~EditView(){}
@@ -199,20 +200,15 @@ void EditView::edit_word(){
     word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     word_data["hint"] = ampersand_escape(hint_edit->toPlainText());
-    QList<QListWidgetItem *> selected_items  = tags->selectedItems();
-    QList<int> selected_items_variant;
-
-    for (int i = 0, l = selected_items.size(); i<l; ++i)
-       selected_items_variant << selected_items.at(i)->data(Qt::UserRole).toInt();
 
     if (!test->is_remote()) {
 		bool success;
 
         // Offline
         if(word_data["id"].toInt() == 0) // Add word
-            success = database_manager->add_word(word_data, selected_items_variant);
+            success = database_manager->add_word(word_data, selected_tags);
         else // Update word
-            success = database_manager->update_word(word_data, selected_items_variant);
+            success = database_manager->update_word(word_data, selected_tags);
 
         // Show confirmation
         show_confirmation(success);
@@ -225,8 +221,8 @@ void EditView::edit_word(){
         post_data.addQueryItem("list_id", QString::number(test->get_id()));
         for (QHash<QString, QString>::iterator i = word_data.begin(); i != word_data.end(); ++i)
             post_data.addQueryItem(i.key(), i.value());
-        for (int i = 0; i < selected_items_variant.size(); ++i)
-            post_data.addQueryItem("tag_ids[]", QString::number(selected_items_variant.at(i)));
+        for (int i = 0; i < selected_tags.size(); ++i)
+            post_data.addQueryItem("tag_ids[]", QString::number(selected_tags.at(i)));
 		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -263,8 +259,24 @@ void EditView::show_confirmation(bool success){
         status->setText(tr("<b>SQLite error: </b>")+database_manager->pop_last_error());
 }
 
-void EditView::back(){
-	delete this;
+
+void EditView::update_selected_tags(QModelIndex top_left, QModelIndex)
+{
+    QMap<int, QVariant> item_data = tags_box->model()->itemData(top_left);
+    int variant = item_data[Qt::UserRole].toInt();
+    switch (item_data[Qt::CheckStateRole].toInt()) {
+    case Qt::Checked:
+        if (variant != 0)
+            selected_tags << item_data[Qt::UserRole].toInt();
+        break;
+    case Qt::Unchecked:
+        selected_tags.removeOne(variant);
+        break;
+    default:
+        qDebug() << tr("Wrong check state value");
+        break;
+    }
+    qDebug() << selected_tags;
 }
 
 void EditView::reset(){
@@ -294,8 +306,6 @@ void EditView::reset(){
 	OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
 	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
 	layout->addWidget(OK_button);
-
-    cancel_button->setText(tr("Back"));
 	disable_edition(false);
 }
 
@@ -341,14 +351,28 @@ void EditView::read_reply(QString reply_string) {
     if(test->is_remote())
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 
+    //Initialiaze selected tags context
     QStringList tag_ids = default_values["tag_ids"].split(", ");
-	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
-        QListWidgetItem* item = new QListWidgetItem(reply_list.at(i+1).trimmed());
-        item->setData(Qt::UserRole, QVariant(reply_list.at(i).toInt()));
-        tags->addItem(item);
-        if(tag_ids.contains(reply_list.at(i))) // select tags that belong to the word
-            item->setSelected(true);
-	}
+    for (QStringList::const_iterator it=tag_ids.constBegin(); it != tag_ids.constEnd(); ++it)
+        selected_tags << it->toInt();
+    tags_box->disconnect();
+    tags_box->clear();
+    int l = reply_list.size()/2;
+    QStandardItemModel *model = new QStandardItemModel(l+1, 1);
+    QStandardItem* item = new QStandardItem(tr("---"));
+    model->setItem(0, 0, item);
+    for (int i = 0; i < l; ++i) {
+        item = new QStandardItem(reply_list.at(2*i+1).trimmed());
+        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+        if(tag_ids.contains(reply_list.at(2*i))) // select tags that belong to the word
+            item->setData(Qt::Checked, Qt::CheckStateRole);
+        else
+            item->setData(Qt::Unchecked, Qt::CheckStateRole);
+        item->setData(QVariant(reply_list.at(2*i).toInt()), Qt::UserRole);
+        model->setItem(i+1, 0, item);
+    }
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(update_selected_tags(QModelIndex,QModelIndex)));
+    tags_box->setModel(model);
 }
 
 void EditView::disable_edition(bool ok) {
@@ -362,7 +386,7 @@ void EditView::disable_edition(bool ok) {
 	comment_edit->setEnabled(!ok);
 	example_edit->setEnabled(!ok);
     hint_edit->setEnabled(!ok);
-    tags->setEnabled(!ok);
+    tags_box->setEnabled(!ok);
 }
 
 void EditView::prepare_to_continue()
@@ -380,5 +404,4 @@ void EditView::prepare_to_continue()
 
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-    cancel_button->setText(tr("Back"));
 }

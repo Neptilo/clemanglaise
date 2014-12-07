@@ -25,11 +25,13 @@ public:
 	void disable_edition(bool ok);
 
 private:
+    QList<int> selected_tags;
     QLabel* title;
     QLabel* status;
     QComboBox* nature_edit;
     QComboBox *gender_edit;
-    QListWidget* tags;
+    QComboBox* tags_box;
+
     QNetworkAccessManager nam;
     QNetworkAccessManager tag_nam;
     QLineEdit* word_edit;
@@ -39,7 +41,6 @@ private:
     QTextEdit* example_edit;
     QTextEdit* hint_edit;
     QPushButton* OK_button;
-    QPushButton* cancel_button;
     QPushButton* continue_button;
     QFormLayout* layout;
     QString php_filename;
@@ -59,12 +60,11 @@ public slots:
 	void read_reply(QNetworkReply * reply); 
     void show_confirmation(QNetworkReply* reply);
     void show_confirmation(bool success);
-    void back();
     void reset();
 	void find_tags();
 
 private slots:
     void update_gender(int index);
+    void update_selected_tags(QModelIndex top_left, QModelIndex bottom_right);
 };
-
 #endif // EDITVIEW_H
