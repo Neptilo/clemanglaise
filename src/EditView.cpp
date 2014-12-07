@@ -267,7 +267,7 @@ void EditView::update_selected_tags(QModelIndex top_left, QModelIndex)
     switch (item_data[Qt::CheckStateRole].toInt()) {
     case Qt::Checked:
         if (variant != 0)
-            selected_tags << item_data[Qt::UserRole].toInt();
+            selected_tags << variant;
         break;
     case Qt::Unchecked:
         selected_tags.removeOne(variant);
@@ -276,7 +276,6 @@ void EditView::update_selected_tags(QModelIndex top_left, QModelIndex)
         qDebug() << tr("Wrong check state value");
         break;
     }
-    qDebug() << selected_tags;
 }
 
 void EditView::reset(){
