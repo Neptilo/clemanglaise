@@ -1,15 +1,18 @@
 #include "TestView.h"
 
 #include <QAction>
+#include <QApplication>
 #include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QStyleFactory>
 #include <QTimer>
 #include <QToolButton>
 #include <QWizard>
 
+#include "AndroidStyle.h"
 #include "CheckableItemDelegate.h"
 #include "import_wizard/DstListPage.h"
 #include "import_wizard/DuplicatePage.h"
@@ -37,7 +40,6 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QW
     test(test, this),
     title(NULL),
     update_view(NULL),
-    update_theme_view(NULL),
     add_button(NULL),
     search_button(NULL),
     import_button(NULL),
@@ -132,7 +134,7 @@ void TestView::create_interface()
     tags_box = new QComboBox();
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
     CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
-    tags_box->setItemDelegate(delegate); // to display the checkboxes
+    tags_box->setItemDelegate(delegate);
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     tool_bar_layout->addWidget(tags_box);
     layout->addLayout(tool_bar_layout);
@@ -379,7 +381,6 @@ void TestView::add_tag()
 	default_values_list << "" << "";
     add_tag_view = new AddTagView(&test, tr("<b>Add a new tag</b>"), default_values_list, tr("Add"), "add_tag", tr("Tag successfully added!"), database_manager, this);
     layout->addWidget(add_tag_view);
-    connect(add_tag_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::add_word()
@@ -392,7 +393,6 @@ void TestView::add_word()
         default_values[word_keys.at(i)] = "";
     add_view = new EditView(&test, tr("<b>Add a new word</b>"), default_values, tr("Add"), "add_word", tr("Word successfully added!"), database_manager, this);
     layout->addWidget(add_view);
-    connect(add_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::update_word()
@@ -402,7 +402,6 @@ void TestView::update_word()
 	// Create a new add frame
     update_view = new EditView(&test, tr("<b>Edit a word entry</b>"), word_data, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
     layout->addWidget(update_view);
-    connect(update_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::search()
@@ -412,11 +411,25 @@ void TestView::search()
 	// Create a new search frame
     search_view = new SearchView(&test, database_manager, !test.is_remote()||admin, this);
     layout->addWidget(search_view);
-    connect(search_view, SIGNAL(destroyed()), this, SLOT(init()));
 }
 
 void TestView::go_back() {
-	delete this;
+    if (
+            add_view ||
+            add_tag_view ||
+            search_view ||
+            update_view) {
+        delete add_view;
+        delete add_tag_view;
+        delete search_view;
+        delete update_view;
+        add_view = NULL;
+        add_tag_view = NULL;
+        search_view = NULL;
+        update_view = NULL;
+        init();
+    } else
+        delete this;
 }
 
 void TestView::find_tags() {
@@ -472,8 +485,6 @@ void TestView::remove_widgets()
     question_view = NULL;
     delete answer_view;
     answer_view = NULL;
-    if (back_button)
-        back_button->hide();
     if (add_button)
         add_button->hide();
     if (search_button)

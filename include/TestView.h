@@ -47,7 +47,6 @@ private:
     QLabel *title;
     QPushButton *update_button;
     EditView *update_view;
-    AddTagView *update_theme_view;
     QStringList word_keys;
     QList<int> selected_tags;
 

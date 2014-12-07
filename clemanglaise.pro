@@ -36,7 +36,8 @@ HEADERS += \
     include/AddTagView.h \
     include/InterfaceParameters.h \
     include/CheckableItemDelegate.h \
-    include/MultilinePushButton.h
+    include/MultilinePushButton.h \
+    include/AndroidStyle.h
 SOURCES += \
     src/AnswerView.cpp \
     src/EditView.cpp \
@@ -66,7 +67,8 @@ SOURCES += \
     src/AddTagView.cpp \
     src/InterfaceParameters.cpp \
     src/CheckableItemDelegate.cpp \
-    src/MultilinePushButton.cpp
+    src/MultilinePushButton.cpp \
+    src/AndroidStyle.cpp
 
 RESOURCES += clemanglaise.qrc
 

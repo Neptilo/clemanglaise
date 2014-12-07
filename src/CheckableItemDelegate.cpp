@@ -1,13 +1,21 @@
 #include "CheckableItemDelegate.h"
 
+#include <QDebug>
+#include <QEvent>
+
 CheckableItemDelegate::CheckableItemDelegate(QObject *parent) :
-    QStyledItemDelegate(parent)
+    QItemDelegate(parent)
 {
 }
 
-void CheckableItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+bool CheckableItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
-    QStyleOptionViewItem new_option(option);
-    new_option.showDecorationSelected = false;
-    QStyledItemDelegate::paint(painter, new_option, index);
+    Q_UNUSED(option);
+    if (event->type() == QEvent::MouseButtonRelease) {
+        QVariant value = index.data(Qt::CheckStateRole);
+        Qt::CheckState state = (static_cast<Qt::CheckState>(value.toInt()) == Qt::Checked
+                                ? Qt::Unchecked : Qt::Checked);
+        return model->setData(index, state, Qt::CheckStateRole);
+    } else
+        return false;
 }

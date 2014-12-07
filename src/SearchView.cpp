@@ -8,6 +8,7 @@
 #include <QtNetwork>
 
 #include "EditView.h"
+#include "InterfaceParameters.h"
 #include "NetworkReplyReader.h"
 #include "QuestionView.h"
 #include "SearchView.h"
@@ -15,39 +16,40 @@
 
 SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
     QWidget(parent),
-    search_bar(NULL),
-    tags(NULL),
     nam(),
     tag_nam(),
-    result(NULL),
     test(test),
     reply_list(),
-    update_frame(NULL),
     modifiable(modifiable),
     database_manager(database_manager),
+    search_bar(NULL),
+    OK_button(NULL),
+    tags(NULL),
+    result(NULL),
+    update_view(NULL),
     status(NULL)
 {
     // has to be consistent with the actual content of reply_list
     word_keys << "id" << "word"  << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "hint" << "score" << "tag_ids";
 
-    QLayout* layout = new QVBoxLayout(this);
+    QBoxLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
     tags = new QListWidget(this);
     tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
     find_tags();
 
-    QPushButton* OK_button = new QPushButton(tr("OK"),this);
+    OK_button = new QPushButton(tr("OK"), this);
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
-
-    QPushButton* back_button = new QPushButton(tr("Back"),this);
-    back_button->setIcon(QIcon::fromTheme("process-stop",QIcon(getImgPath("process-stop.png"))));
+    OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+    OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
 
     status = new QLabel(this);
 
-    layout->addWidget(search_bar);
+    QBoxLayout *input_layout = new QHBoxLayout;
+    layout->addLayout(input_layout);
+    input_layout->addWidget(search_bar);
+    input_layout->addWidget(OK_button);
     layout->addWidget(tags);
-    layout->addWidget(OK_button);
-    layout->addWidget(back_button);
     layout->addWidget(status);
     status->hide();
 
@@ -55,7 +57,6 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     connect(OK_button, SIGNAL(clicked()), this, SLOT(search()));
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_tags(QNetworkReply*)));
-    connect(back_button, SIGNAL(clicked()), this, SLOT(back()));
 }
 
 SearchView::~SearchView() {
@@ -77,7 +78,7 @@ void SearchView::find_tags() {
 }
 
 void SearchView::search() {
-    layout()->removeWidget(update_frame);
+    layout()->removeWidget(update_view);
     status->hide();
     QList<QListWidgetItem *> selected_items  = tags->selectedItems();
     QList<int> selected_tags;
@@ -218,12 +219,6 @@ void SearchView::read_reply(QString reply_string) {
     connect(result, SIGNAL(cellClicked(int,int)), this, SLOT(action(int, int)));
 }
 
-
-void SearchView::back()
-{
-    delete this;
-}
-
 void SearchView::action(int row, int col)
 {
     int nb_cols = word_keys.size();
@@ -238,9 +233,12 @@ void SearchView::action(int row, int col)
         QHash<QString, QString> default_values;
         for(int i = 0; i < nb_cols; ++i)
             default_values[word_keys.at(i)] = reply_list.at(i+row*nb_cols);
-        update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
-        layout()->addWidget(update_frame);
-        connect(update_frame, SIGNAL(destroyed()), this, SLOT(refresh()));
+        update_view = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
+        search_bar->hide();
+        OK_button->hide();
+        tags->hide();
+        layout()->addWidget(update_view);
+        connect(update_view, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){
         QMessageBox::StandardButton ret = QMessageBox::question(
                     this,

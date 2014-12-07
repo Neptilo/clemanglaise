@@ -20,7 +20,6 @@ AddTagView::AddTagView(Test *test, const QString &title, const QStringList &defa
     tag_edit(NULL),
     OK_button(NULL),
     nam(),
-    cancel_button(NULL),
     continue_button(NULL),
     layout(NULL),
     test(test),
@@ -61,11 +60,6 @@ AddTagView::AddTagView(Test *test, const QString &title, const QStringList &defa
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_tag()));
     layout->addWidget(OK_button);
-
-    cancel_button = new QPushButton(tr("Cancel"), this);
-	cancel_button->setIcon(QIcon::fromTheme("process-stop", QIcon(getImgPath("process-stop.png"))));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(back()));
-    layout->addWidget(cancel_button);
 }
 
 AddTagView::~AddTagView(){}
@@ -125,11 +119,6 @@ void AddTagView::show_confirmation(){
 	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
-    cancel_button->setText(tr("Back to test"));
-}
-
-void AddTagView::back(){
-    delete this;
 }
 
 void AddTagView::reset(){
@@ -141,8 +130,6 @@ void AddTagView::reset(){
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_tag()));
     layout->addWidget(OK_button);
-
-    cancel_button->setText(tr("Cancel"));
 }
 
 

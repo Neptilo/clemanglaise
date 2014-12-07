@@ -20,25 +20,27 @@ public:
     void read_reply_tags();//(QString reply_string = "");
 
 private:
-    QLineEdit *search_bar;
-    QListWidget *tags; 
     QNetworkAccessManager nam;
     QNetworkAccessManager tag_nam;
-    QTableWidget *result;
     Test *test;
     QStringList reply_list;
     QStringList reply_list_tag;
-    EditView *update_frame;
     bool modifiable;
     DatabaseManager *database_manager;
     QStringList word_keys;
+
+    // GUI
+    QLineEdit *search_bar;
+    QPushButton *OK_button;
+    QListWidget *tags;
+    QTableWidget *result;
+    EditView *update_view;
     QLabel *status;
 
 public slots:
     void find_tags();
     void search();
     void read_reply(QNetworkReply * reply);
-    void back();
     void action(int row, int col);
     void refresh();
 private slots:

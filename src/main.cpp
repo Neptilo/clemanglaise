@@ -12,6 +12,9 @@
 #include <QPushButton>
 #include <QObject>
 
+#if defined(Q_OS_ANDROID)
+#include "AndroidStyle.h"
+#endif
 #include "HomeView.h"
 #include "NetworkReplyReader.h"
 #include "string_utils.h"
@@ -117,5 +120,8 @@ int main(int argc, char *argv[])
 		w->show();
 	}
 
+#if defined(Q_OS_ANDROID)
+    a.setStyle(new AndroidStyle());
+#endif
 	return a.exec();
 }

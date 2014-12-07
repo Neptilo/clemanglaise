@@ -28,7 +28,6 @@ private:
     QLineEdit* tag_edit;
     QPushButton* OK_button;
 	QNetworkAccessManager nam; 
-    QPushButton* cancel_button;
     QPushButton* continue_button;
     QFormLayout* layout;
     Test *test;
@@ -46,7 +45,6 @@ public slots:
     void show_confirmation();
 	void read_reply(QNetworkReply * reply); 
 	void find_tags(); 
-    void back();
     void reset();
 };
 
