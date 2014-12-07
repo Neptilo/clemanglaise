@@ -5,8 +5,11 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QRegExp>
+#include <QStandardItem>
+#include <QStandardItemModel>
 #include <QtNetwork>
 
+#include "CheckableItemDelegate.h"
 #include "EditView.h"
 #include "InterfaceParameters.h"
 #include "NetworkReplyReader.h"
@@ -24,7 +27,6 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     database_manager(database_manager),
     search_bar(NULL),
     OK_button(NULL),
-    tags(NULL),
     result(NULL),
     update_view(NULL),
     status(NULL)
@@ -34,8 +36,11 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
 
     QBoxLayout* layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
-    tags = new QListWidget(this);
-    tags->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    tags_box = new QComboBox();
+    tags_box->setFixedHeight(InterfaceParameters::widget_unit);
+    CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
+    tags_box->setItemDelegate(delegate);
+    tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     find_tags();
 
     OK_button = new QPushButton(tr("OK"), this);
@@ -49,7 +54,7 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     layout->addLayout(input_layout);
     input_layout->addWidget(search_bar);
     input_layout->addWidget(OK_button);
-    layout->addWidget(tags);
+    layout->addWidget(tags_box);
     layout->addWidget(status);
     status->hide();
 
@@ -77,14 +82,11 @@ void SearchView::find_tags() {
 	}
 }
 
+
+
 void SearchView::search() {
     layout()->removeWidget(update_view);
-    status->hide();
-    QList<QListWidgetItem *> selected_items  = tags->selectedItems();
-    QList<int> selected_tags;
-
-    for (int i = 0, l = selected_items.size(); i<l; ++i)
-       selected_tags << selected_items.at(i)->data(Qt::UserRole).toInt();
+    status->hide();    
     // Standardization of search string
     QString search_str = ampersand_unescape(search_bar->text());
     if (test->is_remote()) {
@@ -116,13 +118,42 @@ void SearchView::read_reply_tags(QNetworkReply* reply)
 }
 
 void SearchView::read_reply_tags() {
-    tags->clear();
-	tags->addItem(tr("Without any tags"));
-	for(int i=0, l = reply_list_tag.count(); i<l-1; i+=2) {
-        QListWidgetItem* item = new QListWidgetItem(reply_list_tag.at(i+1).trimmed());
-        item->setData(Qt::UserRole, QVariant(reply_list_tag.at(i).toInt()));
-        tags->addItem(item);
-	}
+    // fill the tag combo box
+    tags_box->disconnect();
+    tags_box->clear();
+    int l = reply_list_tag.size()/2;
+    QStandardItemModel *model = new QStandardItemModel(l+2, 1);
+    QStandardItem* item = new QStandardItem(tr("Filter by tags"));
+    model->setItem(0, 0, item);
+    item = new QStandardItem(tr("Without any tags"));
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setData(Qt::Unchecked, Qt::CheckStateRole);
+    model->setItem(1, 0, item);
+    for (int i = 0; i < l; ++i) {
+        item = new QStandardItem(reply_list_tag.at(2*i+1).trimmed());
+        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+        item->setData(Qt::Unchecked, Qt::CheckStateRole);
+        item->setData(QVariant(reply_list_tag.at(2*i).toInt()), Qt::UserRole);
+        model->setItem(i+2, 0, item);
+    }
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(update_selected_tags(QModelIndex,QModelIndex)));
+    tags_box->setModel(model);
+}
+
+void SearchView::update_selected_tags(QModelIndex top_left, QModelIndex)
+{
+    QMap<int, QVariant> item_data = tags_box->model()->itemData(top_left);
+    switch (item_data[Qt::CheckStateRole].toInt()) {
+    case Qt::Checked:
+        selected_tags << item_data[Qt::UserRole].toInt();
+        break;
+    case Qt::Unchecked:
+        selected_tags.removeOne(item_data[Qt::UserRole].toInt());
+        break;
+    default:
+        qDebug() << tr("Wrong check state value");
+        break;
+    }
 }
 
 void SearchView::read_reply(QNetworkReply* reply)
@@ -236,7 +267,7 @@ void SearchView::action(int row, int col)
         update_view = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
         search_bar->hide();
         OK_button->hide();
-        tags->hide();
+        tags_box->hide();
         layout()->addWidget(update_view);
         connect(update_view, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){

@@ -308,7 +308,6 @@ bool DatabaseManager::delete_word(const int& id) {
     QSqlQuery query;
     bool success = query.prepare(QString("DELETE FROM words WHERE id = :id"));
     query.bindValue(":id", id);
-
     success &= query.exec();
     if (!success)
         last_error = query.lastError().text();

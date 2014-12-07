@@ -28,14 +28,15 @@ private:
     bool modifiable;
     DatabaseManager *database_manager;
     QStringList word_keys;
+    QList<int> selected_tags;
 
     // GUI
     QLineEdit *search_bar;
     QPushButton *OK_button;
-    QListWidget *tags;
     QTableWidget *result;
     EditView *update_view;
     QLabel *status;
+    QComboBox *tags_box;
 
 public slots:
     void find_tags();
@@ -46,6 +47,7 @@ public slots:
 private slots:
     void read_reply_tags(QNetworkReply *reply);
     void read_delete_reply(QNetworkReply *reply);
+    void update_selected_tags(QModelIndex top_left, QModelIndex bottom_right);
 };
 
 #endif // SEARCHVIEW_H
