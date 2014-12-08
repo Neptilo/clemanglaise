@@ -12,7 +12,6 @@ Priority 1
   * Increase font size of the word being asked
   * Apply the same style to other views (including increasing icon sizes)
   * Reorganize attributes: first data attributes, second GUI attributes, third action attributes
-  * Add a combo box to filter by theme in the search view
   * Add scrollbars where widgets are bigger than window
 
 Priority 2
