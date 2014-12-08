@@ -359,6 +359,7 @@ void EditView::read_reply(QString reply_string) {
     int l = reply_list.size()/2;
     QStandardItemModel *model = new QStandardItemModel(l+1, 1);
     QStandardItem* item = new QStandardItem(tr("---"));
+    item->setSizeHint(QSize(0, InterfaceParameters::widget_unit));
     model->setItem(0, 0, item);
     for (int i = 0; i < l; ++i) {
         item = new QStandardItem(reply_list.at(2*i+1).trimmed());

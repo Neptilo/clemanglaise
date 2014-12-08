@@ -85,7 +85,8 @@ void SearchView::find_tags() {
 
 
 void SearchView::search() {
-    layout->removeWidget(update_view);
+    if(update_view)
+        layout->removeWidget(update_view);
     status->hide();    
     // Standardization of search string
     QString search_str = ampersand_unescape(search_bar->text());
@@ -124,6 +125,7 @@ void SearchView::read_reply_tags() {
     int l = reply_list_tag.size()/2;
     QStandardItemModel *model = new QStandardItemModel(l+2, 1);
     QStandardItem* item = new QStandardItem(tr("Filter by tags"));
+    item->setSizeHint(QSize(0, InterfaceParameters::widget_unit));
     model->setItem(0, 0, item);
     item = new QStandardItem(tr("Without any tags"));
     item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
