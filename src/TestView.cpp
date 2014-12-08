@@ -467,6 +467,7 @@ void TestView::read_reply(QString reply_string) {
     QStandardItemModel *model = new QStandardItemModel(l+2, 1);
     QStandardItem* item = new QStandardItem(tr("Filter by tags"));
     model->setItem(0, 0, item);
+    item->setSizeHint(QSize(0, InterfaceParameters::widget_unit));
     item = new QStandardItem(tr("Without any tags"));
     item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     item->setData(Qt::Unchecked, Qt::CheckStateRole);
