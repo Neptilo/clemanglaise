@@ -30,7 +30,6 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QW
     admin(admin),
     answer_view(NULL),
     database_manager(database_manager),
-    layout(NULL),
     nam(NULL),
     nam_tags(),
     question_view(NULL),
@@ -358,12 +357,16 @@ void TestView::delete_word()
 void TestView::update_selected_tags(QModelIndex top_left, QModelIndex)
 {
     QMap<int, QVariant> item_data = tags_box->model()->itemData(top_left);
+    int map_size = item_data.size();
+    int variant = item_data[Qt::UserRole].toInt();
     switch (item_data[Qt::CheckStateRole].toInt()) {
     case Qt::Checked:
-        selected_tags << item_data[Qt::UserRole].toInt();
+        if (map_size > 2)
+            selected_tags << variant ;
         break;
     case Qt::Unchecked:
-        selected_tags.removeOne(item_data[Qt::UserRole].toInt());
+        if (map_size > 2)
+            selected_tags.removeOne(variant);
         break;
     default:
         qDebug() << tr("Wrong check state value");

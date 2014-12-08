@@ -34,7 +34,6 @@ private:
     bool admin;
     AnswerView *answer_view;
     DatabaseManager *database_manager;
-    QBoxLayout *layout;
     QNetworkAccessManager *nam;
     QNetworkAccessManager nam_tags;
     QuestionView *question_view;
@@ -51,9 +50,11 @@ private:
     QList<int> selected_tags;
 
     // GUI
+    QBoxLayout *layout;
     QBoxLayout *header_layout;
-    QToolButton *back_button;
     QBoxLayout *tool_bar_layout;
+    QToolButton *back_button;
+
     QToolButton *add_button;
     QToolButton *search_button;
     QToolButton *import_button;

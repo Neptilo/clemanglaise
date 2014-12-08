@@ -31,6 +31,7 @@ private:
     QList<int> selected_tags;
 
     // GUI
+    QBoxLayout *layout;
     QLineEdit *search_bar;
     QPushButton *OK_button;
     QTableWidget *result;

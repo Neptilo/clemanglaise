@@ -34,9 +34,9 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     // has to be consistent with the actual content of reply_list
     word_keys << "id" << "word"  << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "hint" << "score" << "tag_ids";
 
-    QBoxLayout* layout = new QVBoxLayout(this);
+    layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
-    tags_box = new QComboBox();
+    tags_box = new QComboBox(this);
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
     CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
     tags_box->setItemDelegate(delegate);
@@ -50,10 +50,10 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
 
     status = new QLabel(this);
 
-    QBoxLayout *input_layout = new QHBoxLayout;
-    layout->addLayout(input_layout);
+    QBoxLayout *input_layout = new QHBoxLayout();
     input_layout->addWidget(search_bar);
     input_layout->addWidget(OK_button);
+    layout->addLayout(input_layout);
     layout->addWidget(tags_box);
     layout->addWidget(status);
     status->hide();
@@ -85,7 +85,7 @@ void SearchView::find_tags() {
 
 
 void SearchView::search() {
-    layout()->removeWidget(update_view);
+    layout->removeWidget(update_view);
     status->hide();    
     // Standardization of search string
     QString search_str = ampersand_unescape(search_bar->text());
@@ -143,12 +143,16 @@ void SearchView::read_reply_tags() {
 void SearchView::update_selected_tags(QModelIndex top_left, QModelIndex)
 {
     QMap<int, QVariant> item_data = tags_box->model()->itemData(top_left);
+    int map_size = item_data.size();
+    int variant = item_data[Qt::UserRole].toInt();
     switch (item_data[Qt::CheckStateRole].toInt()) {
     case Qt::Checked:
-        selected_tags << item_data[Qt::UserRole].toInt();
+        if (map_size > 2)
+            selected_tags << variant ;
         break;
     case Qt::Unchecked:
-        selected_tags.removeOne(item_data[Qt::UserRole].toInt());
+        if (map_size > 2)
+            selected_tags.removeOne(variant);
         break;
     default:
         qDebug() << tr("Wrong check state value");
@@ -202,7 +206,7 @@ void SearchView::read_reply(QString reply_string) {
     result = new QTableWidget(result_nb_rows, result_nb_cols, this);
     result->setHorizontalHeaderLabels(header_labels);
     result->verticalHeader()->hide();
-    layout()->addWidget(result);
+    layout->addWidget(result);
     for(int i=0, col_ind=0; i<reply_list.count()-1; ++i){ // -1 because the last string is an empty string.
         QLabel* item;
         if(modifiable && (col_ind==0 || col_ind==1)){
@@ -268,7 +272,7 @@ void SearchView::action(int row, int col)
         search_bar->hide();
         OK_button->hide();
         tags_box->hide();
-        layout()->addWidget(update_view);
+        layout->addWidget(update_view);
         connect(update_view, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){
         QMessageBox::StandardButton ret = QMessageBox::question(
