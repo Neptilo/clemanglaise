@@ -4,6 +4,11 @@
 
 const QHash<QString, QString> maphash = mapping();
 
+QString toTitleCase(const QString& str)
+{
+    return str.left(1).toUpper() + str.mid(1);
+}
+
 QString ampersand_escape(const QString &string) {
 	QString encoded;
 	for(int i=0;i<string.size();++i) {

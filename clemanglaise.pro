@@ -17,6 +17,7 @@ HEADERS += \
     include/QuestionView.h \
     include/SearchView.h \
     include/string_utils.h \
+    include/iso_mapping.h \
     include/Test.h \
     include/TestView.h \
     include/WordView.h \
@@ -49,6 +50,7 @@ SOURCES += \
     src/QuestionView.cpp \
     src/SearchView.cpp \
     src/string_utils.cpp \
+    src/iso_mapping.cpp \
     src/Test.cpp \
     src/TestView.cpp \
     src/WordView.cpp \

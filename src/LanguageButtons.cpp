@@ -11,6 +11,7 @@
 #include "InterfaceParameters.h"
 #include "MultilinePushButton.h"
 #include "string_utils.h"
+#include "iso_mapping.h"
 
 LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWidget *parent) :
     QWidget(parent),
@@ -33,7 +34,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
                     this);
         if (InterfaceParameters::orientation == Qt::PortraitOrientation)
             button->set_tool_button_style(Qt::ToolButtonTextUnderIcon);
-        button->setToolTip(tr("from ") + test->get_src() + tr(" to ") + test->get_dst());
+        button->setToolTip(tr("from ") + LANG_MAP.value(test->get_src()) + tr(" to ") + LANG_MAP.value(test->get_dst()));
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         button->set_icon_size(QSize(2*fontMetrics().height(),
                                     2*fontMetrics().height()));

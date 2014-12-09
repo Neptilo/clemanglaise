@@ -7,6 +7,8 @@
 #endif
 
 #include "NetworkReplyReader.h"
+#include "iso_mapping.h"
+#include "string_utils.h"
 
 AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget *parent) :
     QWidget(parent),
@@ -21,6 +23,10 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
     title(tr("<b>Create a vocabulary list</b>")),
     test(NULL)
 {
+    completer = new QCompleter(LANGUAGES, this);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+    src_edit.setCompleter(completer);
+    dst_edit.setCompleter(completer);
     QFormLayout* layout = new QFormLayout(this);
     layout->addWidget(&title);
     layout->addRow(tr("&Name: "), &name_edit);
@@ -51,10 +57,12 @@ Test *AddListView::get_test()
 void AddListView::add_offline_list()
 {
     int test_id = 0;
-    database_manager->add_list(name_edit.text(), src_edit.text(), dst_edit.text(), flag_edit.text(), test_id);
+    QString src_test = LANG_MAP.key(toTitleCase(src_edit.text()));
+    QString dst_test = LANG_MAP.key(toTitleCase(dst_edit.text()));
+    database_manager->add_list(name_edit.text(), src_test,  dst_test, flag_edit.text(), test_id);
     QString error(database_manager->pop_last_error());
     if(error == ""){
-        test = new Test(test_id, name_edit.text(), src_edit.text(), dst_edit.text(), flag_edit.text(), false);
+        test = new Test(test_id, name_edit.text(), src_test, dst_test, flag_edit.text(), false);
         emit created(test);
     }else{
         status.setText(tr("<b>SQLite error: </b>") + error);
@@ -69,9 +77,11 @@ void AddListView::add_online_list()
 #else
         QUrlQuery post_data;
 #endif
+    QString src_test = LANG_MAP.key(toTitleCase(src_edit.text()));
+    QString dst_test = LANG_MAP.key(toTitleCase(dst_edit.text()));
     post_data.addQueryItem("name", name_edit.text());
-    post_data.addQueryItem("src", src_edit.text());
-    post_data.addQueryItem("dst", dst_edit.text());
+    post_data.addQueryItem("src", src_test);
+    post_data.addQueryItem("dst", dst_test);
     post_data.addQueryItem("flag", flag_edit.text());
     const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/add_list");
     QNetworkRequest request(url);

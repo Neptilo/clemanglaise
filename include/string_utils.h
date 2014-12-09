@@ -6,6 +6,7 @@
 #include <QStringList>
 
 extern const QHash<QString, QString> maphash;
+QString toTitleCase(const QString &string);
 QString ampersand_escape(const QString &string);
 QStringList ampersand_escape(const QStringList &list);
 QString colon_unescape(const QString &string);

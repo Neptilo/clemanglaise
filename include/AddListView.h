@@ -1,6 +1,7 @@
 #ifndef ADDLISTVIEW_H
 #define ADDLISTVIEW_H
 
+#include <QCompleter>
 #include <QLabel>
 #include <QLineEdit>
 #include <QNetworkAccessManager>
@@ -19,6 +20,7 @@ public:
     Test *get_test();
 
 private:
+    QCompleter *completer;
     QPushButton cancel_button;
     QPushButton create_button;
     DatabaseManager *database_manager;
