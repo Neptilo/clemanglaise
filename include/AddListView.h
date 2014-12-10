@@ -20,7 +20,10 @@ public:
     Test *get_test();
 
 private:
-    QCompleter *completer;
+    bool check_inputs(QString& src_test, QString& dst_test, QString& test_flag, QString& error);
+
+    QCompleter *lang_completer;
+    QCompleter *country_completer;
     QPushButton cancel_button;
     QPushButton create_button;
     DatabaseManager *database_manager;

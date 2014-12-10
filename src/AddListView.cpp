@@ -23,10 +23,13 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
     title(tr("<b>Create a vocabulary list</b>")),
     test(NULL)
 {
-    completer = new QCompleter(LANGUAGES, this);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);
-    src_edit.setCompleter(completer);
-    dst_edit.setCompleter(completer);
+    lang_completer = new QCompleter(LANGUAGES, this);
+    lang_completer->setCaseSensitivity(Qt::CaseInsensitive);
+    src_edit.setCompleter(lang_completer);
+    dst_edit.setCompleter(lang_completer);
+    country_completer = new QCompleter(COUNTRIES, this);
+    country_completer->setCaseSensitivity(Qt::CaseInsensitive);
+    flag_edit.setCompleter(country_completer);
     QFormLayout* layout = new QFormLayout(this);
     layout->addWidget(&title);
     layout->addRow(tr("&Name: "), &name_edit);
@@ -57,12 +60,18 @@ Test *AddListView::get_test()
 void AddListView::add_offline_list()
 {
     int test_id = 0;
-    QString src_test = LANG_MAP.key(toTitleCase(src_edit.text()));
-    QString dst_test = LANG_MAP.key(toTitleCase(dst_edit.text()));
-    database_manager->add_list(name_edit.text(), src_test,  dst_test, flag_edit.text(), test_id);
-    QString error(database_manager->pop_last_error());
-    if(error == ""){
-        test = new Test(test_id, name_edit.text(), src_test, dst_test, flag_edit.text(), false);
+    QString src_test(""), dst_test(""), test_flag(""), error("");
+
+    if (!check_inputs(src_test, dst_test, test_flag, error))
+    {
+        status.setText(tr("<b>Error: </b>") + error);
+        status.show();
+        return;
+    }
+    database_manager->add_list(name_edit.text(), src_test,  dst_test, test_flag, test_id);
+    error = database_manager->pop_last_error();
+    if(error.isEmpty()){
+        test = new Test(test_id, name_edit.text(), src_test, dst_test, test_flag, false);
         emit created(test);
     }else{
         status.setText(tr("<b>SQLite error: </b>") + error);
@@ -70,19 +79,43 @@ void AddListView::add_offline_list()
     }
 }
 
+bool AddListView::check_inputs(QString& src_test, QString& dst_test, QString& test_flag, QString& error)
+{
+    src_test = LANG_MAP.key(src_edit.text().toUpper().trimmed());
+    dst_test = LANG_MAP.key(dst_edit.text().toUpper().trimmed());
+    test_flag = COUNTRY_MAP.key(flag_edit.text().toUpper().trimmed());
+    error="";
+    if(src_test.isEmpty())
+        error = tr("Please select a valid source language from the provided list");
+    else if (dst_test.isEmpty())
+        error = tr("Please select a valid destination language from the provided list");
+    else if(test_flag.isEmpty())
+        error = tr("Please select a valid country flag from the provided list");
+    else if(src_test == dst_test)
+        error = tr("Source and destination languages cannot be the same");
+    return error.isEmpty();
+}
+
 void AddListView::add_online_list()
 {
+    QString src_test(""), dst_test(""), test_flag(""), error("");
+
+    if (!check_inputs(src_test, dst_test, test_flag, error))
+    {
+        status.setText(tr("<b>Error: </b>") + error);
+        status.show();
+        return;
+    }
+
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
 #else
         QUrlQuery post_data;
-#endif
-    QString src_test = LANG_MAP.key(toTitleCase(src_edit.text()));
-    QString dst_test = LANG_MAP.key(toTitleCase(dst_edit.text()));
+#endif    
     post_data.addQueryItem("name", name_edit.text());
     post_data.addQueryItem("src", src_test);
     post_data.addQueryItem("dst", dst_test);
-    post_data.addQueryItem("flag", flag_edit.text());
+    post_data.addQueryItem("flag", test_flag);
     const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/add_list");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");

@@ -6,7 +6,7 @@ const QHash<QString, QString> maphash = mapping();
 
 QString toTitleCase(const QString& str)
 {
-    return str.left(1).toUpper() + str.mid(1);
+    return str.left(1).toUpper() + str.mid(1).toLower();
 }
 
 QString ampersand_escape(const QString &string) {
