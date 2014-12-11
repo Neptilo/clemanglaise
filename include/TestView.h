@@ -26,7 +26,8 @@ class TestView : public QWidget{
 public:
     TestView(Test &test, DatabaseManager *database_manager, bool admin = false, QWidget *parent = 0);
     ~TestView();
-    void read_reply(QString reply_string="");
+
+    void read_reply(QString reply_string = "");
 
 private:
     EditView *add_view;

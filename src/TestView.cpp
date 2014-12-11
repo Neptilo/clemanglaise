@@ -417,18 +417,21 @@ void TestView::search()
 }
 
 void TestView::go_back() {
-    if (
+    if (search_view) {
+        if (!search_view->go_back()) {
+            delete search_view;
+            search_view = NULL;
+            init();
+        } // Else search_view already handled the go back action.
+    } else if (
             add_view ||
             add_tag_view ||
-            search_view ||
             update_view) {
         delete add_view;
         delete add_tag_view;
-        delete search_view;
         delete update_view;
         add_view = NULL;
         add_tag_view = NULL;
-        search_view = NULL;
         update_view = NULL;
         init();
     } else
@@ -501,7 +504,6 @@ void TestView::remove_widgets()
         tags_box->hide();
     status.hide();
 }
-
 
 void TestView::import_word()
 {

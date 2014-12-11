@@ -16,8 +16,11 @@ class SearchView : public QWidget
 public:
     explicit SearchView(Test *test, DatabaseManager *database_manager, bool modifiable = false, QWidget *parent = 0);
     ~SearchView();
+
     void read_reply(QString reply_string = "");
     void read_reply_tags();//(QString reply_string = "");
+    bool go_back();
+    void refresh();
 
 private:
     QNetworkAccessManager nam;
@@ -44,7 +47,7 @@ public slots:
     void search();
     void read_reply(QNetworkReply * reply);
     void action(int row, int col);
-    void refresh();
+
 private slots:
     void read_reply_tags(QNetworkReply *reply);
     void read_delete_reply(QNetworkReply *reply);

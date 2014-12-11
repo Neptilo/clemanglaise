@@ -142,6 +142,24 @@ void SearchView::read_reply_tags() {
     tags_box->setModel(model);
 }
 
+/**
+ * handles the go back action according to the widgets it contains
+ * @return true if has handled the action or false if it hasn't to pass the action over to the caller
+ */
+bool SearchView::go_back()
+{
+    if (update_view) {
+        delete update_view;
+        update_view = NULL;
+        search_bar->show();
+        OK_button->show();
+        tags_box->show();
+        result->show();
+        return true;
+    } else
+        return false;
+}
+
 void SearchView::update_selected_tags(QModelIndex top_left, QModelIndex)
 {
     QMap<int, QVariant> item_data = tags_box->model()->itemData(top_left);
@@ -252,7 +270,6 @@ void SearchView::read_reply(QString reply_string) {
     }
     result->resizeColumnsToContents();
     result->resizeRowsToContents();
-    disconnect(result);
     connect(result, SIGNAL(cellClicked(int,int)), this, SLOT(action(int, int)));
 }
 
@@ -262,7 +279,6 @@ void SearchView::action(int row, int col)
 
     if(col == 0){
         // Remove everything
-        result->disconnect();
         result->hide();
         status->hide();
 
@@ -275,7 +291,6 @@ void SearchView::action(int row, int col)
         OK_button->hide();
         tags_box->hide();
         layout->addWidget(update_view);
-        connect(update_view, SIGNAL(destroyed()), this, SLOT(refresh()));
     }else if(col == 1){
         QMessageBox::StandardButton ret = QMessageBox::question(
                     this,
@@ -286,10 +301,7 @@ void SearchView::action(int row, int col)
             #endif
                     );
         if(ret == QMessageBox::Yes){
-            result->disconnect();
-
             if (test->is_remote()) {
-
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
                 QUrl post_data;
 #else
