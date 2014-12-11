@@ -140,10 +140,6 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     hint_edit->setPlainText(hint);
     layout->addRow(tr("&Hint: "), hint_edit);
 
-    status = new QLabel(this);
-    layout->addWidget(status);
-
-
     tags_box = new QComboBox(this);
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
     CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
@@ -152,6 +148,9 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     layout->addRow(tr("T&ags: "), tags_box);
     find_tags();
     connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
+
+    status = new QLabel(this);
+    layout->addWidget(status);
 
     nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
     nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
@@ -351,8 +350,8 @@ void EditView::read_reply(QString reply_string) {
 		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 
     //Initialiaze selected tags context
-    QStringList tag_ids = default_values["tag_ids"].split(", ");
-    for (QStringList::const_iterator it=tag_ids.constBegin(); it != tag_ids.constEnd(); ++it)
+    QStringList tag_ids = default_values["tag_ids"].split(", ", QString::SkipEmptyParts);
+    for (QStringList::const_iterator it = tag_ids.constBegin(); it != tag_ids.constEnd(); ++it)
         selected_tags << it->toInt();
     tags_box->disconnect();
     tags_box->clear();
