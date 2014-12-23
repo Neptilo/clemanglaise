@@ -51,7 +51,7 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QW
     create_actions();
     create_interface();
     init();
-    connect(&nam_tags, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
+    connect(&nam_tags, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_tags(QNetworkReply*)));
 }
 
 TestView::~TestView(){
@@ -69,7 +69,7 @@ void TestView::create_actions()
         add_action->setShortcut(QKeySequence::New);
         connect(add_action, SIGNAL(triggered()), this, SLOT(add_word()));
 
-        add_tag_action = new QAction(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))), tr("Add a &theme"), this);
+        add_tag_action = new QAction(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))), tr("Add a &tag"), this);
         connect(add_tag_action, SIGNAL(triggered()), this, SLOT(add_tag()));
     }
 
@@ -451,7 +451,7 @@ void TestView::find_tags() {
 	}
 }
 
-void TestView::read_reply_themes(QNetworkReply* reply)
+void TestView::read_reply_tags(QNetworkReply* reply)
 {
 	// Store the lines of the reply in the "reply_list" attribute
 	QString reply_string = reply->readAll();

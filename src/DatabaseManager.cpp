@@ -236,7 +236,7 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data, const Q
         return false;
     }
 
-    // Add themes to many-to-many table
+    // Add tags to many-to-many table
     for (int i =0,l= selected_tags.size(); i<l && success; ++i)
     {
         success &= query.prepare(QString("INSERT INTO words_tags(word_id, tag_id) "
@@ -314,18 +314,18 @@ bool DatabaseManager::delete_word(const int& id) {
     return success;
 }
 
-bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_data, QList<int> themes_id)
+bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_data, QList<int> tag_ids)
 {
     QString tags_cond;
     QStringList selected_tags_str;
-    for (int i = 0, l=themes_id.size(); i < l; ++i)
-        if (themes_id.at(i) != 0)
-            selected_tags_str << QString::number(themes_id.at(i));
+    for (int i = 0, l=tag_ids.size(); i < l; ++i)
+        if (tag_ids.at(i) != 0)
+            selected_tags_str << QString::number(tag_ids.at(i));
 
     QString tags_selected = selected_tags_str.join(", ");
-    if (themes_id.size()==0) // No tags filter set
+    if (tag_ids.size()==0) // No tags filter set
         tags_cond = "1";
-    else if (themes_id.contains(0)) // account for words with no tags
+    else if (tag_ids.contains(0)) // account for words with no tags
         tags_cond = QString("(tag_id IN (%1) OR tag_id is NULL)").arg(tags_selected);
     else
         tags_cond = QString("tag_id IN (%1)").arg(tags_selected);

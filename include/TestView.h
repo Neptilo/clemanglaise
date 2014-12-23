@@ -81,7 +81,7 @@ public slots:
     void update_request();
     void read_reply(QNetworkReply *reply);
     void read_delete_list_reply(QNetworkReply *reply);
-    void read_reply_themes(QNetworkReply *reply);
+    void read_reply_tags(QNetworkReply *reply);
     void validate_question();
     void validate_answer();
     void find_tags();

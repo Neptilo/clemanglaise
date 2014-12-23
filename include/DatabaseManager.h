@@ -27,7 +27,7 @@ public:
     bool delete_word(const int& id);
 
     // find word entry having the lowest score
-    bool find_lowest(int test_id, QHash<QString, QString> &word_data, QList<int> themes_id);
+    bool find_lowest(int test_id, QHash<QString, QString> &word_data, QList<int> tag_ids);
     bool find_tags(QStringList& reply_list);
     bool find_used_tags(int test_id, QStringList& reply_list);
     QList<Test> get_lists();
