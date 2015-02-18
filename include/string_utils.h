@@ -13,7 +13,10 @@ QString colon_unescape(const QString &string);
 QString ampersand_unescape(const QString &string);
 QStringList ampersand_unescape(const QStringList &list);
 QString number_to_accent(const QString letter, int accent_number);
-QString numbers_to_accents(const QString &string);
+
+// transcribes a pinyin pronunciation in number format or with accents into the pronunciation with accents only
+// If `sep` is not empty, replaces all non-alphanumeric characters between syllables by `sep`
+QString numbers_to_accents(const QString &string, const QString &sep = "");
 QString getImgPath(const QString & img);
 QHash<QString, QString> mapping();
 QString X2IPA(const QString &string);

@@ -39,18 +39,28 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
             standardized_answer.replace(QString("uu"), QString("&#363;"));
             standardized_answer.replace(QString("aa"), QString("&#257;"));
             standardized_answer.replace(QString("ee"), QString("&#275;"));
+            // not before because otherwise "o u" would be replaced by "ō"
+            standardized_answer.replace(QRegExp("\\s"), QString());
         }else if(test->get_dst() == "zh"){
-            standardized_answer = numbers_to_accents(standardized_answer);
+            standardized_answer = numbers_to_accents(standardized_answer, " ");
         }
         correct_answers = pronunciation;
     }else{
         standardized_answer = ampersand_unescape(standardized_answer);
         correct_answers = ampersand_unescape(meaning);
     }
+    qDebug() << "user: " << standardized_answer;
     QStringList correct_answer_list = correct_answers.split(",");
     // remove whitespaces at start and end of each element in the list
-    for(int i = 0; i < correct_answer_list.size(); ++i)
-        correct_answer_list.replace(i, correct_answer_list.at(i).trimmed());
+    for (int i = 0; i < correct_answer_list.size(); ++i) {
+        QString answer(correct_answer_list.at(i).trimmed());
+        if (test->get_dst() == "ja")
+            answer.replace(QRegExp("[^&#;a-zA-Z0-9]+"), QString(""));
+        else if (test->get_dst() == "zh")
+            answer.replace(QRegExp("[^&#;a-zA-Z0-9]+"), QString(" "));
+        correct_answer_list.replace(i, answer);
+    }
+    qDebug() << "correct: " << correct_answer_list;
     correct = correct_answer_list.contains(standardized_answer, Qt::CaseInsensitive);
 
     message = correct? tr("Right!"): tr("Wrong!");
