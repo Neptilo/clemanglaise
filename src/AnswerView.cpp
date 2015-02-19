@@ -49,7 +49,6 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         standardized_answer = ampersand_unescape(standardized_answer);
         correct_answers = ampersand_unescape(meaning);
     }
-    qDebug() << "user: " << standardized_answer;
     QStringList correct_answer_list = correct_answers.split(",");
     // remove whitespaces at start and end of each element in the list
     for (int i = 0; i < correct_answer_list.size(); ++i) {
@@ -57,10 +56,9 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         if (test->get_dst() == "ja")
             answer.replace(QRegExp("[^&#;a-zA-Z0-9]+"), QString(""));
         else if (test->get_dst() == "zh")
-            answer.replace(QRegExp("[^&#;a-zA-Z0-9]+"), QString(" "));
+            answer = separate_pinyin(answer);
         correct_answer_list.replace(i, answer);
     }
-    qDebug() << "correct: " << correct_answer_list;
     correct = correct_answer_list.contains(standardized_answer, Qt::CaseInsensitive);
 
     message = correct? tr("Right!"): tr("Wrong!");

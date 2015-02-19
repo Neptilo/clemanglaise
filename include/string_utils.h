@@ -17,6 +17,11 @@ QString number_to_accent(const QString letter, int accent_number);
 // transcribes a pinyin pronunciation in number format or with accents into the pronunciation with accents only
 // If `sep` is not empty, replaces all non-alphanumeric characters between syllables by `sep`
 QString numbers_to_accents(const QString &string, const QString &sep = "");
+
+// separates the syllables of a pinyin pronunciation
+// replaces all non-alphanumeric characters between syllables by `sep`, a space by default
+QString separate_pinyin(const QString &string, const QString &sep = " ");
+
 QString getImgPath(const QString & img);
 QHash<QString, QString> mapping();
 QString X2IPA(const QString &string);

@@ -1,4 +1,5 @@
 #include <QRegExp>
+#include <QDebug>
 
 #include "string_utils.h"
 
@@ -164,9 +165,7 @@ QString number_to_accent(const QString letter, int accent_number){
 QString numbers_to_accents(const QString &string, const QString &sep){
 
 	// Capture syllables
-    // The erhua is allowed both as a final letter 'r' and as a separate syllable.
-    // For example, both "kongr4" and "kong4r" are allowed.
-    QRegExp syllable_rx("([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr])([ioun]?g?r?)(\\d?)(\\W*)", Qt::CaseInsensitive);
+    QRegExp syllable_rx("([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr])([iounr]?g?)(\\d?)(\\W*)", Qt::CaseInsensitive);
     QString res, separation;
 	int pos = 0;
 	while ((pos = syllable_rx.indexIn(string, pos)) != -1) {
@@ -180,6 +179,18 @@ QString numbers_to_accents(const QString &string, const QString &sep){
 	}
 
 	return res;
+}
+
+QString separate_pinyin(const QString &string, const QString &sep)
+{
+    QRegExp syllable_rx("[bcdfgj-np-tw-z]?h?[iu]?(&#x?\\d+;|[aeiouvr])[iounr]?g?", Qt::CaseInsensitive);
+    int pos = 0;
+    QStringList syllables;
+    while ((pos = syllable_rx.indexIn(string, pos)) != -1) {
+        pos += syllable_rx.matchedLength();
+        syllables << syllable_rx.cap(0);
+    }
+    return syllables.join(sep);
 }
 
 /**
