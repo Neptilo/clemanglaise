@@ -183,12 +183,17 @@ QString numbers_to_accents(const QString &string, const QString &sep){
 
 QString separate_pinyin(const QString &string, const QString &sep)
 {
-    QRegExp syllable_rx("[bcdfgj-np-tw-z]?h?[iu]?(&#x?\\d+;|[aeiouvr])[iounr]?g?", Qt::CaseInsensitive);
+    // It is necessary to reverse the regular expression,
+    // otherwise "ana" would be split as "an a" instead of "a na".
+
+    // backward regular expression of:
+    // "[bcdfgj-np-tw-z]?h?[iu]?(&#x?\\d+;|[aeiouvr])[iounr]?g?"
+    QRegExp backward_syllable_rx("g?[iounr]?(;\\d+x?#&|[aeiouv])[iu]?h?[bcdfgj-np-tw-z]?|r", Qt::CaseInsensitive);
     int pos = 0;
     QStringList syllables;
-    while ((pos = syllable_rx.indexIn(string, pos)) != -1) {
-        pos += syllable_rx.matchedLength();
-        syllables << syllable_rx.cap(0);
+    while ((pos = backward_syllable_rx.indexIn(reverse(string), pos)) != -1) {
+        pos += backward_syllable_rx.matchedLength();
+        syllables.prepend(reverse(backward_syllable_rx.cap(0)));
     }
     return syllables.join(sep);
 }
@@ -371,5 +376,13 @@ QStringList trimmed(const QStringList &list)
     QStringList ret;
     for(int i = 0; i < list.size(); ++i)
         ret << list.at(i).trimmed();
+    return ret;
+}
+
+
+QString reverse(const QString &str)
+{
+    QString ret(str);
+    std::reverse(ret.begin(), ret.end());
     return ret;
 }

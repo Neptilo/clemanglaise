@@ -31,4 +31,7 @@ bool isKirshenbaum(const QString& string);
 // returns the list of trimmed element of the input list
 QStringList trimmed(const QStringList &list);
 
+// returns a reversed copy of the string
+QString reverse(const QString &str);
+
 #endif // STRING_UTILS_H
