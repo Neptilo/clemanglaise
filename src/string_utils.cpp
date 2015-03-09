@@ -187,8 +187,8 @@ QString separate_pinyin(const QString &string, const QString &sep)
     // otherwise "ana" would be split as "an a" instead of "a na".
 
     // backward regular expression of:
-    // "[bcdfgj-np-tw-z]?h?[iu]?(&#x?\\d+;|[aeiouvr])[iounr]?g?"
-    QRegExp backward_syllable_rx("g?[iounr]?(;\\d+x?#&|[aeiouv])[iu]?h?[bcdfgj-np-tw-z]?|r", Qt::CaseInsensitive);
+    // "[bcdfgj-np-tw-z]?h?[iu]?(&#x?\\d+;|[aeiouv])[ioun]?g?|(e|&#(275|233|283|232);)r"
+    QRegExp backward_syllable_rx("g?[ioun]?(;\\d+x?#&|[aeiouv])[iu]?h?[bcdfgj-np-tw-z]?|r(e|;(572|332|382|232)#&)?", Qt::CaseInsensitive);
     int pos = 0;
     QStringList syllables;
     while ((pos = backward_syllable_rx.indexIn(reverse(string), pos)) != -1) {
