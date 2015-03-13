@@ -187,13 +187,21 @@ QString separate_pinyin(const QString &string, const QString &sep)
     // otherwise "ana" would be split as "an a" instead of "a na".
 
     // backward regular expression of:
-    // "[bcdfgj-np-tw-z]?h?[iu]?(&#x?\\d+;|[aeiouv])[ioun]?g?|(e|&#(275|233|283|232);)r"
-    QRegExp backward_syllable_rx("g?[ioun]?(;\\d+x?#&|[aeiouv])[iu]?h?[bcdfgj-np-tw-z]?|r(e|;(572|332|382|232)#&)?", Qt::CaseInsensitive);
+    // "[bcdfgj-np-tw-z]?h?[iu]?(&#x?\\d+;|[aeiouv])[ioun]?g?|r"
+    QRegExp backward_syllable_rx("g?[ioun]?(;\\d+x?#&|[aeiouv])[iu]?h?[bcdfgj-np-tw-z]?|r", Qt::CaseInsensitive);
     int pos = 0;
     QStringList syllables;
+    QRegExp e_rx("(e|&#(275|233|283|232);)", Qt::CaseInsensitive);
     while ((pos = backward_syllable_rx.indexIn(reverse(string), pos)) != -1) {
         pos += backward_syllable_rx.matchedLength();
-        syllables.prepend(reverse(backward_syllable_rx.cap(0)));
+        QString syllable(reverse(backward_syllable_rx.cap(0)));
+        if (
+                !syllables.isEmpty()
+                && syllables.at(0) == QString("r")
+                && e_rx.exactMatch(syllable))
+            syllables.replace(0, syllable+syllables.at(0));
+        else
+            syllables.prepend(syllable);
     }
     return syllables.join(sep);
 }
