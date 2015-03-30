@@ -9,6 +9,7 @@
 #endif
 
 #include <QApplication>
+#include <QFontDatabase>
 #include <QPushButton>
 #include <QObject>
 
@@ -122,6 +123,8 @@ int main(int argc, char *argv[])
 
 #if defined(Q_OS_ANDROID)
     a.setStyle(new AndroidStyle());
+    QFontDatabase font_database;
+    font_database.addApplicationFont(":/fonts/wts11.ttf");
 #endif
 	return a.exec();
 }

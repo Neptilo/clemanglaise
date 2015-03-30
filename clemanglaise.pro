@@ -84,3 +84,6 @@ greaterThan(QT_MAJOR_VERSION, 4): cache()
 OTHER_FILES += \
     TODO.rst \
     programming_style.rst
+
+DISTFILES += \
+    fonts/wts11.ttf

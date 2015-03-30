@@ -87,9 +87,8 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 	}
     // Left/upper part
     if(handwriting){
-        QLabel* handwriting_label = new QLabel("<b>"+meaning+"</b>", this);
-        QFont font;
-        font.setPixelSize(100);
+        QLabel* handwriting_label = new QLabel("<span>"+meaning+"</span>", this);
+        QFont font("HanWang KaiBold-Gb5", 50);
         handwriting_label->setFont(font);
         handwriting_label->setAlignment(Qt::AlignRight);
         handwriting_layout->addWidget(handwriting_label);

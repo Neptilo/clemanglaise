@@ -38,5 +38,6 @@
         <file>img/flags/RU.png</file>
         <file>img/flags/US.png</file>
         <file>img/document-save.png</file>
+        <file>fonts/wts11.ttf</file>
     </qresource>
 </RCC>
