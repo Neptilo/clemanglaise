@@ -169,16 +169,18 @@ void EditView::edit_word(){
 
     // Standardize pronunciation to save into database
     QString standardized_pronunciation;
-    if(test->get_dst() == "ja"){
-        standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
-        standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
-        standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
-        standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
-        standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
-    }else if(test->get_dst() == "zh"){
-        standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
-    } else {
-        standardized_pronunciation = isKirshenbaum(pronunciation_edit->text())?ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text())):ampersand_escape(pronunciation_edit->text());
+    if (pronunciation_edit) {
+        if(test->get_dst() == "ja"){
+            standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
+            standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
+            standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
+            standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
+            standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
+        }else if(test->get_dst() == "zh"){
+            standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
+        } else {
+            standardized_pronunciation = isKirshenbaum(pronunciation_edit->text())?ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text())):ampersand_escape(pronunciation_edit->text());
+        }
     }
 
     // Define data to send
