@@ -105,7 +105,7 @@ void HomeView::list_created(Test *test)
 void HomeView::read_reply_lists(QNetworkReply *reply)
 {
     if(remote){ // verification in case user clicked switch button before NAM's reply
-        QString reply_string = reply->readAll();
+        QString reply_string = reply->readAll().replace('\0', "");
         reply->deleteLater();
         if (reply_string.isEmpty())
             info_label.setText(tr("There is no vocabulary list on the server at the moment."));

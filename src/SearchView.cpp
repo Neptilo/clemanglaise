@@ -113,7 +113,7 @@ void SearchView::search() {
 void SearchView::read_reply_tags(QNetworkReply* reply)
 {
     // store the lines of the reply in the "reply_list_tag" attribute
-    reply_list_tag = QString(reply->readAll()).split('\n');
+    reply_list_tag = QString(reply->readAll().replace('\0', "")).split('\n');
     reply->deleteLater();
     read_reply_tags();
 }
@@ -184,7 +184,7 @@ void SearchView::read_reply(QNetworkReply* reply)
 {
     QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if(status_code.toInt() != 200){
-        status->setText(reply->readAll());
+        status->setText(reply->readAll().replace('\0', ""));
         status->show();
         return;
     }
@@ -199,7 +199,7 @@ void SearchView::read_delete_reply(QNetworkReply* reply)
 {
     QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if(status_code.toInt() != 200){
-        status->setText(reply->readAll());
+        status->setText(reply->readAll().replace('\0', ""));
         status->show();
         return;
     }

@@ -214,7 +214,7 @@ void TestView::update_request() {
 void TestView::read_reply(QNetworkReply* reply){
     QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if(status_code.toInt() != 200){
-        status.setText(reply->readAll());
+        status.setText(reply->readAll().replace('\0', ""));
         layout->addWidget(&status);
         status.show();
         return;
@@ -222,7 +222,7 @@ void TestView::read_reply(QNetworkReply* reply){
     status.hide();
     if(question_view){ // If question_frame is deleted, that means the user has changed the view to another one before the NAM request was finished, so we want to ignore the NAM's reply.
         // Store the lines of the reply in the "reply_list" attribute
-        QString reply_string(reply->readAll());
+        QString reply_string(reply->readAll().replace('\0', ""));
         reply->deleteLater();
         if(reply_string.isEmpty())
             question_view->show_error(tr("The selected list is currently empty."));
@@ -239,12 +239,12 @@ void TestView::read_reply(QNetworkReply* reply){
 
 void TestView::read_delete_list_reply(QNetworkReply *reply)
 {
-    QString reply_string(reply->readAll());
+    QString reply_string(reply->readAll().replace('\0', ""));
     reply->deleteLater();
     if(reply_string.isEmpty())
         delete this;
     else{
-        status.setText(reply->readAll());
+        status.setText(reply->readAll().replace('\0', ""));
         layout->addWidget(&status);
         status.show();
     }
@@ -454,7 +454,7 @@ void TestView::find_tags() {
 void TestView::read_reply_tags(QNetworkReply* reply)
 {
 	// Store the lines of the reply in the "reply_list" attribute
-	QString reply_string = reply->readAll();
+    QString reply_string = reply->readAll().replace('\0', "");
 	reply->deleteLater();
 	read_reply(reply_string);
 }

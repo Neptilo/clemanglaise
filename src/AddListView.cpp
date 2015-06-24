@@ -132,7 +132,7 @@ void AddListView::add_online_list()
 
 void AddListView::show_confirmation(QNetworkReply *reply)
 {
-    const QString error(reply->readAll());
+    const QString error(reply->readAll().replace('\0', ""));
     if(error == "")
         emit created(NULL);
     else{

@@ -102,7 +102,7 @@ void AddTagView::edit_tag(){
 }
 
 void AddTagView::show_confirmation(QNetworkReply* reply){
-    const QString reply_string(reply->readAll());
+    const QString reply_string(reply->readAll().replace('\0', ""));
     reply->deleteLater();
     if(reply_string.compare("")){
         status->setText(reply_string);
@@ -149,7 +149,7 @@ void AddTagView::find_tags() {
 void AddTagView::read_reply(QNetworkReply* reply)
 {
     // Store the lines of the reply in the "reply_list" attribute
-    QString reply_string = reply->readAll();
+    QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
 	read_reply(reply_string);
 }

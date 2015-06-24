@@ -141,7 +141,7 @@ void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
     bool success = true;
 
     // find names of tags
-    QString reply_string = reply->readAll();
+    QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
     QStringList reply_list = reply_string.split('\n', QString::SkipEmptyParts);
     tag_names = QStringList();

@@ -242,7 +242,7 @@ void EditView::edit_word(){
 }
 
 void EditView::show_confirmation(QNetworkReply* reply){
-    const QString reply_string(reply->readAll());
+    const QString reply_string(reply->readAll().replace('\0', ""));
     reply->deleteLater();
     if(reply_string.compare(""))
         status->setText(reply_string);
@@ -341,7 +341,7 @@ void EditView::update_gender(int index)
 void EditView::read_reply(QNetworkReply* reply)
 {
 	// Store the lines of the reply in the "reply_list" attribute
-	QString reply_string = reply->readAll();
+    QString reply_string = reply->readAll().replace('\0', "");
 	reply->deleteLater();
 	read_reply(reply_string);
 }

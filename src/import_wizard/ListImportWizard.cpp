@@ -145,7 +145,7 @@ void ListImportWizard::import_tags_and_list()
 
 void ListImportWizard::read_reply(QNetworkReply* reply)
 {
-    QString reply_string = reply->readAll();
+    QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
     reply_list = new QStringList(reply_string.split('\n'));
 
@@ -157,7 +157,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
 
 void ListImportWizard::read_tag_reply(QNetworkReply* reply)
 {
-    QString reply_string = reply->readAll();
+    QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
     QStringList tag_reply_list = reply_string.split('\n', QString::SkipEmptyParts);
     online_tag_ids.clear();
