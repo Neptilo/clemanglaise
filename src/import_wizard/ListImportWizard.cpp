@@ -233,8 +233,8 @@ void ListImportWizard::read_tag_reply(QNetworkReply* reply)
         // update word_data's tag ids with new local ids
         QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", QString::SkipEmptyParts);
         QStringList word_tag_ids_str;
-        for (int i = 0; i < online_tag_ids_str.size(); ++i) {
-            int tag_id = offline_tag_ids.at(online_tag_ids.indexOf(online_tag_ids_str.at(i).toInt()));
+        for (int j = 0; j < online_tag_ids_str.size(); ++j) {
+            int tag_id = offline_tag_ids.at(online_tag_ids.indexOf(online_tag_ids_str.at(j).toInt()));
             word_tag_ids_str << QString::number(tag_id);
         }
         word_data["tag_ids"] = word_tag_ids_str.join(", ");
