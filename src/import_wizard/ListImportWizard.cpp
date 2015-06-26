@@ -317,8 +317,11 @@ void ListImportWizard::read_tag_reply(QNetworkReply* reply)
                             ++nb_failed;
                     }
                         break;
-                    default: // case ImportBehavior::Discard
+                    case ImportBehavior::Discard:
+                        ++nb_discarded;
                         break;
+                    default:
+                        qDebug() << tr("This should not happen. Import behavior \"%1\" is not recognized.").arg(chosen_behavior);
                     }
                 }
             } // TODO: else show error
