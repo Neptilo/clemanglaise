@@ -651,7 +651,9 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
     reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "pronunciation" << "hint" << "score";
     QStringList cond;
     for (int i = 0; i < word_list.size(); ++i)
-        cond << QString("word LIKE '%%1%'").arg(word_list[i]);
+        // double up apostrophes to escape them
+        cond << QString("word LIKE '%%1%'")
+                .arg(QString(word_list[i]).replace('\'', "''"));
     QSqlQuery query(QString("SELECT %3 FROM words WHERE list_id = %1 AND (%2)")
                     .arg(test_id)
                     .arg(cond.join(" OR "))
