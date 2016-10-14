@@ -36,10 +36,8 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
 
     layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
-    tags_box = new QComboBox(this);
+    tags_box = new CheckableComboBox(this);
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
-    CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
-    tags_box->setItemDelegate(delegate);
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     find_tags();
 

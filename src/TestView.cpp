@@ -13,7 +13,6 @@
 #include <QWizard>
 
 #include "AndroidStyle.h"
-#include "CheckableItemDelegate.h"
 #include "import_wizard/DstListPage.h"
 #include "import_wizard/DuplicatePage.h"
 #include "import_wizard/ListImportWizard.h"
@@ -130,10 +129,8 @@ void TestView::create_interface()
     init_button(delete_button);
     delete_button->setDefaultAction(delete_action);
     tool_bar_layout->addWidget(delete_button);
-    tags_box = new QComboBox();
+    tags_box = new CheckableComboBox(this);
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
-    CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
-    tags_box->setItemDelegate(delegate);
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     tool_bar_layout->addWidget(tags_box);
     layout->addLayout(tool_bar_layout);

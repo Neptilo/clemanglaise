@@ -8,7 +8,6 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 
-#include "CheckableItemDelegate.h"
 #include "EditView.h"
 #include "InterfaceParameters.h"
 #include "QuestionView.h"
@@ -140,10 +139,8 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     hint_edit->setPlainText(hint);
     layout->addRow(tr("&Hint: "), hint_edit);
 
-    tags_box = new QComboBox(this);
+    tags_box = new CheckableComboBox(this);
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
-    CheckableItemDelegate *delegate = new CheckableItemDelegate(this);
-    tags_box->setItemDelegate(delegate);
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     layout->addRow(tr("T&ags: "), tags_box);
     find_tags();

@@ -12,6 +12,7 @@
 #include <QListWidget>
 #include <QTextEdit>
 
+#include "CheckableComboBox.h"
 #include "Test.h"
 #include "DatabaseManager.h"
 
@@ -30,7 +31,7 @@ private:
     QLabel* status;
     QComboBox* nature_edit;
     QComboBox *gender_edit;
-    QComboBox* tags_box;
+    CheckableComboBox* tags_box;
 
     QNetworkAccessManager nam;
     QNetworkAccessManager tag_nam;

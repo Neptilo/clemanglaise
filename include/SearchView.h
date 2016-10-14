@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QtNetwork>
 
+#include "CheckableComboBox.h"
 #include "Test.h"
 #include "EditView.h"
 
@@ -40,7 +41,7 @@ private:
     QTableWidget *result;
     EditView *update_view;
     QLabel *status;
-    QComboBox *tags_box;
+    CheckableComboBox *tags_box;
 
 public slots:
     void find_tags();

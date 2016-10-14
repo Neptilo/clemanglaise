@@ -38,7 +38,8 @@ HEADERS += \
     include/InterfaceParameters.h \
     include/CheckableItemDelegate.h \
     include/MultilinePushButton.h \
-    include/AndroidStyle.h
+    include/AndroidStyle.h \
+    include/CheckableComboBox.h
 SOURCES += \
     src/AnswerView.cpp \
     src/EditView.cpp \
@@ -70,7 +71,8 @@ SOURCES += \
     src/InterfaceParameters.cpp \
     src/CheckableItemDelegate.cpp \
     src/MultilinePushButton.cpp \
-    src/AndroidStyle.cpp
+    src/AndroidStyle.cpp \
+    src/CheckableComboBox.cpp
 
 RESOURCES += clemanglaise.qrc
 

@@ -5,6 +5,7 @@
 #include <QToolBar>
 
 #include "AnswerView.h"
+#include "CheckableComboBox.h"
 #include "DatabaseManager.h"
 #include "EditView.h"
 #include "QuestionView.h"
@@ -60,7 +61,7 @@ private:
     QToolButton *search_button;
     QToolButton *import_button;
     QToolButton *delete_button;
-    QComboBox *tags_box;
+    CheckableComboBox *tags_box;
 
     // actions
     QAction *back_action;
