@@ -200,7 +200,7 @@ void TestView::update_request() {
         selected_tags_str << QString::number(selected_tags_copy.at(i));
 	// Request to PHP or local file
 	QUrl url;
-    url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3")
+    url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3")
                .arg(test.get_id())
                .arg(selected_tags_str.join(","))
                .arg(untagged));
@@ -316,7 +316,7 @@ void TestView::delete_list()
             QUrlQuery post_data;
 #endif
             post_data.addQueryItem("list_id", QString::number(test.get_id()));
-            const QUrl url("http://neptilo.com/php/clemanglaise/delete_list.php");
+            const QUrl url("https://neptilo.com/php/clemanglaise/delete_list.php");
             QNetworkRequest request(url);
             request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
             nam->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
@@ -442,7 +442,7 @@ void TestView::find_tags() {
 		read_reply();
 	} else { 
 		// Request to PHP file
-        const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test.get_id()));
+        const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test.get_id()));
 		QNetworkRequest request(url);
         nam_tags.get(request);
 	}

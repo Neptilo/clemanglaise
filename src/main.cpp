@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 		QUrlQuery post_data;
 #endif
 		post_data.addQueryItem("password", password.c_str());
-		const QUrl url("http://neptilo.com/php/clemanglaise/login.php");
+		const QUrl url("https://neptilo.com/php/clemanglaise/login.php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
         nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.

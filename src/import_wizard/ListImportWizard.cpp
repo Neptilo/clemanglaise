@@ -138,7 +138,7 @@ void ListImportWizard::import_tags_and_list()
     progress_page.setSubTitle(tr("Importing list <b>%1</b> to <b>%2</b> %3.").arg(src_test->get_name()).arg(dst_test->get_name()).arg(behavior_text));
 
     // request to PHP file for the list of all words
-    const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/search.php?list_id=%1").arg(src_test->get_id()));
+    const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/search.php?list_id=%1").arg(src_test->get_id()));
     progress_page.set_status(tr("Retrieving vocabulary list from server"));
     nam.get(QNetworkRequest(url));
 }
@@ -150,7 +150,7 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
     reply_list = new QStringList(reply_string.split('\n'));
 
     // find used tag names in list
-    const QUrl url = QUrl(QString("http://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(src_test->get_id()));
+    const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(src_test->get_id()));
     progress_page.set_status(tr("Retrieving tag names from server"));
     tag_nam.get(QNetworkRequest(url));
 }

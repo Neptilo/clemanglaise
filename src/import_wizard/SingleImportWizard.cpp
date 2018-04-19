@@ -130,7 +130,7 @@ void SingleImportWizard::import_tags_and_word()
 
 void SingleImportWizard::find_tags() {
     // Request to PHP file
-    const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_tags.php");
+    const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
     QNetworkRequest request(url);
     progress_page.set_status(tr("Retrieving tag names from server"));
     tag_nam.get(request);

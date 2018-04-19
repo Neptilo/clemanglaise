@@ -80,7 +80,7 @@ void AddTagView::edit_tag(){
 		post_data.addQueryItem("id", this->default_values.at(0));
         QString line = ampersand_escape(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
         post_data.addQueryItem("tag", line);
-		const QUrl url("http://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
+		const QUrl url("https://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
         QNetworkAccessManager* nam2 = new QNetworkAccessManager(this);
@@ -140,7 +140,7 @@ void AddTagView::find_tags() {
 		read_reply();
 	} else { 
 		// Request to PHP file
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_tags.php");
+        const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
 		QNetworkRequest request(url);
 		nam.get(request);
 	}

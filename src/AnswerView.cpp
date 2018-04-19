@@ -68,7 +68,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 		//Offline
         database_manager->set_score(word_data["id"].toInt(), correct);
 	} else {
-		const QUrl url("http://neptilo.com/php/clemanglaise/set_score.php");
+		const QUrl url("https://neptilo.com/php/clemanglaise/set_score.php");
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 		QNetworkAccessManager* nam = new QNetworkAccessManager(this); // has to be a pointer because otherwise it will be destroyed at the end of the function and not send the data.

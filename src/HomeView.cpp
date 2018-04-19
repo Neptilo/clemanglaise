@@ -68,7 +68,7 @@ void HomeView::init()
 
     if(remote){
         // Request to PHP file to get the list of online vocabulary lists
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/get_lists.php");
+        const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/get_lists.php");
         QNetworkRequest request(url);
         nam.get(request);
     }else{
