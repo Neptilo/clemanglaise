@@ -12,6 +12,8 @@ QStringList ampersand_escape(const QStringList &list);
 QString colon_unescape(const QString &string);
 QString ampersand_unescape(const QString &string);
 QStringList ampersand_unescape(const QStringList &list);
+QString remove_diacritics(const QString &string);
+QStringList remove_diacritics(const QStringList &list);
 QString number_to_accent(const QString letter, int accent_number);
 
 // transcribes a pinyin pronunciation in number format or with accents into the pronunciation with accents only

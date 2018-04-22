@@ -47,7 +47,9 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         correct_answers = pronunciation;
     }else{
         standardized_answer = ampersand_unescape(standardized_answer);
+        standardized_answer = remove_diacritics(standardized_answer);
         correct_answers = ampersand_unescape(meaning);
+        correct_answers = remove_diacritics(correct_answers);
     }
     QStringList correct_answer_list = correct_answers.split(",");
     // remove whitespaces at start and end of each element in the list

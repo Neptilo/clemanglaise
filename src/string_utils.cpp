@@ -79,6 +79,48 @@ QStringList ampersand_unescape(const QStringList &list)
     return ret;
 }
 
+QString diacritic_letters;
+QStringList no_diacritic_letters;
+
+QString remove_diacritics(const QString &string){
+    if(diacritic_letters.isEmpty()){
+        diacritic_letters = QString::fromUtf8(
+                    "ÀÁÂÃÄÅĄÆÇĆÈÉÊËĘÌÍÎÏŁÑŃÒÓÔÕÖØŒŠŚÙÚÛÜÝŸŽŹŻ"
+                    "àáâãäåąæçćèéêëęìíîïłñńòóôõöøœšśùúûüýÿžźż");
+        no_diacritic_letters
+                <<"A"<<"A"<<"A"<<"A"<<"A"<<"A"<<"A"<<"AE"<<"C"<<"C"<<"E"<<"E"<<
+                  "E"<<"E"<<"E"<<"I"<<"I"<<"I"<<"I"<<"L"<<"N"<<"N"<<"O"<<"O"<<
+                  "O"<<"O"<<"O"<<"O"<<"OE"<<"S"<<"S"<<"U"<<"U"<<"U"<<"U"<<"Y"<<
+                  "Y"<<"Z"<<"Z"<<"Z"<<
+                  "a"<<"a"<<"a"<<"a"<<"a"<<"a"<<"a"<<"ae"<<"c"<<"c"<<"e"<<"e"<<
+                  "e"<<"e"<<"e"<<"i"<<"i"<<"i"<<"i"<<"l"<<"n"<<"n"<<"o"<<"o"<<
+                  "o"<<"o"<<"o"<<"o"<<"oe"<<"s"<<"s"<<"u"<<"u"<<"u"<<"u"<<"y"<<
+                  "y"<<"z"<<"z"<<"z";
+    }
+
+    QString ret = "";
+    for(int i = 0; i < string.length(); i++){
+        QChar c = string[i];
+        int dIndex = diacritic_letters.indexOf(c);
+        if (dIndex < 0) {
+            ret.append(c);
+        }else{
+            QString replacement = no_diacritic_letters[dIndex];
+            ret.append(replacement);
+        }
+    }
+
+    return ret;
+}
+
+QStringList remove_diacritics(const QStringList &list)
+{
+    QStringList ret;
+    for(int i = 0; i < list.size(); ++i)
+        ret << remove_diacritics(list.at(i));
+    return ret;
+}
+
 // Don't use with ampersand_escape. It would be redundant and generate bugs.
 QString number_to_accent(const QString letter, int accent_number){
 	if(letter == "a"){
