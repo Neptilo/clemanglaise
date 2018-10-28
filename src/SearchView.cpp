@@ -56,8 +56,8 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     layout->addWidget(status);
     status->hide();
 
-    connect(search_bar, SIGNAL(returnPressed()), this, SLOT(search()));
-    connect(OK_button, SIGNAL(clicked()), this, SLOT(search()));
+    connect(search_bar, SIGNAL(returnPressed()), this, SLOT(refresh()));
+    connect(OK_button, SIGNAL(clicked()), this, SLOT(refresh()));
     connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_tags(QNetworkReply*)));
 }
@@ -152,7 +152,7 @@ bool SearchView::go_back()
         search_bar->show();
         OK_button->show();
         tags_box->show();
-        result->show();
+        refresh();
         return true;
     } else
         return false;
@@ -334,6 +334,7 @@ void SearchView::action(int row, int col)
 
 void SearchView::refresh(){
     find_tags();
-    result->show();
+    if (result)
+        result->show();
     search();
 }

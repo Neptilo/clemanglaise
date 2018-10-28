@@ -21,9 +21,10 @@ public:
     void read_reply(QString reply_string = "");
     void read_reply_tags();//(QString reply_string = "");
     bool go_back();
-    void refresh();
 
 private:
+    void search();
+
     QNetworkAccessManager nam;
     QNetworkAccessManager tag_nam;
     Test *test;
@@ -45,7 +46,6 @@ private:
 
 public slots:
     void find_tags();
-    void search();
     void read_reply(QNetworkReply * reply);
     void action(int row, int col);
 
@@ -53,6 +53,7 @@ private slots:
     void read_reply_tags(QNetworkReply *reply);
     void read_delete_reply(QNetworkReply *reply);
     void update_selected_tags(QModelIndex top_left, QModelIndex bottom_right);
+    void refresh();
 };
 
 #endif // SEARCHVIEW_H
