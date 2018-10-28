@@ -11,7 +11,8 @@ NetworkReplyReader::NetworkReplyReader(QObject *parent) :
     QObject(parent)
 {}
 
-QNetworkCookieJar* NetworkReplyReader::cookie_jar = new QNetworkCookieJar(0);
+QNetworkCookieJar* NetworkReplyReader::cookie_jar =
+        new QNetworkCookieJar(nullptr);
 
 void NetworkReplyReader::read_reply(QNetworkReply* reply)
 {

@@ -16,21 +16,21 @@
 
 EditView::EditView(Test *test, const QString &title, const QHash<QString, QString> &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent) :
     QWidget(parent),
-    title(NULL),
-    status(NULL),
-    nature_edit(NULL),
-    gender_edit(NULL),
+    title(nullptr),
+    status(nullptr),
+    nature_edit(nullptr),
+    gender_edit(nullptr),
     nam(),
     tag_nam(),
-    word_edit(NULL),
-    meaning_edit(NULL),
-    pronunciation_edit(NULL),
-    comment_edit(NULL),
-    example_edit(NULL),
-    hint_edit(NULL),
-    OK_button(NULL),
-    continue_button(NULL),
-    layout(NULL),
+    word_edit(nullptr),
+    meaning_edit(nullptr),
+    pronunciation_edit(nullptr),
+    comment_edit(nullptr),
+    example_edit(nullptr),
+    hint_edit(nullptr),
+    OK_button(nullptr),
+    continue_button(nullptr),
+    layout(nullptr),
     php_filename(php_filename),
     default_values(default_values),
     reply_list(),
@@ -150,7 +150,7 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     layout->addWidget(status);
 
     nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-    nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+    nam.cookieJar()->setParent(nullptr); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
 	OK_button = new QPushButton(OK_button_value, this);
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
@@ -324,7 +324,7 @@ void EditView::update_gender(int index)
     if (gender_edit) {
         if (nature_edit->itemData(index) == QVariant("n")) {
             int index;
-            layout->getWidgetPosition(nature_edit, &index, NULL);
+            layout->getWidgetPosition(nature_edit, &index, nullptr);
             layout->insertRow(index+1, tr("&Gender: "), gender_edit);
             gender_edit->show();
         } else {

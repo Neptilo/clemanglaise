@@ -13,7 +13,7 @@
 
 DuplicatePage::DuplicatePage(QWidget *parent) :
     QWizardPage(parent),
-    word_data(NULL),
+    word_data(nullptr),
     layout(this),
     info(this),
     duplicate_table(this),

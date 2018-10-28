@@ -15,7 +15,7 @@ class DuplicatePage : public QWizardPage
 {
     Q_OBJECT
 public:
-    explicit DuplicatePage(QWidget *parent = 0);
+    explicit DuplicatePage(QWidget *parent = nullptr);
     void initializePage();
     bool isComplete() const;
     const QHash<QString, QString> *word_data; // pointer to a constant object

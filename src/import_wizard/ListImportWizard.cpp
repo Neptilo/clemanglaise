@@ -15,7 +15,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     QWizard(parent),
     Importer(database_manager),
     src_test(test),
-    dst_test(NULL),
+    dst_test(nullptr),
     dst_list_page(database_manager, true, this),
     behavior_page(this),
     progress_page(this),
@@ -27,7 +27,7 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     nb_updated(0),
     nb_discarded(0),
     nb_failed(0),
-    reply_list(NULL)
+    reply_list(nullptr)
 {
     setWindowTitle(tr("Import a vocabulary list"));
 #ifdef Q_OS_ANDROID
@@ -171,7 +171,7 @@ void ListImportWizard::read_tag_reply(QNetworkReply* reply)
     // has to be consistent with the actual query in the PHP file
     word_keys << "id" << "word" << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "hint"  << "score" << "tag_ids";
     if (!reply_list) {
-        progress_page.append_log(tr("<b>Error:</b> reply_list is NULL."));
+        progress_page.append_log(tr("<b>Error:</b> reply_list is nullptr."));
         return;
     }
     int nb_words = reply_list->size()/word_keys.size();
@@ -330,7 +330,7 @@ void ListImportWizard::read_tag_reply(QNetworkReply* reply)
         progress_page.increase_progress();
     }
     delete reply_list;
-    reply_list = NULL;
+    reply_list = nullptr;
 
     // print recap of import
     QStringList recap_list;

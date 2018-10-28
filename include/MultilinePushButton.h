@@ -9,9 +9,9 @@ class MultilinePushButton : public QPushButton
 {
    Q_OBJECT
 public:
-    explicit MultilinePushButton(QWidget *parent=0);
-    explicit MultilinePushButton(const QString &text, QWidget *parent=0);
-    MultilinePushButton(const QIcon& icon, const QString &text, QWidget *parent=0);
+    explicit MultilinePushButton(QWidget *parent = nullptr);
+    explicit MultilinePushButton(const QString &text, QWidget *parent = nullptr);
+    MultilinePushButton(const QIcon& icon, const QString &text, QWidget *parent = nullptr);
 
     void set_icon(const QIcon &icon);
     void set_text(const QString &text);

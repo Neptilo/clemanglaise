@@ -15,7 +15,10 @@ class AddListView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AddListView(DatabaseManager *database_manager, bool remote, QWidget *parent = 0);
+    explicit AddListView(
+            DatabaseManager *database_manager,
+            bool remote,
+            QWidget *parent = nullptr);
     ~AddListView();
     Test *get_test();
 

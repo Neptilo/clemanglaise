@@ -5,8 +5,8 @@
 
 Switcher::Switcher(Qt::Orientation orientation, const QString &first_str, const QString &last_str, QWidget *parent):
     QWidget(parent),
-    first_label(NULL),
-    last_label(NULL),
+    first_label(nullptr),
+    last_label(nullptr),
     slider(orientation, this)
 {
     QLayout *layout;
@@ -23,7 +23,7 @@ Switcher::Switcher(Qt::Orientation orientation, const QString &first_str, const 
         slider.setMaximumHeight(slider_max_length);
         slider.setMinimumHeight(slider_min_length);
     default:
-        layout = NULL;
+        layout = nullptr;
         break;
     }
 

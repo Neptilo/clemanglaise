@@ -9,7 +9,7 @@ class CheckableItemDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    explicit CheckableItemDelegate(QObject *parent = 0);
+    explicit CheckableItemDelegate(QObject *parent = nullptr);
 
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 

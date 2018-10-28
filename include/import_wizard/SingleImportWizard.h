@@ -14,8 +14,8 @@ class SingleImportWizard : public QWizard, public Importer
     enum {Page_DstList, Page_Progress, Page_Duplicates};
     Q_OBJECT
 public:
-    // dst_test: pointer to a predefined vocab test, NULL otherwise
-    explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, Test *dst_test, QWidget *parent = 0);
+    // dst_test: pointer to a predefined vocab test, nullptr otherwise
+    explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, Test *dst_test, QWidget *parent = nullptr);
     ImportBehavior::Behavior chosen_behavior;
     void showEvent(QShowEvent *);
     bool validateCurrentPage() const;

@@ -10,7 +10,7 @@ DstListPage::DstListPage(DatabaseManager *database_manager, bool multiple, QWidg
     layout(this),
     question(this),
     test_buttons(database_manager->get_lists(), true, this),
-    add_list_view(NULL)
+    add_list_view(nullptr)
 {
     // question
     if(multiple)
@@ -46,5 +46,5 @@ void DstListPage::create_add_list_view()
 void DstListPage::remove_add_list_view()
 {
     delete add_list_view;
-    add_list_view = NULL;
+    add_list_view = nullptr;
 }

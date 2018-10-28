@@ -9,13 +9,13 @@
 
 HomeView::HomeView(bool admin, QWidget *parent):
     QWidget(parent),
-    add_list_view(NULL),
+    add_list_view(nullptr),
     admin(admin),
     database_manager(this),
-    layout(NULL),
-    test_buttons(NULL),
+    layout(nullptr),
+    test_buttons(nullptr),
     test_source_switcher(Qt::Horizontal, tr("Local tests"), tr("Online tests"), this),
-    title(NULL)
+    title(nullptr)
 {
     setWindowTitle("Clemanglaise");
     setWindowIcon(QIcon(":/clemanglaise-img.png"));
@@ -54,7 +54,7 @@ void HomeView::add_list()
 void HomeView::init()
 {
     delete test_buttons;
-    test_buttons = NULL;
+    test_buttons = nullptr;
 
     remove_add_list_view();
 
@@ -133,7 +133,7 @@ void HomeView::read_reply_lists(QNetworkReply *reply)
 void HomeView::remove_add_list_view()
 {
     delete add_list_view;
-    add_list_view = NULL;
+    add_list_view = nullptr;
     // resize window to fit content
     // QTimer::singleShot(0, this, SLOT(shrink()));
 }

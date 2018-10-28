@@ -30,7 +30,7 @@ private:
     QLabel info_label;
 
 public:
-    explicit HomeView(bool admin = false, QWidget *parent = 0);
+    explicit HomeView(bool admin = false, QWidget *parent = nullptr);
     ~HomeView();
     
 signals:

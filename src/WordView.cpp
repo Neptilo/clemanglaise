@@ -7,11 +7,11 @@
 WordView::WordView(Test *test, QWidget *parent) :
     QWidget(parent),
     test(test),
-    main_layout(NULL),
-    handwriting_layout(NULL),
-    vertical_layout(NULL),
+    main_layout(nullptr),
+    handwriting_layout(nullptr),
+    vertical_layout(nullptr),
     handwriting(false),
-    OK_button(NULL)
+    OK_button(nullptr)
 {
 
     // List of languages for which we want a handwriting widget

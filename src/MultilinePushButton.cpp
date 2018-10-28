@@ -8,10 +8,10 @@
 MultilinePushButton::MultilinePushButton(QWidget *parent) :
     QPushButton(parent),
     tool_button_style(Qt::ToolButtonIconOnly), // default in QToolButton
-    icon(NULL),
-    layout(NULL),
-    icon_label(NULL),
-    text_label(NULL)
+    icon(nullptr),
+    layout(nullptr),
+    icon_label(nullptr),
+    text_label(nullptr)
 {
     refresh();
 }
@@ -19,9 +19,9 @@ MultilinePushButton::MultilinePushButton(QWidget *parent) :
 MultilinePushButton::MultilinePushButton(const QString &text, QWidget *parent) :
     QPushButton(parent),
     tool_button_style(Qt::ToolButtonTextOnly),
-    icon(NULL),
-    layout(NULL),
-    icon_label(NULL)
+    icon(nullptr),
+    layout(nullptr),
+    icon_label(nullptr)
 {
     text_label = new QLabel(text, this);
     text_label->setWordWrap(true);
@@ -33,7 +33,7 @@ MultilinePushButton::MultilinePushButton(const QString &text, QWidget *parent) :
 MultilinePushButton::MultilinePushButton(const QIcon &icon, const QString &text, QWidget *parent) :
     QPushButton(parent),
     tool_button_style(Qt::ToolButtonTextBesideIcon),
-    layout(NULL)
+    layout(nullptr)
 {
     this->icon = new QIcon(icon);
     icon_label = new QLabel(this);

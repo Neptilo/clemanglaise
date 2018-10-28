@@ -11,7 +11,7 @@ class Switcher : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Switcher(Qt::Orientation orientation, const QString &first_str = "", const QString &last_str = "", QWidget *parent = 0);
+    explicit Switcher(Qt::Orientation orientation, const QString &first_str = "", const QString &last_str = "", QWidget *parent = nullptr);
     bool value() const;
 private:
     ClickableLabel *first_label;

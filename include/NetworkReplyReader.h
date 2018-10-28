@@ -9,7 +9,7 @@ class NetworkReplyReader : public QObject
     Q_OBJECT
 
 public:
-    explicit NetworkReplyReader(QObject *parent = 0);
+    explicit NetworkReplyReader(QObject *parent = nullptr);
     static QNetworkCookieJar* cookie_jar;
     void print(QString s);
 

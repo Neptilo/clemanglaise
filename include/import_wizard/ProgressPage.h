@@ -11,7 +11,7 @@ class ProgressPage : public QWizardPage
 {
     Q_OBJECT
 public:
-    explicit ProgressPage(QWidget *parent = 0);
+    explicit ProgressPage(QWidget *parent = nullptr);
     void set_status(QString text);
     void initializePage();
     bool isComplete() const;

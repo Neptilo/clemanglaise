@@ -25,11 +25,11 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     reply_list(),
     modifiable(modifiable),
     database_manager(database_manager),
-    search_bar(NULL),
-    OK_button(NULL),
-    result(NULL),
-    update_view(NULL),
-    status(NULL)
+    search_bar(nullptr),
+    OK_button(nullptr),
+    result(nullptr),
+    update_view(nullptr),
+    status(nullptr)
 {
     // has to be consistent with the actual content of reply_list
     word_keys << "id" << "word"  << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "hint" << "score" << "tag_ids";
@@ -148,7 +148,7 @@ bool SearchView::go_back()
 {
     if (update_view) {
         delete update_view;
-        update_view = NULL;
+        update_view = nullptr;
         search_bar->show();
         OK_button->show();
         tags_box->show();
@@ -214,7 +214,7 @@ void SearchView::read_reply(QString reply_string) {
     if(result){
         result->clear(); // Because this QTableWidget contains pointers to items with no parent.
         result->deleteLater();
-        result = NULL;
+        result = nullptr;
     }
     QStringList header_labels;
     if(modifiable)
@@ -309,8 +309,14 @@ void SearchView::action(int row, int col)
                 const QUrl url("https://neptilo.com/php/clemanglaise/delete_word.php");
                 QNetworkRequest request(url);
                 request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-                nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-                nam.cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+
+                // By default, nam takes ownership of the cookie jar.
+                nam.setCookieJar(NetworkReplyReader::cookie_jar);
+
+                // Unset the cookie jar's parent so it is not deleted when nam
+                // is deleted, and can still be used by other NAMs.
+                nam.cookieJar()->setParent(nullptr);
+
                 nam.disconnect();
                 connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_delete_reply(QNetworkReply*)));
 

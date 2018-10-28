@@ -11,7 +11,7 @@ class BehaviorPage : public QWizardPage
 {
     Q_OBJECT
 public:
-    explicit BehaviorPage(QWidget *parent = 0);
+    explicit BehaviorPage(QWidget *parent = nullptr);
     void initializePage();
 private:
     QVBoxLayout layout;

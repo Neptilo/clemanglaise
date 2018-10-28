@@ -8,7 +8,7 @@ class CheckableComboBox : public QComboBox
     Q_OBJECT
 
 public:
-    explicit CheckableComboBox(QWidget *parent = 0);
+    explicit CheckableComboBox(QWidget *parent = nullptr);
     virtual void hidePopup();
 };
 

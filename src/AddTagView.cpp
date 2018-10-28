@@ -15,17 +15,17 @@
 
 AddTagView::AddTagView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager* database_manager, QWidget *parent) :
     QWidget(parent),
-    title(NULL),
-    status(NULL),
-    tag_edit(NULL),
-    OK_button(NULL),
+    title(nullptr),
+    status(nullptr),
+    tag_edit(nullptr),
+    OK_button(nullptr),
     nam(),
-    continue_button(NULL),
-    layout(NULL),
+    continue_button(nullptr),
+    layout(nullptr),
     test(test),
 	reply_list(),
-    tag(NULL),
-    tags(NULL),
+    tag(nullptr),
+    tags(nullptr),
 	database_manager(database_manager)
 {
     this->php_filename = php_filename;
@@ -84,8 +84,13 @@ void AddTagView::edit_tag(){
 		QNetworkRequest request(url);
 		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
         QNetworkAccessManager* nam2 = new QNetworkAccessManager(this);
-        nam2->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-        nam2->cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+
+        // By default, nam takes ownership of the cookie jar.
+        nam2->setCookieJar(NetworkReplyReader::cookie_jar);
+
+        // Unset the cookie jar's parent so it is not deleted when nam is
+        // deleted, and can still be used by other NAMs.
+        nam2->cookieJar()->setParent(nullptr);
 
 		// Will show confirmation when loading of reply is finished
 		connect(nam2, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));

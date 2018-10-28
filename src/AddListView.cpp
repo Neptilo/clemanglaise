@@ -16,12 +16,12 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
     create_button(tr("&Create"), this),
     database_manager(database_manager),
     dst_edit(this),
-    nam(NULL),
+    nam(nullptr),
     name_edit(this),
     src_edit(this),
     status(this),
     title(tr("<b>Create a vocabulary list</b>")),
-    test(NULL)
+    test(nullptr)
 {
     lang_completer = new QCompleter(LANGUAGES, this);
     lang_completer->setCaseSensitivity(Qt::CaseInsensitive);
@@ -120,8 +120,14 @@ void AddListView::add_online_list()
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     nam = new QNetworkAccessManager(this);
-    nam->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-    nam->cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+
+    // By default, nam takes ownership of the cookie jar.
+    nam->setCookieJar(NetworkReplyReader::cookie_jar);
+
+    // Unset the cookie jar's parent so it is not deleted when nam is deleted,
+    // and can still be used by other NAMs.
+    nam->cookieJar()->setParent(nullptr);
+
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         nam->post(request, post_data.encodedQuery());
@@ -134,7 +140,7 @@ void AddListView::show_confirmation(QNetworkReply *reply)
 {
     const QString error(reply->readAll().replace('\0', ""));
     if(error == "")
-        emit created(NULL);
+        emit created(nullptr);
     else{
         status.setText(error);
         status.show();

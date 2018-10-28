@@ -24,25 +24,25 @@
 
 TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QWidget *parent):
     QWidget(parent),
-    add_view(NULL),
-    add_tag_view(NULL),
+    add_view(nullptr),
+    add_tag_view(nullptr),
     admin(admin),
-    answer_view(NULL),
+    answer_view(nullptr),
     database_manager(database_manager),
-    nam(NULL),
+    nam(nullptr),
     nam_tags(),
-    question_view(NULL),
-    request(NULL),
-    search_view(NULL),
+    question_view(nullptr),
+    request(nullptr),
+    search_view(nullptr),
     status(this),
     test(test, this),
-    title(NULL),
-    update_view(NULL),
-    add_button(NULL),
-    search_button(NULL),
-    import_button(NULL),
-    delete_button(NULL),
-    tags_box(NULL)
+    title(nullptr),
+    update_view(nullptr),
+    add_button(nullptr),
+    search_button(nullptr),
+    import_button(nullptr),
+    delete_button(nullptr),
+    tags_box(nullptr)
 {
     // has to be consistent with the actual query in the PHP file
     word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "pronunciation" << "hint" << "tag_ids";
@@ -258,7 +258,7 @@ void TestView::validate_question(){
 void TestView::validate_answer() {
     // Remove everything
     delete question_view;
-    question_view = NULL;
+    question_view = nullptr;
     if(answer_view)
         answer_view->hide();
 
@@ -319,8 +319,13 @@ void TestView::delete_list()
             const QUrl url("https://neptilo.com/php/clemanglaise/delete_list.php");
             QNetworkRequest request(url);
             request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-            nam->setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-            nam->cookieJar()->setParent(0); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
+
+            // By default, nam takes ownership of the cookie jar.
+            nam->setCookieJar(NetworkReplyReader::cookie_jar);
+
+            // Unset the cookie jar's parent so it is not deleted when nam is
+            // deleted, and can still be used by other NAMs.
+            nam->cookieJar()->setParent(nullptr);
 
             // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
@@ -417,7 +422,7 @@ void TestView::go_back() {
     if (search_view) {
         if (!search_view->go_back()) {
             delete search_view;
-            search_view = NULL;
+            search_view = nullptr;
             init();
         } // Else search_view already handled the go back action.
     } else if (
@@ -427,9 +432,9 @@ void TestView::go_back() {
         delete add_view;
         delete add_tag_view;
         delete update_view;
-        add_view = NULL;
-        add_tag_view = NULL;
-        update_view = NULL;
+        add_view = nullptr;
+        add_tag_view = nullptr;
+        update_view = nullptr;
         init();
     } else
         delete this;
@@ -486,9 +491,9 @@ void TestView::read_reply(QString reply_string) {
 void TestView::remove_widgets()
 {
     delete question_view;
-    question_view = NULL;
+    question_view = nullptr;
     delete answer_view;
-    answer_view = NULL;
+    answer_view = nullptr;
     if (add_button)
         add_button->hide();
     if (search_button)
@@ -504,7 +509,7 @@ void TestView::remove_widgets()
 
 void TestView::import_word()
 {
-    SingleImportWizard import_wizard(database_manager, word_data, NULL, this);
+    SingleImportWizard import_wizard(database_manager, word_data, nullptr, this);
     if(import_wizard.exec())
         // Show confirmation
         status.setText(tr("Import succeeded!"));

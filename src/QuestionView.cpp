@@ -14,12 +14,12 @@
 QuestionView::QuestionView(Test *test, bool admin, QWidget *parent):
     WordView(test, parent),
     admin(admin),
-    handwriting_area(NULL),
-    label(NULL),
-    edit_button(NULL),
-    import_button(NULL),
-    delete_button(NULL),
-    edit(NULL)
+    handwriting_area(nullptr),
+    label(nullptr),
+    edit_button(nullptr),
+    import_button(nullptr),
+    delete_button(nullptr),
+    edit(nullptr)
 {
     create_actions();
 

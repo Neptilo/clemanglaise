@@ -16,8 +16,8 @@ private:
     bool remote;
 
 public:
-    explicit Test(int id, const QString &name, const QString &src, const QString &dst, const QString &flag, bool remote = true, QObject *parent = 0);
-    explicit Test(const Test &other, QObject *parent = 0);
+    explicit Test(int id, const QString &name, const QString &src, const QString &dst, const QString &flag, bool remote = true, QObject *parent = nullptr);
+    explicit Test(const Test &other, QObject *parent = nullptr);
     int get_id() const;
     QString get_name() const;
     QString get_src() const;

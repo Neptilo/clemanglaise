@@ -15,7 +15,7 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
     Importer(database_manager),
     chosen_behavior(ImportBehavior::DontCheck),
     word_data(word_data),
-    dst_list_page(NULL),
+    dst_list_page(nullptr),
     duplicate_page(this),
     progress_page(this),
     dst_test(dst_test),

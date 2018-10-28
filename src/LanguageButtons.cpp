@@ -52,7 +52,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         button->set_icon_size(QSize(2*fontMetrics().height(),
                                     2*fontMetrics().height()));
-        signal_mapper.setMapping(button, (QObject *) NULL);
+        signal_mapper.setMapping(button, (QObject *) nullptr);
         connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout->addWidget(button, l/w, l%w);
     }

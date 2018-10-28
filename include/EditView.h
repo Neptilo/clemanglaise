@@ -20,7 +20,7 @@ class EditView : public QWidget{
     Q_OBJECT
 
 public:
-    EditView(Test *test, const QString &title, const QHash<QString, QString> &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent = 0);
+    EditView(Test *test, const QString &title, const QHash<QString, QString> &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent = nullptr);
     ~EditView();
     void read_reply(QString reply_string="");
 	void disable_edition(bool ok);

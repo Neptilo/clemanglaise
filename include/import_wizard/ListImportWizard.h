@@ -17,7 +17,7 @@ class ListImportWizard : public QWizard, public Importer
     Q_OBJECT
     enum {Page_DstList, Page_Behavior, Page_Progress, Page_Duplicates};
 public:
-    explicit ListImportWizard(DatabaseManager *database_manager, Test *src_test, QWidget *parent = 0);
+    explicit ListImportWizard(DatabaseManager *database_manager, Test *src_test, QWidget *parent = nullptr);
     void showEvent(QShowEvent *);
     int nextId() const;
 private:
