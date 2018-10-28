@@ -49,7 +49,7 @@ QString Test::get_flag() const
 }
 
 bool Test::is_remote() const {
-	return remote;
+    return remote;
 }
 
 void Test::set_remote(bool remote) {

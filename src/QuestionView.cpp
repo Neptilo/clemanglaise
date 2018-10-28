@@ -119,13 +119,13 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
     input_layout->addWidget(edit);
     input_layout->addWidget(OK_button);
 
-	// Connections
-	connect(edit, SIGNAL(returnPressed()), parent(), SLOT(validate_question()));
-	connect(edit, SIGNAL(returnPressed()), this, SLOT(disable_validation()));
-	connect(OK_button, SIGNAL(clicked()), parent(), SLOT(validate_question()));
-	connect(OK_button, SIGNAL(clicked()), this, SLOT(disable_validation()));
-	OK_button->setDefault(true);
-	edit->setFocus();
+    // Connections
+    connect(edit, SIGNAL(returnPressed()), parent(), SLOT(validate_question()));
+    connect(edit, SIGNAL(returnPressed()), this, SLOT(disable_validation()));
+    connect(OK_button, SIGNAL(clicked()), parent(), SLOT(validate_question()));
+    connect(OK_button, SIGNAL(clicked()), this, SLOT(disable_validation()));
+    OK_button->setDefault(true);
+    edit->setFocus();
     OK_button->setEnabled(true);
 }
 
@@ -145,9 +145,9 @@ void QuestionView::show_error(const QString &error)
 }
 
 void QuestionView::disable_validation(){
-	OK_button->disconnect();
-	OK_button->hide();
-	edit->disconnect();
+    OK_button->disconnect();
+    OK_button->hide();
+    edit->disconnect();
     edit->setEnabled(false);
 }
 

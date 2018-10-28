@@ -69,15 +69,15 @@ SearchView::~SearchView() {
 
 void SearchView::find_tags() {
     if (!test->is_remote()) {
-		// Offline
+        // Offline
         database_manager->find_used_tags(test->get_id(), reply_list_tag);
-		read_reply_tags();
-	} else { 
+        read_reply_tags();
+    } else {
         // Request to PHP file
         const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test->get_id()));
         QNetworkRequest request(url);
         tag_nam.get(request);
-	}
+    }
 }
 
 

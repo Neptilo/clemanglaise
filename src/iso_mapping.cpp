@@ -356,7 +356,7 @@ QHash<QString, QString> create_lang_map()
     _LANG_MAP["kj"] = "KWANYAMA";
     _LANG_MAP["kk"] = "KAZAKH";
     _LANG_MAP["kl"] = "KALAALLISUT";
-    _LANG_MAP["km"]	= "CENTRAL KHMER";
+    _LANG_MAP["km"] = "CENTRAL KHMER";
     _LANG_MAP["kn"] = "KANNADA";
     _LANG_MAP["ko"] = "KOREAN";
     _LANG_MAP["kr"] = "KANURI";

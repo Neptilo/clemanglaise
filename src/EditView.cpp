@@ -152,17 +152,17 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
     nam.cookieJar()->setParent(nullptr); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
-	OK_button = new QPushButton(OK_button_value, this);
+    OK_button = new QPushButton(OK_button_value, this);
     OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
 
-	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
-	layout->addWidget(OK_button);
+    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
+    layout->addWidget(OK_button);
 }
 
 EditView::~EditView(){}
 
 void EditView::edit_word(){
-	status->setText(tr("Sending data..."));
+    status->setText(tr("Sending data..."));
 
     // Standardize pronunciation to save into database
     QString standardized_pronunciation;
@@ -200,7 +200,7 @@ void EditView::edit_word(){
     word_data["hint"] = ampersand_escape(hint_edit->toPlainText());
 
     if (!test->is_remote()) {
-		bool success;
+        bool success;
 
         // Offline
         if(word_data["id"].toInt() == 0) // Add word
@@ -210,32 +210,32 @@ void EditView::edit_word(){
 
         // Show confirmation
         show_confirmation(success);
-	} else {
+    } else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-		QUrl post_data;
+        QUrl post_data;
 #else
-		QUrlQuery post_data;
+        QUrlQuery post_data;
 #endif
         post_data.addQueryItem("list_id", QString::number(test->get_id()));
         for (QHash<QString, QString>::iterator i = word_data.begin(); i != word_data.end(); ++i)
             post_data.addQueryItem(i.key(), i.value());
         for (int i = 0; i < selected_tags.size(); ++i)
             post_data.addQueryItem("tag_ids[]", QString::number(selected_tags.at(i)));
-		const QUrl url("https://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
-		QNetworkRequest request(url);
-		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+        const QUrl url("https://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-		// Will show confirmation when loading of reply is finished
-		connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
+        // Will show confirmation when loading of reply is finished
+        connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
-		// Send the request
+        // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-		nam.post(request, post_data.encodedQuery());
+        nam.post(request, post_data.encodedQuery());
 #else
-		nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
-	}
-	disable_edition(true);
+    }
+    disable_edition(true);
 }
 
 void EditView::show_confirmation(QNetworkReply* reply){
@@ -296,25 +296,25 @@ void EditView::reset(){
     if (pronunciation_edit)
         pronunciation_edit->setText(default_values["pronunciation"]);
 
-	delete continue_button;
+    delete continue_button;
 
     title->setText(tr("<b>Add a new word</b>"));
-	OK_button = new QPushButton(tr("Add word"), this);
-	OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
-	connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
-	layout->addWidget(OK_button);
-	disable_edition(false);
+    OK_button = new QPushButton(tr("Add word"), this);
+    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
+    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
+    layout->addWidget(OK_button);
+    disable_edition(false);
 }
 
 void EditView::find_tags() {
     if (!test->is_remote()) {
-		// Offline
-		database_manager->find_tags(reply_list);
-		read_reply();
+        // Offline
+        database_manager->find_tags(reply_list);
+        read_reply();
     } else {
-		// Request to PHP file
+        // Request to PHP file
         const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
-		QNetworkRequest request(url);
+        QNetworkRequest request(url);
         tag_nam.get(request);
     }
 }
@@ -337,16 +337,16 @@ void EditView::update_gender(int index)
 
 void EditView::read_reply(QNetworkReply* reply)
 {
-	// Store the lines of the reply in the "reply_list" attribute
+    // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll().replace('\0', "");
-	reply->deleteLater();
-	read_reply(reply_string);
+    reply->deleteLater();
+    read_reply(reply_string);
 }
 
 
 void EditView::read_reply(QString reply_string) {
     if(test->is_remote())
-		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+        reply_list = reply_string.split('\n', QString::SkipEmptyParts);
 
     //Initialiaze selected tags context
     QStringList tag_ids = default_values["tag_ids"].split(", ", QString::SkipEmptyParts);
@@ -374,15 +374,15 @@ void EditView::read_reply(QString reply_string) {
 }
 
 void EditView::disable_edition(bool ok) {
-	word_edit->setEnabled(!ok);
-	nature_edit->setEnabled(!ok);
+    word_edit->setEnabled(!ok);
+    nature_edit->setEnabled(!ok);
     if (gender_edit)
         gender_edit->setEnabled(!ok);
-	meaning_edit->setEnabled(!ok);
+    meaning_edit->setEnabled(!ok);
     if (pronunciation_edit)
         pronunciation_edit->setEnabled(!ok);
-	comment_edit->setEnabled(!ok);
-	example_edit->setEnabled(!ok);
+    comment_edit->setEnabled(!ok);
+    example_edit->setEnabled(!ok);
     hint_edit->setEnabled(!ok);
     tags_box->setEnabled(!ok);
 }

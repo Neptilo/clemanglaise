@@ -16,7 +16,7 @@ AnswerView::AnswerView(Test *test, QWidget *parent):
 
 AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &player_answer, Test *test, DatabaseManager *database_manager, QWidget *parent):
     WordView(test, parent),
-	database_manager(database_manager)
+    database_manager(database_manager)
 {
     // Define explicit variables for the content of the label
     QString word = word_data["word"];
@@ -67,26 +67,26 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 
     // Update score
     if (!test->is_remote()) {
-		//Offline
+        //Offline
         database_manager->set_score(word_data["id"].toInt(), correct);
-	} else {
-		const QUrl url("https://neptilo.com/php/clemanglaise/set_score.php");
-		QNetworkRequest request(url);
-		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-		QNetworkAccessManager* nam = new QNetworkAccessManager(this); // has to be a pointer because otherwise it will be destroyed at the end of the function and not send the data.
-		
+    } else {
+        const QUrl url("https://neptilo.com/php/clemanglaise/set_score.php");
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+        QNetworkAccessManager* nam = new QNetworkAccessManager(this); // has to be a pointer because otherwise it will be destroyed at the end of the function and not send the data.
+
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-		QUrl post_data;
+        QUrl post_data;
         post_data.addQueryItem("id", word_data["id"]);
         post_data.addQueryItem("correct", QString::number(correct));
-		nam->post(request, post_data.encodedQuery());
+        nam->post(request, post_data.encodedQuery());
 #else
-		QUrlQuery post_data;
+        QUrlQuery post_data;
         post_data.addQueryItem("id", word_data["id"]);
-		post_data.addQueryItem("correct", QString::number(correct));
+        post_data.addQueryItem("correct", QString::number(correct));
         nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
-	}
+    }
     // Left/upper part
     if(handwriting){
         QLabel* handwriting_label = new QLabel("<span>"+meaning+"</span>", this);
@@ -105,7 +105,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon(getImgPath("face-smile.png")))
                                        .pixmap(2*fontMetrics().height()));
         display_answer->setStyleSheet("QLabel {color : green; }");
-	} else {
+    } else {
         display_icon_answer->setPixmap(QIcon::fromTheme("face-sad", QIcon(getImgPath("face-sad.png")))
                                        .pixmap(2*fontMetrics().height()));
         display_answer->setStyleSheet("QLabel {color : red; }");

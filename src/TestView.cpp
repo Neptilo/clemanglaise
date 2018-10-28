@@ -198,14 +198,14 @@ void TestView::update_request() {
     QStringList selected_tags_str;
     for(int i = 0; i < selected_tags_copy.length(); ++i)
         selected_tags_str << QString::number(selected_tags_copy.at(i));
-	// Request to PHP or local file
-	QUrl url;
+    // Request to PHP or local file
+    QUrl url;
     url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3")
                .arg(test.get_id())
                .arg(selected_tags_str.join(","))
                .arg(untagged));
     delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request remains the same.)
-	request = new QNetworkRequest(url);
+    request = new QNetworkRequest(url);
 }
 
 void TestView::read_reply(QNetworkReply* reply){
@@ -282,13 +282,13 @@ void TestView::validate_answer() {
             status.show();
         }
     } 
-	else 
-		nam->get(*request);
+    else
+        nam->get(*request);
 }
 
 void TestView::update_question(){
     if (test.is_remote())
-		update_request();
+        update_request();
     validate_answer();
 }
 
@@ -379,20 +379,20 @@ void TestView::update_selected_tags(QModelIndex top_left, QModelIndex)
 
 void TestView::add_tag()
 {
-	remove_widgets();
+    remove_widgets();
 
-	// Create a new add frame
-	QStringList default_values_list;
-	default_values_list << "" << "";
+    // Create a new add frame
+    QStringList default_values_list;
+    default_values_list << "" << "";
     add_tag_view = new AddTagView(&test, tr("<b>Add a new tag</b>"), default_values_list, tr("Add"), "add_tag", tr("Tag successfully added!"), database_manager, this);
     layout->addWidget(add_tag_view);
 }
 
 void TestView::add_word()
 {
-	remove_widgets();
+    remove_widgets();
 
-	// Create a new add frame
+    // Create a new add frame
     QHash<QString, QString> default_values;
     for(int i = 0; i < word_keys.size(); ++i)
         default_values[word_keys.at(i)] = "";
@@ -402,18 +402,18 @@ void TestView::add_word()
 
 void TestView::update_word()
 {
-	remove_widgets();
+    remove_widgets();
 
-	// Create a new add frame
+    // Create a new add frame
     update_view = new EditView(&test, tr("<b>Edit a word entry</b>"), word_data, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
     layout->addWidget(update_view);
 }
 
 void TestView::search()
 {
-	remove_widgets();
+    remove_widgets();
 
-	// Create a new search frame
+    // Create a new search frame
     search_view = new SearchView(&test, database_manager, !test.is_remote()||admin, this);
     layout->addWidget(search_view);
 }
@@ -442,23 +442,23 @@ void TestView::go_back() {
 
 void TestView::find_tags() {
     if (!test.is_remote()) {
-		// Offline
+        // Offline
         database_manager->find_used_tags(test.get_id(), tag_reply_list);
-		read_reply();
-	} else { 
-		// Request to PHP file
+        read_reply();
+    } else {
+        // Request to PHP file
         const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test.get_id()));
-		QNetworkRequest request(url);
+        QNetworkRequest request(url);
         nam_tags.get(request);
-	}
+    }
 }
 
 void TestView::read_reply_tags(QNetworkReply* reply)
 {
-	// Store the lines of the reply in the "reply_list" attribute
+    // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll().replace('\0', "");
-	reply->deleteLater();
-	read_reply(reply_string);
+    reply->deleteLater();
+    read_reply(reply_string);
 }
 
 void TestView::read_reply(QString reply_string) {

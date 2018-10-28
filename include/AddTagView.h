@@ -27,24 +27,24 @@ private:
     QLabel* status;
     QLineEdit* tag_edit;
     QPushButton* OK_button;
-	QNetworkAccessManager nam; 
+    QNetworkAccessManager nam; 
     QPushButton* continue_button;
     QFormLayout* layout;
     Test *test;
     QString php_filename;
     QStringList default_values;
-	QStringList reply_list; 
+    QStringList reply_list; 
     QString success_message;
-	QLabel* tag;
-	QComboBox* tags;
-	DatabaseManager* database_manager;
+    QLabel* tag;
+    QComboBox* tags;
+    DatabaseManager* database_manager;
 
 public slots:
     void edit_tag();
     void show_confirmation(QNetworkReply* reply);
     void show_confirmation();
-	void read_reply(QNetworkReply * reply); 
-	void find_tags(); 
+    void read_reply(QNetworkReply * reply); 
+    void find_tags(); 
     void reset();
 };
 

@@ -23,10 +23,10 @@ AddTagView::AddTagView(Test *test, const QString &title, const QStringList &defa
     continue_button(nullptr),
     layout(nullptr),
     test(test),
-	reply_list(),
+    reply_list(),
     tag(nullptr),
     tags(nullptr),
-	database_manager(database_manager)
+    database_manager(database_manager)
 {
     this->php_filename = php_filename;
     this->default_values = default_values;
@@ -68,21 +68,21 @@ void AddTagView::edit_tag(){
     status->setText(tr("Sending data..."));
     if (!test->is_remote()) {
         // Offline
-		// Will show confirmation when loading of reply is finished
+        // Will show confirmation when loading of reply is finished
         database_manager->add_tag(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
         show_confirmation();
-	} else {
+    } else {
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
 #else
         QUrlQuery post_data;
 #endif
-		post_data.addQueryItem("id", this->default_values.at(0));
+        post_data.addQueryItem("id", this->default_values.at(0));
         QString line = ampersand_escape(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
         post_data.addQueryItem("tag", line);
-		const QUrl url("https://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
-		QNetworkRequest request(url);
-		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+        const QUrl url("https://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
         QNetworkAccessManager* nam2 = new QNetworkAccessManager(this);
 
         // By default, nam takes ownership of the cookie jar.
@@ -92,18 +92,18 @@ void AddTagView::edit_tag(){
         // deleted, and can still be used by other NAMs.
         nam2->cookieJar()->setParent(nullptr);
 
-		// Will show confirmation when loading of reply is finished
-		connect(nam2, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
+        // Will show confirmation when loading of reply is finished
+        connect(nam2, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
-		// Send the request
+        // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         nam2->post(request, post_data.encodedQuery());
 #else
         nam2->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 
-	}
-	
+    }
+
 }
 
 void AddTagView::show_confirmation(QNetworkReply* reply){
@@ -114,14 +114,14 @@ void AddTagView::show_confirmation(QNetworkReply* reply){
     }else{
         status->setText(this->success_message);
     }
-	show_confirmation();
+    show_confirmation();
 }
 
 void AddTagView::show_confirmation(){
-	status->setText(this->success_message);
+    status->setText(this->success_message);
     delete OK_button;
     continue_button = new QPushButton(tr("Add another tag"), this);
-	continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
+    continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
 }
@@ -141,14 +141,14 @@ void AddTagView::reset(){
 void AddTagView::find_tags() {
     if (!test->is_remote()) {
         // Offline
-		database_manager->find_tags(reply_list);
-		read_reply();
-	} else { 
-		// Request to PHP file
+        database_manager->find_tags(reply_list);
+        read_reply();
+    } else {
+        // Request to PHP file
         const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
-		QNetworkRequest request(url);
-		nam.get(request);
-	}
+        QNetworkRequest request(url);
+        nam.get(request);
+    }
 }
 
 void AddTagView::read_reply(QNetworkReply* reply)
@@ -156,12 +156,12 @@ void AddTagView::read_reply(QNetworkReply* reply)
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
-	read_reply(reply_string);
+    read_reply(reply_string);
 }
 
 void AddTagView::read_reply(QString reply_string) {
     if (test->is_remote())
-		reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+        reply_list = reply_string.split('\n', QString::SkipEmptyParts);
     for(int i=0, l = reply_list.count(); i<l-1; i+=2)///
         tags->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
 }

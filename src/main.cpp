@@ -24,65 +24,65 @@ using namespace std;
 
 string tr(const char* s){
 #if defined(Q_OS_WIN) && !defined(__CYGWIN__)
-	return QObject::tr(s).toLocal8Bit().constData();
+    return QObject::tr(s).toLocal8Bit().constData();
 #else
-	return QObject::tr(s).toUtf8().constData();
+    return QObject::tr(s).toUtf8().constData();
 #endif
 }
 
 int main(int argc, char *argv[])
 {
 
-	// Read command line arguments
-	bool use_password(false);
-	string password;
-	for(int i=1; i<argc; i++){
-		string arg = argv[i];
-		if(arg == "-p" || arg == "--password"){
-			use_password = true;
-			if((++i)<argc){
-				password = argv[i];
-			}else{
-				cout << tr("Enter password: ");
+    // Read command line arguments
+    bool use_password(false);
+    string password;
+    for(int i=1; i<argc; i++){
+        string arg = argv[i];
+        if(arg == "-p" || arg == "--password"){
+            use_password = true;
+            if((++i)<argc){
+                password = argv[i];
+            }else{
+                cout << tr("Enter password: ");
 
-				// Hide tty input and read it
+                // Hide tty input and read it
 #if defined(Q_OS_WIN) && !defined(__CYGWIN__)
-				/* HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-				   DWORD mode = 0;
-				   GetConsoleMode(hStdin, &mode);
-				   SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
-				   cin >> password;
-				   SetConsoleMode(hStdin, mode);*/
+                /* HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+                   DWORD mode = 0;
+                   GetConsoleMode(hStdin, &mode);
+                   SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
+                   cin >> password;
+                   SetConsoleMode(hStdin, mode);*/
 #else
-				termios oldt;
-				tcgetattr(STDIN_FILENO, &oldt);
-				termios newt = oldt;
-				newt.c_lflag &= ~ECHO;
-				tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-				cin >> password;
-				tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-				cout << endl;
+                termios oldt;
+                tcgetattr(STDIN_FILENO, &oldt);
+                termios newt = oldt;
+                newt.c_lflag &= ~ECHO;
+                tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+                cin >> password;
+                tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+                cout << endl;
 #endif
 
-			}
-		}else if(arg == "-h" || arg == "-?" || arg == "--help"){
-			cout << tr("Usage: ") << argv[0] << tr(" [OPTION]") << endl << endl;
-			cout << "\t-h, -?, --help\t\t\t" << tr("Display this help and exit") << endl;
-			cout << "\t-p, --password " << tr("[PASSWORD]\tPassword to connect as administrator. If password is not given it's asked from the tty.") << endl;
-			return 0;
-		}else{
-			cerr << tr("unknown option '") << arg << tr("'") << endl;
-			cerr << tr("Try '") << argv[0] << " --help" << tr("' for more information") << endl;
-			return 1;
-		}
-	}
+            }
+        }else if(arg == "-h" || arg == "-?" || arg == "--help"){
+            cout << tr("Usage: ") << argv[0] << tr(" [OPTION]") << endl << endl;
+            cout << "\t-h, -?, --help\t\t\t" << tr("Display this help and exit") << endl;
+            cout << "\t-p, --password " << tr("[PASSWORD]\tPassword to connect as administrator. If password is not given it's asked from the tty.") << endl;
+            return 0;
+        }else{
+            cerr << tr("unknown option '") << arg << tr("'") << endl;
+            cerr << tr("Try '") << argv[0] << " --help" << tr("' for more information") << endl;
+            return 1;
+        }
+    }
 
     QApplication a(argc, argv); // Needs to be done before using any signals
 
 #if QT_VERSION < 0x050000
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-	QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-	QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 #endif
 
     srand(time(nullptr));
@@ -94,16 +94,16 @@ int main(int argc, char *argv[])
     NetworkReplyReader reply_reader(nullptr); // Same as above
     if(use_password){
 
-		// Connect as administrator
+        // Connect as administrator
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-		QUrl post_data;
+        QUrl post_data;
 #else
-		QUrlQuery post_data;
+        QUrlQuery post_data;
 #endif
-		post_data.addQueryItem("password", password.c_str());
-		const QUrl url("https://neptilo.com/php/clemanglaise/login.php");
-		QNetworkRequest request(url);
-		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+        post_data.addQueryItem("password", password.c_str());
+        const QUrl url("https://neptilo.com/php/clemanglaise/login.php");
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
         // By default, nam takes ownership of the cookie jar.
         nam.setCookieJar(NetworkReplyReader::cookie_jar);
@@ -112,27 +112,27 @@ int main(int argc, char *argv[])
         // deleted, and can still be used by other NAMs.
         nam.cookieJar()->setParent(nullptr);
 
-		// Will show confirmation when loading of reply is finished
+        // Will show confirmation when loading of reply is finished
         QObject::connect(&nam, SIGNAL(finished(QNetworkReply*)), &reply_reader, SLOT(read_reply(QNetworkReply*)));
 
-		// Send the request
+        // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         nam.post(request, post_data.encodedQuery());
 #else
         nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
 #endif
 
-		// Then we wait for the NetworkReplyReader to answer yes.
-	}else{
+        // Then we wait for the NetworkReplyReader to answer yes.
+    }else{
         HomeView *w = new HomeView(false);
         w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-		w->show();
-	}
+        w->show();
+    }
 
 #if defined(Q_OS_ANDROID)
     a.setStyle(new AndroidStyle());
     QFontDatabase font_database;
     font_database.addApplicationFont(":/fonts/wts11.ttf");
 #endif
-	return a.exec();
+    return a.exec();
 }

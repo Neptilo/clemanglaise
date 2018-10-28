@@ -23,7 +23,7 @@ public:
     EditView(Test *test, const QString &title, const QHash<QString, QString> &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent = nullptr);
     ~EditView();
     void read_reply(QString reply_string="");
-	void disable_edition(bool ok);
+    void disable_edition(bool ok);
 
 private:
     QList<int> selected_tags;
@@ -58,11 +58,11 @@ private:
 
 public slots:
     void edit_word();
-	void read_reply(QNetworkReply * reply); 
+    void read_reply(QNetworkReply * reply); 
     void show_confirmation(QNetworkReply* reply);
     void show_confirmation(bool success);
     void reset();
-	void find_tags();
+    void find_tags();
 
 private slots:
     void update_gender(int index);
