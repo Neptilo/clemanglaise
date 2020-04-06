@@ -6,21 +6,6 @@
         <file>img/accessories-text-editor.png</file>
         <file>img/edit-find.png</file>
         <file>img/edit-delete.png</file>
-        <file>img/win/process-stop.png</file>
-        <file>img/win/emblem-default.png</file>
-        <file>img/win/list-add.png</file>
-        <file>img/win/face-smile.png</file>
-        <file>img/win/face-crying.png</file>
-        <file>img/win/edit-find.png</file>
-        <file>img/win/edit-delete.png</file>
-        <file>img/macx/process-stop.png</file>
-        <file>img/macx/emblem-default.png</file>
-        <file>img/macx/list-add.png</file>
-        <file>img/macx/face-smile.png</file>
-        <file>img/macx/face-crying.png</file>
-        <file>img/macx/accessories-text-editor.png</file>
-        <file>img/macx/edit-find.png</file>
-        <file>img/macx/edit-delete.png</file>
         <file>img/emblem-default.png</file>
         <file>img/face-sad.png</file>
         <file>img/face-smile.png</file>
@@ -38,6 +23,5 @@
         <file>img/flags/RU.png</file>
         <file>img/flags/US.png</file>
         <file>img/document-save.png</file>
-        <file>fonts/wts11.ttf</file>
     </qresource>
 </RCC>

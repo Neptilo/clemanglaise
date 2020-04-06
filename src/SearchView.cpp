@@ -15,6 +15,7 @@
 #include "NetworkReplyReader.h"
 #include "QuestionView.h"
 #include "SearchView.h"
+#include "resource_utils.h"
 #include "string_utils.h"
 
 SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
@@ -42,7 +43,7 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     find_tags();
 
     OK_button = new QPushButton(tr("OK"), this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
+    OK_button->setIcon(getIcon("emblem-default"));
     OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
     OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
 
@@ -231,11 +232,11 @@ void SearchView::read_reply(QString reply_string) {
             item = new QLabel(this);
             switch(col_ind){
             case 0:
-                item->setPixmap(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))).pixmap(16));
+                item->setPixmap(getIcon("accessories-text-editor").pixmap(16));
                 item->setToolTip(tr("Edit"));
                 break;
             case 1:
-                item->setPixmap(QIcon::fromTheme("edit-delete", QIcon(getImgPath("edit-delete.png"))).pixmap(16));
+                item->setPixmap(getIcon("edit-delete").pixmap(16));
                 item->setToolTip(tr("Delete"));
                 break;
             default:;

@@ -1,14 +1,14 @@
 #include <ctime>
 #include <string>
 #include <iostream>
-#if defined(Q_OS_WIN)
+
+#include <QApplication>
+#if defined(Q_OS_WIN) // Q_OS_WIN may only exist after the first Qt inclusion
 #include <windows.h>
 #else
 #include <termios.h>
 #include <unistd.h>
 #endif
-
-#include <QApplication>
 #include <QFontDatabase>
 #include <QPushButton>
 #include <QObject>
@@ -129,10 +129,5 @@ int main(int argc, char *argv[])
         w->show();
     }
 
-#if defined(Q_OS_ANDROID)
-    a.setStyle(new AndroidStyle());
-    QFontDatabase font_database;
-    font_database.addApplicationFont(":/fonts/wts11.ttf");
-#endif
     return a.exec();
 }

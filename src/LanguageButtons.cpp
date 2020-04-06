@@ -10,6 +10,7 @@
 
 #include "InterfaceParameters.h"
 #include "MultilinePushButton.h"
+#include "resource_utils.h"
 #include "string_utils.h"
 #include "iso_mapping.h"
 
@@ -29,7 +30,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
     for (int i = 0; i < l; ++i) {
         Test *test = new Test(tests.at(i), this); // pointer to non constant copy of test
         MultilinePushButton *button = new MultilinePushButton(
-                    QIcon(getImgPath("flags/"+test->get_flag()+".png")),
+                    QIcon(":/img/flags/"+test->get_flag()+".png"),
                     test->get_name(),
                     this);
         if (InterfaceParameters::orientation == Qt::PortraitOrientation)
@@ -44,7 +45,7 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
     }
     if(new_button){
         MultilinePushButton *button = new MultilinePushButton(
-                    QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))),
+                    getIcon("list-add"),
                     tr("New list"),
                     this);
         if (InterfaceParameters::orientation == Qt::PortraitOrientation)

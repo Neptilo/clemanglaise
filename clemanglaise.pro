@@ -16,6 +16,7 @@ HEADERS += \
     include/NetworkReplyReader.h \
     include/QuestionView.h \
     include/SearchView.h \
+    include/resource_utils.h \
     include/string_utils.h \
     include/iso_mapping.h \
     include/Test.h \
@@ -50,6 +51,7 @@ SOURCES += \
     src/NetworkReplyReader.cpp \
     src/QuestionView.cpp \
     src/SearchView.cpp \
+    src/resource_utils.cpp \
     src/string_utils.cpp \
     src/iso_mapping.cpp \
     src/Test.cpp \
@@ -87,5 +89,6 @@ OTHER_FILES += \
     TODO.rst \
     programming_style.rst
 
-DISTFILES += \
-    fonts/wts11.ttf
+ANDROID_EXTRA_LIBS = \
+    $$PWD/lib/libcrypto_1_1.so \
+    $$PWD/lib/libssl_1_1.so

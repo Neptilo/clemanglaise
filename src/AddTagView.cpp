@@ -10,6 +10,7 @@
 #include "AddTagView.h"
 #include "CheckableItemDelegate.h"
 #include "QuestionView.h"
+#include "resource_utils.h"
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
 
@@ -57,7 +58,7 @@ AddTagView::AddTagView(Test *test, const QString &title, const QStringList &defa
     layout->addWidget(status);
 
     OK_button = new QPushButton(OK_button_value, this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
+    OK_button->setIcon(getIcon("emblem-default"));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_tag()));
     layout->addWidget(OK_button);
 }
@@ -121,7 +122,7 @@ void AddTagView::show_confirmation(){
     status->setText(this->success_message);
     delete OK_button;
     continue_button = new QPushButton(tr("Add another tag"), this);
-    continue_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
+    continue_button->setIcon(getIcon("list-add"));
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
 }
@@ -132,7 +133,7 @@ void AddTagView::reset(){
     delete continue_button;
 
     OK_button = new QPushButton(tr("Add Tag"), this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
+    OK_button->setIcon(getIcon("emblem-default"));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_tag()));
     layout->addWidget(OK_button);
 }

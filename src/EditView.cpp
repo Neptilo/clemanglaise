@@ -11,6 +11,7 @@
 #include "EditView.h"
 #include "InterfaceParameters.h"
 #include "QuestionView.h"
+#include "resource_utils.h"
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
 
@@ -153,7 +154,7 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     nam.cookieJar()->setParent(nullptr); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
     OK_button = new QPushButton(OK_button_value, this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))));
+    OK_button->setIcon(getIcon("emblem-default"));
 
     connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
     layout->addWidget(OK_button);
@@ -398,7 +399,7 @@ void EditView::prepare_to_continue()
     success_message = tr("Word successfully added!");
     delete OK_button;
     continue_button = new QPushButton(tr("Add another word"), this);
-    continue_button->setIcon(QIcon::fromTheme("list-add", QIcon(getImgPath("list-add.png"))));
+    continue_button->setIcon(getIcon("list-add.png"));
 
     layout->addWidget(continue_button);
     connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));

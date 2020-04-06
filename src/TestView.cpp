@@ -19,7 +19,7 @@
 #include "import_wizard/SingleImportWizard.h"
 #include "InterfaceParameters.h"
 #include "NetworkReplyReader.h"
-#include "string_utils.h"
+#include "resource_utils.h"
 #include "AddTagView.h"
 
 TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QWidget *parent):
@@ -59,30 +59,34 @@ TestView::~TestView(){
 
 void TestView::create_actions()
 {
-    back_action = new QAction(QIcon::fromTheme("go-previous", QIcon(getImgPath("go-previous.png"))), tr("Go &back to test list"), this);
+    back_action = new QAction(
+                getIcon("go-previous"), tr("Go &back to test list"), this);
     back_action->setShortcut(QKeySequence::Back);
     connect(back_action, SIGNAL(triggered()), this, SLOT(go_back()));
 
     if (!test.is_remote() || admin) {
-        add_action = new QAction(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))), tr("Add a &word"), this);
+        add_action = new QAction(getIcon("list-add"), tr("Add a &word"), this);
         add_action->setShortcut(QKeySequence::New);
         connect(add_action, SIGNAL(triggered()), this, SLOT(add_word()));
 
-        add_tag_action = new QAction(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))), tr("Add a &tag"), this);
+        add_tag_action = new QAction(getIcon("list-add"), tr("Add a &tag"), this);
         connect(add_tag_action, SIGNAL(triggered()), this, SLOT(add_tag()));
     }
 
-    search_action = new QAction(QIcon::fromTheme("edit-find", QIcon(getImgPath("edit-find.png"))), tr("&Search for words"), this);
+    search_action = new QAction(
+                getIcon("edit-find"), tr("&Search for words"), this);
     search_action->setShortcut(QKeySequence::Find);
     connect(search_action, SIGNAL(triggered()), this, SLOT(search()));
 
     if (test.is_remote()) {
-        import_action = new QAction(QIcon::fromTheme("document-save", QIcon(getImgPath("document-save.png"))), tr("&Import this vocabulary list"), this);
+        import_action = new QAction(
+                    getIcon("document-save"), tr("&Import this vocabulary list"), this);
         import_action->setShortcut(QKeySequence::Save);
         connect(import_action, SIGNAL(triggered()), this, SLOT(import_list()));
     }
 
-    delete_action = new QAction(QIcon::fromTheme("edit-delete", QIcon(getImgPath("edit-delete.png"))), tr("&Delete this vocabulary list"), this);
+    delete_action = new QAction(
+                getIcon("edit-delete"), tr("&Delete this vocabulary list"), this);
     connect(delete_action, SIGNAL(triggered()), this, SLOT(delete_list()));
 }
 

@@ -408,19 +408,6 @@ bool isKirshenbaum(const QString& string){
     return rx.exactMatch(string);
 }
 
-QString getImgPath(const QString& img) {
-    QString path("");
-#if defined(Q_OS_WIN) && !defined(__CYGWIN__)
-    path = ":/img/win/";
-#elif defined(Q_OS_MAC)
-    path = ":/img/macx/";
-#else
-    path = ":/img/";
-#endif
-    path += img;
-    return path;
-}
-
 QStringList trimmed(const QStringList &list)
 {
     QStringList ret;

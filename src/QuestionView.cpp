@@ -9,6 +9,7 @@
 #include <QToolButton>
 
 #include "InterfaceParameters.h"
+#include "resource_utils.h"
 #include "string_utils.h"
 
 QuestionView::QuestionView(Test *test, bool admin, QWidget *parent):
@@ -40,14 +41,19 @@ QuestionView::~QuestionView(){
 void QuestionView::create_actions()
 {
     if (!test->is_remote() || admin) {
-        edit_action = new QAction(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))), tr("&Edit this word entry"), this);
+        edit_action = new QAction(
+                    getIcon("accessories-text-editor"),
+                    tr("&Edit this word entry"),
+                    this);
         connect(edit_action, SIGNAL(triggered()), parent(), SLOT(update_word()));
-        delete_action = new QAction(QIcon::fromTheme("edit-delete", QIcon(getImgPath("edit-delete.png"))), tr("&Delete this word"), this);
+        delete_action = new QAction(
+                    getIcon("edit-delete"), tr("&Delete this word"), this);
         delete_action->setShortcut(QKeySequence::Delete);
         connect(delete_action, SIGNAL(triggered()), parent(), SLOT(delete_word()));
     }
     if (test->is_remote()) {
-        import_action = new QAction(QIcon::fromTheme("document-save", QIcon(getImgPath("document-save.png"))), tr("&Import this word"), this);
+        import_action = new QAction(
+                    getIcon("document-save"), tr("&Import this word"), this);
         import_action->setShortcut(QKeySequence::Save);
         connect(import_action, SIGNAL(triggered()), parent(), SLOT(import_word()));
     }
@@ -110,7 +116,7 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
     edit = new QLineEdit(this);
     edit->setFixedHeight(InterfaceParameters::widget_unit);
     OK_button = new QPushButton(
-                QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))),
+                getIcon("emblem-default"),
                 tr("OK"),
                 this);
     OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);

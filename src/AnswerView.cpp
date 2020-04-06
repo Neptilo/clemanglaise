@@ -8,6 +8,7 @@
 
 #include "InterfaceParameters.h"
 #include "QuestionView.h"
+#include "resource_utils.h"
 #include "string_utils.h"
 
 AnswerView::AnswerView(Test *test, QWidget *parent):
@@ -102,11 +103,11 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     QLabel* display_icon_answer = new QLabel(this);
     QLabel* display_answer = new QLabel(this);
     if (correct) {
-        display_icon_answer->setPixmap(QIcon::fromTheme("face-smile", QIcon(getImgPath("face-smile.png")))
+        display_icon_answer->setPixmap(getIcon("face-smile")
                                        .pixmap(2*fontMetrics().height()));
         display_answer->setStyleSheet("QLabel {color : green; }");
     } else {
-        display_icon_answer->setPixmap(QIcon::fromTheme("face-sad", QIcon(getImgPath("face-sad.png")))
+        display_icon_answer->setPixmap(getIcon("face-sad")
                                        .pixmap(2*fontMetrics().height()));
         display_answer->setStyleSheet("QLabel {color : red; }");
     }
@@ -133,7 +134,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 
     // Create the OK button
     OK_button = new QPushButton(
-                QIcon::fromTheme("emblem-default", QIcon(getImgPath("emblem-default.png"))),
+                getIcon("emblem-default.png"),
                 tr("OK"),
                 this);
     OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
