@@ -23,5 +23,8 @@
         <file>img/flags/RU.png</file>
         <file>img/flags/US.png</file>
         <file>img/document-save.png</file>
+        <file>img/flags/PL.png</file>
+        <file>img/flags/SI.png</file>
+        <file>img/flags/TR.png</file>
     </qresource>
 </RCC>
