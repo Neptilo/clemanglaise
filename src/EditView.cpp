@@ -303,13 +303,18 @@ void EditView::reset(){
     if (pronunciation_edit)
         pronunciation_edit->setText(default_values["pronunciation"]);
 
-    delete continue_button;
+    status->setText("");
+    continue_button->hide();
 
     title->setText(tr("<b>Add a new word</b>"));
-    OK_button = new QPushButton(tr("Add word"), this);
-    OK_button->setIcon(QIcon::fromTheme("emblem-default", QIcon(":/emblem-default.png")));
-    connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
-    layout->addWidget(OK_button);
+    if (OK_button)
+        OK_button->show();
+    else {
+        OK_button = new QPushButton(tr("Add word"), this);
+        OK_button->setIcon(getIcon("emblem-default"));
+        connect(OK_button, SIGNAL(clicked()), this, SLOT(edit_word()));
+        layout->addWidget(OK_button);
+    }
     disable_edition(false);
 }
 
@@ -403,11 +408,14 @@ void EditView::prepare_to_continue()
         default_values[word_keys.at(i)] = "";
     php_filename = "add_word";
     success_message = tr("Word successfully added!");
-    delete OK_button;
-    OK_button = nullptr;
-    continue_button = new QPushButton(tr("Add another word"), this);
-    continue_button->setIcon(getIcon("list-add.png"));
+    OK_button->hide();
+    if (continue_button)
+        continue_button->show();
+    else {
+        continue_button = new QPushButton(tr("Add another word"), this);
+        continue_button->setIcon(getIcon("list-add.png"));
 
-    layout->addWidget(continue_button);
-    connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
+        layout->addWidget(continue_button);
+        connect(continue_button, SIGNAL(clicked()), this, SLOT(reset()));
+    }
 }
