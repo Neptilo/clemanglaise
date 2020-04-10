@@ -3,7 +3,8 @@
 
 #include "string_utils.h"
 
-const QHash<QString, QString> maphash = mapping();
+const QHash<QString, QString> kirshenbaum_IPA_hash = make_Kirshenbaum_IPA_hash();
+const QHash<QString, QString> ASCII_DIN_hash = make_ASCII_DIN_hash();
 
 QString toTitleCase(const QString& str)
 {
@@ -207,7 +208,12 @@ QString number_to_accent(const QString letter, int accent_number){
 QString numbers_to_accents(const QString &string, const QString &sep){
 
     // Capture syllables
-    QRegExp syllable_rx("([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr])([iounr]?g?)(\\d?)(\\W*)", Qt::CaseInsensitive);
+    QRegExp syllable_rx(
+        "([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6"
+        "\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2"
+        "\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr"
+        "])([iounr]?g?)(\\d?)(\\W*)",
+        Qt::CaseInsensitive);
     QString res, separation;
     int pos = 0;
     while ((pos = syllable_rx.indexIn(string, pos)) != -1) {
@@ -216,7 +222,7 @@ QString numbers_to_accents(const QString &string, const QString &sep){
 
         // Generate new string
         QString nucleus = number_to_accent(syllable_rx.cap(2), syllable_rx.cap(4).toInt());
-        separation = (sep.isEmpty()) ? syllable_rx.cap(5) : sep;
+        separation = sep.isEmpty() ? syllable_rx.cap(5) : sep;
         res += syllable_rx.cap(1)+nucleus+syllable_rx.cap(3);
     }
 
@@ -251,7 +257,7 @@ QString separate_pinyin(const QString &string, const QString &sep)
 /**
  * mapping Kirshenbaum -- IPA
  */
-QHash<QString, QString> mapping()
+QHash<QString, QString> make_Kirshenbaum_IPA_hash()
 {
     QHash<QString, QString> hash;
     hash.insert("a", QString::fromUtf8("\u0061"));
@@ -367,37 +373,85 @@ QHash<QString, QString> mapping()
     return hash;
 }
 
-QString X2IPA(const QString &string)
+/**
+ * mapping ASCII -- DIN
+ */
+QHash<QString, QString> make_ASCII_DIN_hash()
 {
-    QString res;
-    if(maphash.contains(string))
-    {
-        res = maphash.value(string);
-    } else  {
-        res = string;
-    }
-    return res;
+    QHash<QString, QString> hash;
+    hash.insert("2", "ʾ");
+    hash.insert("aa", "ā");
+    hash.insert("th", "ṯ");
+    hash.insert("j", "ǧ");
+    hash.insert("7", "ḥ");
+    hash.insert("H", "ḥ");
+    hash.insert("kh", "ḫ");
+    hash.insert("dh", "ḏ");
+    hash.insert("sh", "š");
+    hash.insert("S", "ṣ");
+    hash.insert("D", "ḍ");
+    hash.insert("T", "ṭ");
+    hash.insert("Z", "ẓ");
+    hash.insert("3", "ʿ");
+    hash.insert("gh", "ġ");
+    hash.insert("ii", "ī");
+    hash.insert("uu", "ū");
+    return hash;
 }
 
-QString kirshenbaum2IPA(const QString &string){
-
-    // Capture phonemes
-    QRegExp rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^~]?))(:?)");
-    QString res="";
+QString ASCII_to_DIN(const QString &string, bool keepPunctuation)
+{
+    // Capture individual phonemes
+    QRegExp rx("(\\W*)(\\wh?|aa|ii|uu)");
+    QString res;
     int pos = 0;
     // Match rx in string from pos and return final position or -1 if match failed
-    while (!rx.isEmpty() && (pos = rx.indexIn(string, pos)) != -1) {
+    while ((pos = rx.indexIn(string, pos)) != -1) {
         pos += rx.matchedLength();
 
         // Generate new string
-        if (maphash.contains(rx.cap(1))) {
-            res += X2IPA(rx.cap(1));
-        } else if(maphash.contains(rx.cap(2)+rx.cap(3))) {
-            res += X2IPA(rx.cap(2) + rx.cap(3)) + X2IPA(rx.cap(4));
-        }else {
-            res += X2IPA(rx.cap(2)) + X2IPA(rx.cap(3)) + X2IPA(rx.cap(4));
-        }
-        res += X2IPA(rx.cap(5));
+
+        if (keepPunctuation)
+            res += rx.cap(1);
+
+        // If a new word starts with a vowel, prepend a hamza
+        // (Would it be better to remove them rather than add them?)
+        QString phoneme = rx.cap(2);
+        if (!rx.cap(1).isEmpty() && !phoneme.isEmpty() &&
+                QString("aiu").contains(phoneme[0]))
+            res += "ʾ";
+
+        res += ASCII_DIN_hash.contains(phoneme) ?
+               ASCII_DIN_hash.value(phoneme) : phoneme;
+    }
+
+    return res;
+}
+
+QString kirshenbaum2IPA(const QString &string)
+{
+    // Capture phonemes
+    QRegExp rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^~]?))(:?)");
+    QString res;
+    int pos = 0;
+    auto map = [&rx](int nth)
+    {
+        QString phoneme = rx.cap(nth);
+        return kirshenbaum_IPA_hash.contains(phoneme) ?
+               kirshenbaum_IPA_hash.value(phoneme) : phoneme;
+    };
+    // Match rx in string from pos and return final position or -1 if match failed
+    while ((pos = rx.indexIn(string, pos)) != -1) {
+        pos += rx.matchedLength();
+
+        // Generate new string
+        if (kirshenbaum_IPA_hash.contains(rx.cap(1)))
+            res += map(1);
+        else if(kirshenbaum_IPA_hash.contains(rx.cap(2)+rx.cap(3)))
+            res += map(2) + rx.cap(3) + map(4);
+        else
+            res += map(2) + map(3) + map(4);
+        res += map(5);
     }
 
     return res;

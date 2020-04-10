@@ -114,7 +114,13 @@ void HomeView::read_reply_lists(QNetworkReply *reply)
             reply_list.removeLast();
             QList<Test> online_tests;
             for(int i = 0; i < reply_list.count(); i+=5) {
-                online_tests << Test(reply_list.at(i).toInt(), reply_list.at(i+1), reply_list.at(i+2), reply_list.at(i+3), reply_list.at(i+4), this);
+                online_tests << Test(reply_list.at(i).toInt(),
+                                     reply_list.at(i+1),
+                                     reply_list.at(i+2),
+                                     reply_list.at(i+3),
+                                     reply_list.at(i+4),
+                                     true,
+                                     this);
             }
 
             // test buttons

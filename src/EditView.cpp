@@ -168,16 +168,22 @@ void EditView::edit_word(){
     // Standardize pronunciation to save into database
     QString standardized_pronunciation;
     if (pronunciation_edit) {
+        const QString& pronunciation = pronunciation_edit->text();
         if(test->get_dst() == "ja"){
-            standardized_pronunciation = ampersand_escape(pronunciation_edit->text());
+            standardized_pronunciation = ampersand_escape(pronunciation);
             standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
             standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
             standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
             standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
-        }else if(test->get_dst() == "zh"){
-            standardized_pronunciation = numbers_to_accents(pronunciation_edit->text());
-        } else {
-            standardized_pronunciation = isKirshenbaum(pronunciation_edit->text())?ampersand_escape(kirshenbaum2IPA(pronunciation_edit->text())):ampersand_escape(pronunciation_edit->text());
+        }else if(test->get_dst() == "zh")
+            standardized_pronunciation = numbers_to_accents(pronunciation);
+        else if(test->get_dst() == "ar")
+            standardized_pronunciation = ASCII_to_DIN(pronunciation);
+        else {
+            standardized_pronunciation = ampersand_escape(
+                    isKirshenbaum(pronunciation)?
+                        kirshenbaum2IPA(pronunciation):
+                        pronunciation);
         }
     }
 
@@ -233,7 +239,7 @@ void EditView::edit_word(){
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         nam.post(request, post_data.encodedQuery());
 #else
-        nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        nam.post(request, post_data.query().toUtf8());
 #endif
     }
     disable_edition(true);
@@ -398,6 +404,7 @@ void EditView::prepare_to_continue()
     php_filename = "add_word";
     success_message = tr("Word successfully added!");
     delete OK_button;
+    OK_button = nullptr;
     continue_button = new QPushButton(tr("Add another word"), this);
     continue_button->setIcon(getIcon("list-add.png"));
 

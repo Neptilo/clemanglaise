@@ -5,7 +5,7 @@
 #include <QString>
 #include <QStringList>
 
-extern const QHash<QString, QString> maphash;
+extern const QHash<QString, QString> kirshenbaum_IPA_hash;
 QString toTitleCase(const QString &string);
 QString ampersand_escape(const QString &string);
 QStringList ampersand_escape(const QStringList &list);
@@ -24,8 +24,11 @@ QString numbers_to_accents(const QString &string, const QString &sep = "");
 // replaces all non-alphanumeric characters between syllables by `sep`, a space by default
 QString separate_pinyin(const QString &string, const QString &sep = " ");
 
-QHash<QString, QString> mapping();
-QString X2IPA(const QString &string);
+QHash<QString, QString> make_Kirshenbaum_IPA_hash();
+QHash<QString, QString> make_ASCII_DIN_hash();
+
+QString ASCII_to_DIN(const QString &string, bool keepPunctuation = true);
+
 QString kirshenbaum2IPA(const QString &string);
 bool isKirshenbaum(const QString& string);
 

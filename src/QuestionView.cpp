@@ -81,17 +81,18 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
 
     // Display question
     QString hint_text = (hint.isEmpty())? "" : "<i>Hint: " + hint+"</i><br />";
-    if(test->get_dst() == "fr") {
+    if(test->get_dst() == "fr")
         label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + hint_text);
-    }else if(test->get_dst() == "ja"){
+    else if(test->get_dst() == "ja")
         label->setText("<b>"+word + "</b><br />" + hint_text + tr("<br/>Write the pronunciation of this word in r&#333;maji."));
-    }else if(test->get_dst() == "zh"){
+    else if(test->get_dst() == "zh")
         label->setText("<b>"+word + "</b><br />" + hint_text + tr("<br/>Write the pronunciation of this word in pinyin."));
-    }else if(test->get_dst() == "hr"){
+    else if(test->get_dst() == "ar")
+        label->setText("<b>"+word + "</b><br />" + hint_text + tr("<br/>Write the pronunciation of this word in ASCII."));
+    else if(test->get_dst() == "hr")
         label->setText(tr("Translate <b>") + word + tr("</b> into Croatian.<br />") + hint_text);
-    }else{
+    else
         label->setText(tr("Translate <b>") + word + tr("</b>.<br />")+ hint_text);
-    }
 
     // Populate top layout with buttons
     if (!test->is_remote() || admin) {

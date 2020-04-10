@@ -32,8 +32,13 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     bool correct;
     // remove whitespaces at start and end
     QString standardized_answer = player_answer.trimmed();
-    QString correct_answers; // can be the correct meaning or pronunciation according to the language
-    if(test->get_dst()=="ja" || test->get_dst()=="zh"){
+
+    // can be the correct meaning or pronunciation depending to the language
+    QString correct_answers;
+
+    QStringList languages_asking_pronunciation;
+    languages_asking_pronunciation << "ja" << "zh" << "ar";
+    if(languages_asking_pronunciation.contains(test->get_dst())){
         // Standardize player answer before checking
         if(test->get_dst() == "ja"){
             standardized_answer.replace(QString("ou"), QString("&#333;"));
@@ -42,9 +47,10 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
             standardized_answer.replace(QString("ee"), QString("&#275;"));
             // not before because otherwise "o u" would be replaced by "ō"
             standardized_answer.replace(QRegExp("\\s"), QString());
-        }else if(test->get_dst() == "zh"){
+        }else if(test->get_dst() == "zh")
             standardized_answer = numbers_to_accents(standardized_answer, " ");
-        }
+        else if(test->get_dst() == "ar")
+            standardized_answer = ASCII_to_DIN(standardized_answer, false);
         correct_answers = pronunciation;
     }else{
         standardized_answer = ampersand_unescape(standardized_answer);
@@ -53,13 +59,17 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         correct_answers = remove_diacritics(correct_answers);
     }
     QStringList correct_answer_list = correct_answers.split(",");
-    // remove whitespaces at start and end of each element in the list
     for (int i = 0; i < correct_answer_list.size(); ++i) {
+        // remove whitespaces at start and end of each element in the list
         QString answer(correct_answer_list.at(i).trimmed());
+
         if (test->get_dst() == "ja")
-            answer.replace(QRegExp("[^&#;a-zA-Z0-9]+"), QString(""));
+            answer.remove(QRegExp("[^&#;a-zA-Z0-9]"));
         else if (test->get_dst() == "zh")
             answer = separate_pinyin(answer);
+        else if (test->get_dst() == "ar")
+            answer.remove(QRegExp("\\W")); // remove punctuation
+
         correct_answer_list.replace(i, answer);
     }
     correct = correct_answer_list.contains(standardized_answer, Qt::CaseInsensitive);
@@ -121,12 +131,19 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     QLayout *answer_headline_layout = new QHBoxLayout;
     vertical_layout->addLayout(answer_headline_layout);
     QLabel *answer_headline_label;
-    if (test->get_dst()=="ja" || test->get_dst()=="zh")
+    if (handwriting)
         answer_headline_label = new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this);
     else{
         QString answer = "<b>"+word+"</b> <i>"+nature+"</i>: "+meaning;
+
         if (!pronunciation.isEmpty())
-            answer += "\n<b>["+ pronunciation +"]</b>";
+            // Show pronunciation in brackets for IPA, or else between slashes.
+            // The languages asking for pronunciation happen to be the ones
+            // not written with the IPA.
+            answer += languages_asking_pronunciation.contains(test->get_dst()) ?
+                        "\n<b>/"+ pronunciation +"/</b>" :
+                        "\n<b>["+ pronunciation +"]</b>";
+
         answer_headline_label = new QLabel(answer, this);
     }
     answer_headline_label->setWordWrap(true);
