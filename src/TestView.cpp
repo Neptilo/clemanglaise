@@ -129,10 +129,12 @@ void TestView::create_interface()
         import_button->setDefaultAction(import_action);
         tool_bar_layout->addWidget(import_button);
     }
-    delete_button = new QToolButton(this);
-    init_button(delete_button);
-    delete_button->setDefaultAction(delete_action);
-    tool_bar_layout->addWidget(delete_button);
+    if (!test.is_remote() || admin) {
+        delete_button = new QToolButton(this);
+        init_button(delete_button);
+        delete_button->setDefaultAction(delete_action);
+        tool_bar_layout->addWidget(delete_button);
+    }
     tags_box = new CheckableComboBox(this);
     tags_box->setFixedHeight(InterfaceParameters::widget_unit);
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
