@@ -92,3 +92,6 @@ OTHER_FILES += \
 ANDROID_EXTRA_LIBS = \
     $$PWD/lib/libcrypto_1_1.so \
     $$PWD/lib/libssl_1_1.so
+
+DISTFILES += \
+    README.md

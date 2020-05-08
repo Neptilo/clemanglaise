@@ -91,6 +91,15 @@ int main(int argc, char *argv[])
     // execution of the app after the conditional.
     QNetworkAccessManager nam(nullptr);
 
+    if (!QSslSocket::supportsSsl()){
+        cerr << tr("The SSL libraries could not be loaded. Please make sure "
+                   "to follow the setup instructions in the README.") << endl;
+        return 2;
+        // To show the version of the SSL libraries currently loaded,
+        // use QSslSocket::sslLibraryBuildVersionString()
+        // and QSslSocket::sslLibraryVersionString().
+    }
+
     NetworkReplyReader reply_reader(nullptr); // Same as above
     if(use_password){
 

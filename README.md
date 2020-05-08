@@ -16,10 +16,10 @@ This program creates vocabulary tests in different languages using words from an
   * Compile the project (hotkey: `CTRL+B`). (This will also run `qmake` before compiling.)
   * Since OpenSSL is not included in Qt and that I didn't want to include it in the repository, you'll need to download it yourself:
     * To build on Windows:
-      * Download and extract [this zip](https://bintray.com/vszakats/generic/download_file?file_path=openssl-1.1.1d-win64-mingw.zip).
+      * Download and extract [this zip](https://bintray.com/vszakats/generic/download_file?file_path=openssl-1.1.1d-win64-mingw.zip)(1).
       * In the extracted folder, copy `libcrypto-1_1-x64.dll` and `libssl-1_1-x64.dll` to the folder where Clemanglaise was built (in the same folder as `clemanglaise.exe`).
     * To build on Android:
-      * In [this repository](https://github.com/PurpleI2P/OpenSSL-for-Android-Prebuilt/tree/master/openssl-1.1.1), find the `libcrypto.so.1.1` and `libssl.so.1.1` files for your target architecture (e.g. for my Android phone, it was `armeabi-v7a`) and download them in a folder named `lib` at the root of the project directory.
+      * In [this repository](https://github.com/PurpleI2P/OpenSSL-for-Android-Prebuilt/tree/master/openssl-1.1.1)(1), find the `libcrypto.so.1.1` and `libssl.so.1.1` files for your target architecture (e.g. for my Android phone, it was `armeabi-v7a`) and download them in a folder named `lib` at the root of the project directory.
       * Rename them to `libcrypto_1_1.so` and `libssl_1_1.so`.
 
       Even though these libs are not in the exact version we should be using (it should be 1.1.1d), it works and I think that's good enough for now.
@@ -54,3 +54,5 @@ To run the application with **administrator** rights to the database, type `<cmd
 To show help wizard, type `<cmd> -h`, replacing `<cmd>` with the command mentioned above.
 
 Enjoy!
+
+(1) To find OpenSSL libraries of a specific version, go [here](https://wiki.openssl.org/index.php/Binaries).
