@@ -407,8 +407,6 @@ QString ASCII_to_DIN(const QString &string, bool keepPunctuation)
     int pos = 0;
     // Match rx in string from pos and return final position or -1 if match failed
     while ((pos = rx.indexIn(string, pos)) != -1) {
-        pos += rx.matchedLength();
-
         // Generate new string
 
         if (keepPunctuation)
@@ -417,12 +415,15 @@ QString ASCII_to_DIN(const QString &string, bool keepPunctuation)
         // If a new word starts with a vowel, prepend a hamza
         // (Would it be better to remove them rather than add them?)
         QString phoneme = rx.cap(2);
-        if (!rx.cap(1).isEmpty() && !phoneme.isEmpty() &&
-                QString("aiu").contains(phoneme[0]))
+        if ((!pos || !rx.cap(1).isEmpty()) && // beginning of a word
+                !phoneme.isEmpty() &&
+                QString("aiuā").contains(phoneme[0]))
             res += "ʾ";
 
         res += ASCII_DIN_hash.contains(phoneme) ?
                ASCII_DIN_hash.value(phoneme) : phoneme;
+
+        pos += rx.matchedLength();
     }
 
     return res;
