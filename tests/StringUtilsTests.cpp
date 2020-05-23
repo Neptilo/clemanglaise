@@ -36,3 +36,13 @@ void StringUtilsTests::testSeparatePinyin()
     QCOMPARE(separate_pinyin("huir"), QString("hui r"));
     QCOMPARE(separate_pinyin("zher"), QString("zhe r"));
 }
+
+void StringUtilsTests::testAsciiToDin()
+{
+    QCOMPARE(ASCII_to_DIN("ab it u2thj7khddhr,zsshSDTZ3ghfqklmnhw al-y 2ah aaiiuu."),
+             QString("ʾab ʾit ʾuʾṯǧḥḫdḏr,zsšṣḍṭẓʿġfqklmnhw ʾal-y ʾah ʾāīū."));
+    QCOMPARE(ASCII_to_DIN("/r,l a-*y.", false),
+             QString("rl ay"));
+    // A string already in DIN must not change
+    QCOMPARE(ASCII_to_DIN("ʿh.(, ġī;"), QString("ʿh.(, ġī;"));
+}

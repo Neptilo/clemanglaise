@@ -14,6 +14,7 @@ signals:
 private slots:
     void testNumbersToAccents();
     void testSeparatePinyin();
+    void testAsciiToDin();
 };
 
 #endif // STRINGUTILSTESTS_H
