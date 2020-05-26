@@ -17,7 +17,7 @@ public:
     // dst_test: pointer to a predefined vocab test, nullptr otherwise
     explicit SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, Test *dst_test, QWidget *parent = nullptr);
     ImportBehavior::Behavior chosen_behavior;
-    void showEvent(QShowEvent *);
+    void showEvent(QShowEvent *) override;
     bool validateCurrentPage() const;
 private:
     QHash<QString, QString> word_data;
@@ -25,9 +25,8 @@ private:
     DuplicatePage duplicate_page;
     ProgressPage progress_page;
     Test *dst_test;
-    QNetworkAccessManager tag_nam;
     void find_tags();
-    int nextId() const;
+    int nextId() const override;
 signals:
 
 public slots:
@@ -37,7 +36,7 @@ public slots:
 
 private slots:
     void check_duplicates(Test *test);
-    void read_tag_reply(QNetworkReply *reply);
+    void read_tag_reply();
     void import_tags_and_word();
     void update_on_complete();
 };

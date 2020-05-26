@@ -20,14 +20,13 @@ public:
     AddTagView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager * database_manager, QWidget *parent);
     ~AddTagView();
 
-    void read_reply(QString reply_string="");
+    void read_reply(QString reply_string);
 
 private:
     QLabel* title;
     QLabel* status;
     QLineEdit* tag_edit;
     QPushButton* OK_button;
-    QNetworkAccessManager nam; 
     QPushButton* continue_button;
     QFormLayout* layout;
     Test *test;
@@ -41,9 +40,9 @@ private:
 
 public slots:
     void edit_tag();
-    void show_confirmation(QNetworkReply* reply);
+    void read_edit_tag_reply();
     void show_confirmation();
-    void read_reply(QNetworkReply * reply); 
+    void read_reply();
     void find_tags(); 
     void reset();
 };

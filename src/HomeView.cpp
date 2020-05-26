@@ -6,6 +6,7 @@
 
 #include "InterfaceParameters.h"
 #include "string_utils.h"
+#include "NetworkReplyReader.h"
 
 HomeView::HomeView(bool admin, QWidget *parent):
     QWidget(parent),
@@ -34,8 +35,6 @@ HomeView::HomeView(bool admin, QWidget *parent):
 
     // info label
     layout->addWidget(&info_label);
-
-    connect(&nam, SIGNAL(finished(QNetworkReply *)), this, SLOT(read_reply_lists(QNetworkReply *)));
 
     set_test_source(test_source_switcher.value()); // calls init()
 }
@@ -70,7 +69,8 @@ void HomeView::init()
         // Request to PHP file to get the list of online vocabulary lists
         const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/get_lists.php");
         QNetworkRequest request(url);
-        nam.get(request);
+        QNetworkReply* reply = NetworkReplyReader::nam->get(request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply_lists()));
     }else{
         // test buttons
         QList<Test> offline_tests(database_manager.get_lists());
@@ -102,8 +102,9 @@ void HomeView::list_created(Test *test)
         init();
 }
 
-void HomeView::read_reply_lists(QNetworkReply *reply)
+void HomeView::read_reply_lists()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     if(remote){ // verification in case user clicked switch button before NAM's reply
         QString reply_string = reply->readAll().replace('\0', "");
         reply->deleteLater();

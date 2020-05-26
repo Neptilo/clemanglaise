@@ -20,7 +20,6 @@ AddTagView::AddTagView(Test *test, const QString &title, const QStringList &defa
     status(nullptr),
     tag_edit(nullptr),
     OK_button(nullptr),
-    nam(),
     continue_button(nullptr),
     layout(nullptr),
     test(test),
@@ -41,8 +40,6 @@ AddTagView::AddTagView(Test *test, const QString &title, const QStringList &defa
     layout->addWidget(tags);
 
     find_tags();
-
-    connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
     this->title = new QLabel(title, this);
     layout->addWidget(this->title);
@@ -84,30 +81,23 @@ void AddTagView::edit_tag(){
         const QUrl url("https://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-        QNetworkAccessManager* nam2 = new QNetworkAccessManager(this);
-
-        // By default, nam takes ownership of the cookie jar.
-        nam2->setCookieJar(NetworkReplyReader::cookie_jar);
-
-        // Unset the cookie jar's parent so it is not deleted when nam is
-        // deleted, and can still be used by other NAMs.
-        nam2->cookieJar()->setParent(nullptr);
-
-        // Will show confirmation when loading of reply is finished
-        connect(nam2, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 
         // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         nam2->post(request, post_data.encodedQuery());
 #else
-        nam2->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        QNetworkReply* reply = NetworkReplyReader::nam->post(
+                    request, post_data.query().toUtf8());
 #endif
 
+        // Will show confirmation when loading of reply is finished
+        connect(reply, SIGNAL(finished()), this, SLOT(read_edit_tag_reply()));
     }
 
 }
 
-void AddTagView::show_confirmation(QNetworkReply* reply){
+void AddTagView::read_edit_tag_reply(){
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     const QString reply_string(reply->readAll().replace('\0', ""));
     reply->deleteLater();
     if(reply_string.compare("")){
@@ -143,17 +133,20 @@ void AddTagView::find_tags() {
     if (!test->is_remote()) {
         // Offline
         database_manager->find_tags(reply_list);
-        read_reply();
+        read_reply("");
     } else {
         // Request to PHP file
         const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
         QNetworkRequest request(url);
-        nam.get(request);
+        QNetworkReply* reply = NetworkReplyReader::nam->get(request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     }
 }
 
-void AddTagView::read_reply(QNetworkReply* reply)
+void AddTagView::read_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
@@ -163,6 +156,6 @@ void AddTagView::read_reply(QNetworkReply* reply)
 void AddTagView::read_reply(QString reply_string) {
     if (test->is_remote())
         reply_list = reply_string.split('\n', QString::SkipEmptyParts);
-    for(int i=0, l = reply_list.count(); i<l-1; i+=2)///
+    for(int i=0, l = reply_list.count(); i<l-1; i+=2)
         tags->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
 }

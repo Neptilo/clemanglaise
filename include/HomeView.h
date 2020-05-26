@@ -22,7 +22,6 @@ private:
     bool admin;
     DatabaseManager database_manager;
     QLayout *layout;
-    QNetworkAccessManager nam;
     bool remote;
     LanguageButtons *test_buttons;
     Switcher test_source_switcher; // switches between a local source and an online server to fetch the list of tests
@@ -41,7 +40,7 @@ public slots:
     void shrink();
     void list_created(Test *test);
     void start_test(Test *test);
-    void read_reply_lists(QNetworkReply *reply);
+    void read_reply_lists();
     void remove_add_list_view();
     void set_test_source(bool remote);
 

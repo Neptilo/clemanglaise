@@ -29,8 +29,6 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QW
     admin(admin),
     answer_view(nullptr),
     database_manager(database_manager),
-    nam(nullptr),
-    nam_tags(),
     question_view(nullptr),
     request(nullptr),
     search_view(nullptr),
@@ -50,7 +48,6 @@ TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QW
     create_actions();
     create_interface();
     init();
-    connect(&nam_tags, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_tags(QNetworkReply*)));
 }
 
 TestView::~TestView(){
@@ -157,9 +154,8 @@ void TestView::init()
         question_view = new QuestionView(&test, admin, this);
         layout->addWidget(question_view);
         update_request();
-        nam = new QNetworkAccessManager(this);
-        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
-        nam->get(*request);
+        QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     }else{
         if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
             QString word = word_data["word"];
@@ -214,7 +210,8 @@ void TestView::update_request() {
     request = new QNetworkRequest(url);
 }
 
-void TestView::read_reply(QNetworkReply* reply){
+void TestView::read_reply(){
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if(status_code.toInt() != 200){
         status.setText(reply->readAll().replace('\0', ""));
@@ -240,8 +237,9 @@ void TestView::read_reply(QNetworkReply* reply){
     }
 }
 
-void TestView::read_delete_list_reply(QNetworkReply *reply)
+void TestView::read_delete_list_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     QString reply_string(reply->readAll().replace('\0', ""));
     reply->deleteLater();
     if(reply_string.isEmpty())
@@ -289,7 +287,10 @@ void TestView::validate_answer() {
         }
     } 
     else
-        nam->get(*request);
+    {
+        QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
+    }
 }
 
 void TestView::update_question(){
@@ -315,7 +316,6 @@ void TestView::delete_list()
     if(ret == QMessageBox::Yes){
         if(test.is_remote()){
             // request to PHP file
-            nam->disconnect();
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
             QUrl post_data;
 #else
@@ -326,19 +326,13 @@ void TestView::delete_list()
             QNetworkRequest request(url);
             request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-            // By default, nam takes ownership of the cookie jar.
-            nam->setCookieJar(NetworkReplyReader::cookie_jar);
-
-            // Unset the cookie jar's parent so it is not deleted when nam is
-            // deleted, and can still be used by other NAMs.
-            nam->cookieJar()->setParent(nullptr);
-
             // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
             nam->post(request, post_data.encodedQuery());
 #else
-            connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_delete_list_reply(QNetworkReply*)));
-            nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+            QNetworkReply* reply = NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
+            connect(reply, SIGNAL(finished()),
+                    this, SLOT(read_delete_list_reply()));
 #endif
         }else{
             // offline
@@ -450,17 +444,20 @@ void TestView::find_tags() {
     if (!test.is_remote()) {
         // Offline
         database_manager->find_used_tags(test.get_id(), tag_reply_list);
-        read_reply();
+        read_reply("");
     } else {
         // Request to PHP file
         const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test.get_id()));
         QNetworkRequest request(url);
-        nam_tags.get(request);
+        QNetworkReply* reply = NetworkReplyReader::nam->get(request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply_tags()));
     }
 }
 
-void TestView::read_reply_tags(QNetworkReply* reply)
+void TestView::read_reply_tags()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();

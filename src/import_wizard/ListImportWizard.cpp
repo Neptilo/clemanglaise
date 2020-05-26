@@ -8,6 +8,7 @@
 #include "duplicate_utils.h"
 #include "import_wizard/Importer.h"
 #include "import_wizard/SingleImportWizard.h"
+#include "NetworkReplyReader.h"
 
 #include <import_wizard/DuplicatePage.h>
 
@@ -19,9 +20,6 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
     dst_list_page(database_manager, true, this),
     behavior_page(this),
     progress_page(this),
-    //duplicate_page(this),
-    nam(this),
-    tag_nam(this),
     nb_inserted(0),
     nb_replaced(0),
     nb_updated(0),
@@ -51,9 +49,6 @@ ListImportWizard::ListImportWizard(DatabaseManager *database_manager, Test *test
 
     // page to show possible duplicates for specific duplicates if user has chosen to be prompted for every detected duplicate
     //    setPage(Page_Duplicates, &duplicate_page);
-
-    connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
-    connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_tag_reply(QNetworkReply*)));
 }
 
 int ListImportWizard::nextId() const
@@ -140,11 +135,13 @@ void ListImportWizard::import_tags_and_list()
     // request to PHP file for the list of all words
     const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/search.php?list_id=%1").arg(src_test->get_id()));
     progress_page.set_status(tr("Retrieving vocabulary list from server"));
-    nam.get(QNetworkRequest(url));
+    QNetworkReply* reply = NetworkReplyReader::nam->get(QNetworkRequest(url));
+    connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
 }
 
-void ListImportWizard::read_reply(QNetworkReply* reply)
+void ListImportWizard::read_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
     reply_list = new QStringList(reply_string.split('\n'));
@@ -152,7 +149,9 @@ void ListImportWizard::read_reply(QNetworkReply* reply)
     // find used tag names in list
     const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(src_test->get_id()));
     progress_page.set_status(tr("Retrieving tag names from server"));
-    tag_nam.get(QNetworkRequest(url));
+    QNetworkReply* tag_reply = NetworkReplyReader::nam->get(QNetworkRequest(url));
+    connect(tag_reply, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(read_tag_reply(QNetworkReply*)));
 }
 
 void ListImportWizard::read_tag_reply(QNetworkReply* reply)

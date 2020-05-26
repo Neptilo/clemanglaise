@@ -27,8 +27,6 @@ private:
     BehaviorPage behavior_page;
     ProgressPage progress_page;
     int chosen_behavior;
-    QNetworkAccessManager nam;
-    QNetworkAccessManager tag_nam;
     int nb_inserted;
     int nb_replaced;
     int nb_updated;
@@ -43,7 +41,7 @@ private slots:
     void import_tags_and_list();
     void save_and_next(Test *test);
     void choose_behavior(int behavior);
-    void read_reply(QNetworkReply *reply);
+    void read_reply();
     void read_tag_reply(QNetworkReply *reply);
     void update_on_complete();
 };

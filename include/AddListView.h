@@ -31,7 +31,6 @@ private:
     QPushButton create_button;
     DatabaseManager *database_manager;
     QLineEdit dst_edit;
-    QNetworkAccessManager *nam;
     QLineEdit name_edit;
     QLineEdit src_edit;
     QLineEdit flag_edit;
@@ -46,7 +45,7 @@ signals:
 public slots:
     void add_offline_list();
     void add_online_list();
-    void show_confirmation(QNetworkReply* reply);
+    void show_confirmation();
 };
 
 #endif // ADDLISTVIEW_H

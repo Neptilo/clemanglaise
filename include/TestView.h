@@ -28,7 +28,7 @@ public:
     TestView(Test &test, DatabaseManager *database_manager, bool admin = false, QWidget *parent = nullptr);
     ~TestView();
 
-    void read_reply(QString reply_string = "");
+    void read_reply(QString reply_string);
 
 private:
     EditView *add_view;
@@ -36,8 +36,6 @@ private:
     bool admin;
     AnswerView *answer_view;
     DatabaseManager *database_manager;
-    QNetworkAccessManager *nam;
-    QNetworkAccessManager nam_tags;
     QuestionView *question_view;
     QHash<QString, QString> word_data;
     QStringList tag_reply_list;
@@ -80,9 +78,9 @@ public slots:
     void init();
     void shrink();
     void update_request();
-    void read_reply(QNetworkReply *reply);
-    void read_delete_list_reply(QNetworkReply *reply);
-    void read_reply_tags(QNetworkReply *reply);
+    void read_reply();
+    void read_delete_list_reply();
+    void read_reply_tags();
     void validate_question();
     void validate_answer();
     void find_tags();

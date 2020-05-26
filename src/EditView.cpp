@@ -21,8 +21,6 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     status(nullptr),
     nature_edit(nullptr),
     gender_edit(nullptr),
-    nam(),
-    tag_nam(),
     word_edit(nullptr),
     meaning_edit(nullptr),
     pronunciation_edit(nullptr),
@@ -145,13 +143,9 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     layout->addRow(tr("T&ags: "), tags_box);
     find_tags();
-    connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
 
     status = new QLabel(this);
     layout->addWidget(status);
-
-    nam.setCookieJar(NetworkReplyReader::cookie_jar); // By default, nam takes ownership of the cookie jar.
-    nam.cookieJar()->setParent(nullptr); // Unset the cookie jar's parent so it is not deleted when nam is deleted, and can still be used by other NAMs.
 
     OK_button = new QPushButton(OK_button_value, this);
     OK_button->setIcon(getIcon("emblem-default"));
@@ -232,20 +226,21 @@ void EditView::edit_word(){
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-        // Will show confirmation when loading of reply is finished
-        connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
-
         // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         nam.post(request, post_data.encodedQuery());
 #else
-        nam.post(request, post_data.query().toUtf8());
+        QNetworkReply* reply = NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
 #endif
+
+        // Will show confirmation when loading of reply is finished
+        connect(reply, SIGNAL(finished()), this, SLOT(show_confirmation()));
     }
     disable_edition(true);
 }
 
-void EditView::show_confirmation(QNetworkReply* reply){
+void EditView::show_confirmation(){
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     const QString reply_string(reply->readAll().replace('\0', ""));
     reply->deleteLater();
     if(reply_string.compare(""))
@@ -322,12 +317,13 @@ void EditView::find_tags() {
     if (!test->is_remote()) {
         // Offline
         database_manager->find_tags(reply_list);
-        read_reply();
+        read_reply("");
     } else {
         // Request to PHP file
         const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
         QNetworkRequest request(url);
-        tag_nam.get(request);
+        QNetworkReply* reply = NetworkReplyReader::nam->get(request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     }
 }
 
@@ -347,8 +343,10 @@ void EditView::update_gender(int index)
     }
 }
 
-void EditView::read_reply(QNetworkReply* reply)
+void EditView::read_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+
     // Store the lines of the reply in the "reply_list" attribute
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();

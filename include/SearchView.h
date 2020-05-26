@@ -18,15 +18,13 @@ public:
     explicit SearchView(Test *test, DatabaseManager *database_manager, bool modifiable = false, QWidget *parent = nullptr);
     ~SearchView();
 
-    void read_reply(QString reply_string = "");
+    void read_reply(QString reply_string);
     void read_reply_tags();//(QString reply_string = "");
     bool go_back();
 
 private:
     void search();
 
-    QNetworkAccessManager nam;
-    QNetworkAccessManager tag_nam;
     Test *test;
     QStringList reply_list;
     QStringList reply_list_tag;
@@ -46,12 +44,12 @@ private:
 
 public slots:
     void find_tags();
-    void read_reply(QNetworkReply * reply);
+    void read_reply();
     void action(int row, int col);
 
 private slots:
-    void read_reply_tags(QNetworkReply *reply);
-    void read_delete_reply(QNetworkReply *reply);
+    void read_used_tags_reply();
+    void read_delete_reply();
     void update_selected_tags(QModelIndex top_left, QModelIndex bottom_right);
     void refresh();
 };

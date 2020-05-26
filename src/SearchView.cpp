@@ -20,8 +20,6 @@
 
 SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
     QWidget(parent),
-    nam(),
-    tag_nam(),
     test(test),
     reply_list(),
     modifiable(modifiable),
@@ -59,8 +57,6 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
 
     connect(search_bar, SIGNAL(returnPressed()), this, SLOT(refresh()));
     connect(OK_button, SIGNAL(clicked()), this, SLOT(refresh()));
-    connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
-    connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_tags(QNetworkReply*)));
 }
 
 SearchView::~SearchView() {
@@ -77,7 +73,8 @@ void SearchView::find_tags() {
         // Request to PHP file
         const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test->get_id()));
         QNetworkRequest request(url);
-        tag_nam.get(request);
+        QNetworkReply* reply = NetworkReplyReader::nam->get(request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_used_tags_reply()));
     }
 }
 
@@ -101,16 +98,19 @@ void SearchView::search() {
                               .arg(search_str)
                               .arg(selected_tags_str.join(","))
                               .arg(untagged));
-        nam.get(QNetworkRequest(url));
+        QNetworkReply* reply = NetworkReplyReader::nam->get(QNetworkRequest(url));
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     } else {
         // Offline
         database_manager->search(test->get_id(), search_str, selected_tags, reply_list);
-        read_reply();
+        read_reply("");
     }
 }
 
-void SearchView::read_reply_tags(QNetworkReply* reply)
+void SearchView::read_used_tags_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+
     // store the lines of the reply in the "reply_list_tag" attribute
     reply_list_tag = QString(reply->readAll().replace('\0', "")).split('\n');
     reply->deleteLater();
@@ -179,8 +179,9 @@ void SearchView::update_selected_tags(QModelIndex top_left, QModelIndex)
     }
 }
 
-void SearchView::read_reply(QNetworkReply* reply)
+void SearchView::read_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if(status_code.toInt() != 200){
         status->setText(reply->readAll().replace('\0', ""));
@@ -194,8 +195,9 @@ void SearchView::read_reply(QNetworkReply* reply)
     read_reply(reply_string); // FIXME: Memory leak
 }
 
-void SearchView::read_delete_reply(QNetworkReply* reply)
+void SearchView::read_delete_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if(status_code.toInt() != 200){
         status->setText(reply->readAll().replace('\0', ""));
@@ -203,8 +205,6 @@ void SearchView::read_delete_reply(QNetworkReply* reply)
         return;
     }
     status->hide();
-    nam.disconnect();
-    connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
     refresh();
 }
 
@@ -311,22 +311,14 @@ void SearchView::action(int row, int col)
                 QNetworkRequest request(url);
                 request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-                // By default, nam takes ownership of the cookie jar.
-                nam.setCookieJar(NetworkReplyReader::cookie_jar);
-
-                // Unset the cookie jar's parent so it is not deleted when nam
-                // is deleted, and can still be used by other NAMs.
-                nam.cookieJar()->setParent(nullptr);
-
-                nam.disconnect();
-                connect(&nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_delete_reply(QNetworkReply*)));
-
                 // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
                 nam.post(request, post_data.encodedQuery());
 #else
-                nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+                QNetworkReply* reply = NetworkReplyReader::nam->post(
+                            request, post_data.query().toUtf8());
 #endif
+                connect(reply, SIGNAL(finished()), this, SLOT(read_delete_reply()));
             } else {
                 int id = reply_list.at(row*nb_cols).toInt();
                 if (!database_manager->delete_word(id)) {

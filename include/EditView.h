@@ -22,7 +22,7 @@ class EditView : public QWidget{
 public:
     EditView(Test *test, const QString &title, const QHash<QString, QString> &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent = nullptr);
     ~EditView();
-    void read_reply(QString reply_string="");
+    void read_reply(QString reply_string);
     void disable_edition(bool ok);
 
 private:
@@ -33,8 +33,6 @@ private:
     QComboBox *gender_edit;
     CheckableComboBox* tags_box;
 
-    QNetworkAccessManager nam;
-    QNetworkAccessManager tag_nam;
     QLineEdit* word_edit;
     QLineEdit* meaning_edit;
     QLineEdit* pronunciation_edit;
@@ -58,8 +56,8 @@ private:
 
 public slots:
     void edit_word();
-    void read_reply(QNetworkReply * reply); 
-    void show_confirmation(QNetworkReply* reply);
+    void read_reply();
+    void show_confirmation();
     void show_confirmation(bool success);
     void reset();
     void find_tags();

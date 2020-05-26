@@ -9,6 +9,7 @@
 #include "import_wizard/DuplicatePage.h"
 #include "import_wizard/Importer.h"
 #include "string_utils.h"
+#include "NetworkReplyReader.h"
 
 SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const QHash<QString, QString> &word_data, Test *dst_test, QWidget *parent) :
     QWizard(parent),
@@ -18,8 +19,7 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
     dst_list_page(nullptr),
     duplicate_page(this),
     progress_page(this),
-    dst_test(dst_test),
-    tag_nam(this)
+    dst_test(dst_test)
 {
     setWindowTitle(tr("Import a word"));
 #ifdef Q_OS_ANDROID
@@ -45,8 +45,6 @@ SingleImportWizard::SingleImportWizard(DatabaseManager *database_manager, const 
     connect(&progress_page, SIGNAL(ready()), this, SLOT(import_tags_and_word())); // emitted when page shows up
     connect(&progress_page, SIGNAL(completeChanged()), this, SLOT(update_on_complete()));
     setOption(QWizard::NoBackButtonOnLastPage);
-
-    connect(&tag_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_tag_reply(QNetworkReply*)));
 }
 
 int SingleImportWizard::nextId() const
@@ -133,10 +131,12 @@ void SingleImportWizard::find_tags() {
     const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
     QNetworkRequest request(url);
     progress_page.set_status(tr("Retrieving tag names from server"));
-    tag_nam.get(request);
+    QNetworkReply* reply = NetworkReplyReader::nam->get(request);
+    connect(reply, SIGNAL(finished()), this, SLOT(read_tag_reply()));
 }
 
-void SingleImportWizard::read_tag_reply(QNetworkReply *reply) {
+void SingleImportWizard::read_tag_reply() {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     progress_page.increase_progress();
     bool success = true;
 

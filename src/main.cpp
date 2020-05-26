@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
     // Before the conditional because it has to be still there during the
     // execution of the app after the conditional.
-    QNetworkAccessManager nam(nullptr);
+    NetworkReplyReader reply_reader(nullptr);
 
     if (!QSslSocket::supportsSsl()){
         cerr << tr("The SSL libraries could not be loaded. Please make sure "
@@ -100,7 +100,6 @@ int main(int argc, char *argv[])
         // and QSslSocket::sslLibraryVersionString().
     }
 
-    NetworkReplyReader reply_reader(nullptr); // Same as above
     if(use_password){
 
         // Connect as administrator
@@ -114,22 +113,17 @@ int main(int argc, char *argv[])
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-        // By default, nam takes ownership of the cookie jar.
-        nam.setCookieJar(NetworkReplyReader::cookie_jar);
-
-        // Unset the cookie jar's parent so it is not deleted when nam is
-        // deleted, and can still be used by other NAMs.
-        nam.cookieJar()->setParent(nullptr);
-
-        // Will show confirmation when loading of reply is finished
-        QObject::connect(&nam, SIGNAL(finished(QNetworkReply*)), &reply_reader, SLOT(read_reply(QNetworkReply*)));
-
         // Send the request
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         nam.post(request, post_data.encodedQuery());
 #else
-        nam.post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        QNetworkReply* reply = NetworkReplyReader::nam->post(
+                    request, post_data.query().toUtf8());
 #endif
+
+        // Will show confirmation when loading of reply is finished
+        QObject::connect(reply, SIGNAL(finished()),
+                         &reply_reader, SLOT(read_reply()));
 
         // Then we wait for the NetworkReplyReader to answer yes.
     }else{

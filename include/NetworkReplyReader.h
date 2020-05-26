@@ -11,12 +11,13 @@ class NetworkReplyReader : public QObject
 public:
     explicit NetworkReplyReader(QObject *parent = nullptr);
     static QNetworkCookieJar* cookie_jar;
+    static QNetworkAccessManager* nam;
     void print(QString s);
 
 signals:
     
 public slots:
-    void read_reply(QNetworkReply* reply);
+    void read_reply();
     
 };
 

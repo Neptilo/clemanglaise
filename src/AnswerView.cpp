@@ -10,6 +10,7 @@
 #include "QuestionView.h"
 #include "resource_utils.h"
 #include "string_utils.h"
+#include "NetworkReplyReader.h"
 
 AnswerView::AnswerView(Test *test, QWidget *parent):
     WordView(test, parent)
@@ -83,8 +84,8 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     } else {
         const QUrl url("https://neptilo.com/php/clemanglaise/set_score.php");
         QNetworkRequest request(url);
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-        QNetworkAccessManager* nam = new QNetworkAccessManager(this); // has to be a pointer because otherwise it will be destroyed at the end of the function and not send the data.
+        request.setHeader(QNetworkRequest::ContentTypeHeader,
+                          "application/x-www-form-urlencoded");
 
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         QUrl post_data;
@@ -95,7 +96,8 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         QUrlQuery post_data;
         post_data.addQueryItem("id", word_data["id"]);
         post_data.addQueryItem("correct", QString::number(correct));
-        nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        NetworkReplyReader::nam->disconnect();
+        NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
 #endif
     }
     // Left/upper part

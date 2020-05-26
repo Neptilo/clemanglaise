@@ -16,7 +16,6 @@ AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget
     create_button(tr("&Create"), this),
     database_manager(database_manager),
     dst_edit(this),
-    nam(nullptr),
     name_edit(this),
     src_edit(this),
     status(this),
@@ -118,26 +117,21 @@ void AddListView::add_online_list()
     post_data.addQueryItem("flag", test_flag);
     const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/add_list");
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    nam = new QNetworkAccessManager(this);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,
+                      "application/x-www-form-urlencoded");
 
-    // By default, nam takes ownership of the cookie jar.
-    nam->setCookieJar(NetworkReplyReader::cookie_jar);
-
-    // Unset the cookie jar's parent so it is not deleted when nam is deleted,
-    // and can still be used by other NAMs.
-    nam->cookieJar()->setParent(nullptr);
-
-    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(show_confirmation(QNetworkReply*)));
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
         nam->post(request, post_data.encodedQuery());
 #else
-        nam->post(request, post_data.query(QUrl::FullyEncoded).toUtf8());
+        QNetworkReply* reply = NetworkReplyReader::nam->post(
+                    request, post_data.query().toUtf8());
 #endif
+        connect(reply, SIGNAL(finished()), this, SLOT(show_confirmation()));
 }
 
-void AddListView::show_confirmation(QNetworkReply *reply)
+void AddListView::show_confirmation()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     const QString error(reply->readAll().replace('\0', ""));
     if(error == "")
         emit created(nullptr);
