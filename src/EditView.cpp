@@ -2,9 +2,7 @@
 #include <QtNetwork>
 #include <QDebug>
 #include <QTextDocument>
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-#   include <QUrlQuery>
-#endif
+#include <QUrlQuery>
 #include <QStandardItem>
 #include <QStandardItemModel>
 
@@ -212,11 +210,7 @@ void EditView::edit_word(){
         // Show confirmation
         show_confirmation(success);
     } else {
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        QUrl post_data;
-#else
         QUrlQuery post_data;
-#endif
         post_data.addQueryItem("list_id", QString::number(test->get_id()));
         for (QHash<QString, QString>::iterator i = word_data.begin(); i != word_data.end(); ++i)
             post_data.addQueryItem(i.key(), i.value());
@@ -227,11 +221,7 @@ void EditView::edit_word(){
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
         // Send the request
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        nam.post(request, post_data.encodedQuery());
-#else
         QNetworkReply* reply = NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
-#endif
 
         // Will show confirmation when loading of reply is finished
         connect(reply, SIGNAL(finished()), this, SLOT(show_confirmation()));

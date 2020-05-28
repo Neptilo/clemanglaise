@@ -306,34 +306,24 @@ void TestView::update_question(int){
 void TestView::delete_list()
 {
     QMessageBox::StandardButton ret = QMessageBox::question(
-                this,
-                tr("Confirm deletion"),
-                tr("Are you sure you want to delete the vocabulary list \"<b>%1</b>\"?").arg(test.get_name())
-            #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-                , QMessageBox::Yes | QMessageBox::No
-            #endif
-                );
+        this,
+        tr("Confirm deletion"),
+        tr("Are you sure you want to delete the vocabulary list \"<b>%1</b>\"?")
+                .arg(test.get_name()));
     if(ret == QMessageBox::Yes){
         if(test.is_remote()){
             // request to PHP file
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-            QUrl post_data;
-#else
             QUrlQuery post_data;
-#endif
             post_data.addQueryItem("list_id", QString::number(test.get_id()));
             const QUrl url("https://neptilo.com/php/clemanglaise/delete_list.php");
             QNetworkRequest request(url);
-            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+            request.setHeader(QNetworkRequest::ContentTypeHeader,
+                              "application/x-www-form-urlencoded");
 
             // Send the request
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-            nam->post(request, post_data.encodedQuery());
-#else
             QNetworkReply* reply = NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
             connect(reply, SIGNAL(finished()),
                     this, SLOT(read_delete_list_reply()));
-#endif
         }else{
             // offline
             if (database_manager->delete_list(test.get_id()))

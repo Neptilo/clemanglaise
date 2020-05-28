@@ -2,9 +2,7 @@
 
 #include <QRegExp>
 #include <QtNetwork>
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-#   include <QUrlQuery>
-#endif
+#include <QUrlQuery>
 
 #include "InterfaceParameters.h"
 #include "QuestionView.h"
@@ -86,19 +84,11 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader,
                           "application/x-www-form-urlencoded");
-
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        QUrl post_data;
-        post_data.addQueryItem("id", word_data["id"]);
-        post_data.addQueryItem("correct", QString::number(correct));
-        nam->post(request, post_data.encodedQuery());
-#else
         QUrlQuery post_data;
         post_data.addQueryItem("id", word_data["id"]);
         post_data.addQueryItem("correct", QString::number(correct));
         NetworkReplyReader::nam->disconnect();
         NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
-#endif
     }
     // Left/upper part
     if(handwriting){

@@ -79,12 +79,6 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv); // Needs to be done before using any signals
 
-#if QT_VERSION < 0x050000
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-#endif
-
     srand(time(nullptr));
 
     // Before the conditional because it has to be still there during the
@@ -103,23 +97,16 @@ int main(int argc, char *argv[])
     if(use_password){
 
         // Connect as administrator
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        QUrl post_data;
-#else
         QUrlQuery post_data;
-#endif
         post_data.addQueryItem("password", password.c_str());
         const QUrl url("https://neptilo.com/php/clemanglaise/login.php");
         QNetworkRequest request(url);
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+        request.setHeader(QNetworkRequest::ContentTypeHeader,
+                          "application/x-www-form-urlencoded");
 
         // Send the request
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        nam.post(request, post_data.encodedQuery());
-#else
         QNetworkReply* reply = NetworkReplyReader::nam->post(
                     request, post_data.query().toUtf8());
-#endif
 
         // Will show confirmation when loading of reply is finished
         QObject::connect(reply, SIGNAL(finished()),

@@ -160,15 +160,9 @@ void SingleImportWizard::read_tag_reply() {
         progress_page.set_status(
                     tr("Looking for tag <b>%1</b> in local database")
                     .arg(tag_names.at(i).trimmed()));
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        QRegExp re(
-                    "\\s*" + QRegExp::escape(tag_names.at(i).trimmed()) + "\\s*",
-                    Qt::CaseInsensitive);
-#else
         QRegularExpression re(
-                    "\\s*" + QRegularExpression::escape(tag_names.at(i).trimmed()) + "\\s*",
-                    QRegularExpression::CaseInsensitiveOption);
-#endif
+            "\\s*" + QRegularExpression::escape(tag_names.at(i).trimmed()) + "\\s*",
+            QRegularExpression::CaseInsensitiveOption);
         database_manager->find_tags(reply_list); // reply_list's contents are replaced
         int tag_name_ind = reply_list.indexOf(re);
         if (tag_name_ind >= 0) {

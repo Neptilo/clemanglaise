@@ -2,9 +2,7 @@
 
 #include <QDebug>
 #include <QFormLayout>
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-#   include <QUrlQuery>
-#endif
+#include <QUrlQuery>
 
 #include "NetworkReplyReader.h"
 #include "iso_mapping.h"
@@ -106,11 +104,7 @@ void AddListView::add_online_list()
         return;
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        QUrl post_data;
-#else
-        QUrlQuery post_data;
-#endif    
+    QUrlQuery post_data;
     post_data.addQueryItem("name", name_edit.text());
     post_data.addQueryItem("src", src_test);
     post_data.addQueryItem("dst", dst_test);
@@ -120,13 +114,9 @@ void AddListView::add_online_list()
     request.setHeader(QNetworkRequest::ContentTypeHeader,
                       "application/x-www-form-urlencoded");
 
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        nam->post(request, post_data.encodedQuery());
-#else
-        QNetworkReply* reply = NetworkReplyReader::nam->post(
-                    request, post_data.query().toUtf8());
-#endif
-        connect(reply, SIGNAL(finished()), this, SLOT(show_confirmation()));
+    QNetworkReply* reply = NetworkReplyReader::nam->post(
+                request, post_data.query().toUtf8());
+    connect(reply, SIGNAL(finished()), this, SLOT(show_confirmation()));
 }
 
 void AddListView::show_confirmation()

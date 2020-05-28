@@ -78,8 +78,6 @@ void SearchView::find_tags() {
     }
 }
 
-
-
 void SearchView::search() {
     if(update_view)
         layout->removeWidget(update_view);
@@ -292,32 +290,22 @@ void SearchView::action(int row, int col)
         layout->addWidget(update_view);
     }else if(col == 1){
         QMessageBox::StandardButton ret = QMessageBox::question(
-                    this,
-                    tr("Confirm deletion"),
-                    tr("Are you sure you want to delete the entry \"<b>%1</b>\"?").arg(reply_list.at(row*nb_cols+word_keys.indexOf("word")))
-            #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-                    , QMessageBox::Yes | QMessageBox::No
-            #endif
-                    );
+            this,
+            tr("Confirm deletion"),
+            tr("Are you sure you want to delete the entry \"<b>%1</b>\"?")
+                    .arg(reply_list.at(row*nb_cols+word_keys.indexOf("word"))));
         if(ret == QMessageBox::Yes){
             if (test->is_remote()) {
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-                QUrl post_data;
-#else
                 QUrlQuery post_data;
-#endif
                 post_data.addQueryItem("id", reply_list.at(row*nb_cols));
                 const QUrl url("https://neptilo.com/php/clemanglaise/delete_word.php");
                 QNetworkRequest request(url);
-                request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+                request.setHeader(QNetworkRequest::ContentTypeHeader,
+                                  "application/x-www-form-urlencoded");
 
                 // Send the request
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-                nam.post(request, post_data.encodedQuery());
-#else
                 QNetworkReply* reply = NetworkReplyReader::nam->post(
                             request, post_data.query().toUtf8());
-#endif
                 connect(reply, SIGNAL(finished()), this, SLOT(read_delete_reply()));
             } else {
                 int id = reply_list.at(row*nb_cols).toInt();

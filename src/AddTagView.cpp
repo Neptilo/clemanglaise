@@ -3,9 +3,7 @@
 #include <QStandardItemModel>
 #include <QListView>
 #include <QTableView>
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-#   include <QUrlQuery>
-#endif
+#include <QUrlQuery>
 
 #include "AddTagView.h"
 #include "CheckableItemDelegate.h"
@@ -70,11 +68,7 @@ void AddTagView::edit_tag(){
         database_manager->add_tag(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
         show_confirmation();
     } else {
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        QUrl post_data;
-#else
         QUrlQuery post_data;
-#endif
         post_data.addQueryItem("id", this->default_values.at(0));
         QString line = ampersand_escape(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
         post_data.addQueryItem("tag", line);
@@ -83,12 +77,8 @@ void AddTagView::edit_tag(){
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
         // Send the request
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-        nam2->post(request, post_data.encodedQuery());
-#else
         QNetworkReply* reply = NetworkReplyReader::nam->post(
                     request, post_data.query().toUtf8());
-#endif
 
         // Will show confirmation when loading of reply is finished
         connect(reply, SIGNAL(finished()), this, SLOT(read_edit_tag_reply()));
