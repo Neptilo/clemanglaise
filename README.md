@@ -6,42 +6,55 @@ This program creates vocabulary tests in different languages using words from an
 
 ### Usual method, working on Linux, Mac or Windows
 
-  * First Qt must be installed on your computer. 
+  * First, install Qt **with the Open Source licence**.
+    * Download and run [the online installer](https://www.qt.io/download-thank-you) 
+    * At *Select Components* step, expand *Qt 5.14.2* and select the relevant components for the architectures on which you wish to deploy the app.
 
-    * [Qt installer for MAC 64 bits](http://download.qt-project.org/official_releases/online_installers/qt-mac-opensource-1.4.0-x86_64-online.dmg "download link for Mac") 
-    * [Qt installer for Linux 64 bits](http://download.qt-project.org/official_releases/online_installers/qt-linux-opensource-1.4.0-x86_64-online.run "download link for Linux") 
-    * [Qt installer for Windows](http://download.qt-project.org/official_releases/online_installers/qt-windows-opensource-1.4.0-x86-online.exe "Qt installer for Windows")
-
+      **E.g:** for Windows, tick *MinGW 7.3.0 64-bit*. For Android, tick *Android*.
   * Open the project **clemanglaise.pro** with QtCreator.
-  * Compile with qmake in the compilation tab.
-  * Compile the project (hotkey: `CTRL+B`).
+  * If you intend to deploy the app on Android, there is some more preparative work to do. Please follow [these steps](doc/android.md) (only for Linux users) and come back here when you're done.
+  * Compile the project (hotkey: `CTRL+B`). (This will also run `qmake` before compiling.)
+  * Since OpenSSL is not included in Qt and that I didn't want to include it in the repository, you'll need to download it yourself:
+    * To build on Windows:
+      * Download and extract [this zip](https://bintray.com/vszakats/generic/download_file?file_path=openssl-1.1.1d-win64-mingw.zip)(1).
+      * In the extracted folder, copy `libcrypto-1_1-x64.dll` and `libssl-1_1-x64.dll` to the folder where Clemanglaise was built (in the same folder as `clemanglaise.exe`).
+    * To build on Android:
+      * In [this repository](https://github.com/PurpleI2P/OpenSSL-for-Android-Prebuilt/tree/master/openssl-1.1.1)(1), find the `libcrypto.so.1.1` and `libssl.so.1.1` files for your target architecture (e.g. for my Android phone, it was `armeabi-v7a`) and download them in a folder named `lib` at the root of the project directory.
+      * Rename them to `libcrypto_1_1.so` and `libssl_1_1.so`.
+
+      Even though these libs are not in the exact version we should be using (it should be 1.1.1d), it works and I think that's good enough for now.
+    * On Linux, if you have some version of OpenSSL 1.1.x installed on your system, it should work without having to do anything more.
+    * On Mac, I haven't tested (let me know if you do), but I hope it's the same as on Linux.
   * Run the project (hotkey: `CTRL+R`) and enjoy!
 
-If you are an **administrator** after opening the project, you have to set a password argument
-to run the application.
+If you have been granted the **administrator** rights to the project's database, you have to set a password argument to run the application.
 
-  * To do it follow this path : **Projets > Paramètres d'exécution**
-  * Then set Arguments to `-p PASSWORD` or `--password PASSWORD`
+  * To do it, go to **Projects mode > Run Settings**
+  * Then set Arguments to `-p <pwd>` or `--password <pwd>`, replacing `<pwd>` with the password.
   * If you want to open help wizard set Arguments to `-h` or `-?` or `--help`	
 
 ### For command-line users
 
 To compile it:
 
-  * Create a directory `bin_clemanglaise` located in the same parent directory as
-    clemanglaise
-  * Check that the location of the `qmake` or `qmake-qt4` is in your `$PATH` variable.
-  * If you have `qmake-qt4` create a symbolic link with `qmake` 
+  * Create a `bin_clemanglaise` directory located in the same parent directory as clemanglaise.
+  * Check that the location of the `qmake` is in your `$PATH` variable.
   * Don't regenerate the project file, use the one provided in the repository.
-  * go into `bin_clemanglaise` directory
-  * Type `qmake <path2clemanglaise.pro>` in the command line.
+  * Go into `bin_clemanglaise` directory
+  * Type `qmake <path>` in the command line, replacing `<path>` with the path to `clemanglaise.pro`.
   * Type `make` in the command line.
 
-To run the application, type `./clemanglaise` in the command line if you are using Linux, or `open clemanglaise.app` if you are using the Mac.
+Add the necessary OpenSSL libs to your build folder: follow the step about OpenSSL in the previous section describing the *Usual method*.
 
-To run the application as an **administrator** type `./clemanglaise -p` and type the
-password.
+To run the application, type:
+* `./clemanglaise` in the command line if you are using Linux,
+* `clemanglaise.exe` if you are using Windows,
+* `open clemanglaise.app` if you are using the Mac.
 
-To show help wizard type `./clemanglaise -h|-?|--help`
+To run the application with **administrator** rights to the database, type `<cmd> -p <pwd>`, replacing `<cmd>` with the command mentioned above, and `<pwd>` with the password.
+
+To show help wizard, type `<cmd> -h`, replacing `<cmd>` with the command mentioned above.
 
 Enjoy!
+
+(1) To find OpenSSL libraries of a specific version, go [here](https://wiki.openssl.org/index.php/Binaries).

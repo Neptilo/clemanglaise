@@ -1,11 +1,13 @@
-#ifndef SEARCHFRAME_H
-#define SEARCHFRAME_H
+#ifndef SEARCHVIEW_H
+#define SEARCHVIEW_H
 
-#include <QWidget>
-#include <QtNetwork>
+#include <QListWidget>
 #include <QTableWidget>
 #include <QPushButton>
+#include <QWidget>
+#include <QtNetwork>
 
+#include "CheckableComboBox.h"
 #include "Test.h"
 #include "EditView.h"
 
@@ -13,25 +15,43 @@ class SearchView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SearchView(Test &test, bool modifiable = false, QWidget *parent = 0);
+    explicit SearchView(Test *test, DatabaseManager *database_manager, bool modifiable = false, QWidget *parent = nullptr);
     ~SearchView();
+
     void read_reply(QString reply_string);
+    void read_reply_tags();//(QString reply_string = "");
+    bool go_back();
 
 private:
-    QLineEdit* search_bar;
-    QNetworkAccessManager nam;
-    QTableWidget* result;
-    Test test;
+    void search();
+
+    Test *test;
     QStringList reply_list;
-    EditView* update_frame;
+    QStringList reply_list_tag;
     bool modifiable;
+    DatabaseManager *database_manager;
+    QStringList word_keys;
+    QList<int> selected_tags;
+
+    // GUI
+    QBoxLayout *layout;
+    QLineEdit *search_bar;
+    QPushButton *OK_button;
+    QTableWidget *result;
+    EditView *update_view;
+    QLabel *status;
+    CheckableComboBox *tags_box;
 
 public slots:
-    void search();
-    void read_reply(QNetworkReply * reply);
-    void back();
+    void find_tags();
+    void read_reply();
     void action(int row, int col);
+
+private slots:
+    void read_used_tags_reply();
+    void read_delete_reply();
+    void update_selected_tags(QModelIndex top_left, QModelIndex bottom_right);
     void refresh();
 };
 
-#endif // SEARCHFRAME_H
+#endif // SEARCHVIEW_H

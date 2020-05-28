@@ -9,15 +9,16 @@
 class LanguageButtons : public QWidget{
     Q_OBJECT
 public:
-    LanguageButtons(const QList<Test>& tests, QWidget *parent, const QStringList & flags);
+    LanguageButtons(const QList<Test>& tests, bool new_button, QWidget *parent = nullptr);
     void disconnect_all();
+private:
+    QSignalMapper signal_mapper;
+
+private slots:
+    void forward_click(QObject *obj);
 
 signals:
-    void clicked(const QString &text);
-
-private:
-    QSignalMapper *signal_mapper;
-    
+    void clicked(Test *test);
 };
 
 #endif // LANGUAGEBUTTONS_H

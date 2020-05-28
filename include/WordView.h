@@ -1,5 +1,5 @@
-#ifndef WORDFRAME_H
-#define WORDFRAME_H
+#ifndef WORDVIEW_H
+#define WORDVIEW_H
 
 #include <QWidget>
 #include <QBoxLayout>
@@ -13,21 +13,24 @@ class WordView : public QWidget
     Q_OBJECT
 
 protected:
-    Test test;
-    QHBoxLayout* horizontal_layout;
-    QVBoxLayout* right_vertical_layout;
+    Test *test;
+    QBoxLayout* main_layout;
+    QVBoxLayout* handwriting_layout;
     QVBoxLayout* vertical_layout;
     bool handwriting;
     QPushButton* OK_button;
 
+    void resizeEvent(QResizeEvent *);
 
 public:
-    WordView(Test &test, QWidget *parent);
+    WordView(Test *test, QWidget *parent);
     
 signals:
     
 public slots:
 
+private slots:
+    void update_layouts(int);
 };
 
-#endif // WORDFRAME_H
+#endif // WORDVIEW_H

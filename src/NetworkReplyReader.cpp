@@ -1,24 +1,32 @@
+#include "NetworkReplyReader.h"
+
 #include <iostream>
 
 #include <QObject>
 #include <QtNetwork>
 
-#include "NetworkReplyReader.h"
-#include "HomeWindow.h"
+#include "HomeView.h"
 
 NetworkReplyReader::NetworkReplyReader(QObject *parent) :
     QObject(parent)
 {
+    // By default, nam takes ownership of the cookie jar.
+    nam->setCookieJar(cookie_jar);
 }
 
-QNetworkCookieJar* NetworkReplyReader::cookie_jar = new QNetworkCookieJar(0);
+QNetworkCookieJar* NetworkReplyReader::cookie_jar =
+        new QNetworkCookieJar(nullptr);
 
-void NetworkReplyReader::read_reply(QNetworkReply* reply)
+QNetworkAccessManager* NetworkReplyReader::nam =
+        new QNetworkAccessManager(nullptr);
+
+void NetworkReplyReader::read_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     reply->deleteLater();
     if(reply->readAll().toInt()){
         print(tr("Connection established"));
-        HomeWindow* w = new HomeWindow(true);
+        HomeView* w = new HomeView(true);
         w->show();
     }else{
         print(tr("Wrong password"));

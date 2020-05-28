@@ -1,198 +1,381 @@
-#include "string_utils.h"
 #include "TestView.h"
-#include "ThemeView.h"
+
+#include <QAction>
+#include <QApplication>
+#include <QMessageBox>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QStandardItem>
+#include <QStandardItemModel>
+#include <QStyleFactory>
+#include <QTimer>
+#include <QToolButton>
+#include <QWizard>
+
+#include "AndroidStyle.h"
+#include "import_wizard/DstListPage.h"
+#include "import_wizard/DuplicatePage.h"
+#include "import_wizard/ListImportWizard.h"
+#include "import_wizard/SingleImportWizard.h"
+#include "InterfaceParameters.h"
 #include "NetworkReplyReader.h"
+#include "resource_utils.h"
+#include "AddTagView.h"
 
-//#include "iostream"
-
-TestView::TestView(Test &test, QString str_title, bool admin, QWidget *parent):
+TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QWidget *parent):
     QWidget(parent),
-    question_frame(NULL),
-    answer_frame(NULL),
-    add_theme_frame(NULL),
-    update_theme_frame(NULL),
-    add_frame(NULL),
-    update_frame(NULL),
-    search_frame(NULL),
-    request(NULL),
-    nam(NULL),
-    nam_themes(),
-    reply_list(),
-    layout(NULL),
-    theme(NULL),
-    title(NULL),
-    back_button(NULL),
-    add_theme_button(NULL),
-    add_button(NULL),
-    search_button(NULL),
-    update_button(NULL),
-    test(test),
-    themes(NULL),
-    parser(NULL),
-    admin(admin)
+    add_view(nullptr),
+    add_tag_view(nullptr),
+    admin(admin),
+    answer_view(nullptr),
+    database_manager(database_manager),
+    question_view(nullptr),
+    request(nullptr),
+    search_view(nullptr),
+    status(this),
+    test(test, this),
+    title(nullptr),
+    update_view(nullptr),
+    add_button(nullptr),
+    search_button(nullptr),
+    import_button(nullptr),
+    delete_button(nullptr),
+    tags_box(nullptr)
 {
-    title = new QLabel(str_title, this);
-    title->setAlignment(Qt::AlignHCenter);
-    layout = new QVBoxLayout(this);
-    answer_frame = new AnswerView(test, this);
+    // has to be consistent with the actual query in the PHP file
+    word_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "pronunciation" << "hint" << "tag_ids";
 
-    layout->addWidget(title);
-
-    theme = new QLabel(tr("<i>Choose a theme</i>"), this);
-    layout->addWidget(theme);
-    themes = new QComboBox(this);
-    // set the ComboBox to that width.
-    themes->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-    layout->addWidget(themes);
-
-    back_button = new QPushButton(tr("Go &back to tests list"), this);
-    back_button->setIcon(QIcon::fromTheme("go-home", QIcon(getImgPath("go-home.png"))));
-    connect(back_button, SIGNAL(clicked()), this, SLOT(go_back()));
-    layout->addWidget(back_button);
-
-    if(!test.isRemoteWork() || admin){
-        add_theme_button = new QPushButton(tr("Add a &theme"), this);
-        add_theme_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
-        connect(add_theme_button, SIGNAL(clicked()), this, SLOT(add_theme()));
-        layout->addWidget(add_theme_button);
-
-        add_button = new QPushButton(tr("Add a &word"), this);
-        add_button->setIcon(QIcon::fromTheme("list-add",QIcon(getImgPath("list-add.png"))));
-        connect(add_button, SIGNAL(clicked()), this, SLOT(add_word()));
-        layout->addWidget(add_button);
-
-        update_button = new QPushButton(tr("&Edit this word entry"), this);
-        update_button->setIcon(QIcon::fromTheme("accessories-text-editor", QIcon(getImgPath("accessories-text-editor.png"))));
-        connect(update_button, SIGNAL(clicked()), this, SLOT(update_word()));
-        layout->addWidget(update_button);
-    }
-
-    search_button = new QPushButton(tr("&Search for words"), this);
-    search_button->setIcon(QIcon::fromTheme("edit-find", QIcon(getImgPath("edit-find.png"))));
-    connect(search_button, SIGNAL(clicked()), this, SLOT(search()));
-    layout->addWidget(search_button);
-
-    if (!test.isRemoteWork())
-        parser = new Parser(test.getSrc() + test.getDst());
-
+    create_actions();
+    create_interface();
     init();
-    connect(&nam_themes, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply_themes(QNetworkReply*)));
 }
 
 TestView::~TestView(){
     delete request;
-    delete parser;
+}
+
+void TestView::create_actions()
+{
+    back_action = new QAction(
+                getIcon("go-previous"), tr("Go &back to test list"), this);
+    back_action->setShortcut(QKeySequence::Back);
+    connect(back_action, SIGNAL(triggered()), this, SLOT(go_back()));
+
+    if (!test.is_remote() || admin) {
+        add_action = new QAction(getIcon("list-add"), tr("Add a &word"), this);
+        add_action->setShortcut(QKeySequence::New);
+        connect(add_action, SIGNAL(triggered()), this, SLOT(add_word()));
+
+        add_tag_action = new QAction(getIcon("list-add"), tr("Add a &tag"), this);
+        connect(add_tag_action, SIGNAL(triggered()), this, SLOT(add_tag()));
+    }
+
+    search_action = new QAction(
+                getIcon("edit-find"), tr("&Search for words"), this);
+    search_action->setShortcut(QKeySequence::Find);
+    connect(search_action, SIGNAL(triggered()), this, SLOT(search()));
+
+    if (test.is_remote()) {
+        import_action = new QAction(
+                    getIcon("document-save"), tr("&Import this vocabulary list"), this);
+        import_action->setShortcut(QKeySequence::Save);
+        connect(import_action, SIGNAL(triggered()), this, SLOT(import_list()));
+    }
+
+    delete_action = new QAction(
+                getIcon("edit-delete"), tr("&Delete this vocabulary list"), this);
+    connect(delete_action, SIGNAL(triggered()), this, SLOT(delete_list()));
+}
+
+void TestView::create_interface()
+{
+    layout = new QVBoxLayout(this);
+
+    // header
+    header_layout = new QHBoxLayout;
+    back_button = new QToolButton(this);
+    init_button(back_button);
+    back_button->setDefaultAction(back_action);
+    QString title_str = QString("<b>%1</b> (%2)")
+            .arg(test.get_name())
+            .arg(test.is_remote()?tr("online"):tr("offline"));
+    title = new QLabel(title_str, this);
+    title->setAlignment(Qt::AlignCenter);
+    title->setFixedHeight(InterfaceParameters::widget_unit);
+    layout->addLayout(header_layout);
+    header_layout->addWidget(back_button);
+    header_layout->addWidget(title, Qt::AlignCenter);
+
+    answer_view = new AnswerView(&test, this);
+
+    tool_bar_layout = new QHBoxLayout;
+    if (!test.is_remote() || admin) {
+        add_button = new QToolButton(this);
+        init_button(add_button);
+        add_button->setDefaultAction(add_action);
+        add_button->addAction(add_tag_action);
+        tool_bar_layout->addWidget(add_button);
+    }
+    search_button = new QToolButton(this);
+    init_button(search_button);
+    search_button->setDefaultAction(search_action);
+    tool_bar_layout->addWidget(search_button);
+    if (test.is_remote()) {
+        import_button = new QToolButton(this);
+        init_button(import_button);
+        import_button->setDefaultAction(import_action);
+        tool_bar_layout->addWidget(import_button);
+    }
+    if (!test.is_remote() || admin) {
+        delete_button = new QToolButton(this);
+        init_button(delete_button);
+        delete_button->setDefaultAction(delete_action);
+        tool_bar_layout->addWidget(delete_button);
+    }
+    tags_box = new CheckableComboBox(this);
+    tags_box->setFixedHeight(InterfaceParameters::widget_unit);
+    tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    tool_bar_layout->addWidget(tags_box);
+    layout->addLayout(tool_bar_layout);
+}
+
+void TestView::init_button(QToolButton *button)
+{
+    if (button) {
+        button->setFixedSize(InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+        button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
+    }
 }
 
 // This function is called every time the user comes back from another view.
 void TestView::init()
 {
-    question_frame = new QuestionView(test, this);
-    layout->addWidget(question_frame);
-    update_request();
-    nam = new QNetworkAccessManager(this);
-    connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(read_reply(QNetworkReply*)));
-    nam->get(*request);
-    find_themes();
-
-    // Show everything
-    if(!test.isRemoteWork() || admin){
-        update_button->show();
-        add_theme_button->show();
-        add_button->show();
+    if (test.is_remote()) {
+        question_view = new QuestionView(&test, admin, this);
+        layout->addWidget(question_view);
+        update_request();
+        QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
+    }else{
+        if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
+            QString word = word_data["word"];
+            QString hint = word_data["hint"];
+            question_view = new QuestionView(&test, admin, this);
+            layout->addWidget(question_view);
+            question_view->ask_question(word, hint);
+        }else{
+            QString error(database_manager->pop_last_error());
+            if(error == "")
+                status.setText(tr("The selected list is currently empty."));
+            else
+                status.setText(tr("<b>SQLite error: </b>")+error);
+            layout->addWidget(&status);
+            status.show();
+        }
     }
-    theme->show();
-    themes->show();
-    back_button->show();
-    search_button->show();
+    find_tags();
+
+    if (back_button)
+        back_button->show();
+    if (add_button)
+        add_button->show();
+    if (search_button)
+        search_button->show();
+    if (import_button)
+        import_button->show();
+    if (delete_button)
+        delete_button->show();
+    if (tags_box)
+        tags_box->show();
+}
+
+void TestView::shrink(){
+    resize(0,0); //minimumSizeHint());
 }
 
 void TestView::update_request() {
+    // If 0 is in the list, remove it and set untagged to true to say we also want to look for untagged words, else set it to false.
+    QList<int> selected_tags_copy(selected_tags);
+    bool untagged = selected_tags_copy.removeOne(0);
+    QStringList selected_tags_str;
+    for(int i = 0; i < selected_tags_copy.length(); ++i)
+        selected_tags_str << QString::number(selected_tags_copy.at(i));
     // Request to PHP or local file
-	QUrl url;
-	int index = themes->currentIndex();
-    QString root = test.getSrc() + test.getDst();
-	if (test.isRemoteWork()) {
-        url = QUrl("http://neptilo.com/php/clemanglaise/find_lowest.php?lang=" + root +"&id_theme="+themes->itemData(index).toString());
-	} else {
-		if (!index || (index && index < 0)) {
-			parser->parse(parser->getFilein());
-        } else {
-			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
-		}
-		url = QUrl(Parser::get_working_path(parser->getFileout()));
-	}
-    delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request stays the same.)
+    QUrl url;
+    url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3")
+               .arg(test.get_id())
+               .arg(selected_tags_str.join(","))
+               .arg(untagged));
+    delete request; // It cannot be deleted before because it still has to be available when a new question is loaded. (The request remains the same.)
     request = new QNetworkRequest(url);
 }
 
-void TestView::read_reply(QNetworkReply* reply){
-    if(question_frame){ // If question_frame is deleted, that means the user has changed the frame to another one before the NAM request was finished, so we want to ignore the NAM's reply.
+void TestView::read_reply(){
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+    QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if(status_code.toInt() != 200){
+        status.setText(reply->readAll().replace('\0', ""));
+        layout->addWidget(&status);
+        status.show();
+        return;
+    }
+    status.hide();
+    if(question_view){ // If question_frame is deleted, that means the user has changed the view to another one before the NAM request was finished, so we want to ignore the NAM's reply.
         // Store the lines of the reply in the "reply_list" attribute
-        QString reply_string(reply->readAll());
+        QString reply_string(reply->readAll().replace('\0', ""));
         reply->deleteLater();
-        reply_list = test.isRemoteWork()?reply_string.split('\n'):reply_string.split(QRegExp(ENDL));
+        if(reply_string.isEmpty())
+            question_view->show_error(tr("The selected list is currently empty."));
+        else{
+            QStringList word_values = reply_string.split('\n');
+            for(int i = 0; i < word_keys.size(); ++i)
+                word_data[word_keys.at(i)] = word_values.at(i);
 
-        // Everything is ready for the question frame to ask the question.
-        QString word = reply_list.at(1);
-        if (test.isRemoteWork()) {
-            QString theme = reply_list.at(9);
-            question_frame->ask_question(word, theme);
-        } else {
-            int id_theme = reply_list.at(6).toInt();
-            question_frame->ask_question(word, Parser::getTheme(id_theme));
+            // Everything is ready for the question view to ask the question.
+            question_view->ask_question(word_data["word"], word_data["hint"]);
         }
+    }
+}
+
+void TestView::read_delete_list_reply()
+{
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+    QString reply_string(reply->readAll().replace('\0', ""));
+    reply->deleteLater();
+    if(reply_string.isEmpty())
+        delete this;
+    else{
+        status.setText(reply->readAll().replace('\0', ""));
+        layout->addWidget(&status);
+        status.show();
     }
 }
 
 void TestView::validate_question(){
 
     // Create a new answer frame
-    delete answer_frame;
-    answer_frame = new AnswerView(reply_list, question_frame->getAnswer(), test, this);
-    layout->addWidget(answer_frame);
+    delete answer_view;
+    answer_view = new AnswerView(word_data, question_view->get_answer(), &test, database_manager, this);
+    layout->addWidget(answer_view);
 }
 
 void TestView::validate_answer() {
-	int index = themes->currentIndex();
-	QString root = test.getSrc() + test.getDst(); 
-
     // Remove everything
-    delete question_frame;
-    question_frame = NULL;
-    if(answer_frame)
-        answer_frame->hide();
+    delete question_view;
+    question_view = nullptr;
+    if(answer_view)
+        answer_view->hide();
 
     // Create a new question frame
-    question_frame = new QuestionView(test, this); // Is it deleted somewhere? It should because of "new".
-    layout->addWidget(question_frame);
+    question_view = new QuestionView(&test, admin, this); // Is it deleted somewhere? It should because of "new".
+    layout->addWidget(question_view);
 
     // Request for a new question
-	if (!test.isRemoteWork()) {
-		if (!index || (index && index < 0)) {
-			parser->parse(parser->getFilein());
-        } else {
-			parser->parse(root + "/" + themes->itemData(index).toString() + "_" + themes->itemText(index));
-		}
+    if (!test.is_remote()) {
+        if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
+            QString word = word_data["word"];
+            QString hint = word_data["hint"];
+            question_view->ask_question(word, hint);
+        }else{
+            QString error(database_manager->pop_last_error());
+            if(error == "")
+                status.setText(tr("The selected list is currently empty."));
+            else
+                status.setText(tr("<b>SQLite error: </b>")+error);
+            layout->addWidget(&status);
+            status.show();
+        }
+    } 
+    else
+    {
+        QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     }
-    nam->get(*request);
 }
 
-void TestView::update_question(int){
-    update_request();
+void TestView::update_question(){
+    if (test.is_remote())
+        update_request();
     validate_answer();
 }
 
-void TestView::add_theme()
+void TestView::update_question(int){
+    update_question();
+}
+
+void TestView::delete_list()
+{
+    QMessageBox::StandardButton ret = QMessageBox::question(
+        this,
+        tr("Confirm deletion"),
+        tr("Are you sure you want to delete the vocabulary list \"<b>%1</b>\"?")
+                .arg(test.get_name()));
+    if(ret == QMessageBox::Yes){
+        if(test.is_remote()){
+            // request to PHP file
+            QUrlQuery post_data;
+            post_data.addQueryItem("list_id", QString::number(test.get_id()));
+            const QUrl url("https://neptilo.com/php/clemanglaise/delete_list.php");
+            QNetworkRequest request(url);
+            request.setHeader(QNetworkRequest::ContentTypeHeader,
+                              "application/x-www-form-urlencoded");
+
+            // Send the request
+            QNetworkReply* reply = NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
+            connect(reply, SIGNAL(finished()),
+                    this, SLOT(read_delete_list_reply()));
+        }else{
+            // offline
+            if (database_manager->delete_list(test.get_id()))
+                delete this;
+            else {
+                QString error(database_manager->pop_last_error());
+                if(error == "")
+                    status.setText(tr("Deletion failed."));
+                else
+                    status.setText(tr("<b>SQLite error: </b>")+error);
+                layout->addWidget(&status);
+                status.show();
+            }
+        }
+    }
+}
+
+void TestView::delete_word()
+{
+    qDebug() << tr("Not implemented yet"); // TODO
+}
+
+void TestView::update_selected_tags(QModelIndex top_left, QModelIndex)
+{
+    QMap<int, QVariant> item_data = tags_box->model()->itemData(top_left);
+    int map_size = item_data.size();
+    int variant = item_data[Qt::UserRole].toInt();
+    switch (item_data[Qt::CheckStateRole].toInt()) {
+    case Qt::Checked:
+        if (map_size > 2)
+            selected_tags << variant ;
+        break;
+    case Qt::Unchecked:
+        if (map_size > 2)
+            selected_tags.removeOne(variant);
+        break;
+    default:
+        qDebug() << tr("Wrong check state value");
+        break;
+    }
+    update_question();
+}
+
+void TestView::add_tag()
 {
     remove_widgets();
 
     // Create a new add frame
     QStringList default_values_list;
     default_values_list << "" << "";
-    add_theme_frame = new ThemeView(test, tr("<b>Add a new theme</b>"), default_values_list, tr("Add"), "add_theme", tr("Theme successfully added!"), this);
-    layout->addWidget(add_theme_frame);
-    connect(add_theme_frame, SIGNAL(destroyed()), this, SLOT(init()));
+    add_tag_view = new AddTagView(&test, tr("<b>Add a new tag</b>"), default_values_list, tr("Add"), "add_tag", tr("Tag successfully added!"), database_manager, this);
+    layout->addWidget(add_tag_view);
 }
 
 void TestView::add_word()
@@ -200,13 +383,11 @@ void TestView::add_word()
     remove_widgets();
 
     // Create a new add frame
-    QStringList default_values_list;
-	//word << meaning << nature << comment << exple << id_theme << pronunciation << score<< theme
-
-    default_values_list << "" << "" << "" << "" << "" << "" << "" << "" << "" << "";
-    add_frame = new EditView(test, tr("<b>Add a new word</b>"), default_values_list, tr("Add"), "add", tr("Word successfully added!"), this);
-    layout->addWidget(add_frame);
-    connect(add_frame, SIGNAL(destroyed()), this, SLOT(init()));
+    QHash<QString, QString> default_values;
+    for(int i = 0; i < word_keys.size(); ++i)
+        default_values[word_keys.at(i)] = "";
+    add_view = new EditView(&test, tr("<b>Add a new word</b>"), default_values, tr("Add"), "add_word", tr("Word successfully added!"), database_manager, this);
+    layout->addWidget(add_view);
 }
 
 void TestView::update_word()
@@ -214,9 +395,8 @@ void TestView::update_word()
     remove_widgets();
 
     // Create a new add frame
-    update_frame = new EditView(test, tr("<b>Edit a word entry</b>"), reply_list, tr("Edit"), "update", tr("Word successfully edited!"), this);
-    layout->addWidget(update_frame);
-    connect(update_frame, SIGNAL(destroyed()), this, SLOT(init()));
+    update_view = new EditView(&test, tr("<b>Edit a word entry</b>"), word_data, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
+    layout->addWidget(update_view);
 }
 
 void TestView::search()
@@ -224,60 +404,135 @@ void TestView::search()
     remove_widgets();
 
     // Create a new search frame
-    search_frame = new SearchView(test, !test.isRemoteWork()||admin, this);
-    layout->addWidget(search_frame);
-    connect(search_frame, SIGNAL(destroyed()), this, SLOT(init()));
+    search_view = new SearchView(&test, database_manager, !test.is_remote()||admin, this);
+    layout->addWidget(search_view);
 }
 
 void TestView::go_back() {
-	delete this;
+    if (search_view) {
+        if (!search_view->go_back()) {
+            delete search_view;
+            search_view = nullptr;
+            init();
+        } // Else search_view already handled the go back action.
+    } else if (
+            add_view ||
+            add_tag_view ||
+            update_view) {
+        delete add_view;
+        delete add_tag_view;
+        delete update_view;
+        add_view = nullptr;
+        add_tag_view = nullptr;
+        update_view = nullptr;
+        init();
+    } else
+        delete this;
 }
 
-void TestView::find_themes() {
-	if (!test.isRemoteWork()) {
+void TestView::find_tags() {
+    if (!test.is_remote()) {
         // Offline
-        Parser p(test.getSrc() + test.getDst());
-        read_reply(p.search("", Parser::getThemeFile()));
-	} else { 
-		// Request to PHP file
-        const QUrl url = QUrl("http://neptilo.com/php/clemanglaise/find_used_themes.php?lang=" + test.getSrc() + test.getDst());
-		QNetworkRequest request(url);
-		nam_themes.get(request);
-	}
+        database_manager->find_used_tags(test.get_id(), tag_reply_list);
+        read_reply("");
+    } else {
+        // Request to PHP file
+        const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test.get_id()));
+        QNetworkRequest request(url);
+        QNetworkReply* reply = NetworkReplyReader::nam->get(request);
+        connect(reply, SIGNAL(finished()), this, SLOT(read_reply_tags()));
+    }
 }
 
-void TestView::read_reply_themes(QNetworkReply* reply)
+void TestView::read_reply_tags()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+
     // Store the lines of the reply in the "reply_list" attribute
-    QString reply_string = reply->readAll();
+    QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
-	read_reply(reply_string);
+    read_reply(reply_string);
 }
 
 void TestView::read_reply(QString reply_string) {
-    QStringList reply_list(reply_string.split('\n', QString::SkipEmptyParts));
-    themes->disconnect();
-    themes->clear();
-    themes->addItem("---");
-	for(int i=0, l = reply_list.count(); i<l-1; i+=2) {
-		themes->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
-    }    
-    connect(themes, SIGNAL(currentIndexChanged(int)), this, SLOT(update_question(int)));
+    if (test.is_remote())
+        tag_reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+
+    // fill the tag combo box
+    tags_box->disconnect();
+    tags_box->clear();
+    int l = tag_reply_list.size()/2;
+    QStandardItemModel *model = new QStandardItemModel(l+2, 1);
+    QStandardItem* item = new QStandardItem(tr("Filter by tags"));
+    model->setItem(0, 0, item);
+    item->setSizeHint(QSize(0, InterfaceParameters::widget_unit));
+    item = new QStandardItem(tr("Without any tags"));
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setData(Qt::Unchecked, Qt::CheckStateRole);
+    model->setItem(1, 0, item);
+    for (int i = 0; i < l; ++i) {
+        item = new QStandardItem(tag_reply_list.at(2*i+1).trimmed());
+        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+        item->setData(Qt::Unchecked, Qt::CheckStateRole);
+        item->setData(QVariant(tag_reply_list.at(2*i).toInt()), Qt::UserRole);
+        model->setItem(i+2, 0, item);
+    }
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(update_selected_tags(QModelIndex,QModelIndex)));
+    tags_box->setModel(model);
 }
 
 void TestView::remove_widgets()
 {
-    delete question_frame;
-    question_frame = NULL;
-    delete answer_frame;
-    answer_frame = NULL;
-    if(!test.isRemoteWork() || admin){
-        update_button->hide();
-        add_theme_button->hide();
+    delete question_view;
+    question_view = nullptr;
+    delete answer_view;
+    answer_view = nullptr;
+    if (add_button)
         add_button->hide();
-    }
-    theme->hide();
-    themes->hide();
-    back_button->hide();
-    search_button->hide();
+    if (search_button)
+        search_button->hide();
+    if (import_button)
+        import_button->hide();
+    if (delete_button)
+        delete_button->hide();
+    if (tags_box)
+        tags_box->hide();
+    status.hide();
+}
+
+void TestView::import_word()
+{
+    SingleImportWizard import_wizard(database_manager, word_data, nullptr, this);
+    if(import_wizard.exec())
+        // Show confirmation
+        status.setText(tr("Import succeeded!"));
+    else
+        status.setText(import_wizard.get_error());
+    layout->addWidget(&status);
+    status.show();
+}
+
+void TestView::import_list()
+{
+    ListImportWizard import_wizard(database_manager, &test, this);
+    if(import_wizard.exec())
+        // Show confirmation
+        status.setText(tr("Import succeeded!"));
+    else
+        status.setText(import_wizard.get_error());
+    layout->addWidget(&status);
+    status.show();
+}
+
+void TestView::resizeEvent(QResizeEvent *)
+{
+    init_button(back_button);
+    init_button(add_button);
+    init_button(search_button);
+    init_button(import_button);
+    init_button(delete_button);
+    if (title)
+        title->setFixedHeight(InterfaceParameters::widget_unit);
+    if (tags_box)
+        tags_box->setFixedHeight(InterfaceParameters::widget_unit);
 }

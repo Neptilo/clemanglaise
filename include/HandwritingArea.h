@@ -15,7 +15,7 @@ public:
     void paintEvent(QPaintEvent *event);
 
 private:
-    void drawLineTo(const QPoint &endPoint);
+    void draw_line_to(const QPoint &endPoint);
     bool scribbling;
     QImage image;
     QPoint lastPoint;

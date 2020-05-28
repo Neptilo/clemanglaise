@@ -1,0 +1,21 @@
+syntax: glob
+*.autosave
+*.user*
+*.o
+*.swp
+clemanglaise
+*~
+moc_*
+Makefile
+file_out
+.qmake.cache
+*.app
+*.orig
+html
+latex
+Doxyfile
+gource
+enfr
+defr
+qrc_clemanglaise.cpp
+lib

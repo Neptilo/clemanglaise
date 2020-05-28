@@ -1,34 +1,43 @@
 #include "WordView.h"
 
-WordView::WordView(Test& test, QWidget *parent) :
+#include <QApplication>
+#include <QDesktopWidget>
+#include <InterfaceParameters.h>
+
+WordView::WordView(Test *test, QWidget *parent) :
     QWidget(parent),
     test(test),
-    horizontal_layout(NULL),
-    right_vertical_layout(NULL),
-    vertical_layout(NULL),
+    main_layout(nullptr),
+    handwriting_layout(nullptr),
+    vertical_layout(nullptr),
     handwriting(false),
-    OK_button(NULL)
+    OK_button(nullptr)
 {
 
     // List of languages for which we want a handwriting widget
     QStringList list;
     list << "ja" << "zh";
-    handwriting = list.contains(test.getDst());
+    handwriting = list.contains(test->get_dst());
     if(handwriting){
         // We want a place for a character handwriting widget.
         // Layout is a horizontal one composed of two vertical layouts. The one on the right is for character handwriting.
         // The widget is set as horizontal_layout's parent so it will use this layout as default.
-        horizontal_layout = new QHBoxLayout(this);
-        right_vertical_layout = new QVBoxLayout();
-        vertical_layout = new QVBoxLayout();
+        delete main_layout;
+        if (window()->width() > window()->height())
+            main_layout = new QHBoxLayout(this);
+        else
+            main_layout = new QVBoxLayout(this);
+        handwriting_layout = new QVBoxLayout;
+        vertical_layout = new QVBoxLayout;
         // The sub-layouts are automatically parented to the main layout.
-        horizontal_layout->addLayout(right_vertical_layout);
-        horizontal_layout->addLayout(vertical_layout);
+        main_layout->addLayout(handwriting_layout);
+        main_layout->addLayout(vertical_layout);
     }else{
         // We don't need a character handwriting widget.
         // Layout is just a vertical one.
         vertical_layout = new QVBoxLayout(this);
     }
+    connect(QApplication::desktop(), SIGNAL(resized(int)), this, SLOT(update_layouts(int)));
 }
 
 /*
@@ -36,3 +45,18 @@ WordView::WordView(Test& test, QWidget *parent) :
     * Either pointers do not point to anything, we don't use them, so they will be destroyed at the same time as the widget.
     * Or they point to a layout whose parent is the widget or another layout, so Qt will destroy them at the same time as their parents.
 */
+
+void WordView::update_layouts(int)
+{
+    delete main_layout;
+    if (window()->width() > window()->height())
+        main_layout = new QHBoxLayout(this);
+    else
+        main_layout = new QVBoxLayout(this);
+}
+
+void WordView::resizeEvent(QResizeEvent *)
+{
+    if (OK_button)
+        OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
+}

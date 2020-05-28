@@ -1,6 +1,7 @@
-#ifndef QUESTIONFRAME_H
-#define QUESTIONFRAME_H
+#ifndef QUESTIONVIEW_H
+#define QUESTIONVIEW_H
 
+#include <QAction>
 #include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
@@ -13,20 +14,40 @@ class QuestionView : public WordView{
     Q_OBJECT
 
 public:
-    QuestionView(Test &test, QWidget *parent);
+    QuestionView(Test *test, bool admin, QWidget *parent);
     ~QuestionView();
 
-    QString getAnswer();
-    void ask_question(const QString& word, const QString& theme);
-	//static void set_button(QToolButton* button, const QString& text, const QString & icon_path);
+    QString get_answer();
+    void ask_question(const QString &word, const QString &hint);
+    void show_error(const QString &error);
 
 private:
-    QLabel* label;
-    QLineEdit* edit;
-    HandwritingArea* handwriting_area;
+    bool admin;
+
+    HandwritingArea *handwriting_area;
+
+    // GUI
+    QBoxLayout *top_layout;
+    QLabel *label;
+    QToolButton *edit_button;
+    QToolButton *import_button;
+    QToolButton *delete_button;
+    QBoxLayout *input_layout;
+    QLineEdit *edit;
+
+    // actions
+    QAction *edit_action;
+    QAction *import_action;
+    QAction *delete_action;
+
+    void create_actions();
+    void init_button(QToolButton *button);
 
 public slots:
     void disable_validation();
+
+protected:
+    void resizeEvent(QResizeEvent *event);
 };
 
-#endif // QUESTIONFRAME_H
+#endif // QUESTIONVIEW_H

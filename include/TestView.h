@@ -1,15 +1,17 @@
-#ifndef TESTFRAME_H
-#define TESTFRAME_H
+#ifndef TESTVIEW_H
+#define TESTVIEW_H
 
 #include <QPushButton>
+#include <QToolBar>
 
-#include "QuestionView.h"
 #include "AnswerView.h"
-#include "ThemeView.h"
+#include "CheckableComboBox.h"
+#include "DatabaseManager.h"
 #include "EditView.h"
+#include "QuestionView.h"
 #include "SearchView.h"
 #include "Test.h"
-#include "Parser.h" 
+#include "AddTagView.h"
 
 #if defined(Q_OS_WIN)
 const QString ENDL="\\r\\n";
@@ -23,50 +25,82 @@ class TestView : public QWidget{
     Q_OBJECT
     
 public:
-    TestView(Test &test, QString str_title="", bool admin = false, QWidget *parent = 0);
+    TestView(Test &test, DatabaseManager *database_manager, bool admin = false, QWidget *parent = nullptr);
     ~TestView();
+
     void read_reply(QString reply_string);
 
 private:
-    QuestionView* question_frame;
-    AnswerView* answer_frame;
-    ThemeView* add_theme_frame;
-    ThemeView* update_theme_frame;
-    EditView* add_frame;
-    EditView* update_frame;
-    SearchView* search_frame;
-    QNetworkRequest* request; // is a pointer because it cannot be initialized without a URL
-    QNetworkAccessManager* nam;
-    QNetworkAccessManager nam_themes;
-    QStringList reply_list;
-    QLayout* layout;
-	QLabel* theme;
-	QLabel* title;
-    QPushButton* back_button;
-    QPushButton* add_theme_button;
-    QPushButton* add_button;
-    QPushButton* search_button;
-    QPushButton* update_button;
-    Test test;
-	QComboBox *themes;
-    Parser* parser; // pointer because for offline work it doesn't need to be defined.
+    EditView *add_view;
+    AddTagView *add_tag_view;
     bool admin;
+    AnswerView *answer_view;
+    DatabaseManager *database_manager;
+    QuestionView *question_view;
+    QHash<QString, QString> word_data;
+    QStringList tag_reply_list;
+    QNetworkRequest *request; // is a pointer because it cannot be initialized without a URL
+    SearchView *search_view;
+    QLabel status;
+    Test test;
+    QLabel *title;
+    QPushButton *update_button;
+    EditView *update_view;
+    QStringList word_keys;
+    QList<int> selected_tags;
+
+    // GUI
+    QBoxLayout *layout;
+    QBoxLayout *header_layout;
+    QBoxLayout *tool_bar_layout;
+    QToolButton *back_button;
+
+    QToolButton *add_button;
+    QToolButton *search_button;
+    QToolButton *import_button;
+    QToolButton *delete_button;
+    CheckableComboBox *tags_box;
+
+    // actions
+    QAction *back_action;
+    QAction *add_action;
+    QAction *add_tag_action;
+    QAction *search_action;
+    QAction *import_action;
+    QAction *delete_action;
+
     void remove_widgets();
+    void create_actions();
+    void create_interface();
+    void init_button(QToolButton *button);
 
 public slots:
     void init();
+    void shrink();
     void update_request();
-    void read_reply(QNetworkReply* reply);
-    void read_reply_themes(QNetworkReply* reply);
+    void read_reply();
+    void read_delete_list_reply();
+    void read_reply_tags();
     void validate_question();
     void validate_answer();
-	void find_themes(); 
-    void add_theme();
+    void find_tags();
+    void add_tag();
     void add_word();
     void update_word();
     void search();
-	void go_back();
+    void go_back();
+    void update_question();
     void update_question(int);
+    void delete_list();
+    void import_word();
+    void import_list();
+
+protected:
+    void resizeEvent(QResizeEvent *);
+
+private slots:
+    void delete_word();
+    void update_selected_tags(QModelIndex top_left, QModelIndex bottom_right);
 };
 
-#endif // TESTFRAME_H
+#endif // TESTVIEW_H

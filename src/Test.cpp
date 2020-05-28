@@ -1,45 +1,69 @@
+#include "Test.h"
+
+#include <QDebug>
 #include <QObject>
 #include <QStringList>
 
-#include "Test.h"
-
-Test::Test(int id, const QString& name, const QString& src, const QString& dst, const bool remote) {
-    this->id = id;
-    this->name = name;
-    this->src = src;
-    this->dst = dst;
-    this->remote = remote;
+Test::Test(int id, const QString &name, const QString &src, const QString &dst, const QString &flag, const bool remote, QObject *parent) :
+    QObject(parent),
+    id(id),
+    name(name),
+    src(src),
+    dst(dst),
+    flag(flag),
+    remote(remote)
+{
 }
 
-int Test::getId() const
+Test::Test(const Test& other, QObject *parent) :
+    QObject(parent),
+    id(other.id),
+    name(other.name),
+    src(other.src),
+    dst(other.dst),
+    flag(other.flag),
+    remote(other.remote)
+{
+}
+
+int Test::get_id() const
 {
     return id;
 }
 
-const QString& Test::getName() const{
+QString Test::get_name() const{
     return name;
 }
 
-const QString &Test::getSrc(){
+QString Test::get_src() const{
     return src;
 }
 
-const QString &Test::getDst(){
+QString Test::get_dst() const{
     return dst;
 }
 
-bool Test::isRemoteWork() const {
-	return remote;
+QString Test::get_flag() const
+{
+    return flag;
 }
 
-void Test::setRemoteWork(bool where) {
-    this->remote = where;
+bool Test::is_remote() const {
+    return remote;
 }
 
-void Test::addTheme(const QString& theme) {
-	this->themes.insert(theme);
+void Test::set_remote(bool remote) {
+    this->remote = remote;
 }
 
-QSet<QString>& Test::getThemes() {
-	return this->themes;
+Test &Test::operator=(const Test &other)
+{
+    id = other.id;
+    name = other.name;
+    src = other.src;
+    dst = other.dst;
+    flag = other.flag;
+    remote = other.remote;
+    setParent(other.parent());
+    return *this;
 }
