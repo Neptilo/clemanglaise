@@ -182,13 +182,13 @@ void HomeView::resizeEvent(QResizeEvent *)
         if (InterfaceParameters::orientation == Qt::LandscapeOrientation) {
             InterfaceParameters::orientation = Qt::PortraitOrientation;
             if (test_buttons->isVisible())
-                init();
+                test_buttons->layout_buttons();
         }
     } else {
         if (InterfaceParameters::orientation == Qt::PortraitOrientation) {
             InterfaceParameters::orientation = Qt::LandscapeOrientation;
             if (test_buttons->isVisible())
-                init();
+                test_buttons->layout_buttons();
         }
     }
 }

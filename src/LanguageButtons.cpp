@@ -33,8 +33,6 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
                     QIcon(":/img/flags/"+test->get_flag()+".png"),
                     test->get_name(),
                     this);
-        if (InterfaceParameters::orientation == Qt::PortraitOrientation)
-            button->set_tool_button_style(Qt::ToolButtonTextUnderIcon);
         button->setToolTip(tr("from ") + toTitleCase(LANG_MAP.value(test->get_src())) + tr(" to ") + toTitleCase(LANG_MAP.value(test->get_dst())));
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         button->set_icon_size(QSize(2*fontMetrics().height(),
@@ -42,22 +40,40 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
         signal_mapper.setMapping(button, (QObject *) test);
         connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout->addWidget(button, i/w, i%w); // so height and width of layout are approximately the same
+        buttons.push_back(button);
     }
     if(new_button){
         MultilinePushButton *button = new MultilinePushButton(
                     getIcon("list-add"),
                     tr("New list"),
                     this);
-        if (InterfaceParameters::orientation == Qt::PortraitOrientation)
-            button->set_tool_button_style(Qt::ToolButtonTextUnderIcon);
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         button->set_icon_size(QSize(2*fontMetrics().height(),
                                     2*fontMetrics().height()));
         signal_mapper.setMapping(button, (QObject *) nullptr);
         connect(button, SIGNAL(clicked()), &signal_mapper, SLOT(map()));
         layout->addWidget(button, l/w, l%w);
+        buttons.push_back(button);
     }
     connect(&signal_mapper, SIGNAL(mapped(QObject *)), this, SLOT(forward_click(QObject *)));
+    layout_buttons();
+}
+
+void LanguageButtons::layout_buttons()
+{
+    for (MultilinePushButton* button : buttons)
+    {
+        switch (InterfaceParameters::orientation)
+        {
+        case Qt::PortraitOrientation:
+            button->set_tool_button_style(Qt::ToolButtonTextUnderIcon);
+            break;
+        case Qt::LandscapeOrientation:
+            button->set_tool_button_style(Qt::ToolButtonTextBesideIcon);
+            break;
+        default: ;
+        }
+    }
 }
 
 void LanguageButtons::disconnect_all(){
