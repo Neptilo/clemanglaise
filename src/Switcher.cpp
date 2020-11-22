@@ -22,6 +22,7 @@ Switcher::Switcher(Qt::Orientation orientation, const QString &first_str, const 
         layout = new QVBoxLayout(this);
         slider.setMaximumHeight(slider_max_length);
         slider.setMinimumHeight(slider_min_length);
+        break;
     default:
         layout = nullptr;
         break;
