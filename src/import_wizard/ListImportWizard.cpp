@@ -150,12 +150,12 @@ void ListImportWizard::read_reply()
     const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(src_test->get_id()));
     progress_page.set_status(tr("Retrieving tag names from server"));
     QNetworkReply* tag_reply = NetworkReplyReader::nam->get(QNetworkRequest(url));
-    connect(tag_reply, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(read_tag_reply(QNetworkReply*)));
+    connect(tag_reply, SIGNAL(finished()), this, SLOT(read_tag_reply()));
 }
 
-void ListImportWizard::read_tag_reply(QNetworkReply* reply)
+void ListImportWizard::read_tag_reply()
 {
+    auto reply = qobject_cast<QNetworkReply*>(sender());
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
     QStringList tag_reply_list = reply_string.split('\n', QString::SkipEmptyParts);
