@@ -50,7 +50,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
             standardized_answer = numbers_to_accents(standardized_answer, " ");
         else if(test->get_dst() == "ar")
             standardized_answer = ASCII_to_DIN(standardized_answer, false);
-        correct_answers = pronunciation;
+        correct_answers = ampersand_unescape(pronunciation);
     }else{
         standardized_answer = ampersand_unescape(standardized_answer);
         standardized_answer = remove_diacritics(standardized_answer);
