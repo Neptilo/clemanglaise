@@ -91,13 +91,19 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
     }
     // Left/upper part
-    if(handwriting){
-        QLabel* handwriting_label = new QLabel("<span>"+meaning+"</span>", this);
-        QFont font("HanWang KaiBold-Gb5", 50);
-        handwriting_label->setFont(font);
-        handwriting_label->setAlignment(Qt::AlignRight);
-        handwriting_layout->addWidget(handwriting_label);
-    }
+    QLabel* handwriting_label = new QLabel("<span>"+meaning+"</span>", this);
+    QStringList non_alphabetic_langs;
+    non_alphabetic_langs << "ja" << "zh";
+    QStringList non_ASCII_langs;
+    non_ASCII_langs << "ja" << "zh" << "ar";
+    QFont font(non_alphabetic_langs.contains(test->get_dst()) ?
+                   "HanWang KaiBold-Gb5" :
+                   handwriting_label->font().family(),
+               // print non-ASCII languages in big letters
+               non_ASCII_langs.contains(test->get_dst()) ? 40 : 20);
+    handwriting_label->setFont(font);
+    handwriting_label->setAlignment(Qt::AlignHCenter);
+    handwriting_layout->addWidget(handwriting_label);
 
     // Right/lower part
 
@@ -123,21 +129,18 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
     QLayout *answer_headline_layout = new QHBoxLayout;
     vertical_layout->addLayout(answer_headline_layout);
     QLabel *answer_headline_label;
-    if (handwriting)
-        answer_headline_label = new QLabel("<b>"+word+"</b> <i>"+nature+"</i>: "+pronunciation, this);
-    else{
-        QString answer = "<b>"+word+"</b> <i>"+nature+"</i>: "+meaning;
+    QString answer = "<b>"+word+"</b> <i>"+nature+"</i>";
 
-        if (!pronunciation.isEmpty())
-            // Show pronunciation in brackets for IPA, or else between slashes.
-            // The languages asking for pronunciation happen to be the ones
-            // not written with the IPA.
-            answer += languages_asking_pronunciation.contains(test->get_dst()) ?
-                        "\n<b>/"+ pronunciation +"/</b>" :
-                        "\n<b>["+ pronunciation +"]</b>";
-
-        answer_headline_label = new QLabel(answer, this);
+    if (!pronunciation.isEmpty()) {
+        // Show pronunciation in brackets for IPA, or else between slashes.
+        // The languages asking for pronunciation happen to be the ones
+        // not written with the IPA.
+        answer += ": " + (languages_asking_pronunciation.contains(test->get_dst()) ?
+                    "<b>/"+ pronunciation +"/</b>" :
+                    "<b>["+ pronunciation +"]</b>");
     }
+
+    answer_headline_label = new QLabel(answer, this);
     answer_headline_label->setWordWrap(true);
     answer_headline_layout->addWidget(answer_headline_label);
 

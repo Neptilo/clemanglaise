@@ -17,7 +17,6 @@ protected:
     QBoxLayout* main_layout;
     QVBoxLayout* handwriting_layout;
     QVBoxLayout* vertical_layout;
-    bool handwriting;
     QPushButton* OK_button;
 
     void resizeEvent(QResizeEvent *);

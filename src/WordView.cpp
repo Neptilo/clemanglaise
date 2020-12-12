@@ -10,33 +10,21 @@ WordView::WordView(Test *test, QWidget *parent) :
     main_layout(nullptr),
     handwriting_layout(nullptr),
     vertical_layout(nullptr),
-    handwriting(false),
     OK_button(nullptr)
 {
-
-    // List of languages for which we want a handwriting widget
-    QStringList list;
-    list << "ja" << "zh";
-    handwriting = list.contains(test->get_dst());
-    if(handwriting){
-        // We want a place for a character handwriting widget.
-        // Layout is a horizontal one composed of two vertical layouts. The one on the right is for character handwriting.
-        // The widget is set as horizontal_layout's parent so it will use this layout as default.
-        delete main_layout;
-        if (window()->width() > window()->height())
-            main_layout = new QHBoxLayout(this);
-        else
-            main_layout = new QVBoxLayout(this);
-        handwriting_layout = new QVBoxLayout;
-        vertical_layout = new QVBoxLayout;
-        // The sub-layouts are automatically parented to the main layout.
-        main_layout->addLayout(handwriting_layout);
-        main_layout->addLayout(vertical_layout);
-    }else{
-        // We don't need a character handwriting widget.
-        // Layout is just a vertical one.
-        vertical_layout = new QVBoxLayout(this);
-    }
+    // We want a place for a character handwriting widget.
+    // Layout is a horizontal one composed of two vertical layouts. The one on the right is for character handwriting.
+    // The widget is set as horizontal_layout's parent so it will use this layout as default.
+    delete main_layout;
+    if (window()->width() > window()->height())
+        main_layout = new QHBoxLayout(this);
+    else
+        main_layout = new QVBoxLayout(this);
+    handwriting_layout = new QVBoxLayout;
+    vertical_layout = new QVBoxLayout;
+    // The sub-layouts are automatically parented to the main layout.
+    main_layout->addLayout(handwriting_layout);
+    main_layout->addLayout(vertical_layout);
     connect(QApplication::desktop(), SIGNAL(resized(int)), this, SLOT(update_layouts(int)));
 }
 

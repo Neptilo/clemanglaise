@@ -64,9 +64,12 @@ QString QuestionView::get_answer(){
 }
 
 void QuestionView::ask_question(const QString& word, const QString &hint) {
+    // List of languages for which we want a handwriting widget
+    QStringList handwriting_langs;
+    handwriting_langs << "ja" << "zh";
 
     // Left/upper part
-    if(handwriting){
+    if (handwriting_langs.contains(test->get_dst())){
         QLabel *handwriting_label = new QLabel(tr("Draw the characters in the box below. (You can then check them for yourself.)"), this);
         handwriting_label->setWordWrap(true);
         handwriting_layout->addWidget(handwriting_label);
