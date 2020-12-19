@@ -50,12 +50,15 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
             standardized_answer = numbers_to_accents(standardized_answer, " ");
         else if(test->get_dst() == "ar")
             standardized_answer = ASCII_to_DIN(standardized_answer, false);
+
+        // Standardize correct answers
         correct_answers = ampersand_unescape(pronunciation);
     }else{
-        standardized_answer = ampersand_unescape(standardized_answer);
-        standardized_answer = remove_diacritics(standardized_answer);
-        correct_answers = ampersand_unescape(meaning);
-        correct_answers = remove_diacritics(correct_answers);
+        // Standardize player answer before checking
+        standardized_answer = remove_diacritics(ampersand_unescape(standardized_answer));
+
+        // Standardize correct answers
+        correct_answers = remove_diacritics(ampersand_unescape(meaning));
     }
     QStringList correct_answer_list = correct_answers.split(",");
     for (int i = 0; i < correct_answer_list.size(); ++i) {

@@ -14,7 +14,9 @@ QString ampersand_unescape(const QString &string);
 QStringList ampersand_unescape(const QStringList &list);
 QString remove_diacritics(const QString &string);
 QStringList remove_diacritics(const QStringList &list);
-QString number_to_accent(const QString letter, int accent_number);
+
+// from a pinyin letter and the number of a Mandarin tone, return the corresponding accented Unicode character
+QChar number_to_accent(const QChar& letter, int accent_number);
 
 // transcribes a pinyin pronunciation in number format or with accents into the pronunciation with accents only
 // If `sep` is not empty, replaces all non-alphanumeric characters between syllables by `sep`

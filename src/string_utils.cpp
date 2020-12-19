@@ -122,87 +122,86 @@ QStringList remove_diacritics(const QStringList &list)
     return ret;
 }
 
-// Don't use with ampersand_escape. It would be redundant and generate bugs.
-QString number_to_accent(const QString letter, int accent_number){
+QChar number_to_accent(const QChar& letter, int accent_number){
     if(letter == "a"){
         switch(accent_number){
             case 1:
-                return "&#257;";
+                return 257;
             case 2:
-                return "&#225;";
+                return 225;
             case 3:
-                return "&#462;";
+                return 462;
             case 4:
-                return "&#224;";
+                return 224;
             default:
-                return "a";
+                return 'a';
         }
     }else if(letter == "e"){
         switch(accent_number){
             case 1:
-                return "&#275;";
+                return 275;
             case 2:
-                return "&#233;";
+                return 233;
             case 3:
-                return "&#283;";
+                return 283;
             case 4:
-                return "&#232;";
+                return 232;
             default:
-                return "e";
+                return 'e';
         }
     }else if(letter == "i"){
         switch(accent_number){
             case 1:
-                return "&#299;";
+                return 299;
             case 2:
-                return "&#237;";
+                return 237;
             case 3:
-                return "&#464;";
+                return 464;
             case 4:
-                return "&#236;";
+                return 236;
             default:
-                return "i";
+                return 'i';
         }
     }else if(letter == "o"){
         switch(accent_number){
             case 1:
-                return "&#333;";
+                return 333;
             case 2:
-                return "&#243;";
+                return 243;
             case 3:
-                return "&#466;";
+                return 466;
             case 4:
-                return "&#242;";
+                return 242;
             default:
-                return "o";
+                return 'o';
         }
     }else if(letter == "u"){
         switch(accent_number){
             case 1:
-                return "&#363;";
+                return 363;
             case 2:
-                return "&#250;";
+                return 250;
             case 3:
-                return "&#468;";
+                return 468;
             case 4:
-                return "&#249;";
+                return 249;
             default:
-                return "u";
+                return 'u';
         }
     }else if(letter == "v"){
         switch(accent_number){
             case 1:
-                return "&#470;";
+                return 470;
             case 2:
-                return "&#472;";
+                return 472;
             case 3:
-                return "&#474;";
+                return 474;
             case 4:
-                return "&#476;";
+                return 476;
             default:
-                return "&#252;";
+                return 252;
         }
-    }else return ampersand_escape(letter);
+    }else return letter;
 }
 
 QString numbers_to_accents(const QString &string, const QString &sep){
@@ -221,7 +220,8 @@ QString numbers_to_accents(const QString &string, const QString &sep){
         pos += syllable_rx.matchedLength();
 
         // Generate new string
-        QString nucleus = number_to_accent(syllable_rx.cap(2), syllable_rx.cap(4).toInt());
+        QChar nucleus = number_to_accent(
+                            syllable_rx.cap(2).at(0), syllable_rx.cap(4).toInt());
         separation = sep.isEmpty() ? syllable_rx.cap(5) : sep;
         res += syllable_rx.cap(1)+nucleus+syllable_rx.cap(3);
     }
@@ -234,19 +234,24 @@ QString separate_pinyin(const QString &string, const QString &sep)
     // It is necessary to reverse the regular expression,
     // otherwise "ana" would be split as "an a" instead of "a na".
 
-    // backward regular expression of:
-    // "[bcdfgj-np-tw-z]?h?[iu]?(&#x?\\d+;|[aeiouv])[ioun]?g?|r"
-    QRegExp backward_syllable_rx("g?[ioun]?(;\\d+x?#&|[aeiouv])[iu]?h?[bcdfgj-np-tw-z]?|r", Qt::CaseInsensitive);
+    // backward regular expression of syllable_rx in numbers_to_accents
+    QRegExp backward_syllable_rx(
+        "g?[ioun]?([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6"
+        "\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2"
+        "\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr"
+        "])[iu]?h?[bcdfgj-np-tw-z]?|r", Qt::CaseInsensitive);
     int pos = 0;
     QStringList syllables;
-    QRegExp e_rx("(e|&#(275|233|283|232);)", Qt::CaseInsensitive);
+    QRegExp e_rx("([e\\x0113\\x00E9\\x011B\\x00E8])", Qt::CaseInsensitive);
     while ((pos = backward_syllable_rx.indexIn(reverse(string), pos)) != -1) {
         pos += backward_syllable_rx.matchedLength();
         QString syllable(reverse(backward_syllable_rx.cap(0)));
+        // if a sole (possibly accented) 'e' is followed by a sole 'r',
+        // merge them as one syllable
         if (
-                !syllables.isEmpty()
-                && syllables.at(0) == QString("r")
-                && e_rx.exactMatch(syllable))
+                !syllables.isEmpty() &&
+                syllables.at(0) == QString("r") &&
+                e_rx.exactMatch(syllable))
             syllables.replace(0, syllable+syllables.at(0));
         else
             syllables.prepend(syllable);
