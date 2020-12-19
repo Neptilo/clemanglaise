@@ -8,7 +8,7 @@ const QHash<QString, QString> ASCII_DIN_hash = make_ASCII_DIN_hash();
 
 QString toTitleCase(const QString& str)
 {
-    return str.left(1).toUpper() + str.mid(1).toLower();
+    return str.at(0).toUpper() + str.mid(1).toLower();
 }
 
 QString ampersand_escape(const QString &string) {
