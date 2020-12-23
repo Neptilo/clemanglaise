@@ -12,6 +12,7 @@ This program creates vocabulary tests in different languages using words from an
 
       **E.g:** for Windows, tick *MinGW 7.3.0 64-bit*. For Android, tick *Android*.
   * Open the project **clemanglaise.pro** with QtCreator.
+  * On Linux, run `sudo apt install libgl1-mesa-dev` to install `libGL`.
   * If you intend to deploy the app on Android, there is some more preparative work to do. Please follow [these steps](doc/android.md) (only for Linux users) and come back here when you're done.
   * Compile the project (hotkey: `CTRL+B`). (This will also run `qmake` before compiling.)
   * Since OpenSSL is not included in Qt and that I didn't want to include it in the repository, you'll need to download it yourself:
