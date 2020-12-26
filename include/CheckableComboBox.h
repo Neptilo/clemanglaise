@@ -9,7 +9,12 @@ class CheckableComboBox : public QComboBox
 
 public:
     explicit CheckableComboBox(QWidget *parent = nullptr);
-    virtual void hidePopup();
+    void hidePopup() override;
+    void paintEvent(QPaintEvent*) override;
+    void set_title(const QString& title);
+
+private:
+    QString m_title;
 };
 
 #endif // CHECKABLECOMBOBOX_H

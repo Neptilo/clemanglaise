@@ -9,15 +9,20 @@ CheckableItemDelegate::CheckableItemDelegate(QObject *parent) :
 {
 }
 
-bool CheckableItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+bool CheckableItemDelegate::editorEvent(
+        QEvent *event,
+        QAbstractItemModel *model,
+        const QStyleOptionViewItem &option,
+        const QModelIndex &index)
 {
     Q_UNUSED(option);
     if (event->type() == QEvent::MouseButtonRelease) {
         if (enabled) {
             if (index.flags() & Qt::ItemIsUserCheckable) {
                 QVariant value = index.data(Qt::CheckStateRole);
-                Qt::CheckState state = (static_cast<Qt::CheckState>(value.toInt()) == Qt::Checked
-                                        ? Qt::Unchecked : Qt::Checked);
+                Qt::CheckState state =
+                        (static_cast<Qt::CheckState>(value.toInt()) == Qt::Checked ?
+                             Qt::Unchecked : Qt::Checked);
                 return model->setData(index, state, Qt::CheckStateRole);
             } else {
                 return false;

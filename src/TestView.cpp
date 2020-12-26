@@ -462,22 +462,21 @@ void TestView::read_reply(QString reply_string) {
     tags_box->disconnect();
     tags_box->clear();
     int l = tag_reply_list.size()/2;
-    QStandardItemModel *model = new QStandardItemModel(l+2, 1);
-    QStandardItem* item = new QStandardItem(tr("Filter by tags"));
-    model->setItem(0, 0, item);
-    item->setSizeHint(QSize(0, InterfaceParameters::widget_unit));
-    item = new QStandardItem(tr("Without any tags"));
+    QStandardItemModel *model = new QStandardItemModel(l+1, 1);
+    tags_box->set_title(tr("Filter by tags"));
+    auto item = new QStandardItem(tr("Without any tags"));
     item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     item->setData(Qt::Unchecked, Qt::CheckStateRole);
-    model->setItem(1, 0, item);
+    model->setItem(0, 0, item);
     for (int i = 0; i < l; ++i) {
         item = new QStandardItem(tag_reply_list.at(2*i+1).trimmed());
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
         item->setData(Qt::Unchecked, Qt::CheckStateRole);
         item->setData(QVariant(tag_reply_list.at(2*i).toInt()), Qt::UserRole);
-        model->setItem(i+2, 0, item);
+        model->setItem(i+1, 0, item);
     }
-    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(update_selected_tags(QModelIndex,QModelIndex)));
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            this, SLOT(update_selected_tags(QModelIndex,QModelIndex)));
     tags_box->setModel(model);
 }
 

@@ -11,7 +11,10 @@ class CheckableItemDelegate : public QItemDelegate
 public:
     explicit CheckableItemDelegate(QObject *parent = nullptr);
 
-    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+    bool editorEvent(QEvent *event,
+                     QAbstractItemModel *model,
+                     const QStyleOptionViewItem &option,
+                     const QModelIndex &index);
 
     void set_enabled(bool on);
 
