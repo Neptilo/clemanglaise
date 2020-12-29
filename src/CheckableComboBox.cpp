@@ -11,12 +11,6 @@ CheckableComboBox::CheckableComboBox(QWidget *parent):
     setItemDelegate(delegate);
 }
 
-void CheckableComboBox::hidePopup()
-{
-    QComboBox::hidePopup();
-    dynamic_cast<CheckableItemDelegate *>(itemDelegate())->set_enabled(false);
-}
-
 void CheckableComboBox::paintEvent(QPaintEvent*)
 {
     QStylePainter painter(this);

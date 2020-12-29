@@ -15,11 +15,6 @@ public:
                      QAbstractItemModel *model,
                      const QStyleOptionViewItem &option,
                      const QModelIndex &index);
-
-    void set_enabled(bool on);
-
-private:
-    bool enabled;
 };
 
 #endif // CHECKABLEITEMDELEGATE_H
