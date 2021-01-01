@@ -10,7 +10,8 @@ This program creates vocabulary tests in different languages using words from an
     * Download and run [the online installer](https://www.qt.io/download-thank-you) 
     * At *Select Components* step, expand *Qt 5.14.2* and select the relevant components for the architectures on which you wish to deploy the app.
 
-      **E.g:** for Windows, tick *MinGW 7.3.0 64-bit*. For Android, tick *Android*.
+      **E.g:** for Windows, tick *MinGW 7.3.0 64-bit*. 
+    * To deploy on Android, expand *Qt 5.15.2* and check *Android*. (The *5.14.2* scripts contain bugs.)
   * Open the project **clemanglaise.pro** with QtCreator.
   * On Linux, run `sudo apt install libgl1-mesa-dev` to install `libGL`.
   * If you intend to deploy the app on Android, there is some more preparative work to do. Please follow [these steps](doc/android.md) (only for Linux users) and come back here when you're done.
@@ -19,9 +20,6 @@ This program creates vocabulary tests in different languages using words from an
     * To build on Windows:
       * Download and extract [this zip](https://bintray.com/vszakats/generic/download_file?file_path=openssl-1.1.1d-win64-mingw.zip)(1).
       * In the extracted folder, copy `libcrypto-1_1-x64.dll` and `libssl-1_1-x64.dll` to the folder where Clemanglaise was built (in the same folder as `clemanglaise.exe`).
-    * To build on Android:
-      * In [this repository](https://github.com/PurpleI2P/OpenSSL-for-Android-Prebuilt/tree/master/openssl-1.1.1)(1), find the `libcrypto.so.1.1` and `libssl.so.1.1` files for your target architecture (e.g. for my Android phone, it was `armeabi-v7a`) and download them in a folder named `lib` at the root of the project directory.
-      * Rename them to `libcrypto_1_1.so` and `libssl_1_1.so`.
 
       Even though these libs are not in the exact version we should be using (it should be 1.1.1d), it works and I think that's good enough for now.
     * On Linux, if you have some version of OpenSSL 1.1.x installed on your system, it should work without having to do anything more.

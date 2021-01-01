@@ -9,19 +9,7 @@ I first tried with Windows but it proved 100 times more difficult to install JDK
 ### Install SDK
 Download and install [the SDK](https://developer.android.com/studio#downloads).
 
-The SDK will be installed when first launching Android Studio. Take note of the installation path, which will be shown during the process. By default, it should be in ` ~/Android/Sdk`
-
-Because Qt doesn't seem able to keep up with Android Studio updates, there are always some compatibility issues to fix. Here, we need to download an older version of the SDK tools:
-
-Download and extract [this zip](https://dl.google.com/android/repository/tools_r25.2.5-linux.zip).
-
-Then, move the `tools` folder it contains into the SDK folder.
-
-### Install NDK
-Download [the NDK](https://developer.android.com/ndk/downloads)
-and extract it in a place where you can find it again later. E.g. I put it under `~/Android` where the SDK is also installed.
-
-The path must not contain spaces.
+The SDK will be installed when first launching Android Studio. Take note of the installation path, which will be shown during the process. By default, it should be in `~/Android/Sdk`
 
 ### Install JDK
 Run in command-line: `sudo apt install openjdk-8-jdk`
@@ -36,19 +24,15 @@ In the *SDK Tools* tab, tick anything that has the status "Update Available".
 Finally, click *OK*.
 
 ### Configuring Your Development Host
-Run `sudo apt install libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386`
-
-If you want to run the emulator, the following dependencies are also necessary:
-
-`sudo apt install libsdl1.2debian:i386`
 
 #### Qt Creator IDE
-Launch Qt Creator and select *Tools > Options > Devices > Android* to add the JDK, Android NDK and SDK paths.
+Launch Qt Creator and select *Tools > Options > Devices > Android* to add the JDK and SDK paths.
 
 **E.g:**
 * **JDK location:** `/usr/lib/jvm/java-8-openjdk-amd64`
 * **Android SDK location:** `~/Android/Sdk`
-* **Android NDK location:** `~/Android/android-ndk-r21`
+
+Install OpenSSL and any missing SDK tools as prompted by Qt Creator
 
 Now in the Projects tab, you should see an Android kit.
 

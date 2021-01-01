@@ -89,9 +89,18 @@ OTHER_FILES += \
     TODO.rst \
     programming_style.rst
 
+ANDROID_SSL_LIBS = $$ANDROID_SDK_ROOT/android_openssl
 ANDROID_EXTRA_LIBS = \
-    $$PWD/lib/libcrypto_1_1.so \
-    $$PWD/lib/libssl_1_1.so
+    $$ANDROID_SSL_LIBS/latest/arm/libcrypto_1_1.so \
+    $$ANDROID_SSL_LIBS/latest/arm/libssl_1_1.so \
+    $$ANDROID_SSL_LIBS/latest/arm64/libcrypto_1_1.so \
+    $$ANDROID_SSL_LIBS/latest/arm64/libssl_1_1.so \
+    $$ANDROID_SSL_LIBS/latest/x86/libcrypto_1_1.so \
+    $$ANDROID_SSL_LIBS/latest/x86/libssl_1_1.so \
+    $$ANDROID_SSL_LIBS/latest/x86_64/libcrypto_1_1.so \
+    $$ANDROID_SSL_LIBS/latest/x86_64/libssl_1_1.so
 
 DISTFILES += \
     README.md
+
+android: include($$ANDROID_SSL_LIBS/openssl.pri)
