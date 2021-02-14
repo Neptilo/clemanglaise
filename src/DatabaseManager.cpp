@@ -90,23 +90,29 @@ bool DatabaseManager::create_list_table()
 bool DatabaseManager::create_word_table()
 {
     QSqlQuery query;
-    bool success = query.exec("CREATE TABLE IF NOT EXISTS words("
-                              "id INTEGER PRIMARY KEY, "
-                              "list_id INTEGER NOT NULL, "
-                              "word TEXT NOT NULL DEFAULT '', "
-                              "meaning TEXT NOT NULL DEFAULT '', "
-                              "pronunciation TEXT DEFAULT '', "
-                              "nature VARCHAR(5) DEFAULT '', "
-                              "comment TEXT DEFAULT '', "
-                              "example TEXT DEFAULT '', "
-                              "hint TEXT DEFAULT '', "
-                              "correctly_answered INTEGER NOT NULL DEFAULT 0, "
-                              "asked INTEGER NOT NULL DEFAULT 0, "
-                              "score DECIMAL(2,2) DEFAULT 0, "
-                              "FOREIGN KEY(list_id) REFERENCES lists(ID) "
-                              "ON UPDATE CASCADE "
-                              "ON DELETE CASCADE"
-                              ")");
+    // last_results represents the last results of the player's answers, stored in bits
+    // If a word is new, we simulate an alternating sequence of correct/incorrect
+    // results, i.e. of 0s and 1s.
+    auto last_results_default = static_cast<unsigned short>(-1) / 3;
+    bool success = query.exec(QString(
+                "CREATE TABLE IF NOT EXISTS words("
+                "id INTEGER PRIMARY KEY, "
+                "list_id INTEGER NOT NULL, "
+                "word TEXT NOT NULL DEFAULT '', "
+                "meaning TEXT NOT NULL DEFAULT '', "
+                "pronunciation TEXT DEFAULT '', "
+                "nature VARCHAR(5) DEFAULT '', "
+                "comment TEXT DEFAULT '', "
+                "example TEXT DEFAULT '', "
+                "hint TEXT DEFAULT '', "
+                "correctly_answered INTEGER NOT NULL DEFAULT 0, "
+                "asked INTEGER NOT NULL DEFAULT 0, "
+                "last_results INTEGER DEFAULT %1, "
+                "score DECIMAL(2,2) DEFAULT .5, "
+                "FOREIGN KEY(list_id) REFERENCES lists(ID) "
+                "ON UPDATE CASCADE "
+                "ON DELETE CASCADE"
+                ")").arg(last_results_default));
     if(!success)
         last_error = query.lastError().text();
     return success;
@@ -486,18 +492,50 @@ bool DatabaseManager::get_tags_id(int word_id, QStringList &word_tags_id) {
 
 bool DatabaseManager::set_score(int id, const int &correct) {
     QSqlQuery query;
-    bool success = query.prepare(
-                QString("UPDATE words "
-                        "SET correctly_answered = correctly_answered + :correct, "
-                        "asked = asked + 1, "
-                        "score = ROUND((correctly_answered + :cor) * 1.0 /(asked+2), 2) "
-                        "WHERE id = :id"));
+    bool success = query.prepare("SELECT last_results FROM words WHERE id = :id");
+    query.bindValue(":id", id);
+    success &= query.exec();
+    if (!success) {
+        last_error = query.lastError().text();
+        return success;
+    }
+    success &= query.next();
+    if (!success) {
+        last_error = query.lastError().text();
+        return success;
+    }
+
+    // update last results: shift them to add the new result
+    auto last_results = static_cast<unsigned short>(query.value(0).toInt());
+    last_results = (last_results << 1) + correct;
+
+    // compute score = the average value of the bits in last_results,
+    // using Kernighan's algorithm
+    unsigned int count = 0;
+    auto max_count = CHAR_BIT * sizeof last_results;
+    unsigned short to_count = last_results;
+    while (to_count) {
+        to_count &= to_count - 1;
+        count++;
+    }
+    float score = static_cast<float>(count) / max_count;
+
+    success = query.prepare(
+                "UPDATE words "
+                "SET correctly_answered = correctly_answered + :correct, "
+                "asked = asked + 1, "
+                "last_results = :last_results, "
+                "score = ROUND(:score, 2) "
+                "WHERE id = :id");
     query.bindValue(":id", id);
     query.bindValue(":correct", correct);
-    query.bindValue(":cor", correct);
+    query.bindValue(":last_results", last_results);
+    query.bindValue(":score", score);
     success &= query.exec();
-    if(!success)
+    if(!success){
         last_error = query.lastError().text();
+        return false;
+    }
     if(query.numRowsAffected() != 1){
         last_error = QString("%1 rows were affected by the update query.").arg(query.numRowsAffected());
         return false;
