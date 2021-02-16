@@ -202,7 +202,8 @@ void TestView::update_request() {
         selected_tags_str << QString::number(selected_tags_copy.at(i));
     // Request to PHP or local file
     QUrl url;
-    url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_lowest.php?list_id=%1&tag_ids=%2&untagged=%3")
+    url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_random.php"
+                       "?list_id=%1&tag_ids=%2&untagged=%3")
                .arg(test.get_id())
                .arg(selected_tags_str.join(","))
                .arg(untagged));

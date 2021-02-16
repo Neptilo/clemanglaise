@@ -78,21 +78,9 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 
     message = correct? tr("Right!"): tr("Wrong!");
 
-    // Update score
-    if (!test->is_remote()) {
-        //Offline
+    // Update score, only if offline
+    if (!test->is_remote())
         database_manager->set_score(word_data["id"].toInt(), correct);
-    } else {
-        const QUrl url("https://neptilo.com/php/clemanglaise/set_score.php");
-        QNetworkRequest request(url);
-        request.setHeader(QNetworkRequest::ContentTypeHeader,
-                          "application/x-www-form-urlencoded");
-        QUrlQuery post_data;
-        post_data.addQueryItem("id", word_data["id"]);
-        post_data.addQueryItem("correct", QString::number(correct));
-        NetworkReplyReader::nam->disconnect();
-        NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
-    }
     // Left/upper part
     QLabel* handwriting_label = new QLabel("<span>"+meaning+"</span>", this);
     QStringList non_alphabetic_langs;
