@@ -31,7 +31,11 @@ SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modif
     status(nullptr)
 {
     // has to be consistent with the actual content of reply_list
-    word_keys << "id" << "word"  << "meaning" << "pronunciation" << "nature" << "comment" << "example" << "hint" << "score" << "tag_ids";
+    word_keys << "id" << "word"  << "meaning" << "pronunciation" << "nature" << "comment" << "example"
+              << "hint";
+    if (!test->is_remote())
+        word_keys << "score";
+    word_keys << "tag_ids";
 
     layout = new QVBoxLayout(this);
     search_bar = new QLineEdit(this);
@@ -217,7 +221,11 @@ void SearchView::read_reply(QString reply_string) {
     QStringList header_labels;
     if(modifiable)
         header_labels << "" << "";
-    header_labels << tr("Word") <<  tr("Meaning") << tr("Pronunciation") << tr("Nature") << tr("Comment") << tr("Example")  << tr("Hint") << tr("Score") << tr("Tags");
+    header_labels << tr("Word") <<  tr("Meaning") << tr("Pronunciation") << tr("Nature") << tr("Comment")
+                  << tr("Example")  << tr("Hint");
+    if (!test->is_remote())
+        header_labels << tr("Score");
+    header_labels << tr("Tags");
     int result_nb_rows(reply_list.count()/nb_cols), result_nb_cols(header_labels.size()); // the number of rows and columns in the displayed table
     result = new QTableWidget(result_nb_rows, result_nb_cols, this);
     result->setHorizontalHeaderLabels(header_labels);
