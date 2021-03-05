@@ -157,18 +157,29 @@ void TestView::init()
         QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     }else{
-        if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
-            QString word = word_data["word"];
-            QString hint = word_data["hint"];
-            question_view = new QuestionView(&test, admin, this);
-            layout->addWidget(question_view);
-            question_view->ask_question(word, hint);
+        // set initial size of a sub-list to test on
+        int count;
+        if(database_manager->count(test.get_id(), count, true)){
+            list_size_limit = std::max(1, count);
+            if(database_manager->find_lowest(
+                        test.get_id(), word_data, selected_tags, list_size_limit)){
+                QString word = word_data["word"];
+                QString hint = word_data["hint"];
+                question_view = new QuestionView(&test, admin, this);
+                layout->addWidget(question_view);
+                question_view->ask_question(word, hint);
+            }else{
+                QString error(database_manager->pop_last_error());
+                if(error == "")
+                    status.setText(tr("The selected list is currently empty."));
+                else
+                    status.setText(tr("<b>SQLite error: </b>")+error);
+                layout->addWidget(&status);
+                status.show();
+            }
         }else{
             QString error(database_manager->pop_last_error());
-            if(error == "")
-                status.setText(tr("The selected list is currently empty."));
-            else
-                status.setText(tr("<b>SQLite error: </b>")+error);
+            status.setText(tr("<b>SQLite error: </b>")+error);
             layout->addWidget(&status);
             status.show();
         }
@@ -264,8 +275,16 @@ void TestView::validate_answer() {
     // Remove everything
     delete question_view;
     question_view = nullptr;
-    if(answer_view)
+    if(answer_view){
+        // update list size depending on whether the last answer was correct
+        float size_increment = static_cast<float>(list_size_limit)/
+                               (1<<asked_in_this_session++);
+        list_size_limit = answer_view->get_correct() ?
+                              list_size_limit+std::max(1.f, size_increment) :
+                              std::max(1.f, list_size_limit-2.f/3*size_increment);
+
         answer_view->hide();
+    }
 
     // Create a new question frame
     question_view = new QuestionView(&test, admin, this); // Is it deleted somewhere? It should because of "new".
@@ -273,7 +292,10 @@ void TestView::validate_answer() {
 
     // Request for a new question
     if (!test.is_remote()) {
-        if(database_manager->find_lowest(test.get_id(), word_data, selected_tags)){
+        int count;
+        database_manager->count(test.get_id(), count, true);
+        if(database_manager->find_lowest(
+                    test.get_id(), word_data, selected_tags, std::min(count+1, list_size_limit))){
             QString word = word_data["word"];
             QString hint = word_data["hint"];
             question_view->ask_question(word, hint);

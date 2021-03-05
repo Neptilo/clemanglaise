@@ -15,9 +15,11 @@ class AnswerView: public WordView{
 public:
     AnswerView(Test *test, QWidget *parent);
     AnswerView(const QHash<QString, QString> &word_data, const QString &player_answer, Test *test, DatabaseManager * database_manager, QWidget *parent);
+    bool get_correct();
 
 private:
     DatabaseManager *database_manager;
+    bool correct;
 };
 
 #endif // ANSWERVIEW_H

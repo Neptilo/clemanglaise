@@ -27,7 +27,11 @@ public:
     bool delete_word(const int& id);
 
     // find word entry having the lowest score
-    bool find_lowest(int test_id, QHash<QString, QString> &word_data, QList<int> tag_ids);
+    bool find_lowest(int test_id,
+                     QHash<QString, QString> &word_data,
+                     QList<int> tag_ids,
+                     int list_size_limit);
+
     bool find_tags(QStringList& reply_list);
     bool find_used_tags(int test_id, QStringList& reply_list);
     QList<Test> get_lists();
@@ -42,7 +46,7 @@ public:
     bool find_duplicates(int test_id, const QString &word, QStringList &reply_keys, QList<QStringList> &reply_values);
 
     // sets res to the number of rows in the word list identified by test_id
-    bool count(int test_id, int &res);
+    bool count(int test_id, int &res, bool alreadyAsked = false);
 
 private:
     QString last_error;

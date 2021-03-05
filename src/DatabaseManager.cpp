@@ -108,7 +108,7 @@ bool DatabaseManager::create_word_table()
                 "correctly_answered INTEGER NOT NULL DEFAULT 0, "
                 "asked INTEGER NOT NULL DEFAULT 0, "
                 "last_results INTEGER DEFAULT %1, "
-                "score DECIMAL(2,2) DEFAULT .5, "
+                "score DECIMAL(2,2) DEFAULT 0, "
                 "FOREIGN KEY(list_id) REFERENCES lists(ID) "
                 "ON UPDATE CASCADE "
                 "ON DELETE CASCADE"
@@ -320,7 +320,10 @@ bool DatabaseManager::delete_word(const int& id) {
     return success;
 }
 
-bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_data, QList<int> tag_ids)
+bool DatabaseManager::find_lowest(int test_id,
+                                  QHash<QString, QString> &word_data,
+                                  QList<int> tag_ids,
+                                  int list_size_limit)
 {
     QString tags_cond;
     QStringList selected_tags_str;
@@ -339,15 +342,19 @@ bool DatabaseManager::find_lowest(int test_id, QHash<QString, QString> &word_dat
     QStringList reply_keys;
     reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example"  << "pronunciation" << "hint" << "tag_ids";
 
-    QSqlQuery query(QString("SELECT words.id, word, meaning, nature, comment, example, pronunciation, hint "
-                            "FROM words "
-                            "LEFT OUTER JOIN words_tags "
-                            "ON words.id = words_tags.word_id "
-                            "WHERE list_id = %1 AND %2 "
-                            "GROUP BY words.id "
-                            "ORDER BY score, RANDOM() "
-                            "LIMIT 1"
-                            ).arg(test_id).arg(tags_cond));
+    QSqlQuery query(QString(
+        "SELECT id, word, meaning, nature, comment, example, pronunciation, hint "
+        "FROM ("
+        "   SELECT * "
+        "   FROM words "
+        "   LEFT OUTER JOIN words_tags "
+        "   ON words.id = words_tags.word_id "
+        "   WHERE list_id = %1 AND %2 "
+        "   GROUP BY words.id "
+        "   ORDER BY asked DESC "
+        "   LIMIT %3) "
+        "ORDER BY score "
+        "LIMIT 1").arg(test_id).arg(tags_cond).arg(list_size_limit));
     int id_index = query.record().indexOf("id");
     if (query.next()) {
         word_data.clear();
@@ -509,28 +516,19 @@ bool DatabaseManager::set_score(int id, const int &correct) {
     auto last_results = static_cast<unsigned short>(query.value(0).toInt());
     last_results = (last_results << 1) + correct;
 
-    // compute score = the average value of the bits in last_results,
-    // using Kernighan's algorithm
-    unsigned int count = 0;
-    auto max_count = CHAR_BIT * sizeof last_results;
-    unsigned short to_count = last_results;
-    while (to_count) {
-        to_count &= to_count - 1;
-        count++;
-    }
-    float score = static_cast<float>(count) / max_count;
-
+    const float old_score_weight = 0.7f;
     success = query.prepare(
                 "UPDATE words "
                 "SET correctly_answered = correctly_answered + :correct, "
                 "asked = asked + 1, "
                 "last_results = :last_results, "
-                "score = ROUND(:score, 2) "
+                // compute score as weighted average between old score and correctness of last answer
+                "score = ROUND(:w * score + (1.0 - :w) * :correct, 2) "
                 "WHERE id = :id");
     query.bindValue(":id", id);
     query.bindValue(":correct", correct);
     query.bindValue(":last_results", last_results);
-    query.bindValue(":score", score);
+    query.bindValue(":w", old_score_weight);
     success &= query.exec();
     if(!success){
         last_error = query.lastError().text();
@@ -725,11 +723,14 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
     return true;
 }
 
-bool DatabaseManager::count(int test_id, int &res)
+bool DatabaseManager::count(int test_id, int &res, bool alreadyAsked)
 {
+    QString query_str("SELECT COUNT(*) FROM words "
+                            "WHERE list_id=:list_id");
+    if (alreadyAsked)
+        query_str += " AND asked>0";
     QSqlQuery query;
-    bool success = query.prepare(QString("SELECT COUNT(*) FROM words "
-                            "WHERE list_id=:list_id"));
+    bool success = query.prepare(query_str);
     query.bindValue(":list_id", test_id);
     if (!success) {
         last_error = query.lastError().text();

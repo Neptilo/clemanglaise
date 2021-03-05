@@ -28,7 +28,6 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 
     // Check answer
     QString message;
-    bool correct;
     // remove whitespaces at start and end
     QString standardized_answer = player_answer.trimmed();
 
@@ -155,4 +154,9 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
         //example_label->setWordWrapMode(QTextOption::w);
         vertical_layout->addWidget(example_label);
     }
+}
+
+bool AnswerView::get_correct()
+{
+    return correct;
 }

@@ -48,6 +48,8 @@ private:
     EditView *update_view;
     QStringList word_keys;
     QList<int> selected_tags;
+    int list_size_limit;
+    int asked_in_this_session = 0;
 
     // GUI
     QBoxLayout *layout;
