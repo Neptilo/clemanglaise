@@ -30,7 +30,8 @@ public:
     bool find_lowest(int test_id,
                      QHash<QString, QString> &word_data,
                      QList<int> tag_ids,
-                     int list_size_limit);
+                     int list_size_limit,
+                     QList<int> excluded_ids);
 
     bool find_tags(QStringList& reply_list);
     bool find_used_tags(int test_id, QStringList& reply_list);

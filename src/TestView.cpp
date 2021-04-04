@@ -159,27 +159,40 @@ void TestView::init()
     }else{
         // set initial size of a sub-list to test on
         int count;
+        QString error;
         if(database_manager->count(test.get_id(), count, true)){
             list_size_limit = std::max(1, count);
-            if(database_manager->find_lowest(
-                        test.get_id(), word_data, selected_tags, list_size_limit)){
-                QString word = word_data["word"];
-                QString hint = word_data["hint"];
-                question_view = new QuestionView(&test, admin, this);
-                layout->addWidget(question_view);
-                question_view->ask_question(word, hint);
-            }else{
-                QString error(database_manager->pop_last_error());
-                if(error == "")
-                    status.setText(tr("The selected list is currently empty."));
-                else
-                    status.setText(tr("<b>SQLite error: </b>")+error);
-                layout->addWidget(&status);
-                status.show();
+            QHash<QString, QString> word_data;
+            for (int i = 0; i < 4; i++) // add 4 words at once to the cache at the start
+            {
+                if(!database_manager->find_lowest(test.get_id(),
+                                                  word_data,
+                                                  selected_tags,
+                                                  list_size_limit,
+                                                  word_ids_in_queue.values()))
+                    break;
+
+                word_data_queue.push(word_data);
+                word_ids_in_queue.insert(word_data["id"].toInt());
             }
+            QString sqlite_error(database_manager->pop_last_error());
+            if (sqlite_error != "")
+                error = tr("<b>SQLite error: </b>")+sqlite_error;
+            else if (word_data_queue.empty())
+                error = tr("The selected list is currently empty.");
         }else{
-            QString error(database_manager->pop_last_error());
-            status.setText(tr("<b>SQLite error: </b>")+error);
+            QString sqlite_error(database_manager->pop_last_error());
+            error = tr("<b>SQLite error: </b>")+sqlite_error;
+        }
+        if (error == "") {
+            QHash<QString, QString>& word_data = word_data_queue.front();
+            QString word = word_data["word"];
+            QString hint = word_data["hint"];
+            question_view = new QuestionView(&test, admin, this);
+            layout->addWidget(question_view);
+            question_view->ask_question(word, hint);
+        } else {
+            status.setText(error);
             layout->addWidget(&status);
             status.show();
         }
@@ -240,8 +253,11 @@ void TestView::read_reply(){
             question_view->show_error(tr("The selected list is currently empty."));
         else{
             QStringList word_values = reply_string.split('\n');
+            word_data_queue.pop();
+            QHash<QString, QString> word_data;
             for(int i = 0; i < word_keys.size(); ++i)
                 word_data[word_keys.at(i)] = word_values.at(i);
+            word_data_queue.push(word_data);
 
             // Everything is ready for the question view to ask the question.
             question_view->ask_question(word_data["word"], word_data["hint"]);
@@ -267,7 +283,11 @@ void TestView::validate_question(){
 
     // Create a new answer frame
     delete answer_view;
-    answer_view = new AnswerView(word_data, question_view->get_answer(), &test, database_manager, this);
+    answer_view = new AnswerView(word_data_queue.front(),
+                                 question_view->get_answer(),
+                                 &test,
+                                 database_manager,
+                                 this);
     layout->addWidget(answer_view);
 }
 
@@ -277,8 +297,7 @@ void TestView::validate_answer() {
     question_view = nullptr;
     if(answer_view){
         // update list size depending on whether the last answer was correct
-        float size_increment = static_cast<float>(list_size_limit)/
-                               (1<<asked_in_this_session++);
+        float size_increment = static_cast<float>(list_size_limit)/++asked_in_this_session;
         list_size_limit = answer_view->get_correct() ?
                               list_size_limit+std::max(1.f, size_increment) :
                               std::max(1.f, list_size_limit-2.f/3*size_increment);
@@ -294,17 +313,30 @@ void TestView::validate_answer() {
     if (!test.is_remote()) {
         int count;
         database_manager->count(test.get_id(), count, true);
-        if(database_manager->find_lowest(
-                    test.get_id(), word_data, selected_tags, std::min(count+1, list_size_limit))){
+        word_ids_in_queue.remove(word_data_queue.front()["id"].toInt());
+        word_data_queue.pop();
+        QHash<QString, QString> word_data;
+        QString error;
+        if(database_manager->find_lowest(test.get_id(),
+                                         word_data,
+                                         selected_tags,
+                                         std::min(count+1, list_size_limit),
+                                         word_ids_in_queue.values())){
+            word_data_queue.push(word_data);
+            word_ids_in_queue.insert(word_data["id"].toInt());
+        }
+        QString sqlite_error(database_manager->pop_last_error());
+        if (sqlite_error != "")
+            error = tr("<b>SQLite error: </b>")+sqlite_error;
+        else if (word_data_queue.empty())
+            error = tr("There are no more words to ask.");
+        if (error == "") {
+            QHash<QString, QString>& word_data = word_data_queue.front();
             QString word = word_data["word"];
             QString hint = word_data["hint"];
             question_view->ask_question(word, hint);
-        }else{
-            QString error(database_manager->pop_last_error());
-            if(error == "")
-                status.setText(tr("The selected list is currently empty."));
-            else
-                status.setText(tr("<b>SQLite error: </b>")+error);
+        } else {
+            status.setText(error);
             layout->addWidget(&status);
             status.show();
         }
@@ -418,7 +450,14 @@ void TestView::update_word()
     remove_widgets();
 
     // Create a new add frame
-    update_view = new EditView(&test, tr("<b>Edit a word entry</b>"), word_data, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
+    update_view = new EditView(&test,
+                               tr("<b>Edit a word entry</b>"),
+                               word_data_queue.front(),
+                               tr("Edit"),
+                               "update_word",
+                               tr("Word successfully edited!"),
+                               database_manager,
+                               this);
     layout->addWidget(update_view);
 }
 
@@ -524,7 +563,7 @@ void TestView::remove_widgets()
 
 void TestView::import_word()
 {
-    SingleImportWizard import_wizard(database_manager, word_data, nullptr, this);
+    SingleImportWizard import_wizard(database_manager, word_data_queue.front(), nullptr, this);
     if(import_wizard.exec())
         // Show confirmation
         status.setText(tr("Import succeeded!"));

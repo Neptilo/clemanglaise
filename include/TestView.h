@@ -3,6 +3,7 @@
 
 #include <QPushButton>
 #include <QToolBar>
+#include <queue>
 
 #include "AnswerView.h"
 #include "CheckableComboBox.h"
@@ -37,7 +38,11 @@ private:
     AnswerView *answer_view;
     DatabaseManager *database_manager;
     QuestionView *question_view;
-    QHash<QString, QString> word_data;
+    // store a small cache of the few next words to ask,
+    // to avoid asking the same word too soon after it's been asked
+    // In online mode, only contains one entry.
+    std::queue<QHash<QString, QString>> word_data_queue;
+    QSet<int> word_ids_in_queue; // ids of the words in word_data_queue, for fast access
     QStringList tag_reply_list;
     QNetworkRequest *request; // is a pointer because it cannot be initialized without a URL
     SearchView *search_view;

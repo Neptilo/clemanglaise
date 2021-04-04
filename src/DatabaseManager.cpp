@@ -323,38 +323,43 @@ bool DatabaseManager::delete_word(const int& id) {
 bool DatabaseManager::find_lowest(int test_id,
                                   QHash<QString, QString> &word_data,
                                   QList<int> tag_ids,
-                                  int list_size_limit)
+                                  int list_size_limit,
+                                  QList<int> excluded_ids)
 {
-    QString tags_cond;
     QStringList selected_tags_str;
     for (int i = 0, l=tag_ids.size(); i < l; ++i)
         if (tag_ids.at(i) != 0)
             selected_tags_str << QString::number(tag_ids.at(i));
+    QStringList excluded_ids_str;
+    for (int i = 0, l=excluded_ids.size(); i < l; ++i)
+        excluded_ids_str << QString::number(excluded_ids.at(i));
 
     QString tags_selected = selected_tags_str.join(", ");
+    QString tags_cond;
     if (tag_ids.size()==0) // No tags filter set
         tags_cond = "1";
     else if (tag_ids.contains(0)) // account for words with no tags
         tags_cond = QString("(tag_id IN (%1) OR tag_id is NULL)").arg(tags_selected);
     else
         tags_cond = QString("tag_id IN (%1)").arg(tags_selected);
+    QString exclude_cond = QString("id NOT IN (%1)").arg(excluded_ids_str.join(", "));
 
     QStringList reply_keys;
-    reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example"  << "pronunciation" << "hint" << "tag_ids";
+    reply_keys << "id" << "word" << "meaning" << "nature" << "comment" << "example" << "pronunciation"
+               << "hint" << "tag_ids";
 
     QSqlQuery query(QString(
         "SELECT id, word, meaning, nature, comment, example, pronunciation, hint "
         "FROM ("
-        "   SELECT * "
+        "   SELECT DISTINCT words.* " // because the join with the tags may duplicate some rows
         "   FROM words "
-        "   LEFT OUTER JOIN words_tags "
+        "   LEFT OUTER JOIN words_tags " // LEFT OUTER to also keep words with no tags
         "   ON words.id = words_tags.word_id "
-        "   WHERE list_id = %1 AND %2 "
-        "   GROUP BY words.id "
+        "   WHERE list_id = %1 AND %2 AND %4 "
         "   ORDER BY asked DESC "
         "   LIMIT %3) "
-        "ORDER BY score "
-        "LIMIT 1").arg(test_id).arg(tags_cond).arg(list_size_limit));
+        "ORDER BY score, RANDOM() "
+        "LIMIT 1").arg(test_id).arg(tags_cond).arg(list_size_limit).arg(exclude_cond));
     int id_index = query.record().indexOf("id");
     if (query.next()) {
         word_data.clear();
