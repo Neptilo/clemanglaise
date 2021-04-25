@@ -253,7 +253,6 @@ void TestView::read_reply(){
             question_view->show_error(tr("The selected list is currently empty."));
         else{
             QStringList word_values = reply_string.split('\n');
-            word_data_queue.pop();
             QHash<QString, QString> word_data;
             for(int i = 0; i < word_keys.size(); ++i)
                 word_data[word_keys.at(i)] = word_values.at(i);
@@ -343,6 +342,7 @@ void TestView::validate_answer() {
     } 
     else
     {
+        word_data_queue.pop();
         QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     }
