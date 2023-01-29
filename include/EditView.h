@@ -14,13 +14,24 @@
 
 #include "CheckableComboBox.h"
 #include "Test.h"
+#ifndef Q_OS_WASM
 #include "DatabaseManager.h"
+#endif
 
 class EditView : public QWidget{
     Q_OBJECT
 
 public:
-    EditView(Test *test, const QString &title, const QHash<QString, QString> &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent = nullptr);
+    EditView(Test *test,
+             const QString &title,
+             const QHash<QString, QString> &default_values,
+             const QString &OK_button_value,
+             const QString &php_filename,
+             const QString &success_message,
+         #ifndef Q_OS_WASM
+             DatabaseManager *database_manager,
+         #endif
+             QWidget *parent = nullptr);
     ~EditView();
     void read_reply(QString reply_string);
     void disable_edition(bool ok);
@@ -48,7 +59,9 @@ private:
     // Elements at even indices are the tag ids and elements at odd indices are their corresponding names.
     QStringList reply_list;
     QString success_message;
+#ifndef Q_OS_WASM
     DatabaseManager *database_manager;
+#endif
     Test *test;
     // This method is called after a word has been successfully added or edited.
     // It updates attributes and the UI to allow the user to add another word. In particular it prepares for an "add" behavior instead of "update".
@@ -58,7 +71,9 @@ public slots:
     void edit_word();
     void read_reply();
     void show_confirmation();
+#ifndef Q_OS_WASM
     void show_confirmation(bool success);
+#endif
     void reset();
     void find_tags();
 

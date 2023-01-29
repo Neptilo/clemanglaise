@@ -7,18 +7,28 @@
 #include <QtNetwork>
 
 #include "WordView.h"
+#ifndef Q_OS_WASM
 #include "DatabaseManager.h"
+#endif
 
 class AnswerView: public WordView{
     Q_OBJECT
 
 public:
     AnswerView(Test *test, QWidget *parent);
-    AnswerView(const QHash<QString, QString> &word_data, const QString &player_answer, Test *test, DatabaseManager * database_manager, QWidget *parent);
+    AnswerView(const QHash<QString, QString> &word_data,
+               const QString &player_answer,
+               Test *test,
+           #ifndef Q_OS_WASM
+               DatabaseManager * database_manager,
+           #endif
+               QWidget *parent);
     bool get_correct();
 
 private:
+#ifndef Q_OS_WASM
     DatabaseManager *database_manager;
+#endif
     bool correct;
 };
 

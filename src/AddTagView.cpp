@@ -12,7 +12,16 @@
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
 
-AddTagView::AddTagView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager* database_manager, QWidget *parent) :
+AddTagView::AddTagView(Test *test,
+                       const QString &title,
+                       const QStringList &default_values,
+                       const QString &OK_button_value,
+                       const QString &php_filename,
+                       const QString &success_message,
+                       #ifndef Q_OS_WASM
+                       DatabaseManager* database_manager,
+                       #endif
+                       QWidget *parent) :
     QWidget(parent),
     title(nullptr),
     status(nullptr),
@@ -23,8 +32,10 @@ AddTagView::AddTagView(Test *test, const QString &title, const QStringList &defa
     test(test),
     reply_list(),
     tag(nullptr),
-    tags(nullptr),
-    database_manager(database_manager)
+    tags(nullptr)
+  #ifndef Q_OS_WASM
+  ,database_manager(database_manager)
+  #endif
 {
     this->php_filename = php_filename;
     this->default_values = default_values;
@@ -62,12 +73,7 @@ AddTagView::~AddTagView(){}
 
 void AddTagView::edit_tag(){
     status->setText(tr("Sending data..."));
-    if (!test->is_remote()) {
-        // Offline
-        // Will show confirmation when loading of reply is finished
-        database_manager->add_tag(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
-        show_confirmation();
-    } else {
+    if (test->is_remote()) {
         QUrlQuery post_data;
         post_data.addQueryItem("id", this->default_values.at(0));
         QString line = ampersand_escape(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
@@ -82,6 +88,13 @@ void AddTagView::edit_tag(){
 
         // Will show confirmation when loading of reply is finished
         connect(reply, SIGNAL(finished()), this, SLOT(read_edit_tag_reply()));
+#ifndef Q_OS_WASM
+    } else {
+        // Offline
+        // Will show confirmation when loading of reply is finished
+        database_manager->add_tag(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
+        show_confirmation();
+#endif
     }
 
 }
@@ -120,16 +133,18 @@ void AddTagView::reset(){
 
 
 void AddTagView::find_tags() {
-    if (!test->is_remote()) {
-        // Offline
-        database_manager->find_tags(reply_list);
-        read_reply("");
-    } else {
+    if (test->is_remote()) {
         // Request to PHP file
         const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
+#ifndef Q_OS_WASM
+    } else {
+        // Offline
+        database_manager->find_tags(reply_list);
+        read_reply("");
+#endif
     }
 }
 

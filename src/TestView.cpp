@@ -3,8 +3,10 @@
 #include <QAction>
 #include <QApplication>
 #include <QMessageBox>
+#ifndef Q_OS_WASM
 #include <QSqlDatabase>
 #include <QSqlError>
+#endif
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QStyleFactory>
@@ -13,22 +15,30 @@
 #include <QWizard>
 
 #include "AndroidStyle.h"
+#ifndef Q_OS_WASM
 #include "import_wizard/DstListPage.h"
 #include "import_wizard/DuplicatePage.h"
 #include "import_wizard/ListImportWizard.h"
 #include "import_wizard/SingleImportWizard.h"
+#endif
 #include "InterfaceParameters.h"
 #include "NetworkReplyReader.h"
 #include "resource_utils.h"
 #include "AddTagView.h"
 
-TestView::TestView(Test &test, DatabaseManager *database_manager, bool admin, QWidget *parent):
+TestView::TestView(Test &test,
+                   #ifndef Q_OS_WASM
+                   DatabaseManager *database_manager,
+                   #endif
+                   bool admin, QWidget *parent):
     QWidget(parent),
     add_view(nullptr),
     add_tag_view(nullptr),
     admin(admin),
     answer_view(nullptr),
+    #ifndef Q_OS_WASM
     database_manager(database_manager),
+    #endif
     question_view(nullptr),
     request(nullptr),
     search_view(nullptr),
@@ -156,6 +166,7 @@ void TestView::init()
         update_request();
         QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
+#ifndef Q_OS_WASM
     }else{
         // set initial size of a sub-list to test on
         int count;
@@ -196,6 +207,7 @@ void TestView::init()
             layout->addWidget(&status);
             status.show();
         }
+#endif
     }
     find_tags();
 
@@ -285,7 +297,9 @@ void TestView::validate_question(){
     answer_view = new AnswerView(word_data_queue.front(),
                                  question_view->get_answer(),
                                  &test,
+                             #ifndef Q_OS_WASM
                                  database_manager,
+                             #endif
                                  this);
     layout->addWidget(answer_view);
 }
@@ -309,6 +323,7 @@ void TestView::validate_answer() {
     layout->addWidget(question_view);
 
     // Request for a new question
+#ifndef Q_OS_WASM
     if (!test.is_remote()) {
         int count;
         database_manager->count(test.get_id(), count, true);
@@ -341,6 +356,7 @@ void TestView::validate_answer() {
         }
     } 
     else
+#endif
     {
         word_data_queue.pop();
         QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
@@ -379,6 +395,7 @@ void TestView::delete_list()
             QNetworkReply* reply = NetworkReplyReader::nam->post(request, post_data.query().toUtf8());
             connect(reply, SIGNAL(finished()),
                     this, SLOT(read_delete_list_reply()));
+#ifndef Q_OS_WASM
         }else{
             // offline
             if (database_manager->delete_list(test.get_id()))
@@ -392,6 +409,7 @@ void TestView::delete_list()
                 layout->addWidget(&status);
                 status.show();
             }
+#endif
         }
     }
 }
@@ -429,7 +447,16 @@ void TestView::add_tag()
     // Create a new add frame
     QStringList default_values_list;
     default_values_list << "" << "";
-    add_tag_view = new AddTagView(&test, tr("<b>Add a new tag</b>"), default_values_list, tr("Add"), "add_tag", tr("Tag successfully added!"), database_manager, this);
+    add_tag_view = new AddTagView(&test,
+                                  tr("<b>Add a new tag</b>"),
+                                  default_values_list,
+                                  tr("Add"),
+                                  "add_tag",
+                                  tr("Tag successfully added!"),
+                              #ifndef Q_OS_WASM
+                                  database_manager,
+                              #endif
+                                  this);
     layout->addWidget(add_tag_view);
 }
 
@@ -441,7 +468,16 @@ void TestView::add_word()
     QHash<QString, QString> default_values;
     for(int i = 0; i < word_keys.size(); ++i)
         default_values[word_keys.at(i)] = "";
-    add_view = new EditView(&test, tr("<b>Add a new word</b>"), default_values, tr("Add"), "add_word", tr("Word successfully added!"), database_manager, this);
+    add_view = new EditView(&test,
+                            tr("<b>Add a new word</b>"),
+                            default_values,
+                            tr("Add"),
+                            "add_word",
+                            tr("Word successfully added!"),
+                        #ifndef Q_OS_WASM
+                            database_manager,
+                        #endif
+                            this);
     layout->addWidget(add_view);
 }
 
@@ -456,7 +492,9 @@ void TestView::update_word()
                                tr("Edit"),
                                "update_word",
                                tr("Word successfully edited!"),
+                           #ifndef Q_OS_WASM
                                database_manager,
+                           #endif
                                this);
     layout->addWidget(update_view);
 }
@@ -466,7 +504,11 @@ void TestView::search()
     remove_widgets();
 
     // Create a new search frame
-    search_view = new SearchView(&test, database_manager, !test.is_remote()||admin, this);
+    search_view = new SearchView(&test,
+                             #ifndef Q_OS_WASM
+                                 database_manager,
+                             #endif
+                                 !test.is_remote()||admin, this);
     layout->addWidget(search_view);
 }
 
@@ -493,16 +535,18 @@ void TestView::go_back() {
 }
 
 void TestView::find_tags() {
-    if (!test.is_remote()) {
-        // Offline
-        database_manager->find_used_tags(test.get_id(), tag_reply_list);
-        read_reply("");
-    } else {
+    if (test.is_remote()) {
         // Request to PHP file
         const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test.get_id()));
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply_tags()));
+#ifndef Q_OS_WASM
+    } else {
+        // Offline
+        database_manager->find_used_tags(test.get_id(), tag_reply_list);
+        read_reply("");
+#endif
     }
 }
 
@@ -561,6 +605,7 @@ void TestView::remove_widgets()
     status.hide();
 }
 
+#ifndef Q_OS_WASM
 void TestView::import_word()
 {
     SingleImportWizard import_wizard(database_manager, word_data_queue.front(), nullptr, this);
@@ -584,6 +629,7 @@ void TestView::import_list()
     layout->addWidget(&status);
     status.show();
 }
+#endif
 
 void TestView::resizeEvent(QResizeEvent *)
 {

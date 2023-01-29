@@ -11,13 +11,24 @@
 #include <QTextEdit>
 
 #include "Test.h"
+#ifndef Q_OS_WASM
 #include "DatabaseManager.h"
+#endif
 
 class AddTagView : public QWidget{
     Q_OBJECT
 
 public:
-    AddTagView(Test *test, const QString &title, const QStringList &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager * database_manager, QWidget *parent);
+    AddTagView(Test *test,
+               const QString &title,
+               const QStringList &default_values,
+               const QString &OK_button_value,
+               const QString &php_filename,
+               const QString &success_message,
+           #ifndef Q_OS_WASM
+               DatabaseManager * database_manager,
+           #endif
+               QWidget *parent);
     ~AddTagView();
 
     void read_reply(QString reply_string);
@@ -36,7 +47,9 @@ private:
     QString success_message;
     QLabel* tag;
     QComboBox* tags;
+#ifndef Q_OS_WASM
     DatabaseManager* database_manager;
+#endif
 
 public slots:
     void edit_tag();

@@ -14,9 +14,17 @@ AnswerView::AnswerView(Test *test, QWidget *parent):
     WordView(test, parent)
 {}
 
-AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &player_answer, Test *test, DatabaseManager *database_manager, QWidget *parent):
-    WordView(test, parent),
-    database_manager(database_manager)
+AnswerView::AnswerView(const QHash<QString, QString> &word_data,
+                       const QString &player_answer,
+                       Test *test,
+                       #ifndef Q_OS_WASM
+                       DatabaseManager *database_manager,
+                       #endif
+                       QWidget *parent):
+    WordView(test, parent)
+  #ifndef Q_OS_WASM
+  , database_manager(database_manager)
+  #endif
 {
     // Define explicit variables for the content of the label
     QString word = word_data["word"];
@@ -77,9 +85,11 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data, const QString &
 
     message = correct? tr("Right!"): tr("Wrong!");
 
+#ifndef Q_OS_WASM
     // Update score, only if offline
     if (!test->is_remote())
         database_manager->set_score(word_data["id"].toInt(), correct);
+#endif
     // Left/upper part
     QLabel* handwriting_label = new QLabel("<span>"+meaning+"</span>", this);
     QStringList non_alphabetic_langs;

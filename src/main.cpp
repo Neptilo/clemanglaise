@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
     // execution of the app after the conditional.
     NetworkReplyReader reply_reader(nullptr);
 
+#ifndef Q_OS_WASM
     if (!QSslSocket::supportsSsl()){
         cerr << tr("The SSL libraries could not be loaded. Please make sure "
                    "to follow the setup instructions in the README.") << endl;
@@ -93,6 +94,7 @@ int main(int argc, char *argv[])
         // use QSslSocket::sslLibraryBuildVersionString()
         // and QSslSocket::sslLibraryVersionString().
     }
+#endif
 
     if(use_password){
 

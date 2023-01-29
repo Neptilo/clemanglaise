@@ -8,7 +8,9 @@
 #include <QPushButton>
 #include <QWidget>
 
-#include "DatabaseManager.h"
+#ifndef Q_OS_WASM
+    #include "DatabaseManager.h"
+#endif
 #include "Test.h"
 
 class AddListView : public QWidget
@@ -16,7 +18,9 @@ class AddListView : public QWidget
     Q_OBJECT
 public:
     explicit AddListView(
+        #ifndef Q_OS_WASM
             DatabaseManager *database_manager,
+        #endif
             bool remote,
             QWidget *parent = nullptr);
     ~AddListView();
@@ -29,7 +33,9 @@ private:
     QCompleter *country_completer;
     QPushButton cancel_button;
     QPushButton create_button;
-    DatabaseManager *database_manager;
+#ifndef Q_OS_WASM
+    DatabaseManager *database_manager = nullptr;
+#endif
     QLineEdit dst_edit;
     QLineEdit name_edit;
     QLineEdit src_edit;
@@ -43,7 +49,9 @@ signals:
     void canceled();
 
 public slots:
+#ifndef Q_OS_WASM
     void add_offline_list();
+#endif
     void add_online_list();
     void show_confirmation();
 };

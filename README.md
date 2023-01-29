@@ -12,9 +12,20 @@ This program creates vocabulary tests in different languages using words from an
 
       **E.g:** for Windows, tick *MinGW 7.3.0 64-bit*. 
     * To deploy on Android, expand *Qt 5.15.2* and check *Android*. (The *5.14.2* scripts contain bugs.)
+    * To build in WebAssembly, check the corresponding option.
   * Open the project **clemanglaise.pro** with QtCreator.
   * On Linux, run `sudo apt install libgl1-mesa-dev` to install `libGL`.
   * If you intend to deploy the app on Android, there is some more preparative work to do. Please follow [these steps](doc/android.md) (only for Linux users) and come back here when you're done.
+  * If you are building for WebAssembly, better do it on a Unix system (required by makefile).
+    * Type:
+      * `git clone https://github.com/emscripten-core/emsdk.git`
+      * `cd emsdk`
+      * `./emsdk install 1.39.7` That version is the one WebAssembly was built with in Qt 5.15.2.
+      * `./emsdk activate --embedded 1.39.7`
+      * `source ./emsdk_env.sh`
+    * Configure QtCreator using [this guide](https://doc.qt.io/qtcreator/creator-setup-webassembly.html)
+    
+      Other useful link [here](https://doc.qt.io/qt-5/wasm.html)
   * Compile the project (hotkey: `CTRL+B`). (This will also run `qmake` before compiling.)
   * Since OpenSSL is not included in Qt and that I didn't want to include it in the repository, you'll need to download it yourself:
     * To build on Windows:

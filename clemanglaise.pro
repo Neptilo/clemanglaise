@@ -22,25 +22,28 @@ HEADERS += \
     include/Test.h \
     include/TestView.h \
     include/WordView.h \
-    include/DatabaseManager.h \
     include/AddListView.h \
     include/Switcher.h \
     include/ClickableLabel.h \
-    include/import_wizard/DstListPage.h \
-    include/import_wizard/DuplicatePage.h \
-    include/import_wizard/SingleImportWizard.h \
-    include/import_wizard/ListImportWizard.h \
-    include/import_wizard/BehaviorPage.h \
-    include/import_wizard/ProgressPage.h \
-    include/import_wizard/Importer.h \
     include/duplicate_utils.h \
-    include/import_wizard/ImportBehavior.h \
     include/AddTagView.h \
     include/InterfaceParameters.h \
     include/CheckableItemDelegate.h \
     include/MultilinePushButton.h \
     include/AndroidStyle.h \
     include/CheckableComboBox.h
+! contains(CONFIG, wasm) {
+    HEADERS += \
+        include/import_wizard/DstListPage.h \
+        include/import_wizard/DuplicatePage.h \
+        include/import_wizard/SingleImportWizard.h \
+        include/import_wizard/ListImportWizard.h \
+        include/import_wizard/BehaviorPage.h \
+        include/import_wizard/ProgressPage.h \
+        include/import_wizard/Importer.h \
+        include/import_wizard/ImportBehavior.h \
+        include/DatabaseManager.h
+}
 SOURCES += \
     src/AnswerView.cpp \
     src/EditView.cpp \
@@ -57,17 +60,9 @@ SOURCES += \
     src/Test.cpp \
     src/TestView.cpp \
     src/WordView.cpp \
-    src/DatabaseManager.cpp \
     src/AddListView.cpp \
     src/Switcher.cpp \
     src/ClickableLabel.cpp \
-    src/import_wizard/DstListPage.cpp \
-    src/import_wizard/DuplicatePage.cpp \
-    src/import_wizard/SingleImportWizard.cpp \
-    src/import_wizard/ListImportWizard.cpp \
-    src/import_wizard/BehaviorPage.cpp \
-    src/import_wizard/ProgressPage.cpp \
-    src/import_wizard/Importer.cpp \
     src/duplicate_utils.cpp \
     src/AddTagView.cpp \
     src/InterfaceParameters.cpp \
@@ -75,12 +70,26 @@ SOURCES += \
     src/MultilinePushButton.cpp \
     src/AndroidStyle.cpp \
     src/CheckableComboBox.cpp
+! contains(CONFIG, wasm) {
+    SOURCES += \
+        src/import_wizard/DstListPage.cpp \
+        src/import_wizard/DuplicatePage.cpp \
+        src/import_wizard/SingleImportWizard.cpp \
+        src/import_wizard/ListImportWizard.cpp \
+        src/import_wizard/BehaviorPage.cpp \
+        src/import_wizard/ProgressPage.cpp \
+        src/import_wizard/Importer.cpp \
+        src/DatabaseManager.cpp
+}
 
 RESOURCES += clemanglaise.qrc
 
-QT += network sql
+QT += network
+! contains(CONFIG, wasm) {
+    QT += sql
+}
 android {
-     QT += androidextras
+    QT += androidextras
 }
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): cache()

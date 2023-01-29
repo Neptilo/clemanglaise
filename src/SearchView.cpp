@@ -18,12 +18,19 @@
 #include "resource_utils.h"
 #include "string_utils.h"
 
-SearchView::SearchView(Test *test, DatabaseManager *database_manager, bool modifiable, QWidget *parent) :
+SearchView::SearchView(Test *test,
+                       #ifndef Q_OS_WASM
+                       DatabaseManager *database_manager,
+                       #endif
+                       bool modifiable,
+                       QWidget *parent) :
     QWidget(parent),
     test(test),
     reply_list(),
     modifiable(modifiable),
+    #ifndef Q_OS_WASM
     database_manager(database_manager),
+    #endif
     search_bar(nullptr),
     OK_button(nullptr),
     result(nullptr),
@@ -69,16 +76,18 @@ SearchView::~SearchView() {
 }
 
 void SearchView::find_tags() {
-    if (!test->is_remote()) {
-        // Offline
-        database_manager->find_used_tags(test->get_id(), reply_list_tag);
-        read_reply_tags();
-    } else {
+    if (test->is_remote()) {
         // Request to PHP file
         const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test->get_id()));
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_used_tags_reply()));
+#ifndef Q_OS_WASM
+    } else {
+        // Offline
+        database_manager->find_used_tags(test->get_id(), reply_list_tag);
+        read_reply_tags();
+#endif
     }
 }
 
@@ -102,10 +111,12 @@ void SearchView::search() {
                               .arg(untagged));
         QNetworkReply* reply = NetworkReplyReader::nam->get(QNetworkRequest(url));
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
+#ifndef Q_OS_WASM
     } else {
         // Offline
         database_manager->search(test->get_id(), search_str, selected_tags, reply_list);
         read_reply("");
+#endif
     }
 }
 
@@ -290,7 +301,16 @@ void SearchView::action(int row, int col)
         QHash<QString, QString> default_values;
         for(int i = 0; i < nb_cols; ++i)
             default_values[word_keys.at(i)] = reply_list.at(i+row*nb_cols);
-        update_view = new EditView(test, tr("<b>Edit a word entry</b>"), default_values, tr("Edit"), "update_word", tr("Word successfully edited!"), database_manager, this);
+        update_view = new EditView(test,
+                                   tr("<b>Edit a word entry</b>"),
+                                   default_values,
+                                   tr("Edit"),
+                                   "update_word",
+                                   tr("Word successfully edited!"),
+                           #ifndef Q_OS_WASM
+                                   database_manager,
+                           #endif
+                                   this);
         search_bar->hide();
         OK_button->hide();
         tags_box->hide();
@@ -314,6 +334,7 @@ void SearchView::action(int row, int col)
                 QNetworkReply* reply = NetworkReplyReader::nam->post(
                             request, post_data.query().toUtf8());
                 connect(reply, SIGNAL(finished()), this, SLOT(read_delete_reply()));
+#ifndef Q_OS_WASM
             } else {
                 int id = reply_list.at(row*nb_cols).toInt();
                 if (!database_manager->delete_word(id)) {
@@ -321,6 +342,7 @@ void SearchView::action(int row, int col)
                     status->show();
                 }
                 refresh();
+#endif
             }
         }
     }

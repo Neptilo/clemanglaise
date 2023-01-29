@@ -7,7 +7,9 @@
 
 #include "AnswerView.h"
 #include "CheckableComboBox.h"
+#ifndef Q_OS_WASM
 #include "DatabaseManager.h"
+#endif
 #include "EditView.h"
 #include "QuestionView.h"
 #include "SearchView.h"
@@ -26,7 +28,11 @@ class TestView : public QWidget{
     Q_OBJECT
     
 public:
-    TestView(Test &test, DatabaseManager *database_manager, bool admin = false, QWidget *parent = nullptr);
+    TestView(Test &test,
+         #ifndef Q_OS_WASM
+             DatabaseManager *database_manager,
+         #endif
+             bool admin = false, QWidget *parent = nullptr);
     ~TestView();
 
     void read_reply(QString reply_string);
@@ -36,7 +42,9 @@ private:
     AddTagView *add_tag_view;
     bool admin;
     AnswerView *answer_view;
+#ifndef Q_OS_WASM
     DatabaseManager *database_manager;
+#endif
     QuestionView *question_view;
     // store a small cache of the few next words to ask,
     // to avoid asking the same word too soon after it's been asked
@@ -99,8 +107,10 @@ public slots:
     void update_question();
     void update_question(int);
     void delete_list();
+#ifndef Q_OS_WASM
     void import_word();
     void import_list();
+#endif
 
 protected:
     void resizeEvent(QResizeEvent *);

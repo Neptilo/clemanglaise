@@ -8,7 +8,9 @@
 #include <QWidget>
 
 #include "AddListView.h"
+#ifndef Q_OS_WASM
 #include "DatabaseManager.h"
+#endif
 #include "LanguageButtons.h"
 #include "Switcher.h"
 #include "Test.h"
@@ -20,7 +22,9 @@ class HomeView : public QWidget{
 private:
     AddListView *add_list_view;
     bool admin;
+#ifndef Q_OS_WASM
     DatabaseManager database_manager;
+#endif
     QLayout *layout;
     bool remote;
     LanguageButtons *test_buttons;

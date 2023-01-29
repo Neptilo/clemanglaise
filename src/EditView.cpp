@@ -13,7 +13,16 @@
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
 
-EditView::EditView(Test *test, const QString &title, const QHash<QString, QString> &default_values, const QString &OK_button_value, const QString &php_filename, const QString &success_message, DatabaseManager *database_manager, QWidget *parent) :
+EditView::EditView(Test *test,
+                   const QString &title,
+                   const QHash<QString, QString> &default_values,
+                   const QString &OK_button_value,
+                   const QString &php_filename,
+                   const QString &success_message,
+                   #ifndef Q_OS_WASM
+                   DatabaseManager *database_manager,
+                   #endif
+                   QWidget *parent) :
     QWidget(parent),
     title(nullptr),
     status(nullptr),
@@ -32,7 +41,9 @@ EditView::EditView(Test *test, const QString &title, const QHash<QString, QStrin
     default_values(default_values),
     reply_list(),
     success_message(success_message),
+    #ifndef Q_OS_WASM
     database_manager(database_manager),
+    #endif
     test(test)
 {
     layout = new QFormLayout(this);
@@ -198,18 +209,7 @@ void EditView::edit_word(){
     word_data["example"] = ampersand_escape(example_edit->toPlainText());
     word_data["hint"] = ampersand_escape(hint_edit->toPlainText());
 
-    if (!test->is_remote()) {
-        bool success;
-
-        // Offline
-        if(word_data["id"].toInt() == 0) // Add word
-            success = database_manager->add_word(word_data, selected_tags);
-        else // Update word
-            success = database_manager->update_word(word_data, selected_tags);
-
-        // Show confirmation
-        show_confirmation(success);
-    } else {
+    if (test->is_remote()) {
         QUrlQuery post_data;
         post_data.addQueryItem("list_id", QString::number(test->get_id()));
         for (QHash<QString, QString>::iterator i = word_data.begin(); i != word_data.end(); ++i)
@@ -225,6 +225,19 @@ void EditView::edit_word(){
 
         // Will show confirmation when loading of reply is finished
         connect(reply, SIGNAL(finished()), this, SLOT(show_confirmation()));
+#ifndef Q_OS_WASM
+    } else {
+        bool success;
+
+        // Offline
+        if(word_data["id"].toInt() == 0) // Add word
+            success = database_manager->add_word(word_data, selected_tags);
+        else // Update word
+            success = database_manager->update_word(word_data, selected_tags);
+
+        // Show confirmation
+        show_confirmation(success);
+#endif
     }
     disable_edition(true);
 }
@@ -241,6 +254,7 @@ void EditView::show_confirmation(){
     }
 }
 
+#ifndef Q_OS_WASM
 void EditView::show_confirmation(bool success){
     if(success){
         status->setText(success_message);
@@ -248,7 +262,7 @@ void EditView::show_confirmation(bool success){
     }else
         status->setText(tr("<b>SQLite error: </b>")+database_manager->pop_last_error());
 }
-
+#endif
 
 void EditView::update_selected_tags(QModelIndex top_left, QModelIndex)
 {
@@ -304,16 +318,18 @@ void EditView::reset(){
 }
 
 void EditView::find_tags() {
-    if (!test->is_remote()) {
-        // Offline
-        database_manager->find_tags(reply_list);
-        read_reply("");
-    } else {
+    if (test->is_remote()) {
         // Request to PHP file
         const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
+#ifndef Q_OS_WASM
+    } else {
+        // Offline
+        database_manager->find_tags(reply_list);
+        read_reply("");
+#endif
     }
 }
 

@@ -15,7 +15,12 @@ class SearchView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SearchView(Test *test, DatabaseManager *database_manager, bool modifiable = false, QWidget *parent = nullptr);
+    explicit SearchView(Test *test,
+                    #ifndef Q_OS_WASM
+                        DatabaseManager *database_manager,
+                    #endif
+                        bool modifiable = false,
+                        QWidget *parent = nullptr);
     ~SearchView();
 
     void read_reply(QString reply_string);
@@ -29,7 +34,9 @@ private:
     QStringList reply_list;
     QStringList reply_list_tag;
     bool modifiable;
+#ifndef Q_OS_WASM
     DatabaseManager *database_manager;
+#endif
     QStringList word_keys;
     QList<int> selected_tags;
 

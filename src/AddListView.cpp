@@ -8,11 +8,17 @@
 #include "iso_mapping.h"
 #include "string_utils.h"
 
-AddListView::AddListView(DatabaseManager *database_manager, bool remote, QWidget *parent) :
+AddListView::AddListView(
+        #ifndef Q_OS_WASM
+        DatabaseManager *database_manager,
+        #endif
+        bool remote, QWidget *parent) :
     QWidget(parent),
     cancel_button(tr("C&ancel"), this),
     create_button(tr("&Create"), this),
+    #ifndef Q_OS_WASM
     database_manager(database_manager),
+    #endif
     dst_edit(this),
     name_edit(this),
     src_edit(this),
@@ -54,6 +60,7 @@ Test *AddListView::get_test()
     return test;
 }
 
+#ifndef Q_OS_WASM
 void AddListView::add_offline_list()
 {
     int test_id = 0;
@@ -75,6 +82,7 @@ void AddListView::add_offline_list()
         status.show();
     }
 }
+#endif
 
 bool AddListView::check_inputs(QString& src_test, QString& dst_test, QString& test_flag, QString& error)
 {

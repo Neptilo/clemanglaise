@@ -12,7 +12,9 @@ HomeView::HomeView(bool admin, QWidget *parent):
     QWidget(parent),
     add_list_view(nullptr),
     admin(admin),
+    #ifndef Q_OS_WASM
     database_manager(this),
+    #endif
     layout(nullptr),
     test_buttons(nullptr),
     test_source_switcher(Qt::Horizontal, tr("Local tests"), tr("Online tests"), this),
@@ -44,7 +46,11 @@ HomeView::~HomeView()
 
 void HomeView::add_list()
 {
-    add_list_view = new AddListView(&database_manager, remote, this); // database_manager is useless for online tests
+    add_list_view = new AddListView(
+                    #ifndef Q_OS_WASM
+                        &database_manager,
+                    #endif
+                        remote, this); // database_manager is useless for online tests
     connect(add_list_view, SIGNAL(created(Test *)), this, SLOT(list_created(Test *)));
     connect(add_list_view, SIGNAL(canceled()), this, SLOT(remove_add_list_view()));
     layout->addWidget(add_list_view);
@@ -71,6 +77,7 @@ void HomeView::init()
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply_lists()));
+#ifndef Q_OS_WASM
     }else{
         // test buttons
         QList<Test> offline_tests(database_manager.get_lists());
@@ -84,6 +91,7 @@ void HomeView::init()
             info_label.setText(tr("You have not created any vocabulary list yet."));
         else
             info_label.setText(tr("<b>Offline tests:</b>"));
+#endif
     }
 }
 
@@ -163,7 +171,11 @@ void HomeView::start_test(Test *test){
         test_buttons->disconnect_all();
         test_buttons->hide();
 
-        TestView* test_view = new TestView(*test, &database_manager, admin, this);
+        TestView* test_view = new TestView(*test,
+                                   #ifndef Q_OS_WASM
+                                           &database_manager,
+                                   #endif
+                                           admin, this);
 
         // remove add_list_view only after creating test_view, because the Test, needed by test_view, will be deleted as child of add_list_view.
         remove_add_list_view();
