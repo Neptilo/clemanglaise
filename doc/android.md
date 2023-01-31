@@ -15,7 +15,7 @@ The SDK will be installed when first launching Android Studio. Take note of the 
 Run in command-line: `sudo apt install openjdk-8-jdk`
 
 ### Updating the Android SDK
-Start Android Studio. In the bottom right corner, click on *Configure > SDK Manager*.
+Start Android Studio. Click on *More Actions*, and *SDK Manager*.
 
 Then, in the *SDK Platforms* tab, tick *Android 7.0*. If you would like to try for earlier versions, please do, and let me know how it goes. At least I can say it failed to work on Android 5.0.
 
