@@ -8,7 +8,6 @@
 
 #include "EditView.h"
 #include "InterfaceParameters.h"
-#include "QuestionView.h"
 #include "resource_utils.h"
 #include "string_utils.h"
 #include "NetworkReplyReader.h"
@@ -362,10 +361,10 @@ void EditView::read_reply()
 
 void EditView::read_reply(QString reply_string) {
     if(test->is_remote())
-        reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+        reply_list = reply_string.split('\n', Qt::SkipEmptyParts);
 
     //Initialiaze selected tags context
-    QStringList tag_ids = default_values["tag_ids"].split(", ", QString::SkipEmptyParts);
+    QStringList tag_ids = default_values["tag_ids"].split(", ", Qt::SkipEmptyParts);
     for (QStringList::const_iterator it = tag_ids.constBegin(); it != tag_ids.constEnd(); ++it)
         selected_tags << it->toInt();
     tags_box->disconnect();

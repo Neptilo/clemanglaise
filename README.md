@@ -23,6 +23,9 @@ This program creates vocabulary tests in different languages using words from an
       * `./emsdk install 1.39.7` That version is the one WebAssembly was built with in Qt 5.15.2.
       * `./emsdk activate --embedded 1.39.7`
       * `source ./emsdk_env.sh`
+      * `sudo apt install python3`
+      * `sudo apt install python-is-python3` (not sure if this one is needed)
+      * `sudo apt install python3-distutils`
     * Configure QtCreator using [this guide](https://doc.qt.io/qtcreator/creator-setup-webassembly.html)
     
       Other useful link [here](https://doc.qt.io/qt-5/wasm.html)
