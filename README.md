@@ -7,10 +7,10 @@ This program creates vocabulary tests in different languages using words from an
 ### Usual method, working on Linux, Mac or Windows
 
   * First, install Qt **with the Open Source licence**.
-    * Download and run [the online installer](https://www.qt.io/download-thank-you) 
-    * At *Select Components* step, expand *Qt 5.14.2* and select the relevant components for the architectures on which you wish to deploy the app.
+    * Download and run [the online installer](https://www.qt.io/download-qt-installer-oss) 
+    * At *Select Components* step, expand *Qt 6.5.3* and select the relevant components for the architectures on which you wish to deploy the app.
 
-      **E.g:** for Windows, tick *MinGW 7.3.0 64-bit*. 
+      **E.g:** for Windows, tick *MinGW 11.2.0 64-bit* both under *Qt 6.5.3* and under *Build Tools*. 
     * To deploy on Android, expand *Qt 5.15.2* and check *Android*. (The *5.14.2* scripts contain bugs.)
     * To build in WebAssembly, check the corresponding option.
   * Open the project **clemanglaise.pro** with QtCreator.
@@ -50,10 +50,10 @@ If you have been granted the **administrator** rights to the project's database,
 
 To compile it:
 
-  * Create a `bin_clemanglaise` directory located in the same parent directory as clemanglaise.
+  * Create a `build` directory located in the same parent directory as clemanglaise.
   * Check that the location of the `qmake` is in your `$PATH` variable.
   * Don't regenerate the project file, use the one provided in the repository.
-  * Go into `bin_clemanglaise` directory
+  * Go into `build` directory
   * Type `qmake <path>` in the command line, replacing `<path>` with the path to `clemanglaise.pro`.
   * Type `make` in the command line.
 

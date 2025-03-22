@@ -22,7 +22,7 @@ QHash<QString, QString> merge_word(
 QString merge_string(
         const QString &left_string,
         const QString &right_string,
-        const QRegExp &split_sep,
+        const QRegularExpression &split_sep,
         const QString &join_sep
         );
 

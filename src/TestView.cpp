@@ -562,7 +562,7 @@ void TestView::read_reply_tags()
 
 void TestView::read_reply(QString reply_string) {
     if (test.is_remote())
-        tag_reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+        tag_reply_list = reply_string.split('\n', Qt::SkipEmptyParts);
 
     // fill the tag combo box
     tags_box->disconnect();

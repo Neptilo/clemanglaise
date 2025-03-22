@@ -1,6 +1,6 @@
 #include "AnswerView.h"
 
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QtNetwork>
 #include <QUrlQuery>
 
@@ -52,7 +52,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
             standardized_answer.replace(QString("aa"), QString("&#257;"));
             standardized_answer.replace(QString("ee"), QString("&#275;"));
             // not before because otherwise "o u" would be replaced by "ō"
-            standardized_answer.replace(QRegExp("\\s"), QString());
+            standardized_answer.replace(QRegularExpression("\\s"), QString());
         }else if(test->get_dst() == "zh")
             standardized_answer = numbers_to_accents(standardized_answer, " ");
         else if(test->get_dst() == "ar")
@@ -73,11 +73,11 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
         QString answer(correct_answer_list.at(i).trimmed());
 
         if (test->get_dst() == "ja")
-            answer.remove(QRegExp("[^&#;a-zA-Z0-9]"));
+            answer.remove(QRegularExpression("[^&#;a-zA-Z0-9]"));
         else if (test->get_dst() == "zh")
             answer = separate_pinyin(answer);
         else if (test->get_dst() == "ar")
-            answer.remove(QRegExp("\\W")); // remove punctuation
+            answer.remove(QRegularExpression("\\W")); // remove punctuation
 
         correct_answer_list.replace(i, answer);
     }
@@ -156,11 +156,11 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
     OK_button->setFocus(); // Because the focus is still on the edit line.
     answer_headline_layout->addWidget(OK_button);
 
-    QLabel *comment_label = new QLabel("<i>"+comment.replace(QRegExp("[\r\n]+"), "<br />")+"</i>", this);
+    QLabel *comment_label = new QLabel("<i>"+comment.replace(QRegularExpression("[\r\n]+"), "<br />")+"</i>", this);
     vertical_layout->addWidget(comment_label);
     if(example.compare("")){
         QTextBrowser *example_label = new QTextBrowser(this);
-        example_label->setHtml("<b>Example:</b> "+ example.replace(QRegExp("[\r\n]+"), "<br />"));
+        example_label->setHtml("<b>Example:</b> "+ example.replace(QRegularExpression("[\r\n]+"), "<br />"));
         //example_label->setWordWrapMode(QTextOption::w);
         vertical_layout->addWidget(example_label);
     }

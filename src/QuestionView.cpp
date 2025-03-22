@@ -2,11 +2,12 @@
 
 #include <QAction>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QTextDocument>
 #include <QLineEdit>
 #include <QPainter>
 #include <QToolButton>
+#include <QGuiApplication>
+#include <QScreen>
 
 #include "InterfaceParameters.h"
 #include "resource_utils.h"
@@ -74,7 +75,7 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
         handwriting_label->setWordWrap(true);
         handwriting_layout->addWidget(handwriting_label);
 
-        QSize handwriting_area_size(QApplication::desktop()->width(), 128);
+        QSize handwriting_area_size(QGuiApplication::primaryScreen()->geometry().width(), 128);
         handwriting_area = new HandwritingArea(handwriting_area_size, this);
         handwriting_area->setMinimumSize(128, 128);
         handwriting_layout->addWidget(handwriting_area);

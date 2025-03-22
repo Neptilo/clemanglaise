@@ -1,8 +1,8 @@
 #include "WordView.h"
 
 #include <QApplication>
-#include <QDesktopWidget>
 #include <InterfaceParameters.h>
+#include <QScreen>
 
 WordView::WordView(Test *test, QWidget *parent) :
     QWidget(parent),
@@ -25,7 +25,7 @@ WordView::WordView(Test *test, QWidget *parent) :
     // The sub-layouts are automatically parented to the main layout.
     main_layout->addLayout(handwriting_layout);
     main_layout->addLayout(vertical_layout);
-    connect(QApplication::desktop(), SIGNAL(resized(int)), this, SLOT(update_layouts(int)));
+    connect(QGuiApplication::primaryScreen(), &QScreen::geometryChanged, this, &WordView::update_layouts);
 }
 
 /*
@@ -34,7 +34,7 @@ WordView::WordView(Test *test, QWidget *parent) :
     * Or they point to a layout whose parent is the widget or another layout, so Qt will destroy them at the same time as their parents.
 */
 
-void WordView::update_layouts(int)
+void WordView::update_layouts()
 {
     delete main_layout;
     if (window()->width() > window()->height())

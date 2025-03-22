@@ -158,7 +158,7 @@ void ListImportWizard::read_tag_reply()
     auto reply = qobject_cast<QNetworkReply*>(sender());
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
-    QStringList tag_reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+    QStringList tag_reply_list = reply_string.split('\n', Qt::SkipEmptyParts);
     online_tag_ids.clear();
     tag_names.clear();
     for(int i = 0, l = tag_reply_list.size(); i < l-1; i += 2) {
@@ -224,7 +224,7 @@ void ListImportWizard::read_tag_reply()
         word_data["list_id"] = QString::number(dst_test->get_id());
 
         // update word_data's tag ids with new local ids
-        QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", QString::SkipEmptyParts);
+        QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", Qt::SkipEmptyParts);
         QStringList word_tag_ids_str;
         for (int j = 0; j < online_tag_ids_str.size(); ++j) {
             int tag_id = offline_tag_ids.at(online_tag_ids.indexOf(online_tag_ids_str.at(j).toInt()));

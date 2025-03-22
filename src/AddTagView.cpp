@@ -160,7 +160,7 @@ void AddTagView::read_reply()
 
 void AddTagView::read_reply(QString reply_string) {
     if (test->is_remote())
-        reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+        reply_list = reply_string.split('\n', Qt::SkipEmptyParts);
     for(int i=0, l = reply_list.count(); i<l-1; i+=2)
         tags->addItem(reply_list.at(i+1), QVariant(reply_list.at(i).toInt()));
 }

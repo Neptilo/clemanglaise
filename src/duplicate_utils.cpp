@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QSet>
+#include <QRegularExpression>
 
 #include "string_utils.h"
 
@@ -44,13 +45,13 @@ QHash<QString, QString> merge_word(
     QHash<QString, QString>::const_iterator i;
     for (i = left_word_data.begin(); i != left_word_data.end(); ++i){
         if(i.key() != "id"){
-            QRegExp split_sep;
+            QRegularExpression split_sep;
             QString join_sep;
             if(i.key() == "comment" || i.key() == "example"){
-                split_sep = QRegExp("<br ?/>", Qt::CaseInsensitive);
+                split_sep = QRegularExpression("<br ?/>", QRegularExpression::CaseInsensitiveOption);
                 join_sep = "<br />";
             }else{
-                split_sep = QRegExp(",");
+                split_sep = QRegularExpression(",");
                 join_sep = ", ";
             }
             merged_data[i.key()] = merge_string(i.value(), right_word_data[i.key()], split_sep, join_sep);
@@ -61,16 +62,16 @@ QHash<QString, QString> merge_word(
 
 
 QString merge_string(
-        const QString &left_string,
-        const QString &right_string,
-        const QRegExp &split_sep,
-        const QString &join_sep)
+    const QString &left_string,
+    const QString &right_string,
+    const QRegularExpression &split_sep,
+    const QString &join_sep)
 {
     const QStringList left_list = ampersand_escape(trimmed(left_string.split(
-        split_sep, QString::SkipEmptyParts)));
+        split_sep, Qt::SkipEmptyParts)));
     auto left_set = QSet<QString>(left_list.begin(), left_list.end());
     const QStringList right_list = ampersand_escape(trimmed(right_string.split(
-        split_sep, QString::SkipEmptyParts)));
+        split_sep, Qt::SkipEmptyParts)));
     auto right_set = QSet<QString>(right_list.begin(), right_list.end());
     left_set.unite(right_set);
     return QStringList(left_set.values()).join(join_sep);

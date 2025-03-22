@@ -78,7 +78,7 @@ void DuplicatePage::initializePage()
 
         for(int j = 0; j < nb_rows; ++j){
             QWidget* item;
-            QString text = ampersand_unescape(duplicate_values.at(j).at(key_ind)).replace(QRegExp("[\r\n]+"), "<br />");
+            QString text = ampersand_unescape(duplicate_values.at(j).at(key_ind)).replace(QRegularExpression("[\r\n]+"), "<br />");
             if(i == 0)
                 item = new QRadioButton(text, this);
             else

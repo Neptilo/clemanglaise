@@ -1,4 +1,4 @@
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QDebug>
 
 #include "string_utils.h"
@@ -32,41 +32,64 @@ QStringList ampersand_escape(const QStringList &list)
 }
 
 /**
- * replace all: by : in IPA, because colon is a reserved caracter while
- * parsing a file
- * @par string: the string we want to handle
+ * Replace all ":" by U+02D0 (ː) in IPA, because colon is a reserved character while
+ * parsing a file.
+ * @param string: the string we want to handle
  */
-QString colon_unescape(const QString &string){
-    QRegExp rx0("[^:]*");
-    QRegExp rx(":([^:]*)");
-    QString res("");
+QString colon_unescape(const QString &string) {
+    QRegularExpression rx0("[^:]*");
+    QRegularExpression rx(":([^:]*)");
+    QString res;
     int pos = 0;
-    if((pos = rx0.indexIn(string, pos)) != -1){
-        pos += rx0.matchedLength();
-        res += rx0.cap(0);
-        while ((pos = rx.indexIn(string, pos)) != -1) {
-            pos += rx.matchedLength();
-            res += QString::fromUtf8("\u02D0")+rx.cap(1);
+
+    // Match the initial part (anything up to the first colon)
+    QRegularExpressionMatch match0 = rx0.match(string, pos);
+    if (match0.hasMatch()) {
+        // Update pos to the end of the match and add the captured text.
+        pos = match0.capturedStart(0) + match0.capturedLength(0);
+        res += match0.captured(0);
+
+        // Now loop over occurrences of ":" followed by any characters (non-colon)
+        while (true) {
+            QRegularExpressionMatch match = rx.match(string, pos);
+            if (!match.hasMatch())
+                break;
+            // Update pos to after the matched substring.
+            pos = match.capturedStart(0) + match.capturedLength(0);
+            res += QString::fromUtf8("\u02D0") + match.captured(1);
         }
     }
     return res;
 }
 
 /**
- * replace all &#number; by corresponding ascii letter
- * @par string: the string we want to handle
+ * Replace all occurrences of &#number; with the corresponding ASCII letter.
+ * @param string: the string we want to handle
  */
-QString ampersand_unescape(const QString &string){
-    QRegExp rx0("[^&]*");
-    QRegExp rx("&#(\\d*);([^&]*)");
+QString ampersand_unescape(const QString &string) {
+    QRegularExpression rx0("[^&]*");
+    QRegularExpression rx("&#(\\d*);([^&]*)");
     QString res;
     int pos = 0;
-    if((pos = rx0.indexIn(string, pos)) != -1){
-        pos += rx0.matchedLength();
-        res += rx0.cap(0);
-        while ((pos = rx.indexIn(string, pos)) != -1) {
-            pos += rx.matchedLength();
-            res += QChar(rx.cap(1).toInt())+rx.cap(2);
+
+    // Match the initial part (anything before the first `&#`)
+    QRegularExpressionMatch match0 = rx0.match(string, pos);
+    if (match0.hasMatch()) {
+        pos = match0.capturedStart(0) + match0.capturedLength(0);
+        res += match0.captured(0);
+
+        // Now loop over occurrences of "&#number;" followed by other text
+        while (true) {
+            QRegularExpressionMatch match = rx.match(string, pos);
+            if (!match.hasMatch())
+                break;
+
+            // Convert captured number to a character
+            int charCode = match.captured(1).toInt();
+            res += QChar(charCode) + match.captured(2);
+
+            // Move position forward
+            pos = match.capturedStart(0) + match.capturedLength(0);
         }
     }
     return res;
@@ -123,139 +146,139 @@ QStringList remove_diacritics(const QStringList &list)
 }
 
 QChar number_to_accent(const QChar& letter, int accent_number){
-    if(letter == "a"){
+    if(letter == 'a'){
         switch(accent_number){
             case 1:
-                return 257;
+                return QChar(257);
             case 2:
-                return 225;
+                return QChar(225);
             case 3:
-                return 462;
+                return QChar(462);
             case 4:
-                return 224;
+                return QChar(224);
             default:
                 return 'a';
         }
-    }else if(letter == "e"){
+    }else if(letter == 'e'){
         switch(accent_number){
             case 1:
-                return 275;
+                return QChar(275);
             case 2:
-                return 233;
+                return QChar(233);
             case 3:
-                return 283;
+                return QChar(283);
             case 4:
-                return 232;
+                return QChar(232);
             default:
                 return 'e';
         }
-    }else if(letter == "i"){
+    }else if(letter == 'i'){
         switch(accent_number){
             case 1:
-                return 299;
+                return QChar(299);
             case 2:
-                return 237;
+                return QChar(237);
             case 3:
-                return 464;
+                return QChar(464);
             case 4:
-                return 236;
+                return QChar(236);
             default:
                 return 'i';
         }
-    }else if(letter == "o"){
+    }else if(letter == 'o'){
         switch(accent_number){
             case 1:
-                return 333;
+                return QChar(333);
             case 2:
-                return 243;
+                return QChar(243);
             case 3:
-                return 466;
+                return QChar(466);
             case 4:
-                return 242;
+                return QChar(242);
             default:
                 return 'o';
         }
-    }else if(letter == "u"){
+    }else if(letter == 'u'){
         switch(accent_number){
             case 1:
-                return 363;
+                return QChar(363);
             case 2:
-                return 250;
+                return QChar(250);
             case 3:
-                return 468;
+                return QChar(468);
             case 4:
-                return 249;
+                return QChar(249);
             default:
                 return 'u';
         }
-    }else if(letter == "v"){
+    }else if(letter == 'v'){
         switch(accent_number){
             case 1:
-                return 470;
+                return QChar(470);
             case 2:
-                return 472;
+                return QChar(472);
             case 3:
-                return 474;
+                return QChar(474);
             case 4:
-                return 476;
+                return QChar(476);
             default:
-                return 252;
+                return QChar(252);
         }
     }else return letter;
 }
 
-QString numbers_to_accents(const QString &string, const QString &sep){
-
+QString numbers_to_accents(const QString &string, const QString &sep) {
     // Capture syllables
-    QRegExp syllable_rx(
+    QRegularExpression syllable_rx(
         "([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6"
         "\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2"
         "\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr"
         "])([iounr]?g?)(\\d?)(\\W*)",
-        Qt::CaseInsensitive);
+        QRegularExpression::CaseInsensitiveOption);
+
     QString res, separation;
     int pos = 0;
-    while ((pos = syllable_rx.indexIn(string, pos)) != -1) {
+    QRegularExpressionMatch match;
+
+    while ((match = syllable_rx.match(string, pos)).hasMatch()) {
         res += separation;
-        pos += syllable_rx.matchedLength();
+        pos = match.capturedEnd(0);  // Move to the end of the matched section
 
         // Generate new string
         QChar nucleus = number_to_accent(
-                            syllable_rx.cap(2).at(0), syllable_rx.cap(4).toInt());
-        separation = sep.isEmpty() ? syllable_rx.cap(5) : sep;
-        res += syllable_rx.cap(1)+nucleus+syllable_rx.cap(3);
+            match.captured(2).at(0), match.captured(4).toInt());
+        separation = sep.isEmpty() ? match.captured(5) : sep;
+        res += match.captured(1) + nucleus + match.captured(3);
     }
 
     return res;
 }
 
-QString separate_pinyin(const QString &string, const QString &sep)
-{
-    // It is necessary to reverse the regular expression,
-    // otherwise "ana" would be split as "an a" instead of "a na".
-
-    // backward regular expression of syllable_rx in numbers_to_accents
-    QRegExp backward_syllable_rx(
+QString separate_pinyin(const QString &string, const QString &sep) {
+    // Reverse regex to correctly split syllables
+    QRegularExpression backward_syllable_rx(
         "g?[ioun]?([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6"
         "\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2"
         "\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr"
-        "])[iu]?h?[bcdfgj-np-tw-z]?|r", Qt::CaseInsensitive);
+        "])[iu]?h?[bcdfgj-np-tw-z]?|r", QRegularExpression::CaseInsensitiveOption);
+
     int pos = 0;
     QStringList syllables;
-    QRegExp e_rx("([e\\x0113\\x00E9\\x011B\\x00E8])", Qt::CaseInsensitive);
-    while ((pos = backward_syllable_rx.indexIn(reverse(string), pos)) != -1) {
-        pos += backward_syllable_rx.matchedLength();
-        QString syllable(reverse(backward_syllable_rx.cap(0)));
-        // if a sole (possibly accented) 'e' is followed by a sole 'r',
-        // merge them as one syllable
-        if (
-                !syllables.isEmpty() &&
-                syllables.at(0) == QString("r") &&
-                e_rx.exactMatch(syllable))
-            syllables.replace(0, syllable+syllables.at(0));
-        else
+    QRegularExpression e_rx("([e\\x0113\\x00E9\\x011B\\x00E8])", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpressionMatch match;
+
+    while ((match = backward_syllable_rx.match(reverse(string), pos)).hasMatch()) {
+        pos = match.capturedEnd(0);
+        QString syllable(reverse(match.captured(0)));
+
+        // Merge 'e' followed by 'r' into one syllable
+        if (!syllables.isEmpty() && syllables.at(0) == QString("r") && e_rx.match(syllable).hasMatch()) {
+            syllables.replace(0, syllable + syllables.at(0));
+        } else {
             syllables.prepend(syllable);
+        }
     }
+
     return syllables.join(sep);
 }
 
@@ -404,68 +427,67 @@ QHash<QString, QString> make_ASCII_DIN_hash()
     return hash;
 }
 
-QString ASCII_to_DIN(const QString &string, bool keepPunctuation)
-{
+QString ASCII_to_DIN(const QString &string, bool keepPunctuation) {
     // Capture individual phonemes
-    QRegExp rx("(\\W*)(\\wh?|aa|ii|uu)");
+    QRegularExpression rx("(\\W*)(\\wh?|aa|ii|uu)");
     QString res;
     int pos = 0;
-    // Match rx in string from pos and return final position or -1 if match failed
-    while ((pos = rx.indexIn(string, pos)) != -1) {
-        // Generate new string
+    QRegularExpressionMatch match;
+
+    while ((match = rx.match(string, pos)).hasMatch()) {
+        pos = match.capturedEnd(0); // Move to the end of the match
 
         if (keepPunctuation)
-            res += rx.cap(1);
+            res += match.captured(1);
 
         // If a new word starts with a vowel, prepend a hamza
         // (Would it be better to remove them rather than add them?)
-        QString phoneme = rx.cap(2);
-        if ((!pos || !rx.cap(1).isEmpty()) && // beginning of a word
-                !phoneme.isEmpty() &&
-                QString("aiuā").contains(phoneme[0]))
+        QString phoneme = match.captured(2);
+        if ((!pos || !match.captured(1).isEmpty()) && // beginning of a word
+            !phoneme.isEmpty() &&
+            QString("aiuā").contains(phoneme[0])) {
             res += "ʾ";
+        }
 
         res += ASCII_DIN_hash.contains(phoneme) ?
-               ASCII_DIN_hash.value(phoneme) : phoneme;
-
-        pos += rx.matchedLength();
+                   ASCII_DIN_hash.value(phoneme) : phoneme;
     }
 
     return res;
 }
 
-QString kirshenbaum2IPA(const QString &string)
-{
+QString kirshenbaum2IPA(const QString &string) {
     // Capture phonemes
-    QRegExp rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^~]?))(:?)");
+    QRegularExpression rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^~]?))(:?)");
     QString res;
     int pos = 0;
-    auto map = [&rx](int nth)
-    {
-        QString phoneme = rx.cap(nth);
+    QRegularExpressionMatch match;
+
+    auto map = [](const QString &phoneme) {
         return kirshenbaum_IPA_hash.contains(phoneme) ?
-               kirshenbaum_IPA_hash.value(phoneme) : phoneme;
+                   kirshenbaum_IPA_hash.value(phoneme) : phoneme;
     };
-    // Match rx in string from pos and return final position or -1 if match failed
-    while ((pos = rx.indexIn(string, pos)) != -1) {
-        pos += rx.matchedLength();
+
+    while ((match = rx.match(string, pos)).hasMatch()) {
+        pos = match.capturedEnd(0); // Move to the end of the match
 
         // Generate new string
-        if (kirshenbaum_IPA_hash.contains(rx.cap(1)))
-            res += map(1);
-        else if(kirshenbaum_IPA_hash.contains(rx.cap(2)+rx.cap(3)))
-            res += map(2) + rx.cap(3) + map(4);
+        if (kirshenbaum_IPA_hash.contains(match.captured(1)))
+            res += map(match.captured(1));
+        else if (kirshenbaum_IPA_hash.contains(match.captured(2) + match.captured(3)))
+            res += map(match.captured(2)) + match.captured(3) + map(match.captured(4));
         else
-            res += map(2) + map(3) + map(4);
-        res += map(5);
+            res += map(match.captured(2)) + map(match.captured(3)) + map(match.captured(4));
+
+        res += map(match.captured(5));
     }
 
     return res;
 }
 
-bool isKirshenbaum(const QString& string){
-    QRegExp rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^~]?)+");
-    return rx.exactMatch(string);
+bool isKirshenbaum(const QString& string) {
+    QRegularExpression rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^~]?)+");
+    return rx.match(string).hasMatch();
 }
 
 QStringList trimmed(const QStringList &list)

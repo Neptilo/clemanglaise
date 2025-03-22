@@ -29,7 +29,7 @@ signals:
 public slots:
 
 private slots:
-    void update_layouts(int);
+    void update_layouts();
 };
 
 #endif // WORDVIEW_H

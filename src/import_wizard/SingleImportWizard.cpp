@@ -115,7 +115,7 @@ void SingleImportWizard::choose_behavior(ImportBehavior::Behavior behavior)
 void SingleImportWizard::import_tags_and_word()
 {
     // retrieve word's tag ids
-    QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", QString::SkipEmptyParts);
+    QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", Qt::SkipEmptyParts);
     // Progress steps: one for PHP request to find tags, one for each local tag search and one for the word import
     progress_page.set_max_progress(online_tag_ids_str.size()+2);
     online_tag_ids = QList<int>();
@@ -143,7 +143,7 @@ void SingleImportWizard::read_tag_reply() {
     // find names of tags
     QString reply_string = reply->readAll().replace('\0', "");
     reply->deleteLater();
-    QStringList reply_list = reply_string.split('\n', QString::SkipEmptyParts);
+    QStringList reply_list = reply_string.split('\n', Qt::SkipEmptyParts);
     tag_names = QStringList();
     for (int i = 0; i < online_tag_ids.size(); ++i) {
         int tag_id = online_tag_ids.at(i);
@@ -190,7 +190,7 @@ void SingleImportWizard::read_tag_reply() {
     }
 
     // update word_data's tag ids with new local ids
-    QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", QString::SkipEmptyParts);
+    QStringList online_tag_ids_str = word_data["tag_ids"].split(", ", Qt::SkipEmptyParts);
     QStringList word_tag_ids_str;
     for (int i = 0; i < online_tag_ids_str.size(); ++i) {
         int tag_id = offline_tag_ids.at(online_tag_ids.indexOf(online_tag_ids_str.at(i).toInt()));

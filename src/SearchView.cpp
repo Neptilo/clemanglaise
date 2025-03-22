@@ -4,7 +4,6 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QRegExp>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QtNetwork>
@@ -264,7 +263,7 @@ void SearchView::read_reply(QString reply_string) {
         if (i%nb_cols != word_keys.indexOf("id")){ // We don't want to show the id.
             if (i%nb_cols == word_keys.indexOf("tag_ids")) {
                 QComboBox* tags_box = new QComboBox();
-                QStringList tag_ids_str = reply_list.at(i).split(", ", QString::SkipEmptyParts);
+                QStringList tag_ids_str = reply_list.at(i).split(", ", Qt::SkipEmptyParts);
                 for (int j = 0, count = tag_ids_str.size(); j < count; ++j) {
                     int tag_id_ind = reply_list_tag.indexOf(tag_ids_str.at(j));
                     if (tag_id_ind >= 0) {
