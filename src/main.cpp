@@ -32,7 +32,6 @@ string tr(const char* s){
 
 int main(int argc, char *argv[])
 {
-
     // Read command line arguments
     bool use_password(false);
     string password;
@@ -83,6 +82,7 @@ int main(int argc, char *argv[])
 
     // Before the conditional because it has to be still there during the
     // execution of the app after the conditional.
+    NetworkReplyReader::initialize();
     NetworkReplyReader reply_reader(nullptr);
 
 #ifndef Q_OS_WASM

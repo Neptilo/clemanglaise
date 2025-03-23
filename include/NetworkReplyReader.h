@@ -12,6 +12,7 @@ public:
     explicit NetworkReplyReader(QObject *parent = nullptr);
     static QNetworkCookieJar* cookie_jar;
     static QNetworkAccessManager* nam;
+    static void initialize();
     void print(QString s);
 
 signals:

@@ -55,13 +55,13 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
         layout->addWidget(button, l/w, l%w);
         buttons.push_back(button);
     }
-    connect(&signal_mapper, SIGNAL(mapped(QObject *)), this, SLOT(forward_click(QObject *)));
+    connect(&signal_mapper, &QSignalMapper::mappedObject, this, &LanguageButtons::forward_click);
     layout_buttons();
 }
 
 void LanguageButtons::layout_buttons()
 {
-    for (MultilinePushButton* button : buttons)
+    for (MultilinePushButton* button : std::as_const(buttons))
     {
         switch (InterfaceParameters::orientation)
         {

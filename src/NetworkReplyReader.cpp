@@ -14,11 +14,17 @@ NetworkReplyReader::NetworkReplyReader(QObject *parent) :
     nam->setCookieJar(cookie_jar);
 }
 
-QNetworkCookieJar* NetworkReplyReader::cookie_jar =
-        new QNetworkCookieJar(nullptr);
+QNetworkCookieJar* NetworkReplyReader::cookie_jar = nullptr;
 
-QNetworkAccessManager* NetworkReplyReader::nam =
-        new QNetworkAccessManager(nullptr);
+QNetworkAccessManager* NetworkReplyReader::nam = nullptr;
+
+void NetworkReplyReader::initialize()
+{
+    if (!cookie_jar)
+        cookie_jar = new QNetworkCookieJar();
+    if (!nam)
+        nam = new QNetworkAccessManager();
+}
 
 void NetworkReplyReader::read_reply()
 {
