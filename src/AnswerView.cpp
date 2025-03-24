@@ -77,7 +77,9 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
         else if (test->get_dst() == "zh")
             answer = separate_pinyin(answer);
         else if (test->get_dst() == "ar")
-            answer.remove(QRegularExpression("\\W")); // remove punctuation
+            // remove punctuation
+            // "\p{L}" matches all Unicode letters including accented characters
+            answer.remove(QRegularExpression("[^\\p{L}\\dʾʿ]"));
 
         correct_answer_list.replace(i, answer);
     }

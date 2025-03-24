@@ -429,7 +429,7 @@ QHash<QString, QString> make_ASCII_DIN_hash()
 
 QString ASCII_to_DIN(const QString &string, bool keepPunctuation) {
     // Capture individual phonemes
-    QRegularExpression rx("(\\W*)(\\wh?|aa|ii|uu)");
+    QRegularExpression rx("(\\W*)(aa|ii|uu|\\wh?)");
     QString res;
     int pos = 0;
     QRegularExpressionMatch match;
