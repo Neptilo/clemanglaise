@@ -28,7 +28,9 @@ bool DatabaseManager::open_db()
 {
     // Find QSLite driver
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    QString path;
 
+    // define path
 #if defined(Q_OS_ANDROID)
     // in Android, store database file in external storage
     QAndroidJniObject media_dir = QAndroidJniObject::callStaticObjectMethod(
@@ -36,28 +38,29 @@ bool DatabaseManager::open_db()
                 "getExternalStorageDirectory",
                 "()Ljava/io/File;");
     QAndroidJniObject media_path = media_dir.callObjectMethod("getAbsolutePath", "()Ljava/lang/String;");
-    QString path(media_path.toString());
+    path = media_path.toString();
     path.append(QDir::separator()).append("Clemanglaise");
     // Create Clemanglaise folder if it doesn't exist
     if(!QDir(path).exists())
         QDir(path).mkpath(".");
     path.append(QDir::separator()).append("clemanglaise.sqlite");
     path = QDir::toNativeSeparators(path);
-    db.setDatabaseName(path);
 #elif defined(Q_OS_LINUX)
     // NOTE: We have to store database file into user home folder in Linux
-    QString path(QDir::home().path());
+    path = QDir::home().path();
     path.append(QDir::separator()).append(".clemanglaise");
     // Create Clemanglaise folder if it doesn't exist
     if(!QDir(path).exists())
         QDir(path).mkpath(".");
     path.append(QDir::separator()).append("clemanglaise.sqlite");
     path = QDir::toNativeSeparators(path);
-    db.setDatabaseName(path);
 #else
     // NOTE: File exists in the application private folder, in Symbian Qt implementation
-    db.setDatabaseName("clemanglaise.sqlite");
+    path = "clemanglaise.sqlite";
 #endif
+
+    bool dbExisted = QFile::exists(path);
+    db.setDatabaseName(path);
 
     // Open database
     bool success = db.open();
@@ -65,6 +68,8 @@ bool DatabaseManager::open_db()
         last_error = db.lastError().text();
         return false;
     }
+    if (!dbExisted)
+        qInfo() << "Database file not found so a new one was created";
     QSqlQuery query;
     success &= query.exec("PRAGMA foreign_keys = ON");
     if(!success)
