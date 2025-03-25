@@ -9,6 +9,7 @@ INCLUDEPATH += . include
 # Input
 HEADERS += \
     include/AnswerView.h \
+    include/DarkModeStyle.h \
     include/EditView.h \
     include/HandwritingArea.h \
     include/HomeView.h \
@@ -46,6 +47,7 @@ HEADERS += \
 }
 SOURCES += \
     src/AnswerView.cpp \
+    src/DarkModeStyle.cpp \
     src/EditView.cpp \
     src/HandwritingArea.cpp \
     src/HomeView.cpp \

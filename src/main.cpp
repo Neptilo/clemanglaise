@@ -12,6 +12,7 @@
 #include <QFontDatabase>
 #include <QPushButton>
 #include <QObject>
+#include <QStyleHints>
 
 #if defined(Q_OS_ANDROID)
 #include "AndroidStyle.h"
@@ -19,6 +20,7 @@
 #include "HomeView.h"
 #include "NetworkReplyReader.h"
 #include "string_utils.h"
+#include "DarkModeStyle.h"
 
 using namespace std;
 
@@ -76,7 +78,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    QApplication a(argc, argv); // Needs to be done before using any signals
+    QApplication app(argc, argv); // Needs to be done before using any signals
+
+    if (QApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark)
+        app.setStyle(new DarkModeStyle);
 
     srand(time(nullptr));
 
@@ -121,5 +126,5 @@ int main(int argc, char *argv[])
         w->show();
     }
 
-    return a.exec();
+    return app.exec();
 }
