@@ -36,6 +36,7 @@ HomeView::HomeView(bool admin, QWidget *parent):
     layout->addWidget(&test_source_switcher);
 
     // info label
+    info_label.setWordWrap(true);
     layout->addWidget(&info_label);
 
     set_test_source(test_source_switcher.value()); // calls init()
@@ -113,35 +114,55 @@ void HomeView::list_created(Test *test)
 void HomeView::read_reply_lists()
 {
     auto reply = qobject_cast<QNetworkReply*>(sender());
-    if(remote){ // verification in case user clicked switch button before NAM's reply
-        QString reply_string = reply->readAll().replace('\0', "");
-        reply->deleteLater();
-        if (reply_string.isEmpty())
-            info_label.setText(tr("There is no vocabulary list on the server at the moment."));
-        else {
-            QStringList reply_list(reply_string.split('\n'));
-            reply_list.removeLast();
-            QList<Test> online_tests;
-            for(int i = 0; i < reply_list.count(); i+=5) {
-                online_tests << Test(reply_list.at(i).toInt(),
-                                     reply_list.at(i+1),
-                                     reply_list.at(i+2),
-                                     reply_list.at(i+3),
-                                     reply_list.at(i+4),
-                                     true,
-                                     this);
-            }
+    if(!remote) // verification in case user clicked switch button before NAM's reply
+        return;
 
-            // test buttons
-            delete test_buttons;
+    reply->deleteLater();
 
-            test_buttons = new LanguageButtons(online_tests, admin, this);
-            connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
-            layout->addWidget(test_buttons);
+    if (reply->error() != QNetworkReply::NoError) {
+        // Network-level error (e.g., no connection, SSL errors, etc.)
+        info_label.setText("<b>" + tr("Network error:") + " </b>" + reply->errorString());
+        return;
+    }
 
-            // info label
-            info_label.setText(tr("<b>Tests on remote server:</b>"));
+    // Check the HTTP status code
+    QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if (!statusCode.isValid()) {
+        info_label.setText(tr("Received invalid HTTP status code"));
+        return;
+    }
+    int status = statusCode.toInt();
+    if (status >= 400) {
+        info_label.setText("<b>" + tr("HTTP error:") + " </b>" + QString::number(status));
+        return;
+    }
+
+    QString reply_string = reply->readAll().replace('\0', "");
+    if (reply_string.isEmpty())
+        info_label.setText(tr("There is no vocabulary list on the server at the moment."));
+    else {
+        QStringList reply_list(reply_string.split('\n'));
+        reply_list.removeLast();
+        QList<Test> online_tests;
+        for(int i = 0; i < reply_list.count(); i+=5) {
+            online_tests << Test(reply_list.at(i).toInt(),
+                                 reply_list.at(i+1),
+                                 reply_list.at(i+2),
+                                 reply_list.at(i+3),
+                                 reply_list.at(i+4),
+                                 true,
+                                 this);
         }
+
+        // test buttons
+        delete test_buttons;
+
+        test_buttons = new LanguageButtons(online_tests, admin, this);
+        connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
+        layout->addWidget(test_buttons);
+
+        // info label
+        info_label.setText(tr("<b>Tests on remote server:</b>"));
     }
 }
 
@@ -193,13 +214,13 @@ void HomeView::resizeEvent(QResizeEvent *)
     if (window()->width() < window()->height()) {
         if (InterfaceParameters::orientation == Qt::LandscapeOrientation) {
             InterfaceParameters::orientation = Qt::PortraitOrientation;
-            if (test_buttons->isVisible())
+            if (test_buttons && test_buttons->isVisible())
                 test_buttons->layout_buttons();
         }
     } else {
         if (InterfaceParameters::orientation == Qt::PortraitOrientation) {
             InterfaceParameters::orientation = Qt::LandscapeOrientation;
-            if (test_buttons->isVisible())
+            if (test_buttons && test_buttons->isVisible())
                 test_buttons->layout_buttons();
         }
     }
