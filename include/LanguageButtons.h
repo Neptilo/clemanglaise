@@ -17,7 +17,15 @@ public:
 private:
     QSignalMapper signal_mapper;
     QList<MultilinePushButton *> buttons;
-
+    
+    /**
+     * Determine the best number of columns to fit `l` items
+     * into a grid layout while maintaining an aspect ratio close to the window's dimensions.
+     *
+     * @param l The number of items to fit into the grid.
+     */
+    int compute_best_num_cols(int l);
+    
 private slots:
     void forward_click(QObject *obj);
 
