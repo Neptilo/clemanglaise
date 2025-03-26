@@ -31,6 +31,7 @@ QuestionView::QuestionView(Test *test, bool admin, QWidget *parent):
     label->setWordWrap(true);
     vertical_layout->addLayout(top_layout);
     top_layout->addWidget(label);
+    resizeEvent(nullptr);
 }
 
 QuestionView::~QuestionView(){
@@ -85,18 +86,18 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
 
     // Display question
     QString hint_text = (hint.isEmpty())? "" : "<i>Hint: " + hint+"</i><br />";
-    if(test->get_dst() == "fr")
-        label->setText(tr("Translate <b>") + word + tr("</b> into French. <br />") + hint_text);
-    else if(test->get_dst() == "ja")
-        label->setText("<b>"+word + "</b><br />" + hint_text + tr("<br/>Write the pronunciation of this word in r&#333;maji."));
+    QString formatted_word = QString("<b style='font-size: %1pt;'>%2</b>")
+        .arg(InterfaceParameters::widget_unit / 2).arg(word);
+    QString instruction;
+    if(test->get_dst() == "ja")
+        instruction = tr("Write the pronunciation of this in r&#333;maji.");
     else if(test->get_dst() == "zh")
-        label->setText("<b>"+word + "</b><br />" + hint_text + tr("<br/>Write the pronunciation of this word in pinyin."));
+        instruction = tr("Write the pronunciation of this in pinyin.");
     else if(test->get_dst() == "ar")
-        label->setText("<b>"+word + "</b><br />" + hint_text + tr("<br/>Write the pronunciation of this word in ASCII."));
-    else if(test->get_dst() == "hr")
-        label->setText(tr("Translate <b>") + word + tr("</b> into Croatian.<br />") + hint_text);
+        instruction = tr("Write the pronunciation of this in ASCII.");
     else
-        label->setText(tr("Translate <b>") + word + tr("</b>.<br />")+ hint_text);
+        instruction = tr("Translate this into the target language.");
+    label->setText(formatted_word + "<br />" + instruction + "<br />" + hint_text);
 
     // Populate top layout with buttons
     if (!test->is_remote() || admin) {
@@ -119,13 +120,10 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
     // user input
     input_layout = new QHBoxLayout;
     edit = new QLineEdit(this);
-    edit->setFixedHeight(InterfaceParameters::widget_unit);
     OK_button = new QPushButton(
                 getIcon("emblem-default"),
                 tr("OK"),
                 this);
-    OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-    OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
     vertical_layout->addLayout(input_layout);
     input_layout->addWidget(edit);
     input_layout->addWidget(OK_button);
@@ -138,6 +136,8 @@ void QuestionView::ask_question(const QString& word, const QString &hint) {
     OK_button->setDefault(true);
     edit->setFocus();
     OK_button->setEnabled(true);
+
+    resizeEvent(nullptr);
 }
 
 void QuestionView::init_button(QToolButton *button)
@@ -168,10 +168,16 @@ void QuestionView::resizeEvent(QResizeEvent *event)
     init_button(edit_button);
     init_button(delete_button);
     init_button(import_button);
-    if (edit)
+    if (edit) {
         edit->setFixedHeight(InterfaceParameters::widget_unit);
+        QFont font = edit->font();
+        font.setPointSize(0.5 * InterfaceParameters::widget_unit);
+        edit->setFont(font);
+    }
     if (OK_button) {
-        OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
-        OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
+        OK_button->setFixedSize(2*InterfaceParameters::widget_unit,
+                                InterfaceParameters::widget_unit);
+        OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2,
+                                     InterfaceParameters::widget_unit/2));
     }
 }

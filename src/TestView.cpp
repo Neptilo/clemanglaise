@@ -104,14 +104,12 @@ void TestView::create_interface()
     // header
     header_layout = new QHBoxLayout;
     back_button = new QToolButton(this);
-    init_button(back_button);
     back_button->setDefaultAction(back_action);
     QString title_str = QString("<b>%1</b> (%2)")
             .arg(test.get_name())
             .arg(test.is_remote()?tr("online"):tr("offline"));
     title = new QLabel(title_str, this);
     title->setAlignment(Qt::AlignCenter);
-    title->setFixedHeight(InterfaceParameters::widget_unit);
     layout->addLayout(header_layout);
     header_layout->addWidget(back_button);
     header_layout->addWidget(title, Qt::AlignCenter);
@@ -121,32 +119,29 @@ void TestView::create_interface()
     tool_bar_layout = new QHBoxLayout;
     if (!test.is_remote() || admin) {
         add_button = new QToolButton(this);
-        init_button(add_button);
         add_button->setDefaultAction(add_action);
         add_button->addAction(add_tag_action);
         tool_bar_layout->addWidget(add_button);
     }
     search_button = new QToolButton(this);
-    init_button(search_button);
     search_button->setDefaultAction(search_action);
     tool_bar_layout->addWidget(search_button);
     if (test.is_remote()) {
         import_button = new QToolButton(this);
-        init_button(import_button);
         import_button->setDefaultAction(import_action);
         tool_bar_layout->addWidget(import_button);
     }
     if (!test.is_remote() || admin) {
         delete_button = new QToolButton(this);
-        init_button(delete_button);
         delete_button->setDefaultAction(delete_action);
         tool_bar_layout->addWidget(delete_button);
     }
     tags_box = new CheckableComboBox(this);
-    tags_box->setFixedHeight(InterfaceParameters::widget_unit);
     tags_box->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     tool_bar_layout->addWidget(tags_box);
     layout->addLayout(tool_bar_layout);
+
+    resizeEvent(nullptr);
 }
 
 void TestView::init_button(QToolButton *button)
@@ -639,7 +634,12 @@ void TestView::resizeEvent(QResizeEvent *)
     init_button(import_button);
     init_button(delete_button);
     if (title)
+    {
         title->setFixedHeight(InterfaceParameters::widget_unit);
+        QFont font = title->font();
+        font.setPointSize(0.5 * InterfaceParameters::widget_unit);
+        title->setFont(font);
+    }
     if (tags_box)
         tags_box->setFixedHeight(InterfaceParameters::widget_unit);
 }

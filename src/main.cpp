@@ -80,6 +80,11 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv); // Needs to be done before using any signals
 
+    // Define a default font size for all texts
+    QFont appFont = QApplication::font();
+    appFont.setPointSize(12);
+    QApplication::setFont(appFont);
+
     if (QApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark)
         app.setStyle(new DarkModeStyle);
 
