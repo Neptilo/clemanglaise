@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
         // Connect as administrator
         QUrlQuery post_data;
         post_data.addQueryItem("password", password.c_str());
-        const QUrl url("https://neptilo.com/php/clemanglaise/login.php");
+        const QUrl url(NetworkReplyReader::api_url + "login.php");
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader,
                           "application/x-www-form-urlencoded");

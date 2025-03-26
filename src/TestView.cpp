@@ -233,7 +233,7 @@ void TestView::update_request() {
         selected_tags_str << QString::number(selected_tags_copy.at(i));
     // Request to PHP or local file
     QUrl url;
-    url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_random.php"
+    url = QUrl(QString(NetworkReplyReader::api_url + "find_random.php"
                        "?list_id=%1&tag_ids=%2&untagged=%3")
                .arg(test.get_id())
                .arg(selected_tags_str.join(","))
@@ -381,7 +381,7 @@ void TestView::delete_list()
             // request to PHP file
             QUrlQuery post_data;
             post_data.addQueryItem("list_id", QString::number(test.get_id()));
-            const QUrl url("https://neptilo.com/php/clemanglaise/delete_list.php");
+            const QUrl url(NetworkReplyReader::api_url + "delete_list.php");
             QNetworkRequest request(url);
             request.setHeader(QNetworkRequest::ContentTypeHeader,
                               "application/x-www-form-urlencoded");
@@ -532,7 +532,7 @@ void TestView::go_back() {
 void TestView::find_tags() {
     if (test.is_remote()) {
         // Request to PHP file
-        const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test.get_id()));
+        const QUrl url = QUrl(QString(NetworkReplyReader::api_url + "find_used_tags.php?list_id=%1").arg(test.get_id()));
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply_tags()));

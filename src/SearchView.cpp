@@ -77,7 +77,7 @@ SearchView::~SearchView() {
 void SearchView::find_tags() {
     if (test->is_remote()) {
         // Request to PHP file
-        const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/find_used_tags.php?list_id=%1").arg(test->get_id()));
+        const QUrl url = QUrl(QString(NetworkReplyReader::api_url + "find_used_tags.php?list_id=%1").arg(test->get_id()));
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_used_tags_reply()));
@@ -103,7 +103,7 @@ void SearchView::search() {
         for(int i = 0; i < selected_tags.length(); ++i)
             selected_tags_str << QString::number(selected_tags.at(i));
         // Request to PHP file
-        const QUrl url = QUrl(QString("https://neptilo.com/php/clemanglaise/search.php?list_id=%1&string=%2&tag_ids=%3&untagged=%4")
+        const QUrl url = QUrl(QString(NetworkReplyReader::api_url + "search.php?list_id=%1&string=%2&tag_ids=%3&untagged=%4")
                               .arg(test->get_id())
                               .arg(search_str)
                               .arg(selected_tags_str.join(","))
@@ -324,7 +324,7 @@ void SearchView::action(int row, int col)
             if (test->is_remote()) {
                 QUrlQuery post_data;
                 post_data.addQueryItem("id", reply_list.at(row*nb_cols));
-                const QUrl url("https://neptilo.com/php/clemanglaise/delete_word.php");
+                const QUrl url(NetworkReplyReader::api_url + "delete_word.php");
                 QNetworkRequest request(url);
                 request.setHeader(QNetworkRequest::ContentTypeHeader,
                                   "application/x-www-form-urlencoded");

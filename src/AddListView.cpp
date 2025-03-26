@@ -117,7 +117,7 @@ void AddListView::add_online_list()
     post_data.addQueryItem("src", src_test);
     post_data.addQueryItem("dst", dst_test);
     post_data.addQueryItem("flag", test_flag);
-    const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/add_list");
+    const QUrl url = QUrl(NetworkReplyReader::api_url + "add_list");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,
                       "application/x-www-form-urlencoded");

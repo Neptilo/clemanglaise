@@ -215,7 +215,7 @@ void EditView::edit_word(){
             post_data.addQueryItem(i.key(), i.value());
         for (int i = 0; i < selected_tags.size(); ++i)
             post_data.addQueryItem("tag_ids[]", QString::number(selected_tags.at(i)));
-        const QUrl url("https://neptilo.com/php/clemanglaise/"+this->php_filename+".php");
+        const QUrl url(NetworkReplyReader::api_url + ""+this->php_filename+".php");
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
@@ -319,7 +319,7 @@ void EditView::reset(){
 void EditView::find_tags() {
     if (test->is_remote()) {
         // Request to PHP file
-        const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/find_tags.php");
+        const QUrl url = QUrl(NetworkReplyReader::api_url + "find_tags.php");
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));

@@ -74,7 +74,7 @@ void HomeView::init()
 
     if(remote){
         // Request to PHP file to get the list of online vocabulary lists
-        const QUrl url = QUrl("https://neptilo.com/php/clemanglaise/get_lists.php");
+        const QUrl url = QUrl(NetworkReplyReader::api_url + "get_lists.php");
         QNetworkRequest request(url);
         QNetworkReply* reply = NetworkReplyReader::nam->get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply_lists()));

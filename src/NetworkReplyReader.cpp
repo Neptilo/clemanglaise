@@ -18,6 +18,12 @@ QNetworkCookieJar* NetworkReplyReader::cookie_jar = nullptr;
 
 QNetworkAccessManager* NetworkReplyReader::nam = nullptr;
 
+#ifdef QT_DEBUG
+const QString NetworkReplyReader::api_url = "https://localhost/php/clemanglaise/";
+#else
+const QString NetworkReplyReader::api_url = "https://neptilo.com/php/clemanglaise/";
+#endif
+
 void NetworkReplyReader::initialize()
 {
     if (!cookie_jar)
