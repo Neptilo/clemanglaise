@@ -2,7 +2,7 @@
 
 This program creates vocabulary tests in different languages using words from an online or a local database.
 
-## How to use?
+## Build & run
 
 ### Usual method, working on Linux, Mac or Windows
 
@@ -69,5 +69,22 @@ To run the application with **administrator** rights to the database, type `<cmd
 To show help wizard, type `<cmd> -h`, replacing `<cmd>` with the command mentioned above.
 
 Enjoy!
+
+## Building the installer
+
+Here are the steps to build a Windows installer:
+* Download and install Inno Setup from either of these servers:
+  * [US](https://jrsoftware.org/download.php/is.exe?site=1)
+  * [Netherlands](https://jrsoftware.org/download.php/is.exe?site=2)
+* Go to the location where `clemanglaise.exe` is built and use **windeployqt** to gather the required Qt libraries: 
+`windeployqt.exe --compiler-runtime clemanglaise.exe`. This copies the necessary DLLs into your application folder.
+* Compile and create the installer:
+  * Open **Inno Setup Compiler**.
+  * Click *File > Open* and select the clemanglaise.iss file located in the project root.
+  * Click *Compile* or press F9.
+  * The installer (setup_clemanglaise.exe) will be created in the "Output" directory.
+* Code signing:
+  * Make sure the `signtool` command is in your `$PATH` variable. If not, add `C:\Program Files (x86)\Windows Kits\10\bin\{version}\x64` to your path, replacing `{version}` with the latest available version.
+  * In a Windows cmd console, go to the location where the installer was built, and run `signtool sign /a /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "setup_clemanglaise.exe"`.
 
 (1) To find OpenSSL libraries of a specific version, go [here](https://wiki.openssl.org/index.php/Binaries).
