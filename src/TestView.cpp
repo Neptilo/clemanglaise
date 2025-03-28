@@ -114,8 +114,6 @@ void TestView::create_interface()
     header_layout->addWidget(back_button);
     header_layout->addWidget(title, Qt::AlignCenter);
 
-    answer_view = new AnswerView(&test, this);
-
     tool_bar_layout = new QHBoxLayout;
     if (!test.is_remote() || admin) {
         add_button = new QToolButton(this);
