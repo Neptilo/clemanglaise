@@ -6,7 +6,10 @@
 #include <QMessageBox>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include <QtNetwork>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrlQuery>
 
 #include "CheckableItemDelegate.h"
 #include "EditView.h"
@@ -103,11 +106,11 @@ void SearchView::search() {
         for(int i = 0; i < selected_tags.length(); ++i)
             selected_tags_str << QString::number(selected_tags.at(i));
         // Request to PHP file
-        const QUrl url = QUrl(QString(NetworkReplyReader::api_url + "search.php?list_id=%1&string=%2&tag_ids=%3&untagged=%4")
-                              .arg(test->get_id())
-                              .arg(search_str)
-                              .arg(selected_tags_str.join(","))
-                              .arg(untagged));
+        const QUrl url(QString(
+            NetworkReplyReader::api_url + "search.php?list_id=%1&string=%2&tag_ids=%3&untagged=%4")
+                           .arg(test->get_id())
+                           .arg(search_str, selected_tags_str.join(","))
+                           .arg(untagged));
         QNetworkReply* reply = NetworkReplyReader::nam->get(QNetworkRequest(url));
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
 #ifndef Q_OS_WASM
@@ -284,7 +287,7 @@ void SearchView::read_reply(QString reply_string) {
     }
     result->resizeColumnsToContents();
     result->resizeRowsToContents();
-    connect(result, SIGNAL(cellClicked(int,int)), this, SLOT(action(int, int)));
+    connect(result, QTableWidget::cellClicked, this, SearchView::action);
 }
 
 void SearchView::action(int row, int col)

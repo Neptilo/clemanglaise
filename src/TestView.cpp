@@ -13,6 +13,9 @@
 #include <QTimer>
 #include <QToolButton>
 #include <QWizard>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QUrlQuery>
 
 #include "AndroidStyle.h"
 #ifndef Q_OS_WASM
@@ -106,8 +109,7 @@ void TestView::create_interface()
     back_button = new QToolButton(this);
     back_button->setDefaultAction(back_action);
     QString title_str = QString("<b>%1</b> (%2)")
-            .arg(test.get_name())
-            .arg(test.is_remote()?tr("online"):tr("offline"));
+            .arg(test.get_name(), test.is_remote()?tr("online"):tr("offline"));
     title = new QLabel(title_str, this);
     title->setAlignment(Qt::AlignCenter);
     layout->addLayout(header_layout);
@@ -139,7 +141,7 @@ void TestView::create_interface()
     tool_bar_layout->addWidget(tags_box);
     layout->addLayout(tool_bar_layout);
 
-    resizeEvent(nullptr);
+    TestView::resizeEvent(nullptr);
 }
 
 void TestView::init_button(QToolButton *button)

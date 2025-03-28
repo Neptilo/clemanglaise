@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QFormLayout>
 #include <QUrlQuery>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 #include "NetworkReplyReader.h"
 #include "iso_mapping.h"

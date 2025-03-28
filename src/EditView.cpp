@@ -1,10 +1,11 @@
 #include <algorithm>
-#include <QtNetwork>
 #include <QDebug>
 #include <QTextDocument>
 #include <QUrlQuery>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 #include "EditView.h"
 #include "InterfaceParameters.h"

@@ -4,7 +4,6 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QTextBrowser>
-#include <QtNetwork>
 
 #include "WordView.h"
 #ifndef Q_OS_WASM

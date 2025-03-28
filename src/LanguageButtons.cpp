@@ -14,6 +14,8 @@
 #include "string_utils.h"
 #include "iso_mapping.h"
 
+static void *no_memory_leak_ptr;
+
 int LanguageButtons::compute_best_num_cols(int l)
 {
     // Compute number of rows and columns, and cell size
@@ -54,7 +56,9 @@ LanguageButtons::LanguageButtons(const QList<Test> &tests, bool new_button, QWid
     int ncols = compute_best_num_cols(l);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // Widget owns the layout, no need to delete manually
     QGridLayout *layout = new QGridLayout(this);
+    no_memory_leak_ptr = layout;
     int i;
     for (i = 0; i < tests.size(); ++i) {
         Test *test = new Test(tests.at(i), this); // pointer to non constant copy of test

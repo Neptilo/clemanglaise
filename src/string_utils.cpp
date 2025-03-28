@@ -37,8 +37,8 @@ QStringList ampersand_escape(const QStringList &list)
  * @param string: the string we want to handle
  */
 QString colon_unescape(const QString &string) {
-    QRegularExpression rx0("[^:]*");
-    QRegularExpression rx(":([^:]*)");
+    static QRegularExpression rx0("[^:]*");
+    static QRegularExpression rx(":([^:]*)");
     QString res;
     int pos = 0;
 
@@ -67,8 +67,8 @@ QString colon_unescape(const QString &string) {
  * @param string: the string we want to handle
  */
 QString ampersand_unescape(const QString &string) {
-    QRegularExpression rx0("[^&]*");
-    QRegularExpression rx("&#(\\d*);([^&]*)");
+    static QRegularExpression rx0("[^&]*");
+    static QRegularExpression rx("&#(\\d*);([^&]*)");
     QString res;
     int pos = 0;
 
@@ -229,7 +229,7 @@ QChar number_to_accent(const QChar& letter, int accent_number){
 
 QString numbers_to_accents(const QString &string, const QString &sep) {
     // Capture syllables
-    QRegularExpression syllable_rx(
+    static QRegularExpression syllable_rx(
         "([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6"
         "\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2"
         "\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr"
@@ -256,7 +256,7 @@ QString numbers_to_accents(const QString &string, const QString &sep) {
 
 QString separate_pinyin(const QString &string, const QString &sep) {
     // Reverse regex to correctly split syllables
-    QRegularExpression backward_syllable_rx(
+    static QRegularExpression backward_syllable_rx(
         "g?[ioun]?([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6"
         "\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2"
         "\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr"
@@ -264,7 +264,7 @@ QString separate_pinyin(const QString &string, const QString &sep) {
 
     int pos = 0;
     QStringList syllables;
-    QRegularExpression e_rx("([e\\x0113\\x00E9\\x011B\\x00E8])", QRegularExpression::CaseInsensitiveOption);
+    static QRegularExpression e_rx("([e\\x0113\\x00E9\\x011B\\x00E8])", QRegularExpression::CaseInsensitiveOption);
     QRegularExpressionMatch match;
 
     while ((match = backward_syllable_rx.match(reverse(string), pos)).hasMatch()) {
@@ -429,7 +429,7 @@ QHash<QString, QString> make_ASCII_DIN_hash()
 
 QString ASCII_to_DIN(const QString &string, bool keepPunctuation) {
     // Capture individual phonemes
-    QRegularExpression rx("(\\W*)(aa|ii|uu|\\wh?)");
+    static QRegularExpression rx("(\\W*)(aa|ii|uu|\\wh?)");
     QString res;
     int pos = 0;
     QRegularExpressionMatch match;
@@ -458,7 +458,7 @@ QString ASCII_to_DIN(const QString &string, bool keepPunctuation) {
 
 QString kirshenbaum2IPA(const QString &string) {
     // Capture phonemes
-    QRegularExpression rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^~]?))(:?)");
+    static QRegularExpression rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^~]?))(:?)");
     QString res;
     int pos = 0;
     QRegularExpressionMatch match;
@@ -486,7 +486,7 @@ QString kirshenbaum2IPA(const QString &string) {
 }
 
 bool isKirshenbaum(const QString& string) {
-    QRegularExpression rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^~]?)+");
+    static QRegularExpression rx("([a-zA-Z@&*?',]?(<[a-z?]{1,3}>)?[\":;`!\\-.^~]?)+");
     return rx.match(string).hasMatch();
 }
 

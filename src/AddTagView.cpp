@@ -1,9 +1,10 @@
-#include <QtNetwork>
 #include <QTextDocument>
 #include <QStandardItemModel>
 #include <QListView>
 #include <QTableView>
 #include <QUrlQuery>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 #include "AddTagView.h"
 #include "CheckableItemDelegate.h"

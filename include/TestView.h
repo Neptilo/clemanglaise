@@ -16,13 +16,7 @@
 #include "Test.h"
 #include "AddTagView.h"
 
-#if defined(Q_OS_WIN)
-const QString ENDL="\\r\\n";
-#elif defined(Q_OS_MAC)
-const QString ENDL="\\r";
-#else
-const QString ENDL="\\n";
-#endif
+class QNetworkRequest;
 
 class TestView : public QWidget{
     Q_OBJECT

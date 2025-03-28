@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QTimer>
 #include <QWidget>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 
 #include "InterfaceParameters.h"
 #include "string_utils.h"
@@ -52,8 +54,8 @@ void HomeView::add_list()
                         &database_manager,
                     #endif
                         remote, this); // database_manager is useless for online tests
-    connect(add_list_view, SIGNAL(created(Test *)), this, SLOT(list_created(Test *)));
-    connect(add_list_view, SIGNAL(canceled()), this, SLOT(remove_add_list_view()));
+    connect(add_list_view, AddListView::created, this, HomeView::list_created);
+    connect(add_list_view, AddListView::canceled, this, HomeView::remove_add_list_view);
     layout->addWidget(add_list_view);
 }
 

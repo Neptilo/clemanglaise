@@ -13,6 +13,8 @@
 #include <QPushButton>
 #include <QObject>
 #include <QStyleHints>
+#include <QUrlQuery>
+#include <QNetworkReply>
 
 #if defined(Q_OS_ANDROID)
 #include "AndroidStyle.h"

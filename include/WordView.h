@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QBoxLayout>
 #include <QPushButton>
-#include <QtNetwork>
 
 #include "Test.h"
 

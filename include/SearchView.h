@@ -5,7 +5,6 @@
 #include <QTableWidget>
 #include <QPushButton>
 #include <QWidget>
-#include <QtNetwork>
 
 #include "CheckableComboBox.h"
 #include "Test.h"

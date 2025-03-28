@@ -3,7 +3,10 @@
 #include <iostream>
 
 #include <QObject>
-#include <QtNetwork>
+#include <QNetworkCookieJar>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QApplication> // For qApp
 
 #include "HomeView.h"
 

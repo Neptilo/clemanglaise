@@ -11,20 +11,26 @@ int find_best_duplicate(
         const QStringList &duplicate_keys,
         const QList<QStringList> &duplicate_values
         ){
-    QStringList relevant_keys; // keys of relevant fields to compute similarity between imported entry and possible duplicate
+    // keys of relevant fields to compute similarity
+    // between imported entry and possible duplicate
+    QStringList relevant_keys;
     relevant_keys << "word" << "meaning";
-    int best_similarity = 0; // Similarity is defined as the number of words and meanings in common between two entries.
+    // Similarity is defined as the number of words
+    // and meanings in common between two entries.
+    int best_similarity = 0;
     int best_match_ind(0);
     for(int i = 0; i < duplicate_values.size(); ++i){
         int similarity = 0;
         for(int j = 0; j < relevant_keys.size(); ++j){
             // get word list of imported entry
-            QStringList import_word_list = trimmed(word_data[relevant_keys.at(j)].split(","));
+            QStringList import_word_list = trimmed(
+                word_data[relevant_keys.at(j)].toLower().split(","));
             int key_ind = duplicate_keys.indexOf(relevant_keys.at(j));
             // get the word list and count elements in common with input word list
-            QStringList dup_word_list = duplicate_values.at(i).at(key_ind).split(",");
+            QStringList dup_word_list =
+                duplicate_values.at(i).at(key_ind).toLower().split(",");
             for(int k = 0; k < dup_word_list.size(); ++k){
-                if(import_word_list.contains(dup_word_list.at(k).trimmed(), Qt::CaseInsensitive))
+                if(import_word_list.contains(dup_word_list.at(k).trimmed()))
                     ++similarity;
             }
         }
@@ -74,5 +80,5 @@ QString merge_string(
         split_sep, Qt::SkipEmptyParts)));
     auto right_set = QSet<QString>(right_list.begin(), right_list.end());
     left_set.unite(right_set);
-    return QStringList(left_set.values()).join(join_sep);
+    return QStringList(left_set.begin(), left_set.end()).join(join_sep);
 }

@@ -1,7 +1,6 @@
 #include "AnswerView.h"
 
 #include <QRegularExpression>
-#include <QtNetwork>
 #include <QUrlQuery>
 
 #include "InterfaceParameters.h"
@@ -52,7 +51,8 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
             standardized_answer.replace(QString("aa"), QString("&#257;"));
             standardized_answer.replace(QString("ee"), QString("&#275;"));
             // not before because otherwise "o u" would be replaced by "ō"
-            standardized_answer.replace(QRegularExpression("\\s"), QString());
+            static const QRegularExpression regex("\\s");
+            standardized_answer.replace(regex, QString());
         }else if(test->get_dst() == "zh")
             standardized_answer = numbers_to_accents(standardized_answer, " ");
         else if(test->get_dst() == "ar")
@@ -73,13 +73,19 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
         QString answer(correct_answer_list.at(i).trimmed());
 
         if (test->get_dst() == "ja")
-            answer.remove(QRegularExpression("[^&#;a-zA-Z0-9]"));
+        {
+            static const QRegularExpression regex("[^&#;a-zA-Z0-9]");
+            answer.remove(regex);
+        }
         else if (test->get_dst() == "zh")
             answer = separate_pinyin(answer);
         else if (test->get_dst() == "ar")
+        {
             // remove punctuation
             // "\p{L}" matches all Unicode letters including accented characters
-            answer.remove(QRegularExpression("[^\\p{L}\\dʾʿ]"));
+            static const QRegularExpression regex("[^\\p{L}\\dʾʿ]");
+            answer.remove(regex);
+        }
 
         correct_answer_list.replace(i, answer);
     }
@@ -158,11 +164,13 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
     OK_button->setFocus(); // Because the focus is still on the edit line.
     answer_headline_layout->addWidget(OK_button);
 
-    QLabel *comment_label = new QLabel("<i>"+comment.replace(QRegularExpression("[\r\n]+"), "<br />")+"</i>", this);
+    static const QRegularExpression regex("[\r\n]+");
+    QLabel *comment_label = new QLabel(
+        "<i>"+comment.replace(regex, "<br />")+"</i>", this);
     vertical_layout->addWidget(comment_label);
     if(example.compare("")){
         QTextBrowser *example_label = new QTextBrowser(this);
-        example_label->setHtml("<b>Example:</b> "+ example.replace(QRegularExpression("[\r\n]+"), "<br />"));
+        example_label->setHtml("<b>Example:</b> "+ example.replace(regex, "<br />"));
         //example_label->setWordWrapMode(QTextOption::w);
         vertical_layout->addWidget(example_label);
     }

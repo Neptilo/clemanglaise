@@ -447,17 +447,17 @@ bool DatabaseManager::search(int test_id, const QString& expr, const QList<int> 
     else
         tags_cond = QString("tag_id IN (%1)").arg(tags_selected);
 
-    QSqlQuery query(
-                QString ("SELECT DISTINCT (words.id), word, meaning, pronunciation, nature, comment, example, hint, score "
-                         "FROM words "
-                         "LEFT OUTER JOIN words_tags "
-                         "ON words_tags.word_id = words.id "
-                         "WHERE list_id = %1 "
-                         "AND %2 "
-                         "AND (word LIKE '%%3%' OR "
-                         "meaning LIKE '%%3%' OR "
-                         "pronunciation LIKE '%%3%')"
-                         ).arg(test_id).arg(tags_cond).arg(expr));
+    QSqlQuery query(QString(
+        "SELECT DISTINCT (words.id), word, meaning, "
+        "pronunciation, nature, comment, example, hint, score "
+        "FROM words "
+        "LEFT OUTER JOIN words_tags "
+        "ON words_tags.word_id = words.id "
+        "WHERE list_id = %1 "
+        "AND %2 "
+        "AND (word LIKE '%%3%' OR "
+        "meaning LIKE '%%3%' OR "
+        "pronunciation LIKE '%%3%')").arg(test_id).arg(tags_cond, expr));
     reply_list = QStringList();
     int nb_fields = query.record().count();
     QStringList tag_list_id;
@@ -702,8 +702,7 @@ bool DatabaseManager::find_duplicates(int test_id, const QString &word, QStringL
                 .arg(QString(word_list[i]).replace('\'', "''"));
     QSqlQuery query(QString("SELECT %3 FROM words WHERE list_id = %1 AND (%2)")
                     .arg(test_id)
-                    .arg(cond.join(" OR "))
-                    .arg(reply_keys.join(", ")));
+                    .arg(cond.join(" OR "), reply_keys.join(", ")));
     reply_values.clear();
     while (query.next()){
         QStringList entry;

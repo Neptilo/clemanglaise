@@ -2,7 +2,9 @@
 #define NETWORKREPLYREADER_H
 
 #include <QObject>
-#include <QtNetwork>
+
+class QNetworkCookieJar;
+class QNetworkAccessManager;
 
 class NetworkReplyReader : public QObject
 {

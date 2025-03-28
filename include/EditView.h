@@ -6,7 +6,6 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QPushButton>
-#include <QtNetwork>
 #include <QFormLayout>
 #include <QComboBox>
 #include <QListWidget>
