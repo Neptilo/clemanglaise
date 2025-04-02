@@ -35,6 +35,7 @@ HomeView::HomeView(bool admin, QWidget *parent):
     layout->addWidget(title);
 
     // test source switcher
+    test_source_switcher.set_to_last(); // initialize to online mode
     layout->addWidget(&test_source_switcher);
 
     // info label
