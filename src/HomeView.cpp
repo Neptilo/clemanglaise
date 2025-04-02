@@ -23,7 +23,7 @@ HomeView::HomeView(bool admin, QWidget *parent):
     title(nullptr)
 {
     setWindowTitle("Clemanglaise");
-    setWindowIcon(QIcon(":/clemanglaise-img.png"));
+    setWindowIcon(QIcon(":/img/clemanglaise.ico"));
     layout = new QVBoxLayout(this);
 #ifndef Q_OS_ANDROID
     layout->setSizeConstraint(QLayout::SetMinimumSize);

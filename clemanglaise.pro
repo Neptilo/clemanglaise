@@ -86,6 +86,8 @@ SOURCES += \
 
 RESOURCES += clemanglaise.qrc
 
+RC_FILE = clemanglaise.rc
+
 QT += network
 ! contains(CONFIG, wasm) {
     QT += sql
@@ -112,6 +114,7 @@ ANDROID_EXTRA_LIBS = \
     $$ANDROID_SSL_LIBS/latest/x86_64/libssl_1_1.so
 
 DISTFILES += \
-    README.md
+    README.md \
+    clemanglaise.rc
 
 android: include($$ANDROID_SSL_LIBS/openssl.pri)

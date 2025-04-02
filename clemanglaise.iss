@@ -34,6 +34,7 @@ PrivilegesRequiredOverridesAllowed=dialog
 OutputBaseFilename=setup_clemanglaise
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=img/clemanglaise.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="clemanglaise-img.png">img/clemanglaise.png</file>
         <file>img/process-stop.png</file>
         <file>img/list-add.png</file>
         <file>img/accessories-text-editor.png</file>
@@ -26,5 +25,6 @@
         <file>img/flags/PL.png</file>
         <file>img/flags/SI.png</file>
         <file>img/flags/TR.png</file>
+        <file>img/clemanglaise.ico</file>
     </qresource>
 </RCC>
