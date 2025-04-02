@@ -141,31 +141,38 @@ void HomeView::read_reply_lists()
 
     QString reply_string = reply->readAll().replace('\0', "");
     if (reply_string.isEmpty())
-        info_label.setText(tr("There is no vocabulary list on the server at the moment."));
-    else {
-        QStringList reply_list(reply_string.split('\n'));
-        reply_list.removeLast();
-        QList<Test> online_tests;
-        for(int i = 0; i < reply_list.count(); i+=5) {
-            online_tests << Test(reply_list.at(i).toInt(),
-                                 reply_list.at(i+1),
-                                 reply_list.at(i+2),
-                                 reply_list.at(i+3),
-                                 reply_list.at(i+4),
-                                 true,
-                                 this);
-        }
-
-        // test buttons
-        delete test_buttons;
-
-        test_buttons = new LanguageButtons(online_tests, admin, this);
-        connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
-        layout->addWidget(test_buttons);
-
-        // info label
-        info_label.setText(tr("<b>Tests on remote server:</b>"));
+    {
+        info_label.setText(tr("There are no vocabulary lists on the server at the moment."));
+        return;
     }
+    QStringList reply_list(reply_string.split('\n'));
+    if (reply_list.count() % 5 != 1) { // something's fishy
+        if (reply_string.length() > 999)
+            reply_string = reply_string.left(999) + "...";
+        info_label.setText("<b>" + tr("Unexpected response:") + " </b>" + reply_string);
+        return;
+    }
+    reply_list.removeLast();
+    QList<Test> online_tests;
+    for(int i = 0; i < reply_list.count(); i+=5) {
+        online_tests << Test(reply_list.at(i).toInt(),
+                             reply_list.at(i+1),
+                             reply_list.at(i+2),
+                             reply_list.at(i+3),
+                             reply_list.at(i+4),
+                             true,
+                             this);
+    }
+
+    // test buttons
+    delete test_buttons;
+
+    test_buttons = new LanguageButtons(online_tests, admin, this);
+    connect(test_buttons, SIGNAL(clicked(Test *)), this, SLOT(start_test(Test *)));
+    layout->addWidget(test_buttons);
+
+    // info label
+    info_label.setText(tr("<b>Tests on remote server:</b>"));
 }
 
 void HomeView::remove_add_list_view()
