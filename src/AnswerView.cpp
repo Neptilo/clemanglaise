@@ -159,7 +159,7 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
                 this);
     OK_button->setFixedSize(2*InterfaceParameters::widget_unit, InterfaceParameters::widget_unit);
     OK_button->setIconSize(QSize(InterfaceParameters::widget_unit/2, InterfaceParameters::widget_unit/2));
-    connect(OK_button, SIGNAL(clicked()), parent, SLOT(validate_answer()));
+    connect(OK_button, &QPushButton::clicked, this, [this]() {emit OK_clicked();});
     OK_button->setDefault(true);
     OK_button->setFocus(); // Because the focus is still on the edit line.
     answer_headline_layout->addWidget(OK_button);

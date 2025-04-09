@@ -24,7 +24,8 @@ public:
     WordView(Test *test, QWidget *parent);
     
 signals:
-    
+    void OK_clicked();
+
 public slots:
 
 private slots:

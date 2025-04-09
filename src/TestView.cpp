@@ -296,10 +296,11 @@ void TestView::validate_question(){
                                  database_manager,
                              #endif
                                  this);
+    connect(answer_view, &WordView::OK_clicked, this, &TestView::update_question);
     layout->addWidget(answer_view);
 }
 
-void TestView::validate_answer() {
+void TestView::update_question() {
     // Remove everything
     delete question_view;
     question_view = nullptr;
@@ -357,16 +358,6 @@ void TestView::validate_answer() {
         QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     }
-}
-
-void TestView::update_question(){
-    if (test.is_remote())
-        update_request();
-    validate_answer();
-}
-
-void TestView::update_question(int){
-    update_question();
 }
 
 void TestView::delete_list()
@@ -432,6 +423,8 @@ void TestView::update_selected_tags(QModelIndex top_left, QModelIndex)
         qDebug() << tr("Wrong check state value");
         break;
     }
+    if (test.is_remote())
+        update_request();
     update_question();
 }
 

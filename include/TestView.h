@@ -91,7 +91,6 @@ public slots:
     void read_delete_list_reply();
     void read_reply_tags();
     void validate_question();
-    void validate_answer();
     void find_tags();
     void add_tag();
     void add_word();
@@ -99,7 +98,6 @@ public slots:
     void search();
     void go_back();
     void update_question();
-    void update_question(int);
     void delete_list();
 #ifndef Q_OS_WASM
     void import_word();
