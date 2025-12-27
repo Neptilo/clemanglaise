@@ -15,6 +15,7 @@ private slots:
     void testNumbersToAccents();
     void testSeparatePinyin();
     void testAsciiToDin();
+    void testAsciiToPolish();
 };
 
 #endif // STRINGUTILSTESTS_H

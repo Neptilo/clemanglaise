@@ -46,3 +46,10 @@ void StringUtilsTests::testAsciiToDin()
     // A string already in DIN must not change
     QCOMPARE(ASCII_to_DIN("ʿh.(, ġī;"), QString("ʿh.(, ġī;"));
 }
+
+void StringUtilsTests::testAsciiToPolish()
+{
+    // Single comprehensive test: mix markers, plain words, spaces, lowercase and uppercase
+    QCOMPARE(ASCII_to_Polish("s'pan S'ten z.L/energia a;e;O'C'N''x ąę"),
+             QString::fromUtf8("ś pan Ś ten żŁenergia ąę ÓĆŃ'x ąę"));
+}

@@ -31,6 +31,14 @@ QHash<QString, QString> make_ASCII_DIN_hash();
 
 QString ASCII_to_DIN(const QString &string, bool keepPunctuation = true);
 
+// converts ASCII + simple markers to Polish diacritics
+// Supported markers:
+//  - Acute: s' z' c' n' o' (and uppercase)
+//  - Dot: z. (and Z.) -> ż/Ż
+//  - Slash: l/ (and L/) -> ł/Ł
+//  - Ogonek: a; e; (and A; E;) -> ą/Ą, ę/Ę
+QString ASCII_to_Polish(const QString &string);
+
 QString kirshenbaum2IPA(const QString &string);
 bool isKirshenbaum(const QString& string);
 

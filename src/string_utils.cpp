@@ -456,6 +456,66 @@ QString ASCII_to_DIN(const QString &string, bool keepPunctuation) {
     return res;
 }
 
+QString ASCII_to_Polish(const QString &string) {
+    QString out;
+
+    auto mapAcute = [](QChar c) -> QChar {
+        switch (c.unicode()) {
+        case 's': return QChar(0x015B); // ś
+        case 'S': return QChar(0x015A); // Ś
+        case 'z': return QChar(0x017A); // ź
+        case 'Z': return QChar(0x0179); // Ź
+        case 'c': return QChar(0x0107); // ć
+        case 'C': return QChar(0x0106); // Ć
+        case 'n': return QChar(0x0144); // ń
+        case 'N': return QChar(0x0143); // Ń
+        case 'o': return QChar(0x00F3); // ó
+        case 'O': return QChar(0x00D3); // Ó
+        default: return QChar();
+        }
+    };
+
+    for (int i = 0; i < string.size(); ++i) {
+        QChar c = string.at(i);
+
+        if (i + 1 < string.size()) {
+            QChar next = string.at(i + 1);
+
+            // Acute accent markers: letter followed by apostrophe
+            if (next == '\'') {
+                QChar mapped = mapAcute(c);
+                if (!mapped.isNull()) { out += mapped; ++i; continue; }
+            }
+
+            // Dot above on z: z. -> ż, Z. -> Ż
+            if ((c == 'z' || c == 'Z') && next == '.') {
+                out += (c.isLower() ? QChar(0x017C) : QChar(0x017B));
+                ++i; continue;
+            }
+
+            // Crossed l: l/ -> ł, L/ -> Ł
+            if ((c == 'l' || c == 'L') && next == '/') {
+                out += (c.isLower() ? QChar(0x0142) : QChar(0x0141));
+                ++i; continue;
+            }
+
+            // Ogonek: a; -> ą, e; -> ę (with uppercase variants)
+            if ((c == 'a' || c == 'A') && next == ';') {
+                out += (c.isLower() ? QChar(0x0105) : QChar(0x0104));
+                ++i; continue;
+            }
+            if ((c == 'e' || c == 'E') && next == ';') {
+                out += (c.isLower() ? QChar(0x0119) : QChar(0x0118));
+                ++i; continue;
+            }
+        }
+
+        out += c;
+    }
+
+    return out;
+}
+
 QString kirshenbaum2IPA(const QString &string) {
     // Capture phonemes
     static QRegularExpression rx("(([a-zA-Z@&*?',])(<[a-z?]{1,3}>)?([\";`!\\-.^~]?))(:?)");

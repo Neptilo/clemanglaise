@@ -60,8 +60,14 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
 
         // Standardize correct answers
         correct_answers = ampersand_unescape(pronunciation);
+    }else if(test->get_dst() == "pl"){
+        // Polish: convert ASCII markers to diacritics, do not strip diacritics
+        standardized_answer = ASCII_to_Polish(ampersand_unescape(standardized_answer));
+
+        // Standardize correct answers (keep diacritics)
+        correct_answers = ampersand_unescape(meaning);
     }else{
-        // Standardize player answer before checking
+        // Default: compare without diacritics
         standardized_answer = remove_diacritics(ampersand_unescape(standardized_answer));
 
         // Standardize correct answers
