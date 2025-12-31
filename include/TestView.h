@@ -14,6 +14,7 @@
 #include "QuestionView.h"
 #include "SearchView.h"
 #include "Test.h"
+#include "AddListView.h"
 #include "AddTagView.h"
 
 class QNetworkRequest;
@@ -33,6 +34,7 @@ public:
 
 private:
     EditView *add_view;
+    AddListView *add_list_view;
     AddTagView *add_tag_view;
     bool admin;
     AnswerView *answer_view;
@@ -67,6 +69,7 @@ private:
     QToolButton *add_button;
     QToolButton *search_button;
     QToolButton *import_button;
+    QToolButton *edit_button;
     QToolButton *delete_button;
     CheckableComboBox *tags_box;
 
@@ -76,6 +79,7 @@ private:
     QAction *add_tag_action;
     QAction *search_action;
     QAction *import_action;
+    QAction *edit_action;
     QAction *delete_action;
 
     void remove_widgets();
@@ -98,6 +102,7 @@ public slots:
     void search();
     void go_back();
     void update_question();
+    void edit_list();
     void delete_list();
 #ifndef Q_OS_WASM
     void import_word();

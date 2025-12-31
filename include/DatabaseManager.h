@@ -25,6 +25,7 @@ public:
     bool create_word_tag_table();
     bool delete_list(int test_id);
     bool delete_word(const int& id);
+    bool update_list(int test_id, const QString &name, const QString &src, const QString &dst, const QString &flag);
 
     // find word entry having the lowest score
     bool find_lowest(int test_id,

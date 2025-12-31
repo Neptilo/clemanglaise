@@ -295,6 +295,33 @@ bool DatabaseManager::add_word(const QHash<QString, QString> &word_data)
     return success;
 }
 
+bool DatabaseManager::update_list(int test_id, const QString &name, const QString &src, const QString &dst, const QString &flag)
+{
+    QSqlQuery query;
+    query.exec("BEGIN");
+    bool success = query.prepare("UPDATE lists "
+                                 "SET name=:name, src=:src, dst=:dst, flag=:flag "
+                                 "WHERE id=:id");
+    query.bindValue(":id", test_id);
+    query.bindValue(":name", name);
+    query.bindValue(":src", src);
+    query.bindValue(":dst", dst);
+    query.bindValue(":flag", flag);
+    success &= query.exec();
+    if (!success){
+        last_error = query.lastError().text();
+        query.exec("ROLLBACK");
+        return false;
+    }
+    if (query.numRowsAffected() != 1){
+        last_error = tr("%1 list(s) seem to be affected by the update.").arg(query.numRowsAffected());
+        query.exec("ROLLBACK");
+        return false;
+    }
+    query.exec("COMMIT");
+    return success;
+}
+
 bool DatabaseManager::delete_list(int test_id)
 {
     QSqlQuery query;

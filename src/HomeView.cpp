@@ -54,7 +54,7 @@ void HomeView::add_list()
                     #ifndef Q_OS_WASM
                         &database_manager,
                     #endif
-                        remote, this); // database_manager is useless for online tests
+                        remote, nullptr, this); // database_manager is useless for online tests
     connect(add_list_view, AddListView::created, this, HomeView::list_created);
     connect(add_list_view, AddListView::canceled, this, HomeView::remove_add_list_view);
     layout->addWidget(add_list_view);

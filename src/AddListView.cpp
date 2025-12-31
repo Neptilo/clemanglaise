@@ -14,10 +14,10 @@ AddListView::AddListView(
         #ifndef Q_OS_WASM
         DatabaseManager *database_manager,
         #endif
-        bool remote, QWidget *parent) :
+        bool remote, Test *existing_test, QWidget *parent) :
     QWidget(parent),
     cancel_button(tr("C&ancel"), this),
-    create_button(tr("&Create"), this),
+    create_button(existing_test ? tr("&Update") : tr("&Create"), this),
     #ifndef Q_OS_WASM
     database_manager(database_manager),
     #endif
@@ -25,8 +25,8 @@ AddListView::AddListView(
     name_edit(this),
     src_edit(this),
     status(this),
-    title(tr("<b>Create a vocabulary list</b>")),
-    test(nullptr)
+    title(existing_test ? tr("<b>Edit vocabulary list</b>") : tr("<b>Create a vocabulary list</b>")),
+    test(existing_test)  // Store pointer to test being edited, or nullptr if creating
 {
     lang_completer = new QCompleter(LANGUAGES, this);
     lang_completer->setCaseSensitivity(Qt::CaseInsensitive);
@@ -35,6 +35,15 @@ AddListView::AddListView(
     country_completer = new QCompleter(COUNTRIES, this);
     country_completer->setCaseSensitivity(Qt::CaseInsensitive);
     flag_edit.setCompleter(country_completer);
+    
+    // If editing, populate the fields with existing data
+    if (existing_test) {
+        name_edit.setText(existing_test->get_name());
+        src_edit.setText(LANG_MAP[existing_test->get_src()]);
+        dst_edit.setText(LANG_MAP[existing_test->get_dst()]);
+        flag_edit.setText(COUNTRY_MAP[existing_test->get_flag()]);
+    }
+    
     QFormLayout* layout = new QFormLayout(this);
     layout->addWidget(&title);
     layout->addRow(tr("&Name: "), &name_edit);
@@ -45,21 +54,13 @@ AddListView::AddListView(
     status.hide();
     layout->addWidget(&create_button);
     layout->addWidget(&cancel_button);
-    if(remote)
-        connect(&create_button, SIGNAL(clicked()), this, SLOT(add_online_list()));
-    else
-        connect(&create_button, SIGNAL(clicked()), this, SLOT(add_offline_list()));
+    
+    void (AddListView::*slot)() = remote ?
+        (existing_test ? &AddListView::update_online_list : &AddListView::add_online_list) :
+        (existing_test ? &AddListView::update_offline_list : &AddListView::add_offline_list);
+    connect(&create_button, &QPushButton::clicked, this, slot);
+    
     connect(&cancel_button, SIGNAL(clicked()), this, SIGNAL(canceled()));
-}
-
-AddListView::~AddListView()
-{
-    delete test;
-}
-
-Test *AddListView::get_test()
-{
-    return test;
 }
 
 #ifndef Q_OS_WASM
@@ -77,8 +78,35 @@ void AddListView::add_offline_list()
     database_manager->add_list(name_edit.text(), src_test,  dst_test, test_flag, test_id);
     error = database_manager->pop_last_error();
     if(error.isEmpty()){
-        test = new Test(test_id, name_edit.text(), src_test, dst_test, test_flag, false);
-        emit created(test);
+        Test *new_test = new Test(test_id, name_edit.text(), src_test, dst_test, test_flag, false);
+        emit created(new_test);
+    }else{
+        status.setText(tr("<b>SQLite error: </b>") + error);
+        status.show();
+    }
+}
+
+void AddListView::update_offline_list()
+{
+    QString src_test(""), dst_test(""), test_flag(""), error("");
+
+    if (!check_inputs(src_test, dst_test, test_flag, error))
+    {
+        status.setText(tr("<b>Error: </b>") + error);
+        status.show();
+        return;
+    }
+    
+    if (!test) {
+        status.setText(tr("<b>Error: </b>No list to update"));
+        status.show();
+        return;
+    }
+    
+    database_manager->update_list(test->get_id(), name_edit.text(), src_test, dst_test, test_flag);
+    error = database_manager->pop_last_error();
+    if(error.isEmpty()){
+        emit created(nullptr);
     }else{
         status.setText(tr("<b>SQLite error: </b>") + error);
         status.show();
@@ -119,7 +147,40 @@ void AddListView::add_online_list()
     post_data.addQueryItem("src", src_test);
     post_data.addQueryItem("dst", dst_test);
     post_data.addQueryItem("flag", test_flag);
-    const QUrl url = QUrl(NetworkReplyReader::api_url + "add_list");
+    const QUrl url = QUrl(NetworkReplyReader::api_url + "add_list.php");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,
+                      "application/x-www-form-urlencoded");
+
+    QNetworkReply* reply = NetworkReplyReader::nam->post(
+                request, post_data.query().toUtf8());
+    connect(reply, SIGNAL(finished()), this, SLOT(show_confirmation()));
+}
+
+void AddListView::update_online_list()
+{
+    QString src_test(""), dst_test(""), test_flag(""), error("");
+
+    if (!check_inputs(src_test, dst_test, test_flag, error))
+    {
+        status.setText(tr("<b>Error: </b>") + error);
+        status.show();
+        return;
+    }
+    
+    if (!test) {
+        status.setText(tr("<b>Error: </b>No list to update"));
+        status.show();
+        return;
+    }
+
+    QUrlQuery post_data;
+    post_data.addQueryItem("list_id", QString::number(test->get_id()));
+    post_data.addQueryItem("name", name_edit.text());
+    post_data.addQueryItem("src", src_test);
+    post_data.addQueryItem("dst", dst_test);
+    post_data.addQueryItem("flag", test_flag);
+    const QUrl url = QUrl(NetworkReplyReader::api_url + "update_list.php");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,
                       "application/x-www-form-urlencoded");

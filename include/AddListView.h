@@ -22,9 +22,8 @@ public:
             DatabaseManager *database_manager,
         #endif
             bool remote,
+            Test *existing_test = nullptr,
             QWidget *parent = nullptr);
-    ~AddListView();
-    Test *get_test();
 
 private:
     bool check_inputs(QString& src_test, QString& dst_test, QString& test_flag, QString& error);
@@ -42,7 +41,7 @@ private:
     QLineEdit flag_edit;
     QLabel status;
     QLabel title;
-    Test *test;
+    Test *test;  // Pointer to the test being edited (in edit mode) or nullptr (in create mode)
 
 signals:
     void created(Test *test);
@@ -51,8 +50,10 @@ signals:
 public slots:
 #ifndef Q_OS_WASM
     void add_offline_list();
+    void update_offline_list();
 #endif
     void add_online_list();
+    void update_online_list();
     void show_confirmation();
 };
 

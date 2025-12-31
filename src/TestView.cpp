@@ -27,6 +27,7 @@
 #include "InterfaceParameters.h"
 #include "NetworkReplyReader.h"
 #include "resource_utils.h"
+#include "AddListView.h"
 #include "AddTagView.h"
 
 TestView::TestView(Test &test,
@@ -36,6 +37,7 @@ TestView::TestView(Test &test,
                    bool admin, QWidget *parent):
     QWidget(parent),
     add_view(nullptr),
+    add_list_view(nullptr),
     add_tag_view(nullptr),
     admin(admin),
     answer_view(nullptr),
@@ -52,6 +54,7 @@ TestView::TestView(Test &test,
     add_button(nullptr),
     search_button(nullptr),
     import_button(nullptr),
+    edit_button(nullptr),
     delete_button(nullptr),
     tags_box(nullptr)
 {
@@ -95,9 +98,15 @@ void TestView::create_actions()
         connect(import_action, SIGNAL(triggered()), this, SLOT(import_list()));
     }
 
-    delete_action = new QAction(
-                getIcon("edit-delete"), tr("&Delete this vocabulary list"), this);
-    connect(delete_action, SIGNAL(triggered()), this, SLOT(delete_list()));
+    if (!test.is_remote() || admin) {
+        edit_action = new QAction(
+                    getIcon("accessories-text-editor"), tr("&Edit this vocabulary list"), this);
+        connect(edit_action, SIGNAL(triggered()), this, SLOT(edit_list()));
+
+        delete_action = new QAction(
+                    getIcon("edit-delete"), tr("&Delete this vocabulary list"), this);
+        connect(delete_action, SIGNAL(triggered()), this, SLOT(delete_list()));
+    }
 }
 
 void TestView::create_interface()
@@ -132,6 +141,10 @@ void TestView::create_interface()
         tool_bar_layout->addWidget(import_button);
     }
     if (!test.is_remote() || admin) {
+        edit_button = new QToolButton(this);
+        edit_button->setDefaultAction(edit_action);
+        tool_bar_layout->addWidget(edit_button);
+        
         delete_button = new QToolButton(this);
         delete_button->setDefaultAction(delete_action);
         tool_bar_layout->addWidget(delete_button);
@@ -214,6 +227,8 @@ void TestView::init()
         search_button->show();
     if (import_button)
         import_button->show();
+    if (edit_button)
+        edit_button->show();
     if (delete_button)
         delete_button->show();
     if (tags_box)
@@ -358,6 +373,45 @@ void TestView::update_question() {
         QNetworkReply* reply = NetworkReplyReader::nam->get(*request);
         connect(reply, SIGNAL(finished()), this, SLOT(read_reply()));
     }
+}
+
+void TestView::edit_list()
+{
+    remove_widgets();
+    
+    add_list_view = new AddListView(
+        #ifndef Q_OS_WASM
+            database_manager,
+        #endif
+            test.is_remote(),
+            &test,
+            this);
+    
+    // Connect the created signal to handle list updates
+    connect(add_list_view, &AddListView::created, this, [this](Test *updated_test) {
+        if (updated_test) {
+            // Update the local test object with new data
+            test = *updated_test;
+            
+            // Update the title
+            QString title_str = QString("<b>%1</b> (%2)")
+                    .arg(test.get_name(), test.is_remote()?tr("online"):tr("offline"));
+            title->setText(title_str);
+        }
+        
+        // Clean up and return to the main view
+        delete add_list_view;
+        add_list_view = nullptr;
+        init();
+    });
+    
+    connect(add_list_view, &AddListView::canceled, this, [this]() {
+        delete add_list_view;
+        add_list_view = nullptr;
+        init();
+    });
+    
+    layout->addWidget(add_list_view);
 }
 
 void TestView::delete_list()
@@ -509,12 +563,15 @@ void TestView::go_back() {
         } // Else search_view already handled the go back action.
     } else if (
             add_view ||
+            add_list_view ||
             add_tag_view ||
             update_view) {
         delete add_view;
+        delete add_list_view;
         delete add_tag_view;
         delete update_view;
         add_view = nullptr;
+        add_list_view = nullptr;
         add_tag_view = nullptr;
         update_view = nullptr;
         init();
@@ -586,6 +643,8 @@ void TestView::remove_widgets()
         search_button->hide();
     if (import_button)
         import_button->hide();
+    if (edit_button)
+        edit_button->hide();
     if (delete_button)
         delete_button->hide();
     if (tags_box)
@@ -625,6 +684,7 @@ void TestView::resizeEvent(QResizeEvent *)
     init_button(add_button);
     init_button(search_button);
     init_button(import_button);
+    init_button(edit_button);
     init_button(delete_button);
     if (title)
     {

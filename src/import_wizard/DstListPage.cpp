@@ -36,7 +36,7 @@ bool DstListPage::isComplete()
 
 void DstListPage::create_add_list_view()
 {
-    add_list_view = new AddListView(database_manager, false, this);
+    add_list_view = new AddListView(database_manager, false, nullptr, this);
     // TODO: how to make add_list_view return the new created test id, so dst_list_page can emit "chosen" signal with Test* argument?
     connect(add_list_view, SIGNAL(created(Test*)), this, SIGNAL(chosen(Test*)));
     connect(add_list_view, SIGNAL(canceled()), this, SLOT(remove_add_list_view()));
