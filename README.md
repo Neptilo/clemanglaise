@@ -30,6 +30,9 @@ This program creates vocabulary tests in different languages using words from an
     
       Other useful link [here](https://doc.qt.io/qt-5/wasm.html)
   * Compile the project (hotkey: `CTRL+B`). (This will also run `qmake` before compiling.)
+  * Configure the run target: Since the project uses a subdirs structure, you need to set up Qt Creator to run the main application:
+    * Go to **Projects** (left sidebar) → **Run**
+    * In the "Run configuration" dropdown, select "main". This will be the default target when you run the project.
   * Since OpenSSL is not included in Qt and that I didn't want to include it in the repository, you'll need to download it yourself:
     * To build on Windows:
       * Download and extract [this zip](https://bintray.com/vszakats/generic/download_file?file_path=openssl-1.1.1d-win64-mingw.zip)(1).
@@ -40,11 +43,23 @@ This program creates vocabulary tests in different languages using words from an
     * On Mac, I haven't tested (let me know if you do), but I hope it's the same as on Linux.
   * Run the project (hotkey: `CTRL+R`) and enjoy!
 
-If you have been granted the **administrator** rights to the project's database, you have to set a password argument to run the application.
+#### Running unit tests
 
-  * To do it, go to **Projects mode > Run Settings**
-  * Then set Arguments to `-p <pwd>` or `--password <pwd>`, replacing `<pwd>` with the password.
-  * If you want to open help wizard set Arguments to `-h` or `-?` or `--help`	
+To run the unit tests:
+
+  * Build the project (`CTRL+B`) - this builds both the application and tests
+  * Expand the project tree and locate the **tests** subproject
+  * Right-click **tests** and select **Run** (or set it as the active target and press `CTRL+R`)
+
+The test output will be displayed in the Application Output panel.
+
+#### Administrator access
+
+If you have been granted the **administrator** rights to the project's database, you have to set a password argument to run the application:
+
+  * Go to **Projects mode > Run Settings**
+  * Set Arguments to `-p <pwd>` or `--password <pwd>`, replacing `<pwd>` with the password
+  * To open the help wizard, set Arguments to `-h` or `-?` or `--help`	
 
 ### For command-line users
 
