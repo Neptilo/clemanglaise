@@ -6,6 +6,15 @@
 const QHash<QString, QString> kirshenbaum_IPA_hash = make_Kirshenbaum_IPA_hash();
 const QHash<QString, QString> ASCII_DIN_hash = make_ASCII_DIN_hash();
 
+// Pinyin vowels with all tone marks (macron, acute, caron, grave) plus base vowels
+static const char* pinyin_vowels =
+    "\\x{0101}\\x{0113}\\x{012B}\\x{014D}\\x{016B}\\x{01D6}"
+    "\\xE1\\xE9\\xED\\xF3\\xFA\\x{01D8}\\x{01CE}\\x{011B}\\x{01D0}\\x{01D2}"
+    "\\x{01D4}\\x{01DA}\\xE0\\xE8\\xEC\\xF2\\xF9\\x{01DC}aeiou\\xFCv";
+
+// 'e' vowels with all tone marks (ē é ě è e)
+static const char* e_vowels = "e\\x{0113}\\xE9\\x{011B}\\xE8";
+
 QString toTitleCase(const QString& str)
 {
     return str.at(0).toUpper() + str.mid(1).toLower();
@@ -230,10 +239,8 @@ QChar number_to_accent(const QChar& letter, int accent_number){
 QString numbers_to_accents(const QString &string, const QString &sep) {
     // Capture syllables
     static QRegularExpression syllable_rx(
-        "([bcdfgj-np-tw-z]?h?[iu]?)([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6"
-        "\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2"
-        "\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr"
-        "])([iounr]?g?)(\\d?)(\\W*)",
+        QString("([bcdfgj-np-tw-z]?h?[iu]?)([%1r])([iounr]?g?)(\\d?)(\\W*)")
+            .arg(pinyin_vowels),
         QRegularExpression::CaseInsensitiveOption);
 
     QString res, separation;
@@ -255,28 +262,36 @@ QString numbers_to_accents(const QString &string, const QString &sep) {
 }
 
 QString separate_pinyin(const QString &string, const QString &sep) {
-    // Reverse regex to correctly split syllables
-    static QRegularExpression backward_syllable_rx(
-        "g?[ioun]?([\\x0101\\x0113\\x012B\\x014D\\x016B\\x01D6"
-        "\\x00E1\\x00E9\\x00ED\\x00F3\\x00FA\\x01D8\\x01CE\\x011B\\x01D0\\x01D2"
-        "\\x01D4\\x01DA\\x00E0\\x00E8\\x00EC\\x00F2\\x00F9\\x01DCaeiou\\x00FCvr"
-        "])[iu]?h?[bcdfgj-np-tw-z]?|r", QRegularExpression::CaseInsensitiveOption);
+    // Match syllables with alternatives (order is critical!):
+    // 1. [e vowel] + r with NO consonant prefix (er, ér, èr, etc.)
+    //    Must come FIRST to match "er" as one syllable before alt 2 can match just "e"
+    // 2. Regular syllable: [consonant] + [vowel] + [optional n/ng coda if not followed by vowel]
+    //    Must come BEFORE alt 3 to match syllables with initial 'r' (like "ren", "ran")
+    //    as complete syllables, not as standalone "r" + remaining vowels (would give "r en" vs "ren")
+    // 3. Standalone 'r' (for syllabic r as in "kòngr" -> "kòng r")
+    //    Must come LAST to avoid breaking up syllables that start with 'r' consonant
+    // 4. Apostrophe (word separator, skipped)
+    static QRegularExpression syllable_rx(
+        QString("[%1]r"
+                "|[bcdfgj-np-tw-z]?h?[iu]?[%2][iu]?(?:ng?(?![%2]))?"
+                "|r|'")
+            .arg(e_vowels, pinyin_vowels),
+        QRegularExpression::CaseInsensitiveOption);
 
     int pos = 0;
     QStringList syllables;
-    static QRegularExpression e_rx("([e\\x0113\\x00E9\\x011B\\x00E8])", QRegularExpression::CaseInsensitiveOption);
     QRegularExpressionMatch match;
 
-    while ((match = backward_syllable_rx.match(reverse(string), pos)).hasMatch()) {
+    while ((match = syllable_rx.match(string, pos)).hasMatch()) {
         pos = match.capturedEnd(0);
-        QString syllable(reverse(match.captured(0)));
+        QString syllable = match.captured(0);
 
-        // Merge 'e' followed by 'r' into one syllable
-        if (!syllables.isEmpty() && syllables.at(0) == QString("r") && e_rx.match(syllable).hasMatch()) {
-            syllables.replace(0, syllable + syllables.at(0));
-        } else {
-            syllables.prepend(syllable);
+        // Skip apostrophes (word separators)
+        if (syllable == "'") {
+            continue;
         }
+
+        syllables.append(syllable);
     }
 
     return syllables.join(sep);
