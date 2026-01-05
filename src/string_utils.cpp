@@ -450,15 +450,13 @@ QString ASCII_to_DIN(const QString &string, bool keepPunctuation) {
     QRegularExpressionMatch match;
 
     while ((match = rx.match(string, pos)).hasMatch()) {
-        pos = match.capturedEnd(0); // Move to the end of the match
-
         if (keepPunctuation)
             res += match.captured(1);
 
         // If a new word starts with a vowel, prepend a hamza
         // (Would it be better to remove them rather than add them?)
         QString phoneme = match.captured(2);
-        if ((!pos || !match.captured(1).isEmpty()) && // beginning of a word
+        if ((match.capturedStart(0) == 0 || !match.captured(1).isEmpty()) && // beginning of a word
             !phoneme.isEmpty() &&
             QString("aiuā").contains(phoneme[0])) {
             res += "ʾ";
@@ -466,6 +464,8 @@ QString ASCII_to_DIN(const QString &string, bool keepPunctuation) {
 
         res += ASCII_DIN_hash.contains(phoneme) ?
                    ASCII_DIN_hash.value(phoneme) : phoneme;
+        
+        pos = match.capturedEnd(0); // Move to the end of the match
     }
 
     return res;
