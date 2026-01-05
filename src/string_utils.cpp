@@ -468,6 +468,11 @@ QString ASCII_to_DIN(const QString &string, bool keepPunctuation) {
         pos = match.capturedEnd(0); // Move to the end of the match
     }
 
+    // Append any remaining characters after the last match
+    if (keepPunctuation && pos < string.length()) {
+        res += string.mid(pos);
+    }
+
     return res;
 }
 

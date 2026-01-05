@@ -40,7 +40,7 @@ void StringUtilsTests::testAsciiToDin()
     QCOMPARE(ASCII_to_DIN("ab it u2thj7khddhr,zsshSDTZ3ghfqklmnhw al-y 2ah aaiiuu."),
              QString("ʾab ʾit ʾuʾṯǧḥḫdḏr,zsšṣḍṭẓʿġfqklmnhw ʾal-y ʾah ʾāīū."));
     QCOMPARE(ASCII_to_DIN("/r,l a-*y.", false),
-             QString("rl ay"));
+             QString("rlʾay"));
     // A string already in DIN must not change
     QCOMPARE(ASCII_to_DIN("ʿh.(, ġī;"), QString("ʿh.(, ġī;"));
 }

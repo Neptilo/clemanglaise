@@ -29,6 +29,9 @@ QString separate_pinyin(const QString &string, const QString &sep = " ");
 QHash<QString, QString> make_Kirshenbaum_IPA_hash();
 QHash<QString, QString> make_ASCII_DIN_hash();
 
+// Converts ASCII representation of Arabic to DIN 31635 transliteration
+// Adds hamza (ʾ) before vowels at word beginnings
+// keepPunctuation: if false, strips punctuation and non-phonetic characters
 QString ASCII_to_DIN(const QString &string, bool keepPunctuation = true);
 
 // converts ASCII + simple markers to Polish diacritics
