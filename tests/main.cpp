@@ -2,8 +2,9 @@
 
 #include "StringUtilsTests.h"
 
-int main()
+int main(int argc, char *argv[])
 {
     StringUtilsTests sut;
-    QTest::qExec(&sut);
+    // Return the runner's result: discarding it makes every run "pass".
+    return QTest::qExec(&sut, argc, argv);
 }

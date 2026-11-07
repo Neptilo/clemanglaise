@@ -59,19 +59,19 @@ AnswerView::AnswerView(const QHash<QString, QString> &word_data,
             standardized_answer = ASCII_to_DIN(standardized_answer, false);
 
         // Standardize correct answers
-        correct_answers = ampersand_unescape(pronunciation);
+        correct_answers = pronunciation;
     }else if(test->get_dst() == "pl"){
         // Polish: convert ASCII markers to diacritics, do not strip diacritics
-        standardized_answer = ASCII_to_Polish(ampersand_unescape(standardized_answer));
+        standardized_answer = ASCII_to_Polish(standardized_answer);
 
         // Standardize correct answers (keep diacritics)
-        correct_answers = ampersand_unescape(meaning);
+        correct_answers = meaning;
     }else{
         // Default: compare without diacritics
-        standardized_answer = remove_diacritics(ampersand_unescape(standardized_answer));
+        standardized_answer = remove_diacritics(standardized_answer);
 
         // Standardize correct answers
-        correct_answers = remove_diacritics(ampersand_unescape(meaning));
+        correct_answers = remove_diacritics(meaning);
     }
     QStringList correct_answer_list = correct_answers.split(",");
     for (int i = 0; i < correct_answer_list.size(); ++i) {

@@ -55,7 +55,7 @@ AddTagView::AddTagView(Test *test,
     layout->addWidget(this->title);
 
     // Define explicit variables for the default values of the fields.
-    QString tag = ampersand_unescape(default_values.at(1));
+    QString tag = default_values.at(1);
 
     tag_edit = new QLineEdit(tag, this);
     layout->addRow(tr("&Tag:"), tag_edit);
@@ -77,8 +77,8 @@ void AddTagView::edit_tag(){
     if (test->is_remote()) {
         QUrlQuery post_data;
         post_data.addQueryItem("id", this->default_values.at(0));
-        QString line = ampersand_escape(tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
-        post_data.addQueryItem("tag", line);
+        QString line = tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1);
+        post_data.addQueryItem("tag", tag_edit->text().left(1).toUpper() + tag_edit->text().mid(1));
         const QUrl url(NetworkReplyReader::api_url + ""+this->php_filename+".php");
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");

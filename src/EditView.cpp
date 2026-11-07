@@ -52,13 +52,13 @@ EditView::EditView(Test *test,
     layout->addWidget(this->title);
 
     // Define explicit variables for the default values of the fields.
-    QString word = ampersand_unescape(default_values["word"]);
-    QString meaning = ampersand_unescape(default_values["meaning"]);
+    QString word = default_values["word"];
+    QString meaning = default_values["meaning"];
     QString nature = default_values["nature"];
     QString comment = default_values["comment"];
     QString example = default_values["example"];
     QString hint = default_values["hint"];
-    QString pronunciation = ampersand_unescape(default_values["pronunciation"]);
+    QString pronunciation = default_values["pronunciation"];
 
     word_edit = new QLineEdit(word, this);
     layout->addRow(tr("&Word: "), word_edit);
@@ -173,20 +173,20 @@ void EditView::edit_word(){
     if (pronunciation_edit) {
         const QString& pronunciation = pronunciation_edit->text();
         if(test->get_dst() == "ja"){
-            standardized_pronunciation = ampersand_escape(pronunciation);
-            standardized_pronunciation.replace(QString("ou"), QString("&#333;"));
-            standardized_pronunciation.replace(QString("uu"), QString("&#363;"));
-            standardized_pronunciation.replace(QString("aa"), QString("&#257;"));
-            standardized_pronunciation.replace(QString("ee"), QString("&#275;"));
+            standardized_pronunciation = pronunciation;
+            standardized_pronunciation.replace(QString("ou"), QString::fromUtf8("ō"));
+            standardized_pronunciation.replace(QString("uu"), QString::fromUtf8("ū"));
+            standardized_pronunciation.replace(QString("aa"), QString::fromUtf8("ā"));
+            standardized_pronunciation.replace(QString("ee"), QString::fromUtf8("ē"));
         }else if(test->get_dst() == "zh")
             standardized_pronunciation = numbers_to_accents(pronunciation);
         else if(test->get_dst() == "ar")
             standardized_pronunciation = ASCII_to_DIN(pronunciation);
         else {
-            standardized_pronunciation = ampersand_escape(
+            standardized_pronunciation =
                     isKirshenbaum(pronunciation)?
                         kirshenbaum2IPA(pronunciation):
-                        pronunciation);
+                        pronunciation;
         }
     }
 
@@ -194,7 +194,7 @@ void EditView::edit_word(){
     QHash<QString, QString> word_data;
     word_data["id"] = default_values["id"];
     word_data["list_id"] = QString::number(test->get_id());
-    word_data["word"] = ampersand_escape(word_edit->text());
+    word_data["word"] = word_edit->text();
     QString nature(nature_edit->itemData(nature_edit->currentIndex()).toString());
     if (nature == "n" && gender_edit) {
         QVariant gender = gender_edit->itemData(gender_edit->currentIndex());
@@ -202,12 +202,12 @@ void EditView::edit_word(){
             nature += gender.toChar();
     }
     word_data["nature"] = nature;
-    word_data["meaning"] = ampersand_escape(meaning_edit->text());
+    word_data["meaning"] = meaning_edit->text();
     word_data["pronunciation"] = standardized_pronunciation;
     // toPlainText() because we don't want to save a too much unnecessary information like an HTML header.
-    word_data["comment"] = ampersand_escape(comment_edit->toPlainText());
-    word_data["example"] = ampersand_escape(example_edit->toPlainText());
-    word_data["hint"] = ampersand_escape(hint_edit->toPlainText());
+    word_data["comment"] = comment_edit->toPlainText();
+    word_data["example"] = example_edit->toPlainText();
+    word_data["hint"] = hint_edit->toPlainText();
 
     if (test->is_remote()) {
         QUrlQuery post_data;

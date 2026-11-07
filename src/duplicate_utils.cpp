@@ -73,11 +73,11 @@ QString merge_string(
     const QRegularExpression &split_sep,
     const QString &join_sep)
 {
-    const QStringList left_list = ampersand_escape(trimmed(left_string.split(
-        split_sep, Qt::SkipEmptyParts)));
+    const QStringList left_list = trimmed(left_string.split(
+        split_sep, Qt::SkipEmptyParts));
     auto left_set = QSet<QString>(left_list.begin(), left_list.end());
-    const QStringList right_list = ampersand_escape(trimmed(right_string.split(
-        split_sep, Qt::SkipEmptyParts)));
+    const QStringList right_list = trimmed(right_string.split(
+        split_sep, Qt::SkipEmptyParts));
     auto right_set = QSet<QString>(right_list.begin(), right_list.end());
     left_set.unite(right_set);
     return QStringList(left_set.begin(), left_set.end()).join(join_sep);

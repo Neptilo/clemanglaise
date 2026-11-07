@@ -98,7 +98,7 @@ void SearchView::search() {
         layout->removeWidget(update_view);
     status->hide();    
     // Standardization of search string
-    QString search_str = ampersand_unescape(search_bar->text());
+    QString search_str = search_bar->text();
     if (test->is_remote()) {
         // If 0 is in the list, remove it and set untagged to true to say we also want to look for untagged words, else set it to false.
         bool untagged = selected_tags.removeOne(0);
@@ -278,7 +278,7 @@ void SearchView::read_reply(QString reply_string) {
                 }
                 result->setCellWidget(i/nb_cols, col_ind, tags_box);
             } else {
-                item = new QLabel(ampersand_unescape(reply_list.at(i)), this);
+                item = new QLabel(reply_list.at(i), this);
                 item->setTextFormat(Qt::RichText);
                 result->setCellWidget(i/nb_cols, col_ind, item);
             }

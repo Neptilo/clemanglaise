@@ -7,11 +7,7 @@
 
 extern const QHash<QString, QString> kirshenbaum_IPA_hash;
 QString toTitleCase(const QString &string);
-QString ampersand_escape(const QString &string);
-QStringList ampersand_escape(const QStringList &list);
 QString colon_unescape(const QString &string);
-QString ampersand_unescape(const QString &string);
-QStringList ampersand_unescape(const QStringList &list);
 QString remove_diacritics(const QString &string);
 QStringList remove_diacritics(const QStringList &list);
 

@@ -62,7 +62,7 @@ void QuestionView::create_actions()
 }
 
 QString QuestionView::get_answer(){
-    return ampersand_escape(edit->text());
+    return edit->text();
 }
 
 void QuestionView::ask_question(const QString& word, const QString &hint) {

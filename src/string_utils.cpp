@@ -20,26 +20,6 @@ QString toTitleCase(const QString& str)
     return str.at(0).toUpper() + str.mid(1).toLower();
 }
 
-QString ampersand_escape(const QString &string) {
-    QString encoded;
-    for(int i=0;i<string.size();++i) {
-        QChar ch = string.at(i);
-        if(ch.unicode() > 127)
-            encoded += QString("&#%1;").arg((int)ch.unicode());
-        else
-            encoded += ch;
-    }
-    return encoded;
-}
-
-QStringList ampersand_escape(const QStringList &list)
-{
-    QStringList ret;
-    for(int i = 0; i < list.size(); ++i)
-        ret << ampersand_escape(list.at(i));
-    return ret;
-}
-
 /**
  * Replace all ":" by U+02D0 (ː) in IPA, because colon is a reserved character while
  * parsing a file.
@@ -69,47 +49,6 @@ QString colon_unescape(const QString &string) {
         }
     }
     return res;
-}
-
-/**
- * Replace all occurrences of &#number; with the corresponding ASCII letter.
- * @param string: the string we want to handle
- */
-QString ampersand_unescape(const QString &string) {
-    static QRegularExpression rx0("[^&]*");
-    static QRegularExpression rx("&#(\\d*);([^&]*)");
-    QString res;
-    int pos = 0;
-
-    // Match the initial part (anything before the first `&#`)
-    QRegularExpressionMatch match0 = rx0.match(string, pos);
-    if (match0.hasMatch()) {
-        pos = match0.capturedStart(0) + match0.capturedLength(0);
-        res += match0.captured(0);
-
-        // Now loop over occurrences of "&#number;" followed by other text
-        while (true) {
-            QRegularExpressionMatch match = rx.match(string, pos);
-            if (!match.hasMatch())
-                break;
-
-            // Convert captured number to a character
-            int charCode = match.captured(1).toInt();
-            res += QChar(charCode) + match.captured(2);
-
-            // Move position forward
-            pos = match.capturedStart(0) + match.capturedLength(0);
-        }
-    }
-    return res;
-}
-
-QStringList ampersand_unescape(const QStringList &list)
-{
-    QStringList ret;
-    for(int i = 0; i < list.size(); ++i)
-        ret << ampersand_unescape(list.at(i));
-    return ret;
 }
 
 QString diacritic_letters;

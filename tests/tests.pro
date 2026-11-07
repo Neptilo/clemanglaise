@@ -9,7 +9,7 @@ QT       += core testlib
 QT       -= gui
 
 TARGET = tests
-#CONFIG   += console
+CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
